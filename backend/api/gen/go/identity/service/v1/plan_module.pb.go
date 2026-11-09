@@ -29,12 +29,12 @@ const (
 // 套餐模块
 type PlanModule struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // 白名单项ID
-	PlanId        *uint32                `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                   // 所属套餐ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // 白名单项ID
+	PlanId        *uint64                `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                   // 所属套餐ID
 	Module        *Module                `protobuf:"varint,3,opt,name=module,proto3,enum=identity.service.v1.Module,oneof" json:"module,omitempty"` // 功能模块
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`        // 创建者用户ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`        // 更新者用户ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`        // 删除者用户ID
+	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`        // 创建者用户ID
+	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`        // 更新者用户ID
+	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`        // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`         // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`         // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`         // 删除时间
@@ -72,14 +72,14 @@ func (*PlanModule) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_plan_module_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PlanModule) GetId() uint32 {
+func (x *PlanModule) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PlanModule) GetPlanId() uint32 {
+func (x *PlanModule) GetPlanId() uint64 {
 	if x != nil && x.PlanId != nil {
 		return *x.PlanId
 	}
@@ -93,21 +93,21 @@ func (x *PlanModule) GetModule() Module {
 	return Module_MODULE_UNSPECIFIED
 }
 
-func (x *PlanModule) GetCreatedBy() uint32 {
+func (x *PlanModule) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *PlanModule) GetUpdatedBy() uint32 {
+func (x *PlanModule) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *PlanModule) GetDeletedBy() uint32 {
+func (x *PlanModule) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -237,7 +237,7 @@ func (x *GetPlanModuleRequest) GetQueryBy() isGetPlanModuleRequest_QueryBy {
 	return nil
 }
 
-func (x *GetPlanModuleRequest) GetId() uint32 {
+func (x *GetPlanModuleRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPlanModuleRequest_Id); ok {
 			return x.Id
@@ -258,7 +258,7 @@ type isGetPlanModuleRequest_QueryBy interface {
 }
 
 type GetPlanModuleRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetPlanModuleRequest_Id) isGetPlanModuleRequest_QueryBy() {}
@@ -311,7 +311,7 @@ func (x *CreatePlanModuleRequest) GetData() *PlanModule {
 // 更新套餐模块 -请求
 type UpdatePlanModuleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *PlanModule            `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -349,7 +349,7 @@ func (*UpdatePlanModuleRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_plan_module_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePlanModuleRequest) GetId() uint32 {
+func (x *UpdatePlanModuleRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -425,7 +425,7 @@ func (x *DeletePlanModuleRequest) GetQueryBy() isDeletePlanModuleRequest_QueryBy
 	return nil
 }
 
-func (x *DeletePlanModuleRequest) GetId() uint32 {
+func (x *DeletePlanModuleRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePlanModuleRequest_Id); ok {
 			return x.Id
@@ -439,7 +439,7 @@ type isDeletePlanModuleRequest_QueryBy interface {
 }
 
 type DeletePlanModuleRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeletePlanModuleRequest_Id) isDeletePlanModuleRequest_QueryBy() {}
@@ -495,15 +495,15 @@ const file_identity_service_v1_plan_module_proto_rawDesc = "" +
 	"%identity/service/v1/plan_module.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\x1a identity/service/v1/module.proto\"\xe7\x05\n" +
 	"\n" +
 	"PlanModule\x12)\n" +
-	"\x02id\x18\x01 \x01(\rB\x14\xbaG\x11\x92\x02\x0e白名单项IDH\x00R\x02id\x88\x01\x01\x122\n" +
-	"\aplan_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e所属套餐IDH\x01R\x06planId\x88\x01\x01\x12L\n" +
+	"\x02id\x18\x01 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e白名单项IDH\x00R\x02id\x88\x01\x01\x122\n" +
+	"\aplan_id\x18\x02 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e所属套餐IDH\x01R\x06planId\x88\x01\x01\x12L\n" +
 	"\x06module\x18\x03 \x01(\x0e2\x1b.identity.service.v1.ModuleB\x12\xbaG\x0f\x92\x02\f功能模块H\x02R\x06module\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x03R\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x03R\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x04R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x04R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x05R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x05R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x06R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -524,7 +524,7 @@ const file_identity_service_v1_plan_module_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1f.identity.service.v1.PlanModuleR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc7\x01\n" +
 	"\x14GetPlanModuleRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -534,14 +534,14 @@ const file_identity_service_v1_plan_module_proto_rawDesc = "" +
 	"\x17CreatePlanModuleRequest\x123\n" +
 	"\x04data\x18\x01 \x01(\v2\x1f.identity.service.v1.PlanModuleR\x04data\"\x9c\x03\n" +
 	"\x17UpdatePlanModuleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x123\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x123\n" +
 	"\x04data\x18\x02 \x01(\v2\x1f.identity.service.v1.PlanModuleR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"C\n" +
 	"\x17DeletePlanModuleRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"/\n" +

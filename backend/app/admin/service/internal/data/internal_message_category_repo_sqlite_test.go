@@ -27,7 +27,7 @@ import (
 )
 
 // newCategory 构造一份合法分类载荷，字段可按需覆盖。
-func newCategory(tenantID uint32, code string) *internalMessageV1.InternalMessageCategory {
+func newCategory(tenantID uint64, code string) *internalMessageV1.InternalMessageCategory {
 	return &internalMessageV1.InternalMessageCategory{
 		TenantId:  trans.Ptr(tenantID),
 		Name:      trans.Ptr("分类-" + code),
@@ -47,13 +47,13 @@ func TestInternalMessageCategoryRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &internalMessageV1.CreateInternalMessageCategoryRequest{
 		Data: &internalMessageV1.InternalMessageCategory{
-			TenantId:  trans.Ptr(uint32(3)),
+			TenantId:  trans.Ptr(uint64(3)),
 			Name:      trans.Ptr("系统公告"),
 			Code:      trans.Ptr("announcement"),
 			IconUrl:   trans.Ptr("https://cdn.example.com/ann.png"),
 			SortOrder: trans.Ptr(uint32(5)),
 			IsEnabled: trans.Ptr(true),
-			CreatedBy: trans.Ptr(uint32(1001)),
+			CreatedBy: trans.Ptr(uint64(1001)),
 		},
 	})
 	require.NoError(t, err, "完整载荷的 Create 应成功")
@@ -63,7 +63,7 @@ func TestInternalMessageCategoryRepoSqlite_Create(t *testing.T) {
 		Only(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, created.TenantID)
-	require.Equal(t, uint32(3), *created.TenantID, "租户 ID 应按载荷落库")
+	require.Equal(t, uint64(3), *created.TenantID, "租户 ID 应按载荷落库")
 	require.NotNil(t, created.Name)
 	require.Equal(t, "系统公告", *created.Name)
 	require.NotNil(t, created.IconURL)
@@ -73,7 +73,7 @@ func TestInternalMessageCategoryRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, created.IsEnabled)
 	require.True(t, *created.IsEnabled)
 	require.NotNil(t, created.CreatedBy)
-	require.Equal(t, uint32(1001), *created.CreatedBy, "created_by 应按载荷落库")
+	require.Equal(t, uint64(1001), *created.CreatedBy, "created_by 应按载荷落库")
 	require.NotNil(t, created.CreatedAt, "created_at 必须显式写入：mixin 列没有 DB 默认值")
 
 	// 读视图：Get 按命中回 DTO
@@ -84,14 +84,14 @@ func TestInternalMessageCategoryRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, created.ID, dto.GetId())
 	require.Equal(t, "announcement", dto.GetCode())
 	require.Equal(t, "系统公告", dto.GetName())
-	require.Equal(t, uint32(3), dto.GetTenantId())
+	require.Equal(t, uint64(3), dto.GetTenantId())
 	require.True(t, dto.GetIsEnabled())
 
 	// 显式 ID 播种路径：Data.Id 给定时必须按它建行（系统默认数据同步依赖这条）
 	err = repo.Create(ctx, &internalMessageV1.CreateInternalMessageCategoryRequest{
 		Data: &internalMessageV1.InternalMessageCategory{
-			Id:       trans.Ptr(uint32(500)),
-			TenantId: trans.Ptr(uint32(0)),
+			Id:       trans.Ptr(uint64(500)),
+			TenantId: trans.Ptr(uint64(0)),
 			Name:     trans.Ptr("系统通知"),
 			Code:     trans.Ptr("system"),
 		},
@@ -259,7 +259,7 @@ func TestInternalMessageCategoryRepoSqlite_ListAndListByIds(t *testing.T) {
 	require.NoError(t, err)
 
 	// 部分命中：只回存在的行
-	got, err = repo.ListCategoriesByIds(ctx, []uint32{rowOne.ID, 9999999})
+	got, err = repo.ListCategoriesByIds(ctx, []uint64{rowOne.ID, 9999999})
 	require.NoError(t, err)
 	require.Len(t, got, 1, "不存在的 ID 应被跳过")
 	require.Equal(t, "one", got[0].GetCode())
@@ -277,7 +277,7 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 
 	err := repo.Create(ctx, &internalMessageV1.CreateInternalMessageCategoryRequest{
 		Data: &internalMessageV1.InternalMessageCategory{
-			TenantId:  trans.Ptr(uint32(1)),
+			TenantId:  trans.Ptr(uint64(1)),
 			Name:      trans.Ptr("原名"),
 			Code:      trans.Ptr("up_code"),
 			IsEnabled: trans.Ptr(true),
@@ -299,7 +299,7 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 		Data: &internalMessageV1.InternalMessageCategory{
 			Name:      trans.Ptr("新名"),
 			SortOrder: trans.Ptr(uint32(9)),
-			UpdatedBy: trans.Ptr(uint32(2001)),
+			UpdatedBy: trans.Ptr(uint64(2001)),
 			Code:      trans.Ptr("masked-out-code"),
 			IsEnabled: trans.Ptr(false), // 掩码外
 		},
@@ -311,7 +311,7 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "up_code", *updated.Code, "掩码外的 code 应保持原值")
 	require.True(t, *updated.IsEnabled, "掩码外的 is_enabled 应保持原值")
 	require.NotNil(t, updated.UpdatedBy)
-	require.Equal(t, uint32(2001), *updated.UpdatedBy, "updated_by 应按载荷落库")
+	require.Equal(t, uint64(2001), *updated.UpdatedBy, "updated_by 应按载荷落库")
 	require.NotNil(t, updated.UpdatedAt, "更新应写入 updated_at")
 
 	// allow_missing=true + 不存在的 ID：转为建行（服务层 upsert 语义的落点）
@@ -321,10 +321,10 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 			Paths: []string{"name", "code", "updated_by"},
 		},
 		Data: &internalMessageV1.InternalMessageCategory{
-			TenantId:  trans.Ptr(uint32(4)),
+			TenantId:  trans.Ptr(uint64(4)),
 			Name:      trans.Ptr("补建分类"),
 			Code:      trans.Ptr("backfill"),
-			UpdatedBy: trans.Ptr(uint32(77)),
+			UpdatedBy: trans.Ptr(uint64(77)),
 		},
 		AllowMissing: trans.Ptr(true),
 	})
@@ -334,10 +334,10 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 		Only(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, backfilled.CreatedBy)
-	require.Equal(t, uint32(77), *backfilled.CreatedBy,
+	require.Equal(t, uint64(77), *backfilled.CreatedBy,
 		"补建时 UpdatedBy 应挪成 CreatedBy：一次补建只有一个操作人")
 	require.Nil(t, backfilled.UpdatedBy, "补建不是更新，updated_by 不该落值")
-	require.Equal(t, uint32(4), *backfilled.TenantID)
+	require.Equal(t, uint64(4), *backfilled.TenantID)
 
 	// allow_missing=true + 存在的 ID：普通更新，不多出一行
 	err = repo.Update(ctx, &internalMessageV1.UpdateInternalMessageCategoryRequest{
@@ -347,7 +347,7 @@ func TestInternalMessageCategoryRepoSqlite_Update(t *testing.T) {
 		},
 		Data: &internalMessageV1.InternalMessageCategory{
 			Name:      trans.Ptr("再改一次"),
-			UpdatedBy: trans.Ptr(uint32(2002)),
+			UpdatedBy: trans.Ptr(uint64(2002)),
 		},
 		AllowMissing: trans.Ptr(true),
 	})

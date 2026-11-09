@@ -52,7 +52,7 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 	repo := newRolePermissionRepoSqlite(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const roleID uint32 = 7001
+	const roleID uint64 = 7001
 
 	tx, err := entClient.Client().Tx(ctx)
 	require.NoError(t, err)
@@ -64,13 +64,13 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 	err = repo.BatchCreate(ctx, tx, []*permissionV1.RolePermission{
 		{
 			RoleId:       trans.Ptr(roleID),
-			PermissionId: trans.Ptr(uint32(8001)),
+			PermissionId: trans.Ptr(uint64(8001)),
 			Status:       permissionV1.RolePermission_ON.Enum(),
 			Effect:       permissionV1.RolePermission_ALLOW.Enum(),
 		},
 		{
 			RoleId:       trans.Ptr(roleID),
-			PermissionId: trans.Ptr(uint32(8002)),
+			PermissionId: trans.Ptr(uint64(8002)),
 			Status:       permissionV1.RolePermission_OFF.Enum(),
 			Effect:       permissionV1.RolePermission_DENY.Enum(),
 		},
@@ -79,7 +79,7 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 
 	// 行 C：经 AssignPermissions 只落关联三元组，status/effect 走列默认
 	//（ON/ALLOW，由 ent 的列默认机制在插入时应用）。
-	err = repo.AssignPermissions(ctx, tx, 0, 1, roleID, []uint32{8003})
+	err = repo.AssignPermissions(ctx, tx, 0, 1, roleID, []uint64{8003})
 	require.NoError(t, err, "AssignPermissions 写入默认枚举行应成功")
 
 	require.NoError(t, tx.Commit())
@@ -90,7 +90,7 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 	require.Len(t, rows, 3, "该角色应关联 3 行权限")
 
 	// 期望读视图按 permission_id 区分：A/B 为写入值，C 为列默认。
-	expect := map[uint32]struct {
+	expect := map[uint64]struct {
 		status permissionV1.RolePermission_Status
 		effect permissionV1.RolePermission_EffectiveStatus
 	}{
@@ -98,7 +98,7 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 		8002: {permissionV1.RolePermission_OFF, permissionV1.RolePermission_DENY},
 		8003: {permissionV1.RolePermission_ON, permissionV1.RolePermission_ALLOW},
 	}
-	viewByPermID := map[uint32]*permissionV1.RolePermission{}
+	viewByPermID := map[uint64]*permissionV1.RolePermission{}
 	for _, row := range rows {
 		viewByPermID[row.GetPermissionId()] = row
 	}
@@ -114,7 +114,7 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 
 // seedRoleBinding 直建一条角色授权绑定（绕过 service 层），返回绑定行 id。
 func seedRoleBinding(t *testing.T, client *ent.Client, ctx context.Context,
-	roleID, tenantID, permissionID uint32) int {
+	roleID, tenantID, permissionID uint64) int {
 	t.Helper()
 	row, err := client.RolePermission.Create().
 		SetRoleID(roleID).
@@ -125,7 +125,7 @@ func seedRoleBinding(t *testing.T, client *ent.Client, ctx context.Context,
 	return int(row.ID)
 }
 
-func countRolePermissionBindingsByPerm(t *testing.T, client *ent.Client, ctx context.Context, permissionID uint32) int {
+func countRolePermissionBindingsByPerm(t *testing.T, client *ent.Client, ctx context.Context, permissionID uint64) int {
 	t.Helper()
 	cnt, err := client.RolePermission.Query().
 		Where(rolepermission.PermissionIDEQ(permissionID)).
@@ -145,8 +145,8 @@ func TestRolePermissionRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
 	client := entClient.Client()
 	ctx := enttest.NewSystemContext(context.Background())
 
-	doomed := uint32(900)   // 将被级联清理的权限
-	survivor := uint32(901) // 无关权限（不得被牵连）
+	doomed := uint64(900)   // 将被级联清理的权限
+	survivor := uint64(901) // 无关权限（不得被牵连）
 
 	seedRoleBinding(t, client, ctx, 10, 1, doomed)
 	seedRoleBinding(t, client, ctx, 11, 2, doomed)
@@ -159,12 +159,12 @@ func TestRolePermissionRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
 	require.Equal(t, 2, countRolePermissionBindingsByPerm(t, client, ctx, doomed), "空集合不得误删")
 
 	// 级联：doomed 的全部绑定清掉（跨角色跨租户）、survivor 保留
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{doomed}), "按权限集合清理应成功")
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{doomed}), "按权限集合清理应成功")
 	require.Zero(t, countRolePermissionBindingsByPerm(t, client, ctx, doomed), "目标权限的角色授权应全清")
 	require.Equal(t, 1, countRolePermissionBindingsByPerm(t, client, ctx, survivor), "无关权限的绑定不得被牵连")
 
 	// 已清理的集合再清一次：静默成功（幂等）
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{doomed}), "重复清理应静默成功")
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{doomed}), "重复清理应静默成功")
 }
 
 // TestRolePermissionRepoSqlite_DeleteByPermissionIDs_CrossTenant 防漂移：
@@ -176,13 +176,13 @@ func TestRolePermissionRepoSqlite_DeleteByPermissionIDs_CrossTenant(t *testing.T
 	client := entClient.Client()
 	ctx := enttest.NewSystemContext(context.Background())
 
-	permID := uint32(910)
-	tenants := []uint32{0, 1, 42, 777}
+	permID := uint64(910)
+	tenants := []uint64{0, 1, 42, 777}
 	for _, tid := range tenants {
 		seedRoleBinding(t, client, ctx, 100+tid, tid, permID)
 	}
 
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{permID}))
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{permID}))
 	for _, tid := range tenants {
 		require.Zero(t, countRolePermissionBindingsByPerm(t, client, ctx, permID),
 			"租户 %d 的该权限授权也应被级联清理", tid)

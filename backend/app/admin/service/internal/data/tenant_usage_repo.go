@@ -87,7 +87,7 @@ func NewTenantUsageRepo(
 // GetUsage 聚合查询指定租户的当前用量与套餐配额上限。
 // 使用 SystemContext 绕过租户隔离以跨表聚合。
 // CountUsersInTenant 数租户用户数（USER_LIMIT 配额检查用）。
-func (r *TenantUsageRepo) CountUsersInTenant(ctx context.Context, tenantID uint32) (uint64, error) {
+func (r *TenantUsageRepo) CountUsersInTenant(ctx context.Context, tenantID uint64) (uint64, error) {
 	count, err := r.entClient.Client().User.Query().
 		Where(user.TenantIDEQ(tenantID)).
 		Count(ctx)
@@ -95,7 +95,7 @@ func (r *TenantUsageRepo) CountUsersInTenant(ctx context.Context, tenantID uint3
 }
 
 // SumStorageInTenant 汇总租户文件字节数（STORAGE 配额检查用）。
-func (r *TenantUsageRepo) SumStorageInTenant(ctx context.Context, tenantID uint32) (uint64, error) {
+func (r *TenantUsageRepo) SumStorageInTenant(ctx context.Context, tenantID uint64) (uint64, error) {
 	var rows []struct {
 		Total uint64 `sql:"total"`
 	}
@@ -114,14 +114,14 @@ func (r *TenantUsageRepo) SumStorageInTenant(ctx context.Context, tenantID uint3
 
 // CountApiCallsInTenant 统计租户 API 调用行数（API_CALL 配额检查与水位扫描用）。
 // 与 GetUsage 的 ApiCallCount 同源（sys_api_audit_logs 按租户 COUNT）。
-func (r *TenantUsageRepo) CountApiCallsInTenant(ctx context.Context, tenantID uint32) (uint64, error) {
+func (r *TenantUsageRepo) CountApiCallsInTenant(ctx context.Context, tenantID uint64) (uint64, error) {
 	cnt, err := r.entClient.Client().ApiAuditLog.Query().
 		Where(apiauditlog.TenantIDEQ(tenantID)).
 		Count(ctx)
 	return uint64(cnt), err
 }
 
-func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*identityV1.TenantUsage, error) {
+func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint64) (*identityV1.TenantUsage, error) {
 	sysCtx := viewer.WithSystemContext(ctx)
 
 	// 1. 查租户记录，WithPlan(WithQuotas) 预载套餐及其配额。
@@ -212,7 +212,7 @@ func mapEntQuotaTypeToProto(qt planquota.QuotaType) identityV1.PlanQuota_QuotaTy
 // 在一个事务中硬删所有带 tenant_id 的业务表数据，保留 sys_tenants 记录（status 改为 OFF），
 // 事务提交后吊销该租户全部用户的在线令牌（admin+app 双 ClientType）。
 // 使用 SystemContext 绕过租户隔离以删除跨表数据。
-func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32) error {
+func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint64) error {
 	sysCtx := viewer.WithSystemContext(ctx)
 
 	tx, err := r.entClient.Client().Tx(sysCtx)

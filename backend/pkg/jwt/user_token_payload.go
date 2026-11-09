@@ -49,9 +49,9 @@ const (
 // NewUserTokenPayload 创建用户令牌
 func NewUserTokenPayload(
 	username string,
-	userID uint32,
-	tenantID uint32,
-	orgUnitID *uint32,
+	userID uint64,
+	tenantID uint64,
+	orgUnitID *uint64,
 	roleCodes []string,
 	dataScope *identityV1.DataScope,
 	clientID *string,
@@ -155,17 +155,17 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		payload.Jti = trans.Ptr(jti)
 	}
 
-	userId, err := claims.GetUint32(ClaimFieldUserID)
+	userId, err := claims.GetUint64(ClaimFieldUserID)
 	if err != nil {
-		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldUserID failed: %v", err))
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldUserID failed: %v", err))
 	}
 	if userId != 0 {
 		payload.UserId = userId
 	}
 
-	tenantId, err := claims.GetUint32(ClaimFieldTenantID)
+	tenantId, err := claims.GetUint64(ClaimFieldTenantID)
 	if err != nil {
-		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldTenantID failed: %v", err))
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldTenantID failed: %v", err))
 	}
 	if tenantId != 0 {
 		payload.TenantId = trans.Ptr(tenantId)
@@ -238,9 +238,9 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		payload.HiddenFields = hiddenFields
 	}
 
-	orgUnitID, err := claims.GetUint32(ClaimFieldOrgUnitID)
+	orgUnitID, err := claims.GetUint64(ClaimFieldOrgUnitID)
 	if err != nil {
-		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldOrgUnitID failed: %v", err))
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldOrgUnitID failed: %v", err))
 	}
 	if orgUnitID != 0 {
 		payload.OrgUnitId = trans.Ptr(orgUnitID)
@@ -274,11 +274,11 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 
 	// JSON 数字在 Go 里解码为 float64；这里两值断言，类型不符则跳过而非 panic。
 	if userId, ok := claims[ClaimFieldUserID].(float64); ok {
-		payload.UserId = uint32(userId)
+		payload.UserId = uint64(userId)
 	}
 
 	if tenantId, ok := claims[ClaimFieldTenantID].(float64); ok {
-		payload.TenantId = trans.Ptr(uint32(tenantId))
+		payload.TenantId = trans.Ptr(uint64(tenantId))
 	}
 
 	if clientId, ok := claims[ClaimFieldClientID].(string); ok {
@@ -296,7 +296,7 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 	}
 
 	if orgUnitID, ok := claims[ClaimFieldOrgUnitID].(float64); ok {
-		payload.OrgUnitId = trans.Ptr(uint32(orgUnitID))
+		payload.OrgUnitId = trans.Ptr(uint64(orgUnitID))
 	}
 
 	if ipa, ok := claims[ClaimFieldIsPlatformAdmin].(bool); ok && ipa {

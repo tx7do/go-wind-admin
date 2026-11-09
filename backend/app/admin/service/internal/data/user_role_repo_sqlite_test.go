@@ -40,9 +40,9 @@ func TestUserRoleRepoSqlite_AssignListAndClean(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(1101)
-		testRoleA  = uint32(2201)
-		testRoleB  = uint32(2202)
+		testUserID = uint64(1101)
+		testRoleA  = uint64(2201)
+		testRoleB  = uint64(2202)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -72,17 +72,17 @@ func TestUserRoleRepoSqlite_AssignListAndClean(t *testing.T) {
 	// 正向：按用户列出角色 ID
 	roleIDs, err := repo.ListRoleIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint32{testRoleA, testRoleB}, roleIDs, "按用户查询应返回两条关联的角色 ID")
+	require.ElementsMatch(t, []uint64{testRoleA, testRoleB}, roleIDs, "按用户查询应返回两条关联的角色 ID")
 
 	// 反向：按角色列出用户 ID（含多角色批量变体）
 	userIDs, err := repo.ListUserIDs(ctx, testRoleA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testUserID}, userIDs, "按角色查询应返回关联的用户 ID")
-	userIDsByRoles, err := repo.ListUserIDsByRoleIDs(ctx, []uint32{testRoleA, testRoleB}, false)
+	require.Equal(t, []uint64{testUserID}, userIDs, "按角色查询应返回关联的用户 ID")
+	userIDsByRoles, err := repo.ListUserIDsByRoleIDs(ctx, []uint64{testRoleA, testRoleB}, false)
 	require.NoError(t, err)
 	// 该仓库实现按角色逐个收集、不去重：两个角色各自关联同一用户，返回两份该用户 ID
 	require.Len(t, userIDsByRoles, 2, "按角色列表查询应返回两份关联（每角色一份）")
-	require.Equal(t, []uint32{testUserID, testUserID}, userIDsByRoles, "两份关联均应指向该用户")
+	require.Equal(t, []uint64{testUserID, testUserID}, userIDsByRoles, "两份关联均应指向该用户")
 
 	// 清理：按用户删除全部关联
 	tx2, err := repo.entClient.Client().Tx(ctx)
@@ -109,9 +109,9 @@ func TestUserRoleRepoSqlite_ReplaceSemantics(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(1102)
-		testRoleA  = uint32(2203)
-		testRoleC  = uint32(2204)
+		testUserID = uint64(1102)
+		testRoleA  = uint64(2203)
+		testRoleC  = uint64(2204)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -137,7 +137,7 @@ func TestUserRoleRepoSqlite_ReplaceSemantics(t *testing.T) {
 
 	roleIDs, err := repo.ListRoleIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testRoleC}, roleIDs, "再次分配后仅应存在新集合中的角色 ID")
+	require.Equal(t, []uint64{testRoleC}, roleIDs, "再次分配后仅应存在新集合中的角色 ID")
 
 	rowCount, err := repo.entClient.Client().UserRole.Query().Count(ctx)
 	require.NoError(t, err)
@@ -160,9 +160,9 @@ func TestUserRoleRepoSqlite_RemoveRolesFromUser(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(1103)
-		testRoleA  = uint32(2205)
-		testRoleB  = uint32(2206)
+		testUserID = uint64(1103)
+		testRoleA  = uint64(2205)
+		testRoleB  = uint64(2206)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -177,11 +177,11 @@ func TestUserRoleRepoSqlite_RemoveRolesFromUser(t *testing.T) {
 	require.NoError(t, tx.Commit())
 
 	// 单向解除 roleA：仅剩 roleB
-	require.NoError(t, repo.RemoveRolesFromUser(ctx, testUserID, []uint32{testRoleA}))
+	require.NoError(t, repo.RemoveRolesFromUser(ctx, testUserID, []uint64{testRoleA}))
 
 	roleIDs, err := repo.ListRoleIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testRoleB}, roleIDs, "解除后应仅保留未被移除的关联")
+	require.Equal(t, []uint64{testRoleB}, roleIDs, "解除后应仅保留未被移除的关联")
 
 	// 收尾清理
 	tx2, err := repo.entClient.Client().Tx(ctx)
@@ -204,9 +204,9 @@ func TestUserRoleRepoSqlite_ExcludeExpired(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID  = uint32(1104)
-		testRoleOK  = uint32(2207)
-		testRoleExp = uint32(2208)
+		testUserID  = uint64(1104)
+		testRoleOK  = uint64(2207)
+		testRoleExp = uint64(2208)
 	)
 
 	past := timestamppb.New(time.Now().Add(-1 * time.Hour))
@@ -230,7 +230,7 @@ func TestUserRoleRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 过滤过期：仅剩未过期那条
 	active, err := repo.ListRoleIDs(ctx, testUserID, true)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testRoleOK}, active, "过滤过期后应仅返回未过期关联")
+	require.Equal(t, []uint64{testRoleOK}, active, "过滤过期后应仅返回未过期关联")
 
 	// 反向过滤同理
 	activeUsers, err := repo.ListUserIDs(ctx, testRoleExp, true)
@@ -243,7 +243,7 @@ func TestUserRoleRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []uint32{testUserID}),
+	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []uint64{testUserID}),
 		"按用户列表清理应成功")
 	require.NoError(t, tx2.Commit())
 
@@ -260,7 +260,7 @@ func TestUserRoleRepoSqlite_BindingOwnershipValidation(t *testing.T) {
 	repo := newUserRoleRepoSqlite(t)
 	sysCtx := enttest.NewSystemContext(context.Background())
 
-	const tenantID = uint32(42)
+	const tenantID = uint64(42)
 
 	tenantRole, err := repo.entClient.Client().Role.Create().
 		SetName("租户可见角色").
@@ -274,7 +274,7 @@ func TestUserRoleRepoSqlite_BindingOwnershipValidation(t *testing.T) {
 		SetTenantID(0).
 		Save(sysCtx)
 	require.NoError(t, err, "播种平台角色应成功")
-	const ghostRoleID = uint32(4290000000) // 不存在的角色
+	const ghostRoleID = uint64(4290000000) // 不存在的角色
 
 	tenantCtx := crudViewer.WithContext(sysCtx, crudViewer.NewUserContext(999, uint64(tenantID), 0, "", nil))
 
@@ -283,26 +283,26 @@ func TestUserRoleRepoSqlite_BindingOwnershipValidation(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	// 本租户角色：通过
-	require.NoError(t, repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{tenantRole.ID}),
+	require.NoError(t, repo.validateRoleBindingOwnership(tenantCtx, tx, []uint64{tenantRole.ID}),
 		"本租户可见角色应通过归属校验")
 
 	// 平台角色（tenant_id=0）：租户 viewer 不可见，拒绝——/me 自绑 platform:admin 的主攻路径
-	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{platformRole.ID})
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint64{platformRole.ID})
 	require.Error(t, err, "平台角色对租户 viewer 不可见，必须拒绝")
 	require.True(t, permissionV1.IsBadRequest(err))
 
 	// 不存在的角色：拒绝
-	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{ghostRoleID})
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint64{ghostRoleID})
 	require.Error(t, err, "不存在的角色必须拒绝")
 
 	// 混合：一个可见一个不可见 → 整体拒绝
-	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{tenantRole.ID, platformRole.ID})
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint64{tenantRole.ID, platformRole.ID})
 	require.Error(t, err, "混合绑定应整体拒绝")
 
 	// 系统上下文：跳过校验（种子/引导信任边界）
 	tx2, err := repo.entClient.Client().Tx(sysCtx)
 	require.NoError(t, err)
 	defer func() { _ = tx2.Rollback() }()
-	require.NoError(t, repo.validateRoleBindingOwnership(sysCtx, tx2, []uint32{platformRole.ID, ghostRoleID}),
+	require.NoError(t, repo.validateRoleBindingOwnership(sysCtx, tx2, []uint64{platformRole.ID, ghostRoleID}),
 		"系统上下文应跳过归属校验")
 }

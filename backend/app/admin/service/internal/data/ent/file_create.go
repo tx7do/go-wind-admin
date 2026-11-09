@@ -65,13 +65,13 @@ func (_c *FileCreate) SetNillableDeletedAt(v *time.Time) *FileCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *FileCreate) SetCreatedBy(v uint32) *FileCreate {
+func (_c *FileCreate) SetCreatedBy(v uint64) *FileCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *FileCreate) SetNillableCreatedBy(v *uint32) *FileCreate {
+func (_c *FileCreate) SetNillableCreatedBy(v *uint64) *FileCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *FileCreate) SetNillableCreatedBy(v *uint32) *FileCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *FileCreate) SetUpdatedBy(v uint32) *FileCreate {
+func (_c *FileCreate) SetUpdatedBy(v uint64) *FileCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *FileCreate) SetNillableUpdatedBy(v *uint32) *FileCreate {
+func (_c *FileCreate) SetNillableUpdatedBy(v *uint64) *FileCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *FileCreate) SetNillableUpdatedBy(v *uint32) *FileCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *FileCreate) SetDeletedBy(v uint32) *FileCreate {
+func (_c *FileCreate) SetDeletedBy(v uint64) *FileCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *FileCreate) SetNillableDeletedBy(v *uint32) *FileCreate {
+func (_c *FileCreate) SetNillableDeletedBy(v *uint64) *FileCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *FileCreate) SetNillableRemark(v *string) *FileCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *FileCreate) SetTenantID(v uint32) *FileCreate {
+func (_c *FileCreate) SetTenantID(v uint64) *FileCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *FileCreate) SetNillableTenantID(v *uint32) *FileCreate {
+func (_c *FileCreate) SetNillableTenantID(v *uint64) *FileCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -289,7 +289,7 @@ func (_c *FileCreate) SetNillableContentHash(v *string) *FileCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *FileCreate) SetID(v uint32) *FileCreate {
+func (_c *FileCreate) SetID(v uint64) *FileCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -370,7 +370,7 @@ func (_c *FileCreate) sqlSave(ctx context.Context) (*File, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -380,7 +380,7 @@ func (_c *FileCreate) sqlSave(ctx context.Context) (*File, error) {
 func (_c *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 	var (
 		_node = &File{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(file.Table, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(file.Table, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -400,15 +400,15 @@ func (_c *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(file.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(file.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(file.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -416,7 +416,7 @@ func (_c *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(file.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(file.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Provider(); ok {
@@ -552,7 +552,7 @@ func (u *FileUpsert) ClearDeletedAt() *FileUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *FileUpsert) SetCreatedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) SetCreatedBy(v uint64) *FileUpsert {
 	u.Set(file.FieldCreatedBy, v)
 	return u
 }
@@ -564,7 +564,7 @@ func (u *FileUpsert) UpdateCreatedBy() *FileUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *FileUpsert) AddCreatedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) AddCreatedBy(v uint64) *FileUpsert {
 	u.Add(file.FieldCreatedBy, v)
 	return u
 }
@@ -576,7 +576,7 @@ func (u *FileUpsert) ClearCreatedBy() *FileUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *FileUpsert) SetUpdatedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) SetUpdatedBy(v uint64) *FileUpsert {
 	u.Set(file.FieldUpdatedBy, v)
 	return u
 }
@@ -588,7 +588,7 @@ func (u *FileUpsert) UpdateUpdatedBy() *FileUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *FileUpsert) AddUpdatedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) AddUpdatedBy(v uint64) *FileUpsert {
 	u.Add(file.FieldUpdatedBy, v)
 	return u
 }
@@ -600,7 +600,7 @@ func (u *FileUpsert) ClearUpdatedBy() *FileUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *FileUpsert) SetDeletedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) SetDeletedBy(v uint64) *FileUpsert {
 	u.Set(file.FieldDeletedBy, v)
 	return u
 }
@@ -612,7 +612,7 @@ func (u *FileUpsert) UpdateDeletedBy() *FileUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *FileUpsert) AddDeletedBy(v uint32) *FileUpsert {
+func (u *FileUpsert) AddDeletedBy(v uint64) *FileUpsert {
 	u.Add(file.FieldDeletedBy, v)
 	return u
 }
@@ -942,14 +942,14 @@ func (u *FileUpsertOne) ClearDeletedAt() *FileUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *FileUpsertOne) SetCreatedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) SetCreatedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *FileUpsertOne) AddCreatedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) AddCreatedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -970,14 +970,14 @@ func (u *FileUpsertOne) ClearCreatedBy() *FileUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *FileUpsertOne) SetUpdatedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) SetUpdatedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *FileUpsertOne) AddUpdatedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) AddUpdatedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -998,14 +998,14 @@ func (u *FileUpsertOne) ClearUpdatedBy() *FileUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *FileUpsertOne) SetDeletedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) SetDeletedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *FileUpsertOne) AddDeletedBy(v uint32) *FileUpsertOne {
+func (u *FileUpsertOne) AddDeletedBy(v uint64) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1300,7 +1300,7 @@ func (u *FileUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *FileUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *FileUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1309,7 +1309,7 @@ func (u *FileUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *FileUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *FileUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1366,7 +1366,7 @@ func (_c *FileCreateBulk) Save(ctx context.Context) ([]*File, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1547,14 +1547,14 @@ func (u *FileUpsertBulk) ClearDeletedAt() *FileUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *FileUpsertBulk) SetCreatedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) SetCreatedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *FileUpsertBulk) AddCreatedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) AddCreatedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1575,14 +1575,14 @@ func (u *FileUpsertBulk) ClearCreatedBy() *FileUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *FileUpsertBulk) SetUpdatedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) SetUpdatedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *FileUpsertBulk) AddUpdatedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) AddUpdatedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1603,14 +1603,14 @@ func (u *FileUpsertBulk) ClearUpdatedBy() *FileUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *FileUpsertBulk) SetDeletedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) SetDeletedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *FileUpsertBulk) AddDeletedBy(v uint32) *FileUpsertBulk {
+func (u *FileUpsertBulk) AddDeletedBy(v uint64) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
 		s.AddDeletedBy(v)
 	})

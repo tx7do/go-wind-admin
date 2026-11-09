@@ -70,14 +70,14 @@ func (_u *UserCredentialUpdate) ClearDeletedAt() *UserCredentialUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserCredentialUpdate) SetUserID(v uint32) *UserCredentialUpdate {
+func (_u *UserCredentialUpdate) SetUserID(v uint64) *UserCredentialUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserCredentialUpdate) SetNillableUserID(v *uint32) *UserCredentialUpdate {
+func (_u *UserCredentialUpdate) SetNillableUserID(v *uint64) *UserCredentialUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *UserCredentialUpdate) SetNillableUserID(v *uint32) *UserCredentialUpda
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *UserCredentialUpdate) AddUserID(v int32) *UserCredentialUpdate {
+func (_u *UserCredentialUpdate) AddUserID(v int64) *UserCredentialUpdate {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -478,7 +478,7 @@ func (_u *UserCredentialUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usercredential.Table, usercredential.Columns, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(usercredential.Table, usercredential.Columns, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -502,16 +502,16 @@ func (_u *UserCredentialUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.ClearField(usercredential.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(usercredential.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(usercredential.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(usercredential.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(usercredential.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(usercredential.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(usercredential.FieldUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(usercredential.FieldUserID, field.TypeUint32)
+		_spec.ClearField(usercredential.FieldUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IdentityType(); ok {
 		_spec.SetField(usercredential.FieldIdentityType, field.TypeEnum, value)
@@ -666,14 +666,14 @@ func (_u *UserCredentialUpdateOne) ClearDeletedAt() *UserCredentialUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserCredentialUpdateOne) SetUserID(v uint32) *UserCredentialUpdateOne {
+func (_u *UserCredentialUpdateOne) SetUserID(v uint64) *UserCredentialUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserCredentialUpdateOne) SetNillableUserID(v *uint32) *UserCredentialUpdateOne {
+func (_u *UserCredentialUpdateOne) SetNillableUserID(v *uint64) *UserCredentialUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -681,7 +681,7 @@ func (_u *UserCredentialUpdateOne) SetNillableUserID(v *uint32) *UserCredentialU
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *UserCredentialUpdateOne) AddUserID(v int32) *UserCredentialUpdateOne {
+func (_u *UserCredentialUpdateOne) AddUserID(v int64) *UserCredentialUpdateOne {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -1087,7 +1087,7 @@ func (_u *UserCredentialUpdateOne) sqlSave(ctx context.Context) (_node *UserCred
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usercredential.Table, usercredential.Columns, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(usercredential.Table, usercredential.Columns, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserCredential.id" for update`)}
@@ -1128,16 +1128,16 @@ func (_u *UserCredentialUpdateOne) sqlSave(ctx context.Context) (_node *UserCred
 		_spec.ClearField(usercredential.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(usercredential.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(usercredential.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(usercredential.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(usercredential.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(usercredential.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(usercredential.FieldUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(usercredential.FieldUserID, field.TypeUint32)
+		_spec.ClearField(usercredential.FieldUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IdentityType(); ok {
 		_spec.SetField(usercredential.FieldIdentityType, field.TypeEnum, value)

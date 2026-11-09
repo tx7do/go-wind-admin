@@ -127,7 +127,7 @@ func clearFilterExprByFieldNames(expr *paginationV1.FilterExpr, fieldName string
 	}
 }
 
-func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingRequest, limitPermissionIDs []uint32) (*permissionV1.ListPermissionResponse, error) {
+func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingRequest, limitPermissionIDs []uint64) (*permissionV1.ListPermissionResponse, error) {
 	if req == nil {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
@@ -182,14 +182,14 @@ func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingReque
 
 	for _, dto := range ret.Items {
 		if hasMenuID {
-			menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
+			menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint64{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
 			dto.MenuIds = menuIDs
 		}
 		if hasApiID {
-			apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+			apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint64{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
@@ -204,7 +204,7 @@ func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingReque
 }
 
 // GetPermissionCodesByIDs 通过权限ID列表获取权限代码列表
-func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint32) ([]string, error) {
+func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint64) ([]string, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.IDIn(ids...),
@@ -221,7 +221,7 @@ func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint
 }
 
 // GetPermissionIDsByCodes 通过权限代码列表获取权限ID列表
-func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]uint32, error) {
+func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]uint64, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.CodeIn(codes...),
@@ -234,15 +234,15 @@ func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []st
 		r.log.Errorf(ctx, "query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }
 
 // GetPermissionIDsByCodesWithTx 通过权限代码列表获取权限ID列表
-func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *ent.Tx, codes []string) ([]uint32, error) {
+func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *ent.Tx, codes []string) ([]uint64, error) {
 	q := tx.Permission.Query().
 		Where(
 			permission.CodeIn(codes...),
@@ -255,15 +255,15 @@ func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *
 		r.log.Errorf(ctx, "query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }
 
 // IsExist 检查 Permission 是否存在
-func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PermissionRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().Permission.Query().
 		Where(permission.IDEQ(id)).
 		Exist(ctx)
@@ -300,14 +300,14 @@ func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissio
 	}
 
 	if hasPath("api_id", req.GetViewMask()) {
-		apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+		apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint64{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
 		dto.ApiIds = apiIDs
 	}
 	if hasPath("menu_id", req.GetViewMask()) {
-		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
+		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint64{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
@@ -452,7 +452,7 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 	// 才整体替换，没提交则维持原关联。
 	updateApis := hasPath("api_ids", req.UpdateMask) || hasPath("apiIds", req.UpdateMask)
 	updateMenus := hasPath("menu_ids", req.UpdateMask) || hasPath("menuIds", req.UpdateMask)
-	var wantApiIds, wantMenuIds []uint32
+	var wantApiIds, wantMenuIds []uint64
 	if updateApis {
 		wantApiIds = slices.Clone(req.Data.GetApiIds())
 	}
@@ -531,7 +531,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		}
 	}()
 
-	var permissionIDs []uint32
+	var permissionIDs []uint64
 	switch req.QueryBy.(type) {
 	default:
 	case *permissionV1.DeletePermissionRequest_Id:
@@ -610,7 +610,7 @@ func (r *PermissionRepo) ListBizPermissions(ctx context.Context) ([]*permissionV
 
 // DeleteByIDs 按 id 集合删除权限行并级联清理全部从属绑定（权限同步 MERGE 的
 // 删除段用）。行删除与级联清理同一事务，中途失败整体回滚不留半删状态。
-func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32) (err error) {
+func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint64) (err error) {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
@@ -647,7 +647,7 @@ func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32
 // UpdateForSync 权限同步 MERGE 的更新段：原位更新派生集字段（名称/分组），
 // **不触碰 status**——管理端手工停用的权限不被同步重新启用（与菜单同步 MERGE
 // 同口径）。
-func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint32, derived *permissionV1.Permission) error {
+func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint64, derived *permissionV1.Permission) error {
 	builder := r.entClient.Client().Permission.UpdateOneID(id).
 		SetNillableName(derived.Name).
 		SetNillableGroupID(derived.GroupId).
@@ -661,7 +661,7 @@ func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint32, derived *
 
 // AssignSyncBindings 权限同步 MERGE 的绑定替换段：按派生集整体替换端点/菜单
 // 快照绑定（AssignApis/AssignMenus 自带替换语义，空派生 = 清空该权限的绑定）。
-func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint32, apiIDs, menuIDs []uint32) error {
+func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint64, apiIDs, menuIDs []uint64) error {
 	if err := r.permissionApiRepo.AssignApis(ctx, id, apiIDs); err != nil {
 		return err
 	}
@@ -672,7 +672,7 @@ func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint32, apiI
 // 绑定、角色授权绑定（sys_role_permissions）、策略联动行（sys_permission_policies）。
 // 授权链上不允许残留指向已删权限行的绑定——"权限行重建换 id 后旧绑定悬空"
 // 的最后残留就此终结。client 形参使级联与行删除可同事务执行。
-func (r *PermissionRepo) cascadeCleanByPermissionIDsWithClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
+func (r *PermissionRepo) cascadeCleanByPermissionIDsWithClient(ctx context.Context, client *ent.Client, permissionIDs []uint64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
@@ -701,7 +701,7 @@ func (r *PermissionRepo) cascadeCleanByPermissionIDsWithClient(ctx context.Conte
 // listSystemPermissionIDs 按 code 前缀解析系统种子权限 id 集合（绑定表清理的
 // 保留集）。权限行自身由权限同步 MERGE 按 code 前缀保护，绑定保护集与之同源，
 // 不再依赖"种子权限=1/2/3"的硬编码 id 假设。
-func (r *PermissionRepo) listSystemPermissionIDs(ctx context.Context) ([]uint32, error) {
+func (r *PermissionRepo) listSystemPermissionIDs(ctx context.Context) ([]uint64, error) {
 	return r.entClient.Client().Permission.Query().
 		Where(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)).
 		IDs(ctx)
@@ -733,7 +733,7 @@ func (r *PermissionRepo) CleanDataPermissions(ctx context.Context) error {
 
 // ListApiEndpointsByPermissionIDs 列出权限关联的端点快照（(path, method)，
 // 授权执行键；绑定表即真相，不再回查 sys_apis）
-func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]Endpoint, error) {
+func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []uint64) ([]Endpoint, error) {
 	endpoints, err := r.permissionApiRepo.ListEndpoints(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -744,7 +744,7 @@ func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, pe
 
 // ListMenuFullPathsByPermissionIDs 列出权限关联的菜单全路径快照（菜单身份键；
 // 绑定表即真相，导航/回显链路自行反解回 id）
-func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]string, error) {
+func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []uint64) ([]string, error) {
 	paths, err := r.permissionMenuRepo.ListMenuFullPaths(ctx, permissionIDs)
 	if err != nil {
 		return nil, err

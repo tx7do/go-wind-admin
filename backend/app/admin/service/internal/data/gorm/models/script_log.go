@@ -8,9 +8,9 @@ import (
 
 // ScriptLog 对应表 sys_script_logs - 脚本执行日志：每次脚本/钩子/任务处理器执行一条记录（成败、耗时、错误）
 type ScriptLog struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	ScriptId    *uint32    `gorm:"column:script_id;type:int unsigned;default:0;comment:脚本 ID（试运行草稿为 0）"`
+	ScriptId    *uint64    `gorm:"column:script_id;type:int unsigned;default:0;comment:脚本 ID（试运行草稿为 0）"`
 	ScriptName  *string    `gorm:"column:script_name;type:varchar(255);comment:脚本名称"`
 	Language    *string    `gorm:"column:language;type:varchar(64);comment:脚本语言：LUA/JAVASCRIPT"`
 	TriggerType *string    `gorm:"column:trigger_type;type:varchar(64);comment:触发方式：hook/task/test_run/manual"`

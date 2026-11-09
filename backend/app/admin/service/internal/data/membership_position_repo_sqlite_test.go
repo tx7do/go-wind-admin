@@ -39,9 +39,9 @@ func TestMembershipPositionRepoSqlite_AssignListAndClean(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testMembershipID = uint32(8301)
-		testPosA         = uint32(9301)
-		testPosB         = uint32(9302)
+		testMembershipID = uint64(8301)
+		testPosA         = uint64(9301)
+		testPosB         = uint64(9302)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -71,15 +71,15 @@ func TestMembershipPositionRepoSqlite_AssignListAndClean(t *testing.T) {
 	// 正向：按成员列出岗位 ID
 	positionIDs, err := repo.ListPositionIDs(ctx, testMembershipID, false)
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint32{testPosA, testPosB}, positionIDs, "按成员查询应返回两条关联的岗位 ID")
+	require.ElementsMatch(t, []uint64{testPosA, testPosB}, positionIDs, "按成员查询应返回两条关联的岗位 ID")
 
 	// 反向：按岗位列出成员 ID（含多岗位批量变体，按岗位逐个收集不去重）
 	membershipIDs, err := repo.ListMembershipIDs(ctx, testPosA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testMembershipID}, membershipIDs, "按岗位查询应返回关联的成员 ID")
-	membershipIDsByPositions, err := repo.ListMembershipIDsByPositionIDs(ctx, []uint32{testPosA, testPosB}, false)
+	require.Equal(t, []uint64{testMembershipID}, membershipIDs, "按岗位查询应返回关联的成员 ID")
+	membershipIDsByPositions, err := repo.ListMembershipIDsByPositionIDs(ctx, []uint64{testPosA, testPosB}, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testMembershipID, testMembershipID}, membershipIDsByPositions, "按岗位列表查询应每岗位各返回一份关联")
+	require.Equal(t, []uint64{testMembershipID, testMembershipID}, membershipIDsByPositions, "按岗位列表查询应每岗位各返回一份关联")
 
 	// 清理：按成员删除全部关联
 	tx2, err := repo.entClient.Client().Tx(ctx)
@@ -104,9 +104,9 @@ func TestMembershipPositionRepoSqlite_RemoveAndCleanByPosition(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testMembershipID = uint32(8302)
-		testPosA         = uint32(9303)
-		testPosB         = uint32(9304)
+		testMembershipID = uint64(8302)
+		testPosA         = uint64(9303)
+		testPosB         = uint64(9304)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -119,17 +119,17 @@ func TestMembershipPositionRepoSqlite_RemoveAndCleanByPosition(t *testing.T) {
 	require.NoError(t, tx.Commit())
 
 	// 单向解除 posA：仅剩 posB
-	require.NoError(t, repo.RemovePositionsFromMembership(ctx, testMembershipID, []uint32{testPosA}))
+	require.NoError(t, repo.RemovePositionsFromMembership(ctx, testMembershipID, []uint64{testPosA}))
 
 	positionIDs, err := repo.ListPositionIDs(ctx, testMembershipID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testPosB}, positionIDs, "解除后应仅保留未被移除的关联")
+	require.Equal(t, []uint64{testPosB}, positionIDs, "解除后应仅保留未被移除的关联")
 
 	// 按岗位清理：posB 的关联被整体删除
 	tx2, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
 	defer func() { _ = tx2.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByPositionIDs(ctx, tx2, []uint32{testPosB}))
+	require.NoError(t, repo.CleanRelationsByPositionIDs(ctx, tx2, []uint64{testPosB}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().MembershipPosition.Query().Count(ctx)
@@ -144,9 +144,9 @@ func TestMembershipPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testMembershipID = uint32(8303)
-		testPosOK        = uint32(9305)
-		testPosExp       = uint32(9306)
+		testMembershipID = uint64(8303)
+		testPosOK        = uint64(9305)
+		testPosExp       = uint64(9306)
 	)
 
 	past := timestamppb.New(time.Now().Add(-1 * time.Hour))
@@ -168,7 +168,7 @@ func TestMembershipPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 过滤过期：仅剩未过期那条
 	active, err := repo.ListPositionIDs(ctx, testMembershipID, true)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testPosOK}, active, "过滤过期后应仅返回未过期关联")
+	require.Equal(t, []uint64{testPosOK}, active, "过滤过期后应仅返回未过期关联")
 
 	// 反向过滤同理
 	activeMemberships, err := repo.ListMembershipIDs(ctx, testPosExp, true)
@@ -179,7 +179,7 @@ func TestMembershipPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	tx2, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
 	defer func() { _ = tx2.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByMembershipIDs(ctx, tx2, []uint32{testMembershipID}))
+	require.NoError(t, repo.CleanRelationsByMembershipIDs(ctx, tx2, []uint64{testMembershipID}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().MembershipPosition.Query().Count(ctx)

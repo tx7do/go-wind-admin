@@ -105,9 +105,9 @@ func (MonitorAlertRule) Fields() []ent.Field {
 // Mixin of the MonitorAlertRule.
 func (MonitorAlertRule) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.Remark{},
 	}
 }

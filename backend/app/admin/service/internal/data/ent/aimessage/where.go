@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.AiMessage {
+func ID(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.AiMessage {
+func IDEQ(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.AiMessage {
+func IDNEQ(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.AiMessage {
+func IDIn(ids ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.AiMessage {
+func IDNotIn(ids ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.AiMessage {
+func IDGT(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.AiMessage {
+func IDGTE(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.AiMessage {
+func IDLT(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.AiMessage {
+func IDLTE(id uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,22 +71,22 @@ func DeletedAt(v time.Time) predicate.AiMessage {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.AiMessage {
+func CreatedBy(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.AiMessage {
+func UpdatedBy(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.AiMessage {
+func DeletedBy(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.AiMessage {
+func TenantID(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldTenantID, v))
 }
 
@@ -121,12 +121,12 @@ func ErrorMessage(v string) predicate.AiMessage {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint32) predicate.AiMessage {
+func UserID(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldUserID, v))
 }
 
 // ConversationID applies equality check predicate on the "conversation_id" field. It's identical to ConversationIDEQ.
-func ConversationID(v uint32) predicate.AiMessage {
+func ConversationID(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldConversationID, v))
 }
 
@@ -281,42 +281,42 @@ func DeletedAtNotNil() predicate.AiMessage {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.AiMessage {
+func CreatedByEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.AiMessage {
+func CreatedByNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.AiMessage {
+func CreatedByIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.AiMessage {
+func CreatedByNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.AiMessage {
+func CreatedByGT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.AiMessage {
+func CreatedByGTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.AiMessage {
+func CreatedByLT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.AiMessage {
+func CreatedByLTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -331,42 +331,42 @@ func CreatedByNotNil() predicate.AiMessage {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.AiMessage {
+func UpdatedByEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.AiMessage {
+func UpdatedByNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.AiMessage {
+func UpdatedByIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.AiMessage {
+func UpdatedByNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.AiMessage {
+func UpdatedByGT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.AiMessage {
+func UpdatedByGTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.AiMessage {
+func UpdatedByLT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.AiMessage {
+func UpdatedByLTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -381,42 +381,42 @@ func UpdatedByNotNil() predicate.AiMessage {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.AiMessage {
+func DeletedByEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.AiMessage {
+func DeletedByNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.AiMessage {
+func DeletedByIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.AiMessage {
+func DeletedByNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.AiMessage {
+func DeletedByGT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.AiMessage {
+func DeletedByGTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.AiMessage {
+func DeletedByLT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.AiMessage {
+func DeletedByLTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -431,42 +431,42 @@ func DeletedByNotNil() predicate.AiMessage {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.AiMessage {
+func TenantIDEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.AiMessage {
+func TenantIDNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.AiMessage {
+func TenantIDIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.AiMessage {
+func TenantIDNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.AiMessage {
+func TenantIDGT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.AiMessage {
+func TenantIDGTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.AiMessage {
+func TenantIDLT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.AiMessage {
+func TenantIDLTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -886,42 +886,42 @@ func ErrorMessageContainsFold(v string) predicate.AiMessage {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint32) predicate.AiMessage {
+func UserIDEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint32) predicate.AiMessage {
+func UserIDNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint32) predicate.AiMessage {
+func UserIDIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint32) predicate.AiMessage {
+func UserIDNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint32) predicate.AiMessage {
+func UserIDGT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint32) predicate.AiMessage {
+func UserIDGTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint32) predicate.AiMessage {
+func UserIDLT(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint32) predicate.AiMessage {
+func UserIDLTE(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldLTE(FieldUserID, v))
 }
 
@@ -936,22 +936,22 @@ func UserIDNotNil() predicate.AiMessage {
 }
 
 // ConversationIDEQ applies the EQ predicate on the "conversation_id" field.
-func ConversationIDEQ(v uint32) predicate.AiMessage {
+func ConversationIDEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldEQ(FieldConversationID, v))
 }
 
 // ConversationIDNEQ applies the NEQ predicate on the "conversation_id" field.
-func ConversationIDNEQ(v uint32) predicate.AiMessage {
+func ConversationIDNEQ(v uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNEQ(FieldConversationID, v))
 }
 
 // ConversationIDIn applies the In predicate on the "conversation_id" field.
-func ConversationIDIn(vs ...uint32) predicate.AiMessage {
+func ConversationIDIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldIn(FieldConversationID, vs...))
 }
 
 // ConversationIDNotIn applies the NotIn predicate on the "conversation_id" field.
-func ConversationIDNotIn(vs ...uint32) predicate.AiMessage {
+func ConversationIDNotIn(vs ...uint64) predicate.AiMessage {
 	return predicate.AiMessage(sql.FieldNotIn(FieldConversationID, vs...))
 }
 

@@ -32,11 +32,11 @@ func newOrgUnitRepoTreeSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Cl
 // createOrgUnitRow 经 repo.Create 直建组织单元（parentID nil = 根；显式 0 同根）。
 // 走 repo 路径让 setTreePath 物化路径照常落库；id 经唯一 name 反查（repo.Create
 // 不回传产物）。
-func createOrgUnitRow(t *testing.T, ctx context.Context, repo *OrgUnitRepo, name string, parentID *uint32) uint32 {
+func createOrgUnitRow(t *testing.T, ctx context.Context, repo *OrgUnitRepo, name string, parentID *uint64) uint64 {
 	t.Helper()
 	data := &identityV1.OrgUnit{
 		Name:     trans.Ptr(name),
-		TenantId: trans.Ptr(uint32(42)),
+		TenantId: trans.Ptr(uint64(42)),
 	}
 	if parentID != nil {
 		data.ParentId = parentID
@@ -58,8 +58,8 @@ func TestOrgUnitRepoSqlite_CreateExplicitZeroParentAsRoot(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, &identityV1.CreateOrgUnitRequest{
 		Data: &identityV1.OrgUnit{
 			Name:     trans.Ptr("零父根单元"),
-			TenantId: trans.Ptr(uint32(42)),
-			ParentId: trans.Ptr(uint32(0)),
+			TenantId: trans.Ptr(uint64(42)),
+			ParentId: trans.Ptr(uint64(0)),
 		},
 	}), "显式 parent_id=0 的创建应按挂根处理而非 FK 违约")
 
@@ -87,7 +87,7 @@ func TestOrgUnitRepoSqlite_UpdateExplicitZeroParentMovesToRoot(t *testing.T) {
 	require.Contains(t, *rowChild.Path, "/"+strconv.FormatUint(uint64(root), 10)+"/",
 		"子节点初始路径应带父前缀")
 
-	zero := uint32(0)
+	zero := uint64(0)
 	require.NoError(t, repo.Update(ctx, &identityV1.UpdateOrgUnitRequest{
 		Id:   child,
 		Data: &identityV1.OrgUnit{ParentId: &zero},
@@ -209,7 +209,7 @@ func TestOrgUnitRepoSqlite_CreateChildPath(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, &identityV1.CreateOrgUnitRequest{
 		Data: &identityV1.OrgUnit{
 			Name:     trans.Ptr("常规子单元"),
-			TenantId: trans.Ptr(uint32(42)),
+			TenantId: trans.Ptr(uint64(42)),
 			ParentId: trans.Ptr(root),
 		},
 	}), "显式 >0 父级的创建应照常挂载")

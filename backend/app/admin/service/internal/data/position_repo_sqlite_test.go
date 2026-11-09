@@ -133,7 +133,7 @@ func TestPositionRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().Position.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetPositionRequest{
@@ -182,7 +182,7 @@ func TestPositionRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().Position.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	err = repo.Update(ctx, &identityV1.UpdatePositionRequest{
 		Id:         createdID,
@@ -245,7 +245,7 @@ func TestPositionRepoSqlite_TypeAllValuesLand(t *testing.T) {
 
 		// 读路径：Get 按主键命中后，type/status 应经回填在 DTO 视图如实呈现。
 		got, err := repo.Get(ctx, &identityV1.GetPositionRequest{
-			QueryBy: &identityV1.GetPositionRequest_Id{Id: uint32(rows[0].ID)},
+			QueryBy: &identityV1.GetPositionRequest_Id{Id: uint64(rows[0].ID)},
 		})
 		require.NoError(t, err, "按主键读取应命中")
 		require.Equal(t, c.protoType, got.GetType(), "读视图应回填类型 %v", c.protoType)
@@ -270,7 +270,7 @@ func TestPositionRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().Position.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &identityV1.DeletePositionRequest{
 		QueryBy: &identityV1.DeletePositionRequest_Id{Id: createdID},

@@ -40,11 +40,11 @@ func TestPolicyEvaluationLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &permissionV1.CreatePolicyEvaluationLogRequest{
 		Data: &permissionV1.PolicyEvaluationLog{
-			TenantId:          trans.Ptr(uint32(3)),
-			UserId:            trans.Ptr(uint32(12)),
-			MembershipId:      trans.Ptr(uint32(13)),
-			PermissionId:      trans.Ptr(uint32(14)),
-			PolicyId:          trans.Ptr(uint32(15)),
+			TenantId:          trans.Ptr(uint64(3)),
+			UserId:            trans.Ptr(uint64(12)),
+			MembershipId:      trans.Ptr(uint64(13)),
+			PermissionId:      trans.Ptr(uint64(14)),
+			PolicyId:          trans.Ptr(uint64(15)),
 			RequestPath:       trans.Ptr("/sqlite/policy-eval/create"),
 			RequestMethod:     trans.Ptr("POST"),
 			Result:            trans.Ptr(false),
@@ -63,11 +63,11 @@ func TestPolicyEvaluationLogRepoSqlite_Create(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "sys_policy_evaluation_logs 应有 1 条记录")
 	row := rows[0]
-	require.Equal(t, uint32(3), *row.TenantID, "tenant_id 应按请求落库")
-	require.Equal(t, uint32(12), *row.UserID, "user_id 应按请求落库")
-	require.Equal(t, uint32(13), *row.MembershipID, "membership_id 应按请求落库")
-	require.Equal(t, uint32(14), *row.PermissionID, "permission_id 应按请求落库")
-	require.Equal(t, uint32(15), *row.PolicyID, "policy_id 应按请求落库")
+	require.Equal(t, uint64(3), *row.TenantID, "tenant_id 应按请求落库")
+	require.Equal(t, uint64(12), *row.UserID, "user_id 应按请求落库")
+	require.Equal(t, uint64(13), *row.MembershipID, "membership_id 应按请求落库")
+	require.Equal(t, uint64(14), *row.PermissionID, "permission_id 应按请求落库")
+	require.Equal(t, uint64(15), *row.PolicyID, "policy_id 应按请求落库")
 	require.Equal(t, "/sqlite/policy-eval/create", *row.RequestPath, "request_path 应按请求落库")
 	require.Equal(t, "POST", *row.RequestMethod, "request_method 应按请求落库")
 	require.Equal(t, false, *row.Result, "result 应按请求落库")
@@ -160,8 +160,8 @@ func TestPolicyEvaluationLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint32{firstID, secondID},
-		[]uint32{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []uint64{firstID, secondID},
+		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestPolicyEvaluationLogRepoSqlite_Get 验证 Get 按主键的命中与未命中。

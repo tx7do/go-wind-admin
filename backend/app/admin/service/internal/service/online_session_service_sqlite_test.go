@@ -66,7 +66,7 @@ func seedOnlineSession(
 	tokenCache *data.UserTokenCache,
 	ctx context.Context,
 	ct authenticationV1.ClientType,
-	uid uint32,
+	uid uint64,
 	jti, username, ip string,
 	loginAt int64,
 ) {
@@ -298,7 +298,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: uid})
 	_, err := svc.ForceLogoutSession(plainCtx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint32(uid)),
+		UserId:     trans.Ptr(uint64(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.Error(t, err, "非租户/平台管理员的强踢应被拒绝")
@@ -307,7 +307,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	adminCtx := onlineAdminOpCtx(ctx)
 	resp, err := svc.ForceLogoutSession(adminCtx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint32(uid)),
+		UserId:     trans.Ptr(uint64(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.NoError(t, err, "强制下线已存在会话应成功")
@@ -321,7 +321,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	// 入参守卫：userId/jti 缺失。
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint32(0)),
+		UserId:     trans.Ptr(uint64(0)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.Error(t, err, "userId=0 应被拒绝")
@@ -329,7 +329,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint32(uid)),
+		UserId:     trans.Ptr(uint64(uid)),
 		Jti:        trans.Ptr(""),
 	})
 	require.Error(t, err, "空 jti 应被拒绝")

@@ -71,14 +71,14 @@ func (_u *OrgUnitUpdate) ClearDeletedAt() *OrgUnitUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *OrgUnitUpdate) SetCreatedBy(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetCreatedBy(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableCreatedBy(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableCreatedBy(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *OrgUnitUpdate) SetNillableCreatedBy(v *uint32) *OrgUnitUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *OrgUnitUpdate) AddCreatedBy(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddCreatedBy(v int64) *OrgUnitUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *OrgUnitUpdate) ClearCreatedBy() *OrgUnitUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *OrgUnitUpdate) SetUpdatedBy(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetUpdatedBy(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableUpdatedBy(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableUpdatedBy(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *OrgUnitUpdate) SetNillableUpdatedBy(v *uint32) *OrgUnitUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *OrgUnitUpdate) AddUpdatedBy(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddUpdatedBy(v int64) *OrgUnitUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *OrgUnitUpdate) ClearUpdatedBy() *OrgUnitUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *OrgUnitUpdate) SetDeletedBy(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetDeletedBy(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableDeletedBy(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableDeletedBy(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *OrgUnitUpdate) SetNillableDeletedBy(v *uint32) *OrgUnitUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *OrgUnitUpdate) AddDeletedBy(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddDeletedBy(v int64) *OrgUnitUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -233,13 +233,13 @@ func (_u *OrgUnitUpdate) ClearDescription() *OrgUnitUpdate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *OrgUnitUpdate) SetParentID(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetParentID(v uint64) *OrgUnitUpdate {
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableParentID(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableParentID(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -307,14 +307,14 @@ func (_u *OrgUnitUpdate) ClearCode() *OrgUnitUpdate {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (_u *OrgUnitUpdate) SetLeaderID(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetLeaderID(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetLeaderID()
 	_u.mutation.SetLeaderID(v)
 	return _u
 }
 
 // SetNillableLeaderID sets the "leader_id" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableLeaderID(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableLeaderID(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetLeaderID(*v)
 	}
@@ -322,7 +322,7 @@ func (_u *OrgUnitUpdate) SetNillableLeaderID(v *uint32) *OrgUnitUpdate {
 }
 
 // AddLeaderID adds value to the "leader_id" field.
-func (_u *OrgUnitUpdate) AddLeaderID(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddLeaderID(v int64) *OrgUnitUpdate {
 	_u.mutation.AddLeaderID(v)
 	return _u
 }
@@ -446,14 +446,14 @@ func (_u *OrgUnitUpdate) ClearTaxID() *OrgUnitUpdate {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (_u *OrgUnitUpdate) SetLegalEntityOrgID(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetLegalEntityOrgID(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetLegalEntityOrgID()
 	_u.mutation.SetLegalEntityOrgID(v)
 	return _u
 }
 
 // SetNillableLegalEntityOrgID sets the "legal_entity_org_id" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableLegalEntityOrgID(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableLegalEntityOrgID(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetLegalEntityOrgID(*v)
 	}
@@ -461,7 +461,7 @@ func (_u *OrgUnitUpdate) SetNillableLegalEntityOrgID(v *uint32) *OrgUnitUpdate {
 }
 
 // AddLegalEntityOrgID adds value to the "legal_entity_org_id" field.
-func (_u *OrgUnitUpdate) AddLegalEntityOrgID(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddLegalEntityOrgID(v int64) *OrgUnitUpdate {
 	_u.mutation.AddLegalEntityOrgID(v)
 	return _u
 }
@@ -667,14 +667,14 @@ func (_u *OrgUnitUpdate) ClearEndAt() *OrgUnitUpdate {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (_u *OrgUnitUpdate) SetContactUserID(v uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetContactUserID(v uint64) *OrgUnitUpdate {
 	_u.mutation.ResetContactUserID()
 	_u.mutation.SetContactUserID(v)
 	return _u
 }
 
 // SetNillableContactUserID sets the "contact_user_id" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableContactUserID(v *uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) SetNillableContactUserID(v *uint64) *OrgUnitUpdate {
 	if v != nil {
 		_u.SetContactUserID(*v)
 	}
@@ -682,7 +682,7 @@ func (_u *OrgUnitUpdate) SetNillableContactUserID(v *uint32) *OrgUnitUpdate {
 }
 
 // AddContactUserID adds value to the "contact_user_id" field.
-func (_u *OrgUnitUpdate) AddContactUserID(v int32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddContactUserID(v int64) *OrgUnitUpdate {
 	_u.mutation.AddContactUserID(v)
 	return _u
 }
@@ -717,14 +717,14 @@ func (_u *OrgUnitUpdate) SetParent(v *OrgUnit) *OrgUnitUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the OrgUnit entity by IDs.
-func (_u *OrgUnitUpdate) AddChildIDs(ids ...uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) AddChildIDs(ids ...uint64) *OrgUnitUpdate {
 	_u.mutation.AddChildIDs(ids...)
 	return _u
 }
 
 // AddChildren adds the "children" edges to the OrgUnit entity.
 func (_u *OrgUnitUpdate) AddChildren(v ...*OrgUnit) *OrgUnitUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -749,14 +749,14 @@ func (_u *OrgUnitUpdate) ClearChildren() *OrgUnitUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to OrgUnit entities by IDs.
-func (_u *OrgUnitUpdate) RemoveChildIDs(ids ...uint32) *OrgUnitUpdate {
+func (_u *OrgUnitUpdate) RemoveChildIDs(ids ...uint64) *OrgUnitUpdate {
 	_u.mutation.RemoveChildIDs(ids...)
 	return _u
 }
 
 // RemoveChildren removes "children" edges to OrgUnit entities.
 func (_u *OrgUnitUpdate) RemoveChildren(v ...*OrgUnit) *OrgUnitUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -825,7 +825,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -849,31 +849,31 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(orgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(orgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(orgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(orgunit.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(orgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(orgunit.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(orgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(orgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(orgunit.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(orgunit.FieldStatus, field.TypeEnum, value)
@@ -888,7 +888,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(orgunit.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(orgunit.FieldRemark, field.TypeString, value)
@@ -918,13 +918,13 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(orgunit.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
-		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedLeaderID(); ok {
-		_spec.AddField(orgunit.FieldLeaderID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldLeaderID, field.TypeUint64, value)
 	}
 	if _u.mutation.LeaderIDCleared() {
-		_spec.ClearField(orgunit.FieldLeaderID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldLeaderID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(orgunit.FieldType, field.TypeEnum, value)
@@ -965,13 +965,13 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(orgunit.FieldTaxID, field.TypeString)
 	}
 	if value, ok := _u.mutation.LegalEntityOrgID(); ok {
-		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedLegalEntityOrgID(); ok {
-		_spec.AddField(orgunit.FieldLegalEntityOrgID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldLegalEntityOrgID, field.TypeUint64, value)
 	}
 	if _u.mutation.LegalEntityOrgIDCleared() {
-		_spec.ClearField(orgunit.FieldLegalEntityOrgID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldLegalEntityOrgID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Address(); ok {
 		_spec.SetField(orgunit.FieldAddress, field.TypeString, value)
@@ -1034,13 +1034,13 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(orgunit.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ContactUserID(); ok {
-		_spec.SetField(orgunit.FieldContactUserID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldContactUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedContactUserID(); ok {
-		_spec.AddField(orgunit.FieldContactUserID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldContactUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.ContactUserIDCleared() {
-		_spec.ClearField(orgunit.FieldContactUserID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldContactUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.PermissionTags(); ok {
 		_spec.SetField(orgunit.FieldPermissionTags, field.TypeJSON, value)
@@ -1061,7 +1061,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1074,7 +1074,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1090,7 +1090,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1103,7 +1103,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1119,7 +1119,7 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1190,14 +1190,14 @@ func (_u *OrgUnitUpdateOne) ClearDeletedAt() *OrgUnitUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *OrgUnitUpdateOne) SetCreatedBy(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetCreatedBy(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableCreatedBy(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableCreatedBy(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -1205,7 +1205,7 @@ func (_u *OrgUnitUpdateOne) SetNillableCreatedBy(v *uint32) *OrgUnitUpdateOne {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *OrgUnitUpdateOne) AddCreatedBy(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddCreatedBy(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -1217,14 +1217,14 @@ func (_u *OrgUnitUpdateOne) ClearCreatedBy() *OrgUnitUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *OrgUnitUpdateOne) SetUpdatedBy(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetUpdatedBy(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableUpdatedBy(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableUpdatedBy(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -1232,7 +1232,7 @@ func (_u *OrgUnitUpdateOne) SetNillableUpdatedBy(v *uint32) *OrgUnitUpdateOne {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *OrgUnitUpdateOne) AddUpdatedBy(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddUpdatedBy(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -1244,14 +1244,14 @@ func (_u *OrgUnitUpdateOne) ClearUpdatedBy() *OrgUnitUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *OrgUnitUpdateOne) SetDeletedBy(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetDeletedBy(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableDeletedBy(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableDeletedBy(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -1259,7 +1259,7 @@ func (_u *OrgUnitUpdateOne) SetNillableDeletedBy(v *uint32) *OrgUnitUpdateOne {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *OrgUnitUpdateOne) AddDeletedBy(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddDeletedBy(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -1352,13 +1352,13 @@ func (_u *OrgUnitUpdateOne) ClearDescription() *OrgUnitUpdateOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *OrgUnitUpdateOne) SetParentID(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetParentID(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableParentID(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableParentID(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -1426,14 +1426,14 @@ func (_u *OrgUnitUpdateOne) ClearCode() *OrgUnitUpdateOne {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (_u *OrgUnitUpdateOne) SetLeaderID(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetLeaderID(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetLeaderID()
 	_u.mutation.SetLeaderID(v)
 	return _u
 }
 
 // SetNillableLeaderID sets the "leader_id" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableLeaderID(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableLeaderID(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetLeaderID(*v)
 	}
@@ -1441,7 +1441,7 @@ func (_u *OrgUnitUpdateOne) SetNillableLeaderID(v *uint32) *OrgUnitUpdateOne {
 }
 
 // AddLeaderID adds value to the "leader_id" field.
-func (_u *OrgUnitUpdateOne) AddLeaderID(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddLeaderID(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddLeaderID(v)
 	return _u
 }
@@ -1565,14 +1565,14 @@ func (_u *OrgUnitUpdateOne) ClearTaxID() *OrgUnitUpdateOne {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (_u *OrgUnitUpdateOne) SetLegalEntityOrgID(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetLegalEntityOrgID(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetLegalEntityOrgID()
 	_u.mutation.SetLegalEntityOrgID(v)
 	return _u
 }
 
 // SetNillableLegalEntityOrgID sets the "legal_entity_org_id" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableLegalEntityOrgID(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableLegalEntityOrgID(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetLegalEntityOrgID(*v)
 	}
@@ -1580,7 +1580,7 @@ func (_u *OrgUnitUpdateOne) SetNillableLegalEntityOrgID(v *uint32) *OrgUnitUpdat
 }
 
 // AddLegalEntityOrgID adds value to the "legal_entity_org_id" field.
-func (_u *OrgUnitUpdateOne) AddLegalEntityOrgID(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddLegalEntityOrgID(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddLegalEntityOrgID(v)
 	return _u
 }
@@ -1786,14 +1786,14 @@ func (_u *OrgUnitUpdateOne) ClearEndAt() *OrgUnitUpdateOne {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (_u *OrgUnitUpdateOne) SetContactUserID(v uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetContactUserID(v uint64) *OrgUnitUpdateOne {
 	_u.mutation.ResetContactUserID()
 	_u.mutation.SetContactUserID(v)
 	return _u
 }
 
 // SetNillableContactUserID sets the "contact_user_id" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableContactUserID(v *uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) SetNillableContactUserID(v *uint64) *OrgUnitUpdateOne {
 	if v != nil {
 		_u.SetContactUserID(*v)
 	}
@@ -1801,7 +1801,7 @@ func (_u *OrgUnitUpdateOne) SetNillableContactUserID(v *uint32) *OrgUnitUpdateOn
 }
 
 // AddContactUserID adds value to the "contact_user_id" field.
-func (_u *OrgUnitUpdateOne) AddContactUserID(v int32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddContactUserID(v int64) *OrgUnitUpdateOne {
 	_u.mutation.AddContactUserID(v)
 	return _u
 }
@@ -1836,14 +1836,14 @@ func (_u *OrgUnitUpdateOne) SetParent(v *OrgUnit) *OrgUnitUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the OrgUnit entity by IDs.
-func (_u *OrgUnitUpdateOne) AddChildIDs(ids ...uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) AddChildIDs(ids ...uint64) *OrgUnitUpdateOne {
 	_u.mutation.AddChildIDs(ids...)
 	return _u
 }
 
 // AddChildren adds the "children" edges to the OrgUnit entity.
 func (_u *OrgUnitUpdateOne) AddChildren(v ...*OrgUnit) *OrgUnitUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1868,14 +1868,14 @@ func (_u *OrgUnitUpdateOne) ClearChildren() *OrgUnitUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to OrgUnit entities by IDs.
-func (_u *OrgUnitUpdateOne) RemoveChildIDs(ids ...uint32) *OrgUnitUpdateOne {
+func (_u *OrgUnitUpdateOne) RemoveChildIDs(ids ...uint64) *OrgUnitUpdateOne {
 	_u.mutation.RemoveChildIDs(ids...)
 	return _u
 }
 
 // RemoveChildren removes "children" edges to OrgUnit entities.
 func (_u *OrgUnitUpdateOne) RemoveChildren(v ...*OrgUnit) *OrgUnitUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1957,7 +1957,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "OrgUnit.id" for update`)}
@@ -1998,31 +1998,31 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 		_spec.ClearField(orgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(orgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(orgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(orgunit.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(orgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(orgunit.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(orgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(orgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(orgunit.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(orgunit.FieldStatus, field.TypeEnum, value)
@@ -2037,7 +2037,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 		_spec.ClearField(orgunit.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(orgunit.FieldRemark, field.TypeString, value)
@@ -2067,13 +2067,13 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 		_spec.ClearField(orgunit.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
-		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedLeaderID(); ok {
-		_spec.AddField(orgunit.FieldLeaderID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldLeaderID, field.TypeUint64, value)
 	}
 	if _u.mutation.LeaderIDCleared() {
-		_spec.ClearField(orgunit.FieldLeaderID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldLeaderID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(orgunit.FieldType, field.TypeEnum, value)
@@ -2114,13 +2114,13 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 		_spec.ClearField(orgunit.FieldTaxID, field.TypeString)
 	}
 	if value, ok := _u.mutation.LegalEntityOrgID(); ok {
-		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedLegalEntityOrgID(); ok {
-		_spec.AddField(orgunit.FieldLegalEntityOrgID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldLegalEntityOrgID, field.TypeUint64, value)
 	}
 	if _u.mutation.LegalEntityOrgIDCleared() {
-		_spec.ClearField(orgunit.FieldLegalEntityOrgID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldLegalEntityOrgID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Address(); ok {
 		_spec.SetField(orgunit.FieldAddress, field.TypeString, value)
@@ -2183,13 +2183,13 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 		_spec.ClearField(orgunit.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ContactUserID(); ok {
-		_spec.SetField(orgunit.FieldContactUserID, field.TypeUint32, value)
+		_spec.SetField(orgunit.FieldContactUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedContactUserID(); ok {
-		_spec.AddField(orgunit.FieldContactUserID, field.TypeUint32, value)
+		_spec.AddField(orgunit.FieldContactUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.ContactUserIDCleared() {
-		_spec.ClearField(orgunit.FieldContactUserID, field.TypeUint32)
+		_spec.ClearField(orgunit.FieldContactUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.PermissionTags(); ok {
 		_spec.SetField(orgunit.FieldPermissionTags, field.TypeJSON, value)
@@ -2210,7 +2210,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2223,7 +2223,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2239,7 +2239,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2252,7 +2252,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2268,7 +2268,7 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -56,7 +56,7 @@ func NewAdminPortalService(
 	}
 }
 
-func (s *AdminPortalService) menuListToQueryString(menus []uint32, onlyButton bool) string {
+func (s *AdminPortalService) menuListToQueryString(menus []uint64, onlyButton bool) string {
 	var ids []string
 	for _, menu := range menus {
 		ids = append(ids, fmt.Sprintf("\"%d\"", menu))
@@ -83,7 +83,7 @@ func (s *AdminPortalService) menuListToQueryString(menus []uint32, onlyButton bo
 // queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单。
 // 菜单授权绑定存全路径快照（菜单身份键，免疫菜单重建换 id），这里把多角色的
 // 绑定快照反解回当前菜单 id 再走原有的 id__in 菜单查询。
-func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleIDs []uint64) ([]uint64, error) {
 	paths, err := s.roleRepo.GetRolesPermissionMenuFullPaths(ctx, roleIDs)
 	if err != nil {
 		return nil, adminV1.ErrorInternalServerError("query roles menu full paths failed")
@@ -215,7 +215,7 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 // filterMenusByPlanWhitelist 按当前租户订阅套餐的模块白名单过滤菜单。
 // 递归过滤整棵树：module 不在白名单内的节点（含其子树）剔除，未归类（nil）
 // 一律放行；容器在全部子项被剔除后一并丢弃，不留空目录。
-func (s *AdminPortalService) filterMenusByPlanWhitelist(ctx context.Context, items []*permissionV1.Menu, tenantId uint32) []*permissionV1.Menu {
+func (s *AdminPortalService) filterMenusByPlanWhitelist(ctx context.Context, items []*permissionV1.Menu, tenantId uint64) []*permissionV1.Menu {
 	// 查租户的 plan_id
 	t, err := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
 		QueryBy: &identityV1.GetTenantRequest_Id{

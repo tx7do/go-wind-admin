@@ -74,9 +74,9 @@ func (Plan) Fields() []ent.Field {
 // Mixin of the Plan.
 func (Plan) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.Remark{},
 	}
 }

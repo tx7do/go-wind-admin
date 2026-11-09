@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.AiUsageLog {
+func ID(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.AiUsageLog {
+func IDEQ(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.AiUsageLog {
+func IDNEQ(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.AiUsageLog {
+func IDIn(ids ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.AiUsageLog {
+func IDNotIn(ids ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.AiUsageLog {
+func IDGT(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.AiUsageLog {
+func IDGTE(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.AiUsageLog {
+func IDLT(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.AiUsageLog {
+func IDLTE(id uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -60,22 +60,22 @@ func CreatedAt(v time.Time) predicate.AiUsageLog {
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.AiUsageLog {
+func TenantID(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // ProviderID applies equality check predicate on the "provider_id" field. It's identical to ProviderIDEQ.
-func ProviderID(v uint32) predicate.AiUsageLog {
+func ProviderID(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldProviderID, v))
 }
 
 // ConversationID applies equality check predicate on the "conversation_id" field. It's identical to ConversationIDEQ.
-func ConversationID(v uint32) predicate.AiUsageLog {
+func ConversationID(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldConversationID, v))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint32) predicate.AiUsageLog {
+func UserID(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldUserID, v))
 }
 
@@ -155,42 +155,42 @@ func CreatedAtNotNil() predicate.AiUsageLog {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.AiUsageLog {
+func TenantIDEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.AiUsageLog {
+func TenantIDNEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.AiUsageLog {
+func TenantIDIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.AiUsageLog {
+func TenantIDNotIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.AiUsageLog {
+func TenantIDGT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.AiUsageLog {
+func TenantIDGTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.AiUsageLog {
+func TenantIDLT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.AiUsageLog {
+func TenantIDLTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -205,42 +205,42 @@ func TenantIDNotNil() predicate.AiUsageLog {
 }
 
 // ProviderIDEQ applies the EQ predicate on the "provider_id" field.
-func ProviderIDEQ(v uint32) predicate.AiUsageLog {
+func ProviderIDEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldProviderID, v))
 }
 
 // ProviderIDNEQ applies the NEQ predicate on the "provider_id" field.
-func ProviderIDNEQ(v uint32) predicate.AiUsageLog {
+func ProviderIDNEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNEQ(FieldProviderID, v))
 }
 
 // ProviderIDIn applies the In predicate on the "provider_id" field.
-func ProviderIDIn(vs ...uint32) predicate.AiUsageLog {
+func ProviderIDIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldIn(FieldProviderID, vs...))
 }
 
 // ProviderIDNotIn applies the NotIn predicate on the "provider_id" field.
-func ProviderIDNotIn(vs ...uint32) predicate.AiUsageLog {
+func ProviderIDNotIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNotIn(FieldProviderID, vs...))
 }
 
 // ProviderIDGT applies the GT predicate on the "provider_id" field.
-func ProviderIDGT(v uint32) predicate.AiUsageLog {
+func ProviderIDGT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGT(FieldProviderID, v))
 }
 
 // ProviderIDGTE applies the GTE predicate on the "provider_id" field.
-func ProviderIDGTE(v uint32) predicate.AiUsageLog {
+func ProviderIDGTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGTE(FieldProviderID, v))
 }
 
 // ProviderIDLT applies the LT predicate on the "provider_id" field.
-func ProviderIDLT(v uint32) predicate.AiUsageLog {
+func ProviderIDLT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLT(FieldProviderID, v))
 }
 
 // ProviderIDLTE applies the LTE predicate on the "provider_id" field.
-func ProviderIDLTE(v uint32) predicate.AiUsageLog {
+func ProviderIDLTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLTE(FieldProviderID, v))
 }
 
@@ -255,42 +255,42 @@ func ProviderIDNotNil() predicate.AiUsageLog {
 }
 
 // ConversationIDEQ applies the EQ predicate on the "conversation_id" field.
-func ConversationIDEQ(v uint32) predicate.AiUsageLog {
+func ConversationIDEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldConversationID, v))
 }
 
 // ConversationIDNEQ applies the NEQ predicate on the "conversation_id" field.
-func ConversationIDNEQ(v uint32) predicate.AiUsageLog {
+func ConversationIDNEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNEQ(FieldConversationID, v))
 }
 
 // ConversationIDIn applies the In predicate on the "conversation_id" field.
-func ConversationIDIn(vs ...uint32) predicate.AiUsageLog {
+func ConversationIDIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldIn(FieldConversationID, vs...))
 }
 
 // ConversationIDNotIn applies the NotIn predicate on the "conversation_id" field.
-func ConversationIDNotIn(vs ...uint32) predicate.AiUsageLog {
+func ConversationIDNotIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNotIn(FieldConversationID, vs...))
 }
 
 // ConversationIDGT applies the GT predicate on the "conversation_id" field.
-func ConversationIDGT(v uint32) predicate.AiUsageLog {
+func ConversationIDGT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGT(FieldConversationID, v))
 }
 
 // ConversationIDGTE applies the GTE predicate on the "conversation_id" field.
-func ConversationIDGTE(v uint32) predicate.AiUsageLog {
+func ConversationIDGTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGTE(FieldConversationID, v))
 }
 
 // ConversationIDLT applies the LT predicate on the "conversation_id" field.
-func ConversationIDLT(v uint32) predicate.AiUsageLog {
+func ConversationIDLT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLT(FieldConversationID, v))
 }
 
 // ConversationIDLTE applies the LTE predicate on the "conversation_id" field.
-func ConversationIDLTE(v uint32) predicate.AiUsageLog {
+func ConversationIDLTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLTE(FieldConversationID, v))
 }
 
@@ -305,42 +305,42 @@ func ConversationIDNotNil() predicate.AiUsageLog {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint32) predicate.AiUsageLog {
+func UserIDEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint32) predicate.AiUsageLog {
+func UserIDNEQ(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint32) predicate.AiUsageLog {
+func UserIDIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint32) predicate.AiUsageLog {
+func UserIDNotIn(vs ...uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint32) predicate.AiUsageLog {
+func UserIDGT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint32) predicate.AiUsageLog {
+func UserIDGTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint32) predicate.AiUsageLog {
+func UserIDLT(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint32) predicate.AiUsageLog {
+func UserIDLTE(v uint64) predicate.AiUsageLog {
 	return predicate.AiUsageLog(sql.FieldLTE(FieldUserID, v))
 }
 

@@ -82,7 +82,7 @@ func TestUserRepoSqlite_Get(t *testing.T) {
 	require.Len(t, rows, 1, "SQLite 中应有 1 条 user 记录")
 	require.Equal(t, entUser.StatusLocked, *rows[0].Status, "proto User_LOCKED 应映射为 ent StatusLocked")
 	require.Equal(t, entUser.GenderMale, *rows[0].Gender, "proto User_MALE 应映射为 ent GenderMale")
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetUserRequest{
@@ -95,7 +95,7 @@ func TestUserRepoSqlite_Get(t *testing.T) {
 	require.Equal(t, identityV1.User_MALE, gotByID.GetGender(), "读视图应回填 gender")
 
 	// ListUsersByIds：实体已在手的路径同样经 backfillEnumsFrom 回填
-	byIds, err := repo.ListUsersByIds(ctx, []uint32{createdID})
+	byIds, err := repo.ListUsersByIds(ctx, []uint64{createdID})
 	require.NoError(t, err, "按主键列表查询应命中")
 	require.Len(t, byIds, 1, "按主键列表应命中 1 条")
 	require.Equal(t, identityV1.User_LOCKED, byIds[0].GetStatus(), "ListUsersByIds 读视图应回填 status")

@@ -160,7 +160,7 @@ func (r *AiProviderRepo) GetEnabledDefault(ctx context.Context) (*ent.AiProvider
 }
 
 // GetApiKeyDecrypted 返回 provider 的 api_key 密文（解密在 service 层做，repo 不管密钥材料）。
-func (r *AiProviderRepo) GetApiKeyEncrypted(ctx context.Context, id uint32) (string, error) {
+func (r *AiProviderRepo) GetApiKeyEncrypted(ctx context.Context, id uint64) (string, error) {
 	entity, err := r.entClient.Client().AiProvider.Query().
 		Where(aiprovider.IDEQ(id)).
 		Select(aiprovider.FieldAPIKey).
@@ -308,7 +308,7 @@ func int32PtrToIntPtr(p *int32) *int {
 }
 
 // GetEntityByID 取提供商实体（chat 链路解析与归属校验用）。
-func (r *AiProviderRepo) GetEntityByID(ctx context.Context, id uint32) (*ent.AiProvider, error) {
+func (r *AiProviderRepo) GetEntityByID(ctx context.Context, id uint64) (*ent.AiProvider, error) {
 	entity, err := r.entClient.Client().AiProvider.Query().
 		Where(aiprovider.IDEQ(id)).
 		Only(ctx)

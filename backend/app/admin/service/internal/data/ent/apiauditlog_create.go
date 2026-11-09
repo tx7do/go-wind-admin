@@ -38,13 +38,13 @@ func (_c *ApiAuditLogCreate) SetNillableCreatedAt(v *time.Time) *ApiAuditLogCrea
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *ApiAuditLogCreate) SetTenantID(v uint32) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetTenantID(v uint64) *ApiAuditLogCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *ApiAuditLogCreate) SetNillableTenantID(v *uint32) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetNillableTenantID(v *uint64) *ApiAuditLogCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -52,13 +52,13 @@ func (_c *ApiAuditLogCreate) SetNillableTenantID(v *uint32) *ApiAuditLogCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *ApiAuditLogCreate) SetUserID(v uint32) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetUserID(v uint64) *ApiAuditLogCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *ApiAuditLogCreate) SetNillableUserID(v *uint32) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetNillableUserID(v *uint64) *ApiAuditLogCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -378,7 +378,7 @@ func (_c *ApiAuditLogCreate) SetSignature(v []byte) *ApiAuditLogCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *ApiAuditLogCreate) SetID(v uint32) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetID(v uint64) *ApiAuditLogCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -460,7 +460,7 @@ func (_c *ApiAuditLogCreate) sqlSave(ctx context.Context) (*ApiAuditLog, error) 
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -470,7 +470,7 @@ func (_c *ApiAuditLogCreate) sqlSave(ctx context.Context) (*ApiAuditLog, error) 
 func (_c *ApiAuditLogCreate) createSpec() (*ApiAuditLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ApiAuditLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(apiauditlog.Table, sqlgraph.NewFieldSpec(apiauditlog.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(apiauditlog.Table, sqlgraph.NewFieldSpec(apiauditlog.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -482,11 +482,11 @@ func (_c *ApiAuditLogCreate) createSpec() (*ApiAuditLog, *sqlgraph.CreateSpec) {
 		_node.CreatedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(apiauditlog.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(apiauditlog.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(apiauditlog.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(apiauditlog.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.Username(); ok {
@@ -638,7 +638,7 @@ type (
 )
 
 // SetUserID sets the "user_id" field.
-func (u *ApiAuditLogUpsert) SetUserID(v uint32) *ApiAuditLogUpsert {
+func (u *ApiAuditLogUpsert) SetUserID(v uint64) *ApiAuditLogUpsert {
 	u.Set(apiauditlog.FieldUserID, v)
 	return u
 }
@@ -650,7 +650,7 @@ func (u *ApiAuditLogUpsert) UpdateUserID() *ApiAuditLogUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *ApiAuditLogUpsert) AddUserID(v uint32) *ApiAuditLogUpsert {
+func (u *ApiAuditLogUpsert) AddUserID(v uint64) *ApiAuditLogUpsert {
 	u.Add(apiauditlog.FieldUserID, v)
 	return u
 }
@@ -1160,14 +1160,14 @@ func (u *ApiAuditLogUpsertOne) Update(set func(*ApiAuditLogUpsert)) *ApiAuditLog
 }
 
 // SetUserID sets the "user_id" field.
-func (u *ApiAuditLogUpsertOne) SetUserID(v uint32) *ApiAuditLogUpsertOne {
+func (u *ApiAuditLogUpsertOne) SetUserID(v uint64) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *ApiAuditLogUpsertOne) AddUserID(v uint32) *ApiAuditLogUpsertOne {
+func (u *ApiAuditLogUpsertOne) AddUserID(v uint64) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.AddUserID(v)
 	})
@@ -1721,7 +1721,7 @@ func (u *ApiAuditLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ApiAuditLogUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *ApiAuditLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1730,7 +1730,7 @@ func (u *ApiAuditLogUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ApiAuditLogUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *ApiAuditLogUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1787,7 +1787,7 @@ func (_c *ApiAuditLogCreateBulk) Save(ctx context.Context) ([]*ApiAuditLog, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1926,14 +1926,14 @@ func (u *ApiAuditLogUpsertBulk) Update(set func(*ApiAuditLogUpsert)) *ApiAuditLo
 }
 
 // SetUserID sets the "user_id" field.
-func (u *ApiAuditLogUpsertBulk) SetUserID(v uint32) *ApiAuditLogUpsertBulk {
+func (u *ApiAuditLogUpsertBulk) SetUserID(v uint64) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *ApiAuditLogUpsertBulk) AddUserID(v uint32) *ApiAuditLogUpsertBulk {
+func (u *ApiAuditLogUpsertBulk) AddUserID(v uint64) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.AddUserID(v)
 	})

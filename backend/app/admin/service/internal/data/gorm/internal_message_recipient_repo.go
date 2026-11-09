@@ -75,7 +75,7 @@ func (r *InternalMessageRecipientRepo) Count(ctx context.Context, scopes []func(
 	return int(count), nil
 }
 
-func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -175,7 +175,7 @@ func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internal
 	return nil
 }
 
-func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) error {
+func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint64) error {
 	if id == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}

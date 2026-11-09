@@ -185,7 +185,7 @@ func (r *DashboardRepo) LoginStatusDistribution(ctx context.Context) ([]Distribu
 
 // UserBehaviorRow 按用户聚合的 24h 操作行为。
 type UserBehaviorRow struct {
-	UserID    uint32 `sql:"user_id"`
+	UserID    uint64 `sql:"user_id"`
 	Username  string `sql:"username"`
 	Total     int    `sql:"total"`
 	Failed    int    `sql:"failed"`

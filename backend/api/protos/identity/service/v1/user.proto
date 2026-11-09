@@ -57,12 +57,12 @@ message User {
     CLOSED = 9; // 注销 (用户主动注销账号。通常在数据脱敏后的软删除状态。)
   }
 
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
   ];  // 用户ID
 
-  optional uint32 tenant_id = 2 [
+  optional uint64 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -71,11 +71,11 @@ message User {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
 
-  optional uint32 org_unit_id = 4 [
+  optional uint64 org_unit_id = 4 [
     json_name = "orgUnitId",
     (gnostic.openapi.v3.property) = {description: "组织ID"}
   ]; // 组织ID
-  repeated uint32 org_unit_ids = 5 [
+  repeated uint64 org_unit_ids = 5 [
     json_name = "orgUnitIds",
     (gnostic.openapi.v3.property) = {description: "归属组织ID列表"}
   ]; // 归属组织ID列表
@@ -88,11 +88,11 @@ message User {
     (gnostic.openapi.v3.property) = {description: "组织名称列表"}
   ]; // 组织名称列表
 
-  optional uint32 position_id = 8 [
+  optional uint64 position_id = 8 [
     json_name = "positionId",
     (gnostic.openapi.v3.property) = {description: "职位ID"}
   ];  // 职位ID
-  repeated uint32 position_ids = 9 [
+  repeated uint64 position_ids = 9 [
     json_name = "positionIds",
     (gnostic.openapi.v3.property) = {description: "职位列表"}
   ]; // 职位列表
@@ -105,11 +105,11 @@ message User {
     (gnostic.openapi.v3.property) = {description: "职位名称列表"}
   ];  // 职位名称列表
 
-  optional uint32 role_id = 12 [
+  optional uint64 role_id = 12 [
     json_name = "roleId",
     (gnostic.openapi.v3.property) = {description: "角色ID"}
   ];  // 角色ID
-  repeated uint32 role_ids = 13 [
+  repeated uint64 role_ids = 13 [
     json_name = "roleIds",
     (gnostic.openapi.v3.property) = {description: "角色ID列表"}
   ];  // 角色ID列表
@@ -209,9 +209,9 @@ message User {
     (gnostic.openapi.v3.property) = {description: "锁定截止时间"}
   ];// 锁定截止时间
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -230,7 +230,7 @@ message ListUserResponse {
 // 获取用户数据 - 请求
 message GetUserRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
       json_name = "id"
     ]; // 用户ID
@@ -261,7 +261,7 @@ message CreateUserRequest {
 
 // 更新用户 - 请求
 message UpdateUserRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 
   User data = 2 [
     json_name = "data",
@@ -291,7 +291,7 @@ message UpdateUserRequest {
 // 删除用户 - 请求
 message DeleteUserRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
       json_name = "id"
     ]; // 用户ID
@@ -306,7 +306,7 @@ message DeleteUserRequest {
 // 用户是否存在 - 请求
 message UserExistsRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
       json_name = "id"
     ]; // 用户ID
@@ -335,12 +335,12 @@ message BatchCreateUsersResponse {
 }
 
 message GetUsersByIdsRequest {
-  repeated uint32 ids = 1;
+  repeated uint64 ids = 1;
 }
 
 // 强制修改用户密码（不验证） - 请求
 message EditUserPasswordRequest {
-  uint32 user_id = 1 [
+  uint64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"

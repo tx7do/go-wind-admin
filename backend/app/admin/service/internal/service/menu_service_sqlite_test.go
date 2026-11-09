@@ -32,7 +32,7 @@ func newMenuServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent.Clien
 }
 
 // menuIDByName 直查 ent 取指定名称菜单的主键。
-func menuIDByName(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string) uint32 {
+func menuIDByName(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string) uint64 {
 	t.Helper()
 	rows, err := entClient.Client().Menu.Query().All(ctx)
 	require.NoError(t, err)
@@ -83,7 +83,7 @@ func TestMenuServiceSqlite_CreateAndGet_ParentChild(t *testing.T) {
 		require.Equal(t, entMenu.StatusOn, *r.Status, "status 应经转换器落库为 ON")
 		require.Equal(t, entMenu.TypeMenu, *r.Type, "type 应经转换器落库为 MENU")
 		require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-		require.Equal(t, uint32(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+		require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 		if r.Name != nil && *r.Name == "服务层子菜单" {
 			require.NotNil(t, r.ParentID, "子菜单的 parent_id 应落库为指向父菜单的外键")
 			require.Equal(t, parentID, *r.ParentID, "子菜单外键应指向父菜单")
@@ -264,7 +264,7 @@ func TestMenuServiceSqlite_SyncMenus_MergeInsertsTree(t *testing.T) {
 	rows, err := entClient.Client().Menu.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2, "同步后应插入根与子共 2 条菜单")
-	var rootID, childParentID uint32
+	var rootID, childParentID uint64
 	var rootFound, childFound bool
 	for _, r := range rows {
 		if r.Name != nil && *r.Name == "同步根菜单" {
@@ -280,7 +280,7 @@ func TestMenuServiceSqlite_SyncMenus_MergeInsertsTree(t *testing.T) {
 			childParentID = *r.ParentID
 		}
 		if r.CreatedBy != nil {
-			require.Equal(t, uint32(7), *r.CreatedBy, "同步行 created_by 应盖入操作人 ID")
+			require.Equal(t, uint64(7), *r.CreatedBy, "同步行 created_by 应盖入操作人 ID")
 		} else {
 			t.Fatal("同步行的 created_by 不应为空")
 		}

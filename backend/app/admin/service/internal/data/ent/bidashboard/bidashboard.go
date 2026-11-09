@@ -116,7 +116,7 @@ var (
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID uint64
 	// DefaultChartCount holds the default value on creation for the "chart_count" field.
 	DefaultChartCount uint32
 	// DefaultIsBuiltIn holds the default value on creation for the "is_built_in" field.
@@ -126,7 +126,7 @@ var (
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // Kind defines the type for the "kind" enum field.

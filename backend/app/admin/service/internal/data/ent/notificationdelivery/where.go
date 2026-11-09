@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.NotificationDelivery {
+func ID(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.NotificationDelivery {
+func IDEQ(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.NotificationDelivery {
+func IDNEQ(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.NotificationDelivery {
+func IDIn(ids ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.NotificationDelivery {
+func IDNotIn(ids ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.NotificationDelivery {
+func IDGT(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.NotificationDelivery {
+func IDGTE(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.NotificationDelivery {
+func IDLT(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.NotificationDelivery {
+func IDLTE(id uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,32 +70,32 @@ func DeletedAt(v time.Time) predicate.NotificationDelivery {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.NotificationDelivery {
+func CreatedBy(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.NotificationDelivery {
+func UpdatedBy(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.NotificationDelivery {
+func DeletedBy(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // ChannelID applies equality check predicate on the "channel_id" field. It's identical to ChannelIDEQ.
-func ChannelID(v uint32) predicate.NotificationDelivery {
+func ChannelID(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldChannelID, v))
 }
 
 // RecipientUserID applies equality check predicate on the "recipient_user_id" field. It's identical to RecipientUserIDEQ.
-func RecipientUserID(v uint32) predicate.NotificationDelivery {
+func RecipientUserID(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldRecipientUserID, v))
 }
 
 // RelatedID applies equality check predicate on the "related_id" field. It's identical to RelatedIDEQ.
-func RelatedID(v uint32) predicate.NotificationDelivery {
+func RelatedID(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldRelatedID, v))
 }
 
@@ -280,42 +280,42 @@ func DeletedAtNotNil() predicate.NotificationDelivery {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.NotificationDelivery {
+func CreatedByEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.NotificationDelivery {
+func CreatedByNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.NotificationDelivery {
+func CreatedByIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.NotificationDelivery {
+func CreatedByNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.NotificationDelivery {
+func CreatedByGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.NotificationDelivery {
+func CreatedByGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.NotificationDelivery {
+func CreatedByLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.NotificationDelivery {
+func CreatedByLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -330,42 +330,42 @@ func CreatedByNotNil() predicate.NotificationDelivery {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.NotificationDelivery {
+func UpdatedByEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.NotificationDelivery {
+func UpdatedByNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.NotificationDelivery {
+func UpdatedByIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.NotificationDelivery {
+func UpdatedByNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.NotificationDelivery {
+func UpdatedByGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.NotificationDelivery {
+func UpdatedByGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.NotificationDelivery {
+func UpdatedByLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.NotificationDelivery {
+func UpdatedByLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -380,42 +380,42 @@ func UpdatedByNotNil() predicate.NotificationDelivery {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.NotificationDelivery {
+func DeletedByEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.NotificationDelivery {
+func DeletedByNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.NotificationDelivery {
+func DeletedByIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.NotificationDelivery {
+func DeletedByNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.NotificationDelivery {
+func DeletedByGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.NotificationDelivery {
+func DeletedByGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.NotificationDelivery {
+func DeletedByLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.NotificationDelivery {
+func DeletedByLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -490,42 +490,42 @@ func ChannelNotNil() predicate.NotificationDelivery {
 }
 
 // ChannelIDEQ applies the EQ predicate on the "channel_id" field.
-func ChannelIDEQ(v uint32) predicate.NotificationDelivery {
+func ChannelIDEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldChannelID, v))
 }
 
 // ChannelIDNEQ applies the NEQ predicate on the "channel_id" field.
-func ChannelIDNEQ(v uint32) predicate.NotificationDelivery {
+func ChannelIDNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldChannelID, v))
 }
 
 // ChannelIDIn applies the In predicate on the "channel_id" field.
-func ChannelIDIn(vs ...uint32) predicate.NotificationDelivery {
+func ChannelIDIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldChannelID, vs...))
 }
 
 // ChannelIDNotIn applies the NotIn predicate on the "channel_id" field.
-func ChannelIDNotIn(vs ...uint32) predicate.NotificationDelivery {
+func ChannelIDNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldChannelID, vs...))
 }
 
 // ChannelIDGT applies the GT predicate on the "channel_id" field.
-func ChannelIDGT(v uint32) predicate.NotificationDelivery {
+func ChannelIDGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldChannelID, v))
 }
 
 // ChannelIDGTE applies the GTE predicate on the "channel_id" field.
-func ChannelIDGTE(v uint32) predicate.NotificationDelivery {
+func ChannelIDGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldChannelID, v))
 }
 
 // ChannelIDLT applies the LT predicate on the "channel_id" field.
-func ChannelIDLT(v uint32) predicate.NotificationDelivery {
+func ChannelIDLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldChannelID, v))
 }
 
 // ChannelIDLTE applies the LTE predicate on the "channel_id" field.
-func ChannelIDLTE(v uint32) predicate.NotificationDelivery {
+func ChannelIDLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldChannelID, v))
 }
 
@@ -540,42 +540,42 @@ func ChannelIDNotNil() predicate.NotificationDelivery {
 }
 
 // RecipientUserIDEQ applies the EQ predicate on the "recipient_user_id" field.
-func RecipientUserIDEQ(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldRecipientUserID, v))
 }
 
 // RecipientUserIDNEQ applies the NEQ predicate on the "recipient_user_id" field.
-func RecipientUserIDNEQ(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldRecipientUserID, v))
 }
 
 // RecipientUserIDIn applies the In predicate on the "recipient_user_id" field.
-func RecipientUserIDIn(vs ...uint32) predicate.NotificationDelivery {
+func RecipientUserIDIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldRecipientUserID, vs...))
 }
 
 // RecipientUserIDNotIn applies the NotIn predicate on the "recipient_user_id" field.
-func RecipientUserIDNotIn(vs ...uint32) predicate.NotificationDelivery {
+func RecipientUserIDNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldRecipientUserID, vs...))
 }
 
 // RecipientUserIDGT applies the GT predicate on the "recipient_user_id" field.
-func RecipientUserIDGT(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldRecipientUserID, v))
 }
 
 // RecipientUserIDGTE applies the GTE predicate on the "recipient_user_id" field.
-func RecipientUserIDGTE(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldRecipientUserID, v))
 }
 
 // RecipientUserIDLT applies the LT predicate on the "recipient_user_id" field.
-func RecipientUserIDLT(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldRecipientUserID, v))
 }
 
 // RecipientUserIDLTE applies the LTE predicate on the "recipient_user_id" field.
-func RecipientUserIDLTE(v uint32) predicate.NotificationDelivery {
+func RecipientUserIDLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldRecipientUserID, v))
 }
 
@@ -590,42 +590,42 @@ func RecipientUserIDNotNil() predicate.NotificationDelivery {
 }
 
 // RelatedIDEQ applies the EQ predicate on the "related_id" field.
-func RelatedIDEQ(v uint32) predicate.NotificationDelivery {
+func RelatedIDEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldRelatedID, v))
 }
 
 // RelatedIDNEQ applies the NEQ predicate on the "related_id" field.
-func RelatedIDNEQ(v uint32) predicate.NotificationDelivery {
+func RelatedIDNEQ(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNEQ(FieldRelatedID, v))
 }
 
 // RelatedIDIn applies the In predicate on the "related_id" field.
-func RelatedIDIn(vs ...uint32) predicate.NotificationDelivery {
+func RelatedIDIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldIn(FieldRelatedID, vs...))
 }
 
 // RelatedIDNotIn applies the NotIn predicate on the "related_id" field.
-func RelatedIDNotIn(vs ...uint32) predicate.NotificationDelivery {
+func RelatedIDNotIn(vs ...uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldNotIn(FieldRelatedID, vs...))
 }
 
 // RelatedIDGT applies the GT predicate on the "related_id" field.
-func RelatedIDGT(v uint32) predicate.NotificationDelivery {
+func RelatedIDGT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGT(FieldRelatedID, v))
 }
 
 // RelatedIDGTE applies the GTE predicate on the "related_id" field.
-func RelatedIDGTE(v uint32) predicate.NotificationDelivery {
+func RelatedIDGTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldGTE(FieldRelatedID, v))
 }
 
 // RelatedIDLT applies the LT predicate on the "related_id" field.
-func RelatedIDLT(v uint32) predicate.NotificationDelivery {
+func RelatedIDLT(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLT(FieldRelatedID, v))
 }
 
 // RelatedIDLTE applies the LTE predicate on the "related_id" field.
-func RelatedIDLTE(v uint32) predicate.NotificationDelivery {
+func RelatedIDLTE(v uint64) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldLTE(FieldRelatedID, v))
 }
 

@@ -21,7 +21,7 @@ import (
 // EnrolledFactorInfo 是给管理面（ListEnrolledMethods/GetMFAStatus）返回的因子元信息。
 // 不含 secret。
 type EnrolledFactorInfo struct {
-	ID          uint32
+	ID          uint64
 	Method      authenticationV1.MFAMethod
 	DisplayName string
 	Enabled     bool
@@ -70,7 +70,7 @@ func NewUserMfaFactorRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*
 
 // HasEnabledTotp 查询某用户在指定租户内是否绑定了 ENABLED 状态的 TOTP 因子。
 // 供登录流程在密码校验通过后判断是否需进入 MFA 二次验证。
-func (r *UserMfaFactorRepo) HasEnabledTotp(ctx context.Context, tenantID, userID uint32) (bool, error) {
+func (r *UserMfaFactorRepo) HasEnabledTotp(ctx context.Context, tenantID, userID uint64) (bool, error) {
 	count, err := r.entClient.Client().UserMfaFactor.Query().
 		Where(
 			usermfafactor.TenantIDEQ(tenantID),
@@ -88,7 +88,7 @@ func (r *UserMfaFactorRepo) HasEnabledTotp(ctx context.Context, tenantID, userID
 
 // FindEnabledTotpForUser 取出某用户 ENABLED 的 TOTP 因子并解密 secret。
 // 供 VerifyMFAChallenge 校验登录挑战用。
-func (r *UserMfaFactorRepo) FindEnabledTotpForUser(ctx context.Context, tenantID, userID uint32) (factorID uint32, plainSecret string, err error) {
+func (r *UserMfaFactorRepo) FindEnabledTotpForUser(ctx context.Context, tenantID, userID uint64) (factorID uint64, plainSecret string, err error) {
 	entity, qerr := r.entClient.Client().UserMfaFactor.Query().
 		Where(
 			usermfafactor.TenantIDEQ(tenantID),
@@ -116,7 +116,7 @@ func (r *UserMfaFactorRepo) FindEnabledTotpForUser(ctx context.Context, tenantID
 }
 
 // ListByUser 列出某用户的全部 MFA 因子（不含 secret），供管理面展示。
-func (r *UserMfaFactorRepo) ListByUser(ctx context.Context, tenantID, userID uint32) ([]EnrolledFactorInfo, error) {
+func (r *UserMfaFactorRepo) ListByUser(ctx context.Context, tenantID, userID uint64) ([]EnrolledFactorInfo, error) {
 	entities, err := r.entClient.Client().UserMfaFactor.Query().
 		Where(
 			usermfafactor.TenantIDEQ(tenantID),
@@ -143,7 +143,7 @@ func (r *UserMfaFactorRepo) ListByUser(ctx context.Context, tenantID, userID uin
 
 // CreateTotpFactor 创建一条 ENABLED 的 TOTP 因子。secret 会被加密后落库。
 // 返回新因子 ID。
-func (r *UserMfaFactorRepo) CreateTotpFactor(ctx context.Context, tenantID, userID uint32, plainSecret, displayName string) (uint32, error) {
+func (r *UserMfaFactorRepo) CreateTotpFactor(ctx context.Context, tenantID, userID uint64, plainSecret, displayName string) (uint64, error) {
 	encSecret, err := crypto.EncryptIfNeeded(plainSecret)
 	if err != nil {
 		r.log.Errorf(ctx, "encrypt mfa secret failed: %s", err.Error())
@@ -166,7 +166,7 @@ func (r *UserMfaFactorRepo) CreateTotpFactor(ctx context.Context, tenantID, user
 
 // DeleteForUser 按 factorID 删除因子，强制校验 (tenantID, userID) 归属，防越权删他人因子。
 // 返回是否确实删除了一行。
-func (r *UserMfaFactorRepo) DeleteForUser(ctx context.Context, tenantID, userID, factorID uint32) (bool, error) {
+func (r *UserMfaFactorRepo) DeleteForUser(ctx context.Context, tenantID, userID, factorID uint64) (bool, error) {
 	n, err := r.entClient.Client().UserMfaFactor.Delete().
 		Where(
 			usermfafactor.IDEQ(factorID),
@@ -183,7 +183,7 @@ func (r *UserMfaFactorRepo) DeleteForUser(ctx context.Context, tenantID, userID,
 
 // DeleteAllByUserMethod 清空某用户指定方法的全部因子（管理端救援重置用）。
 // 返回删除行数。
-func (r *UserMfaFactorRepo) DeleteAllByUserMethod(ctx context.Context, tenantID, userID uint32, method usermfafactor.Method) (int, error) {
+func (r *UserMfaFactorRepo) DeleteAllByUserMethod(ctx context.Context, tenantID, userID uint64, method usermfafactor.Method) (int, error) {
 	n, err := r.entClient.Client().UserMfaFactor.Delete().
 		Where(
 			usermfafactor.TenantIDEQ(tenantID),
@@ -199,7 +199,7 @@ func (r *UserMfaFactorRepo) DeleteAllByUserMethod(ctx context.Context, tenantID,
 }
 
 // GetFactorById 按 id 取因子归属（管理端定位目标用户用），不含 secret。
-func (r *UserMfaFactorRepo) GetFactorById(ctx context.Context, factorID uint32) (tenantID, userID uint32, found bool, err error) {
+func (r *UserMfaFactorRepo) GetFactorById(ctx context.Context, factorID uint64) (tenantID, userID uint64, found bool, err error) {
 	entity, qerr := r.entClient.Client().UserMfaFactor.Query().
 		Select(usermfafactor.FieldTenantID, usermfafactor.FieldUserID, usermfafactor.FieldMethod).
 		Where(usermfafactor.IDEQ(factorID)).
@@ -216,7 +216,7 @@ func (r *UserMfaFactorRepo) GetFactorById(ctx context.Context, factorID uint32) 
 
 // FindFirstByUser 跨租户按用户+方法找首行因子归属（平台管理员救援重置定位 tenant 用）。
 // 调用前提：ctx 为平台管理员 viewer（IsPlatformContext 放行全量）或已注入 Allow。
-func (r *UserMfaFactorRepo) FindFirstByUser(ctx context.Context, userID uint32, method usermfafactor.Method) (tenantID, uid uint32, found bool, err error) {
+func (r *UserMfaFactorRepo) FindFirstByUser(ctx context.Context, userID uint64, method usermfafactor.Method) (tenantID, uid uint64, found bool, err error) {
 	entity, qerr := r.entClient.Client().UserMfaFactor.Query().
 		Select(usermfafactor.FieldTenantID, usermfafactor.FieldUserID).
 		Where(
@@ -235,7 +235,7 @@ func (r *UserMfaFactorRepo) FindFirstByUser(ctx context.Context, userID uint32, 
 }
 
 // UpdateLastUsed 更新因子最近使用时间。
-func (r *UserMfaFactorRepo) UpdateLastUsed(ctx context.Context, tenantID, userID, factorID uint32, at time.Time) error {
+func (r *UserMfaFactorRepo) UpdateLastUsed(ctx context.Context, tenantID, userID, factorID uint64, at time.Time) error {
 	n, err := r.entClient.Client().UserMfaFactor.Update().
 		Where(
 			usermfafactor.IDEQ(factorID),

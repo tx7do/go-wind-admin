@@ -12,7 +12,7 @@ import (
 // TestCollectMenuIndexDocs 菜单收集语义：跳过无 id / 无 path / 无标题菜单；
 // 标题取 meta.title，为空回退 name；输出与输入顺序一致、item_id 落真实菜单 id。
 func TestCollectMenuIndexDocs(t *testing.T) {
-	mk := func(id uint32, path, name, title string) *permissionV1.Menu {
+	mk := func(id uint64, path, name, title string) *permissionV1.Menu {
 		m := &permissionV1.Menu{}
 		if id != 0 {
 			m.Id = trans.Ptr(id)

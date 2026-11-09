@@ -65,13 +65,13 @@ func (_c *InternalMessageRecipientCreate) SetNillableDeletedAt(v *time.Time) *In
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *InternalMessageRecipientCreate) SetTenantID(v uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetTenantID(v uint64) *InternalMessageRecipientCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *InternalMessageRecipientCreate) SetNillableTenantID(v *uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetNillableTenantID(v *uint64) *InternalMessageRecipientCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *InternalMessageRecipientCreate) SetNillableTenantID(v *uint32) *Intern
 }
 
 // SetMessageID sets the "message_id" field.
-func (_c *InternalMessageRecipientCreate) SetMessageID(v uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetMessageID(v uint64) *InternalMessageRecipientCreate {
 	_c.mutation.SetMessageID(v)
 	return _c
 }
 
 // SetNillableMessageID sets the "message_id" field if the given value is not nil.
-func (_c *InternalMessageRecipientCreate) SetNillableMessageID(v *uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetNillableMessageID(v *uint64) *InternalMessageRecipientCreate {
 	if v != nil {
 		_c.SetMessageID(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *InternalMessageRecipientCreate) SetNillableMessageID(v *uint32) *Inter
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (_c *InternalMessageRecipientCreate) SetRecipientUserID(v uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetRecipientUserID(v uint64) *InternalMessageRecipientCreate {
 	_c.mutation.SetRecipientUserID(v)
 	return _c
 }
 
 // SetNillableRecipientUserID sets the "recipient_user_id" field if the given value is not nil.
-func (_c *InternalMessageRecipientCreate) SetNillableRecipientUserID(v *uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetNillableRecipientUserID(v *uint64) *InternalMessageRecipientCreate {
 	if v != nil {
 		_c.SetRecipientUserID(*v)
 	}
@@ -149,7 +149,7 @@ func (_c *InternalMessageRecipientCreate) SetNillableReadAt(v *time.Time) *Inter
 }
 
 // SetID sets the "id" field.
-func (_c *InternalMessageRecipientCreate) SetID(v uint32) *InternalMessageRecipientCreate {
+func (_c *InternalMessageRecipientCreate) SetID(v uint64) *InternalMessageRecipientCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -226,7 +226,7 @@ func (_c *InternalMessageRecipientCreate) sqlSave(ctx context.Context) (*Interna
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -236,7 +236,7 @@ func (_c *InternalMessageRecipientCreate) sqlSave(ctx context.Context) (*Interna
 func (_c *InternalMessageRecipientCreate) createSpec() (*InternalMessageRecipient, *sqlgraph.CreateSpec) {
 	var (
 		_node = &InternalMessageRecipient{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(internalmessagerecipient.Table, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(internalmessagerecipient.Table, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -256,15 +256,15 @@ func (_c *InternalMessageRecipientCreate) createSpec() (*InternalMessageRecipien
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.MessageID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint64, value)
 		_node.MessageID = &value
 	}
 	if value, ok := _c.mutation.RecipientUserID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64, value)
 		_node.RecipientUserID = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -368,7 +368,7 @@ func (u *InternalMessageRecipientUpsert) ClearDeletedAt() *InternalMessageRecipi
 }
 
 // SetMessageID sets the "message_id" field.
-func (u *InternalMessageRecipientUpsert) SetMessageID(v uint32) *InternalMessageRecipientUpsert {
+func (u *InternalMessageRecipientUpsert) SetMessageID(v uint64) *InternalMessageRecipientUpsert {
 	u.Set(internalmessagerecipient.FieldMessageID, v)
 	return u
 }
@@ -380,7 +380,7 @@ func (u *InternalMessageRecipientUpsert) UpdateMessageID() *InternalMessageRecip
 }
 
 // AddMessageID adds v to the "message_id" field.
-func (u *InternalMessageRecipientUpsert) AddMessageID(v uint32) *InternalMessageRecipientUpsert {
+func (u *InternalMessageRecipientUpsert) AddMessageID(v uint64) *InternalMessageRecipientUpsert {
 	u.Add(internalmessagerecipient.FieldMessageID, v)
 	return u
 }
@@ -392,7 +392,7 @@ func (u *InternalMessageRecipientUpsert) ClearMessageID() *InternalMessageRecipi
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsert) SetRecipientUserID(v uint32) *InternalMessageRecipientUpsert {
+func (u *InternalMessageRecipientUpsert) SetRecipientUserID(v uint64) *InternalMessageRecipientUpsert {
 	u.Set(internalmessagerecipient.FieldRecipientUserID, v)
 	return u
 }
@@ -404,7 +404,7 @@ func (u *InternalMessageRecipientUpsert) UpdateRecipientUserID() *InternalMessag
 }
 
 // AddRecipientUserID adds v to the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsert) AddRecipientUserID(v uint32) *InternalMessageRecipientUpsert {
+func (u *InternalMessageRecipientUpsert) AddRecipientUserID(v uint64) *InternalMessageRecipientUpsert {
 	u.Add(internalmessagerecipient.FieldRecipientUserID, v)
 	return u
 }
@@ -566,14 +566,14 @@ func (u *InternalMessageRecipientUpsertOne) ClearDeletedAt() *InternalMessageRec
 }
 
 // SetMessageID sets the "message_id" field.
-func (u *InternalMessageRecipientUpsertOne) SetMessageID(v uint32) *InternalMessageRecipientUpsertOne {
+func (u *InternalMessageRecipientUpsertOne) SetMessageID(v uint64) *InternalMessageRecipientUpsertOne {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.SetMessageID(v)
 	})
 }
 
 // AddMessageID adds v to the "message_id" field.
-func (u *InternalMessageRecipientUpsertOne) AddMessageID(v uint32) *InternalMessageRecipientUpsertOne {
+func (u *InternalMessageRecipientUpsertOne) AddMessageID(v uint64) *InternalMessageRecipientUpsertOne {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.AddMessageID(v)
 	})
@@ -594,14 +594,14 @@ func (u *InternalMessageRecipientUpsertOne) ClearMessageID() *InternalMessageRec
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsertOne) SetRecipientUserID(v uint32) *InternalMessageRecipientUpsertOne {
+func (u *InternalMessageRecipientUpsertOne) SetRecipientUserID(v uint64) *InternalMessageRecipientUpsertOne {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.SetRecipientUserID(v)
 	})
 }
 
 // AddRecipientUserID adds v to the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsertOne) AddRecipientUserID(v uint32) *InternalMessageRecipientUpsertOne {
+func (u *InternalMessageRecipientUpsertOne) AddRecipientUserID(v uint64) *InternalMessageRecipientUpsertOne {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.AddRecipientUserID(v)
 	})
@@ -700,7 +700,7 @@ func (u *InternalMessageRecipientUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *InternalMessageRecipientUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *InternalMessageRecipientUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -709,7 +709,7 @@ func (u *InternalMessageRecipientUpsertOne) ID(ctx context.Context) (id uint32, 
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *InternalMessageRecipientUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *InternalMessageRecipientUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -766,7 +766,7 @@ func (_c *InternalMessageRecipientCreateBulk) Save(ctx context.Context) ([]*Inte
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -947,14 +947,14 @@ func (u *InternalMessageRecipientUpsertBulk) ClearDeletedAt() *InternalMessageRe
 }
 
 // SetMessageID sets the "message_id" field.
-func (u *InternalMessageRecipientUpsertBulk) SetMessageID(v uint32) *InternalMessageRecipientUpsertBulk {
+func (u *InternalMessageRecipientUpsertBulk) SetMessageID(v uint64) *InternalMessageRecipientUpsertBulk {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.SetMessageID(v)
 	})
 }
 
 // AddMessageID adds v to the "message_id" field.
-func (u *InternalMessageRecipientUpsertBulk) AddMessageID(v uint32) *InternalMessageRecipientUpsertBulk {
+func (u *InternalMessageRecipientUpsertBulk) AddMessageID(v uint64) *InternalMessageRecipientUpsertBulk {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.AddMessageID(v)
 	})
@@ -975,14 +975,14 @@ func (u *InternalMessageRecipientUpsertBulk) ClearMessageID() *InternalMessageRe
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsertBulk) SetRecipientUserID(v uint32) *InternalMessageRecipientUpsertBulk {
+func (u *InternalMessageRecipientUpsertBulk) SetRecipientUserID(v uint64) *InternalMessageRecipientUpsertBulk {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.SetRecipientUserID(v)
 	})
 }
 
 // AddRecipientUserID adds v to the "recipient_user_id" field.
-func (u *InternalMessageRecipientUpsertBulk) AddRecipientUserID(v uint32) *InternalMessageRecipientUpsertBulk {
+func (u *InternalMessageRecipientUpsertBulk) AddRecipientUserID(v uint64) *InternalMessageRecipientUpsertBulk {
 	return u.Update(func(s *InternalMessageRecipientUpsert) {
 		s.AddRecipientUserID(v)
 	})

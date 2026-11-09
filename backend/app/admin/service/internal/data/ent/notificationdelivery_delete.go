@@ -40,7 +40,7 @@ func (_d *NotificationDeliveryDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *NotificationDeliveryDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(notificationdelivery.Table, sqlgraph.NewFieldSpec(notificationdelivery.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(notificationdelivery.Table, sqlgraph.NewFieldSpec(notificationdelivery.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

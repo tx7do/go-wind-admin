@@ -67,7 +67,7 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 	revs := listResp.GetItems()
 	require.Equal(t, agentGraphV1, revs[0].GetGraph(), "快照记的是更新前的旧 graph")
 	require.Equal(t, "SAVE", revs[0].GetSource())
-	require.Equal(t, uint32(7), revs[0].GetCreatedBy())
+	require.Equal(t, uint64(7), revs[0].GetCreatedBy())
 
 	// ② graph 没变的更新（只改 enabled）不得产生新快照
 	_, err = svc.Update(ctx, &aiV1.UpdateAiAgentAppRequest{
@@ -104,7 +104,7 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 		AppId:     trans.Ptr(appID),
 		Graph:     trans.Ptr(`{"nodes":[]}`),
 		Source:    trans.Ptr("SAVE"),
-		CreatedBy: trans.Ptr(uint32(7)),
+		CreatedBy: trans.Ptr(uint64(7)),
 	}
 	require.NoError(t, svc.revisionRepo.Create(ctx, bad), "直插一条坏快照作为铺垫")
 	listBefore, err := svc.ListRevisions(ctx, &aiV1.ListAiAgentRevisionsRequest{AppId: appID})

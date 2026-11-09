@@ -118,9 +118,9 @@ func (PermissionAuditLog_ActionType) EnumDescriptor() ([]byte, []int) {
 // 权限变更审计日志
 type PermissionAuditLog struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
-	Id            *uint32                        `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                              // 权限变更审计日志ID
-	TenantId      *uint32                        `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                  // 租户ID
-	OperatorId    *uint32                        `protobuf:"varint,3,opt,name=operator_id,json=operatorId,proto3,oneof" json:"operator_id,omitempty"`                            // 操作者用户ID
+	Id            *uint64                        `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                              // 权限变更审计日志ID
+	TenantId      *uint64                        `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                  // 租户ID
+	OperatorId    *uint64                        `protobuf:"varint,3,opt,name=operator_id,json=operatorId,proto3,oneof" json:"operator_id,omitempty"`                            // 操作者用户ID
 	OperatorName  *string                        `protobuf:"bytes,4,opt,name=operator_name,json=operatorName,proto3,oneof" json:"operator_name,omitempty"`                       // 操作者用户名
 	TargetType    *string                        `protobuf:"bytes,10,opt,name=target_type,json=targetType,proto3,oneof" json:"target_type,omitempty"`                            // 目标类型
 	TargetId      *string                        `protobuf:"bytes,11,opt,name=target_id,json=targetId,proto3,oneof" json:"target_id,omitempty"`                                  // 目标ID
@@ -168,21 +168,21 @@ func (*PermissionAuditLog) Descriptor() ([]byte, []int) {
 	return file_audit_service_v1_permission_audit_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PermissionAuditLog) GetId() uint32 {
+func (x *PermissionAuditLog) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PermissionAuditLog) GetTenantId() uint32 {
+func (x *PermissionAuditLog) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *PermissionAuditLog) GetOperatorId() uint32 {
+func (x *PermissionAuditLog) GetOperatorId() uint64 {
 	if x != nil && x.OperatorId != nil {
 		return *x.OperatorId
 	}
@@ -382,7 +382,7 @@ func (x *GetPermissionAuditLogRequest) GetQueryBy() isGetPermissionAuditLogReque
 	return nil
 }
 
-func (x *GetPermissionAuditLogRequest) GetId() uint32 {
+func (x *GetPermissionAuditLogRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPermissionAuditLogRequest_Id); ok {
 			return x.Id
@@ -403,7 +403,7 @@ type isGetPermissionAuditLogRequest_QueryBy interface {
 }
 
 type GetPermissionAuditLogRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetPermissionAuditLogRequest_Id) isGetPermissionAuditLogRequest_QueryBy() {}
@@ -459,9 +459,9 @@ const file_audit_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"+audit/service/v1/permission_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x97\f\n" +
 	"\x12PermissionAuditLog\x125\n" +
-	"\x02id\x18\x01 \x01(\rB \xbaG\x1d\x92\x02\x1a权限变更审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12=\n" +
-	"\voperator_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\n" +
+	"\x02id\x18\x01 \x01(\x04B \xbaG\x1d\x92\x02\x1a权限变更审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12=\n" +
+	"\voperator_id\x18\x03 \x01(\x04B\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\n" +
 	"operatorId\x88\x01\x01\x12B\n" +
 	"\roperator_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12操作者用户名H\x03R\foperatorName\x88\x01\x01\x128\n" +
 	"\vtarget_type\x18\n" +
@@ -535,7 +535,7 @@ const file_audit_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2$.audit.service.v1.PermissionAuditLogR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcf\x01\n" +
 	"\x1cGetPermissionAuditLogRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +

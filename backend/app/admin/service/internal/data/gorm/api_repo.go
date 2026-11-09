@@ -126,7 +126,7 @@ func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*p
 	}, nil
 }
 
-func (r *ApiRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *ApiRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -180,7 +180,7 @@ func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*p
 }
 
 // GetApiByIDs 根据ID列表获取API资源
-func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV1.Api, error) {
+func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint64) ([]*permissionV1.Api, error) {
 	if len(ids) == 0 {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
@@ -292,8 +292,8 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 }
 
 // ListAllIDs 列出全部 API 行 id。与 data 栈同名方法语义一致。
-func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint32, error) {
-	var ids []uint32
+func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint64, error) {
+	var ids []uint64
 	if err := r.client.DB.WithContext(ctx).Model(&models.Api{}).Pluck("id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "list all api ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list all api ids failed")
@@ -327,7 +327,7 @@ func (r *ApiRepo) CascadeDeleteBindings(ctx context.Context, path, method string
 // SyncMerge 接口同步 MERGE：以 (path, method) 自然键单事务增量对齐 spec 与库存，
 // 删除段级联清绑定。与 data 栈同名方法语义一致（id 永不重排、授权零漂移）。
 // operatorId 为 0 表示系统身份（启动期播种）。
-func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, operatorID uint32) (added, updated, removed int, err error) {
+func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, operatorID uint64) (added, updated, removed int, err error) {
 	if r.permissionApi == nil {
 		return 0, 0, 0, permissionV1.ErrorInternalServerError("permission api repo not wired")
 	}
@@ -392,7 +392,7 @@ func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, opera
 				BusinessModule:    trans.Ptr(dto.GetBusinessModule().String()),
 			}
 			if operatorID != 0 {
-				row.CreatedBy.CreatedBy = trans.Ptr(operatorID)
+				row.CreatedBy = trans.Ptr(operatorID)
 			}
 			// created_at/updated_at 由 mixin BeforeCreate 钩子自动填充
 			if err := tx.Create(row).Error; err != nil {

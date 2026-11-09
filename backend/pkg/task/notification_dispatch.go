@@ -23,7 +23,7 @@ const NotificationDispatchTaskType = "notification_dispatch"
 type NotificationDispatchTaskData struct {
 	// DeliveryId 台账行主键（sys_notification_deliveries.id）：重试幂等的锚，
 	// 也是"这一行现在到底是什么状态"的唯一权威来源。
-	DeliveryId uint32 `json:"delivery_id"`
+	DeliveryId uint64 `json:"delivery_id"`
 	Target     string `json:"target"`
 	Title      string `json:"title"`
 	Content    string `json:"content"`

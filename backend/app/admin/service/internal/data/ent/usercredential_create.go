@@ -65,13 +65,13 @@ func (_c *UserCredentialCreate) SetNillableDeletedAt(v *time.Time) *UserCredenti
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *UserCredentialCreate) SetTenantID(v uint32) *UserCredentialCreate {
+func (_c *UserCredentialCreate) SetTenantID(v uint64) *UserCredentialCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *UserCredentialCreate) SetNillableTenantID(v *uint32) *UserCredentialCreate {
+func (_c *UserCredentialCreate) SetNillableTenantID(v *uint64) *UserCredentialCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *UserCredentialCreate) SetNillableTenantID(v *uint32) *UserCredentialCr
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *UserCredentialCreate) SetUserID(v uint32) *UserCredentialCreate {
+func (_c *UserCredentialCreate) SetUserID(v uint64) *UserCredentialCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *UserCredentialCreate) SetNillableUserID(v *uint32) *UserCredentialCreate {
+func (_c *UserCredentialCreate) SetNillableUserID(v *uint64) *UserCredentialCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -303,7 +303,7 @@ func (_c *UserCredentialCreate) SetNillableResetTokenUsedAt(v *time.Time) *UserC
 }
 
 // SetID sets the "id" field.
-func (_c *UserCredentialCreate) SetID(v uint32) *UserCredentialCreate {
+func (_c *UserCredentialCreate) SetID(v uint64) *UserCredentialCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -426,7 +426,7 @@ func (_c *UserCredentialCreate) sqlSave(ctx context.Context) (*UserCredential, e
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -436,7 +436,7 @@ func (_c *UserCredentialCreate) sqlSave(ctx context.Context) (*UserCredential, e
 func (_c *UserCredentialCreate) createSpec() (*UserCredential, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserCredential{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(usercredential.Table, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(usercredential.Table, sqlgraph.NewFieldSpec(usercredential.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -456,11 +456,11 @@ func (_c *UserCredentialCreate) createSpec() (*UserCredential, *sqlgraph.CreateS
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(usercredential.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(usercredential.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(usercredential.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(usercredential.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.IdentityType(); ok {
@@ -612,7 +612,7 @@ func (u *UserCredentialUpsert) ClearDeletedAt() *UserCredentialUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserCredentialUpsert) SetUserID(v uint32) *UserCredentialUpsert {
+func (u *UserCredentialUpsert) SetUserID(v uint64) *UserCredentialUpsert {
 	u.Set(usercredential.FieldUserID, v)
 	return u
 }
@@ -624,7 +624,7 @@ func (u *UserCredentialUpsert) UpdateUserID() *UserCredentialUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserCredentialUpsert) AddUserID(v uint32) *UserCredentialUpsert {
+func (u *UserCredentialUpsert) AddUserID(v uint64) *UserCredentialUpsert {
 	u.Add(usercredential.FieldUserID, v)
 	return u
 }
@@ -1002,14 +1002,14 @@ func (u *UserCredentialUpsertOne) ClearDeletedAt() *UserCredentialUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserCredentialUpsertOne) SetUserID(v uint32) *UserCredentialUpsertOne {
+func (u *UserCredentialUpsertOne) SetUserID(v uint64) *UserCredentialUpsertOne {
 	return u.Update(func(s *UserCredentialUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserCredentialUpsertOne) AddUserID(v uint32) *UserCredentialUpsertOne {
+func (u *UserCredentialUpsertOne) AddUserID(v uint64) *UserCredentialUpsertOne {
 	return u.Update(func(s *UserCredentialUpsert) {
 		s.AddUserID(v)
 	})
@@ -1360,7 +1360,7 @@ func (u *UserCredentialUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserCredentialUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *UserCredentialUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1369,7 +1369,7 @@ func (u *UserCredentialUpsertOne) ID(ctx context.Context) (id uint32, err error)
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserCredentialUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *UserCredentialUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1426,7 +1426,7 @@ func (_c *UserCredentialCreateBulk) Save(ctx context.Context) ([]*UserCredential
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1607,14 +1607,14 @@ func (u *UserCredentialUpsertBulk) ClearDeletedAt() *UserCredentialUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserCredentialUpsertBulk) SetUserID(v uint32) *UserCredentialUpsertBulk {
+func (u *UserCredentialUpsertBulk) SetUserID(v uint64) *UserCredentialUpsertBulk {
 	return u.Update(func(s *UserCredentialUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserCredentialUpsertBulk) AddUserID(v uint32) *UserCredentialUpsertBulk {
+func (u *UserCredentialUpsertBulk) AddUserID(v uint64) *UserCredentialUpsertBulk {
 	return u.Update(func(s *UserCredentialUpsert) {
 		s.AddUserID(v)
 	})

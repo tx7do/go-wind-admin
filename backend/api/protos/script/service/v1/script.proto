@@ -47,7 +47,7 @@ enum Language {
 
 // 脚本
 message Script {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "脚本ID"
@@ -99,9 +99,9 @@ message Script {
     (gnostic.openapi.v3.property) = {description: "是否启用"}
   ]; // 是否启用
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -117,7 +117,7 @@ message ListScriptsResponse {
 // 查询脚本详情 - 请求
 message GetScriptRequest {
   oneof query_by {
-    uint32 id = 1;
+    uint64 id = 1;
     string name = 2;
   }
 
@@ -136,7 +136,7 @@ message CreateScriptRequest {
 
 // 更新脚本 - 请求
 message UpdateScriptRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 
   Script data = 2;
 
@@ -156,14 +156,14 @@ message UpdateScriptRequest {
 
 // 删除脚本 - 请求
 message DeleteScriptRequest {
-  repeated uint32 ids = 1;  // 要删除的ID列表
+  repeated uint64 ids = 1;  // 要删除的ID列表
 }
 
 // 试运行脚本 - 请求
 message TestRunScriptRequest {
   oneof target {
     // 运行已保存的脚本
-    uint32 id = 1;
+    uint64 id = 1;
     // 运行未保存的草稿（name/language/source 必填）
     Script draft = 2;
   }

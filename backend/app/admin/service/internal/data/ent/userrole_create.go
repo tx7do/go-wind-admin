@@ -65,13 +65,13 @@ func (_c *UserRoleCreate) SetNillableDeletedAt(v *time.Time) *UserRoleCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *UserRoleCreate) SetCreatedBy(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetCreatedBy(v uint64) *UserRoleCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *UserRoleCreate) SetNillableCreatedBy(v *uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetNillableCreatedBy(v *uint64) *UserRoleCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *UserRoleCreate) SetNillableCreatedBy(v *uint32) *UserRoleCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *UserRoleCreate) SetUpdatedBy(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetUpdatedBy(v uint64) *UserRoleCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *UserRoleCreate) SetNillableUpdatedBy(v *uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetNillableUpdatedBy(v *uint64) *UserRoleCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *UserRoleCreate) SetNillableUpdatedBy(v *uint32) *UserRoleCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *UserRoleCreate) SetDeletedBy(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetDeletedBy(v uint64) *UserRoleCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *UserRoleCreate) SetNillableDeletedBy(v *uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetNillableDeletedBy(v *uint64) *UserRoleCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *UserRoleCreate) SetNillableDeletedBy(v *uint32) *UserRoleCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *UserRoleCreate) SetTenantID(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetTenantID(v uint64) *UserRoleCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *UserRoleCreate) SetNillableTenantID(v *uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetNillableTenantID(v *uint64) *UserRoleCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *UserRoleCreate) SetNillableTenantID(v *uint32) *UserRoleCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *UserRoleCreate) SetUserID(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetUserID(v uint64) *UserRoleCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetRoleID sets the "role_id" field.
-func (_c *UserRoleCreate) SetRoleID(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetRoleID(v uint64) *UserRoleCreate {
 	_c.mutation.SetRoleID(v)
 	return _c
 }
@@ -175,13 +175,13 @@ func (_c *UserRoleCreate) SetNillableAssignedAt(v *time.Time) *UserRoleCreate {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_c *UserRoleCreate) SetAssignedBy(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetAssignedBy(v uint64) *UserRoleCreate {
 	_c.mutation.SetAssignedBy(v)
 	return _c
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_c *UserRoleCreate) SetNillableAssignedBy(v *uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetNillableAssignedBy(v *uint64) *UserRoleCreate {
 	if v != nil {
 		_c.SetAssignedBy(*v)
 	}
@@ -217,7 +217,7 @@ func (_c *UserRoleCreate) SetNillableStatus(v *userrole.Status) *UserRoleCreate 
 }
 
 // SetID sets the "id" field.
-func (_c *UserRoleCreate) SetID(v uint32) *UserRoleCreate {
+func (_c *UserRoleCreate) SetID(v uint64) *UserRoleCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -314,7 +314,7 @@ func (_c *UserRoleCreate) sqlSave(ctx context.Context) (*UserRole, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -324,7 +324,7 @@ func (_c *UserRoleCreate) sqlSave(ctx context.Context) (*UserRole, error) {
 func (_c *UserRoleCreate) createSpec() (*UserRole, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserRole{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(userrole.Table, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(userrole.Table, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -344,27 +344,27 @@ func (_c *UserRoleCreate) createSpec() (*UserRole, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(userrole.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(userrole.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.RoleID(); ok {
-		_spec.SetField(userrole.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldRoleID, field.TypeUint64, value)
 		_node.RoleID = &value
 	}
 	if value, ok := _c.mutation.StartAt(); ok {
@@ -380,7 +380,7 @@ func (_c *UserRoleCreate) createSpec() (*UserRole, *sqlgraph.CreateSpec) {
 		_node.AssignedAt = &value
 	}
 	if value, ok := _c.mutation.AssignedBy(); ok {
-		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint64, value)
 		_node.AssignedBy = &value
 	}
 	if value, ok := _c.mutation.IsPrimary(); ok {
@@ -480,7 +480,7 @@ func (u *UserRoleUpsert) ClearDeletedAt() *UserRoleUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserRoleUpsert) SetCreatedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetCreatedBy(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldCreatedBy, v)
 	return u
 }
@@ -492,7 +492,7 @@ func (u *UserRoleUpsert) UpdateCreatedBy() *UserRoleUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserRoleUpsert) AddCreatedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddCreatedBy(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldCreatedBy, v)
 	return u
 }
@@ -504,7 +504,7 @@ func (u *UserRoleUpsert) ClearCreatedBy() *UserRoleUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserRoleUpsert) SetUpdatedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetUpdatedBy(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldUpdatedBy, v)
 	return u
 }
@@ -516,7 +516,7 @@ func (u *UserRoleUpsert) UpdateUpdatedBy() *UserRoleUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserRoleUpsert) AddUpdatedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddUpdatedBy(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldUpdatedBy, v)
 	return u
 }
@@ -528,7 +528,7 @@ func (u *UserRoleUpsert) ClearUpdatedBy() *UserRoleUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserRoleUpsert) SetDeletedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetDeletedBy(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldDeletedBy, v)
 	return u
 }
@@ -540,7 +540,7 @@ func (u *UserRoleUpsert) UpdateDeletedBy() *UserRoleUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserRoleUpsert) AddDeletedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddDeletedBy(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldDeletedBy, v)
 	return u
 }
@@ -552,7 +552,7 @@ func (u *UserRoleUpsert) ClearDeletedBy() *UserRoleUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserRoleUpsert) SetUserID(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetUserID(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldUserID, v)
 	return u
 }
@@ -564,13 +564,13 @@ func (u *UserRoleUpsert) UpdateUserID() *UserRoleUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserRoleUpsert) AddUserID(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddUserID(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldUserID, v)
 	return u
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserRoleUpsert) SetRoleID(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetRoleID(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldRoleID, v)
 	return u
 }
@@ -582,7 +582,7 @@ func (u *UserRoleUpsert) UpdateRoleID() *UserRoleUpsert {
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *UserRoleUpsert) AddRoleID(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddRoleID(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldRoleID, v)
 	return u
 }
@@ -642,7 +642,7 @@ func (u *UserRoleUpsert) ClearAssignedAt() *UserRoleUpsert {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserRoleUpsert) SetAssignedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) SetAssignedBy(v uint64) *UserRoleUpsert {
 	u.Set(userrole.FieldAssignedBy, v)
 	return u
 }
@@ -654,7 +654,7 @@ func (u *UserRoleUpsert) UpdateAssignedBy() *UserRoleUpsert {
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserRoleUpsert) AddAssignedBy(v uint32) *UserRoleUpsert {
+func (u *UserRoleUpsert) AddAssignedBy(v uint64) *UserRoleUpsert {
 	u.Add(userrole.FieldAssignedBy, v)
 	return u
 }
@@ -786,14 +786,14 @@ func (u *UserRoleUpsertOne) ClearDeletedAt() *UserRoleUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserRoleUpsertOne) SetCreatedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetCreatedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserRoleUpsertOne) AddCreatedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddCreatedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -814,14 +814,14 @@ func (u *UserRoleUpsertOne) ClearCreatedBy() *UserRoleUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserRoleUpsertOne) SetUpdatedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetUpdatedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserRoleUpsertOne) AddUpdatedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddUpdatedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -842,14 +842,14 @@ func (u *UserRoleUpsertOne) ClearUpdatedBy() *UserRoleUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserRoleUpsertOne) SetDeletedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetDeletedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserRoleUpsertOne) AddDeletedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddDeletedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -870,14 +870,14 @@ func (u *UserRoleUpsertOne) ClearDeletedBy() *UserRoleUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserRoleUpsertOne) SetUserID(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetUserID(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserRoleUpsertOne) AddUserID(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddUserID(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddUserID(v)
 	})
@@ -891,14 +891,14 @@ func (u *UserRoleUpsertOne) UpdateUserID() *UserRoleUpsertOne {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserRoleUpsertOne) SetRoleID(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetRoleID(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *UserRoleUpsertOne) AddRoleID(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddRoleID(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddRoleID(v)
 	})
@@ -975,14 +975,14 @@ func (u *UserRoleUpsertOne) ClearAssignedAt() *UserRoleUpsertOne {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserRoleUpsertOne) SetAssignedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) SetAssignedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserRoleUpsertOne) AddAssignedBy(v uint32) *UserRoleUpsertOne {
+func (u *UserRoleUpsertOne) AddAssignedBy(v uint64) *UserRoleUpsertOne {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddAssignedBy(v)
 	})
@@ -1046,7 +1046,7 @@ func (u *UserRoleUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserRoleUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *UserRoleUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1055,7 +1055,7 @@ func (u *UserRoleUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserRoleUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *UserRoleUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1112,7 +1112,7 @@ func (_c *UserRoleCreateBulk) Save(ctx context.Context) ([]*UserRole, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1293,14 +1293,14 @@ func (u *UserRoleUpsertBulk) ClearDeletedAt() *UserRoleUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserRoleUpsertBulk) SetCreatedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetCreatedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserRoleUpsertBulk) AddCreatedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddCreatedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1321,14 +1321,14 @@ func (u *UserRoleUpsertBulk) ClearCreatedBy() *UserRoleUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserRoleUpsertBulk) SetUpdatedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetUpdatedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserRoleUpsertBulk) AddUpdatedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddUpdatedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1349,14 +1349,14 @@ func (u *UserRoleUpsertBulk) ClearUpdatedBy() *UserRoleUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserRoleUpsertBulk) SetDeletedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetDeletedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserRoleUpsertBulk) AddDeletedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddDeletedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1377,14 +1377,14 @@ func (u *UserRoleUpsertBulk) ClearDeletedBy() *UserRoleUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserRoleUpsertBulk) SetUserID(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetUserID(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserRoleUpsertBulk) AddUserID(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddUserID(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddUserID(v)
 	})
@@ -1398,14 +1398,14 @@ func (u *UserRoleUpsertBulk) UpdateUserID() *UserRoleUpsertBulk {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserRoleUpsertBulk) SetRoleID(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetRoleID(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *UserRoleUpsertBulk) AddRoleID(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddRoleID(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddRoleID(v)
 	})
@@ -1482,14 +1482,14 @@ func (u *UserRoleUpsertBulk) ClearAssignedAt() *UserRoleUpsertBulk {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserRoleUpsertBulk) SetAssignedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) SetAssignedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserRoleUpsertBulk) AddAssignedBy(v uint32) *UserRoleUpsertBulk {
+func (u *UserRoleUpsertBulk) AddAssignedBy(v uint64) *UserRoleUpsertBulk {
 	return u.Update(func(s *UserRoleUpsert) {
 		s.AddAssignedBy(v)
 	})

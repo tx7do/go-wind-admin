@@ -8,7 +8,7 @@ import (
 
 // Task 对应表 sys_tasks，任务表
 type Task struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Type        *string         `gorm:"column:type;type:varchar(128);comment:任务类型;index:idx_sys_tasks_type"`
 	TypeName    *string         `gorm:"column:type_name;type:varchar(255);comment:任务执行类型名;uniqueIndex:idx_sys_task_type_name"`
@@ -18,9 +18,9 @@ type Task struct {
 	Enable      *bool           `gorm:"column:enable;type:tinyint(1);comment:启用/禁用任务"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

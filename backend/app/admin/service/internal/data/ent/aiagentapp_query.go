@@ -110,8 +110,8 @@ func (_q *AiAgentAppQuery) FirstX(ctx context.Context) *AiAgentApp {
 
 // FirstID returns the first AiAgentApp ID from the query.
 // Returns a *NotFoundError when no AiAgentApp ID was found.
-func (_q *AiAgentAppQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *AiAgentAppQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func (_q *AiAgentAppQuery) FirstID(ctx context.Context) (id uint32, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AiAgentAppQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *AiAgentAppQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +161,8 @@ func (_q *AiAgentAppQuery) OnlyX(ctx context.Context) *AiAgentApp {
 // OnlyID is like Only, but returns the only AiAgentApp ID in the query.
 // Returns a *NotSingularError when more than one AiAgentApp ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AiAgentAppQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *AiAgentAppQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (_q *AiAgentAppQuery) OnlyID(ctx context.Context) (id uint32, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AiAgentAppQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *AiAgentAppQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -206,7 +206,7 @@ func (_q *AiAgentAppQuery) AllX(ctx context.Context) []*AiAgentApp {
 }
 
 // IDs executes the query and returns a list of AiAgentApp IDs.
-func (_q *AiAgentAppQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *AiAgentAppQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -218,7 +218,7 @@ func (_q *AiAgentAppQuery) IDs(ctx context.Context) (ids []uint32, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AiAgentAppQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *AiAgentAppQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -418,7 +418,7 @@ func (_q *AiAgentAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 
 func (_q *AiAgentAppQuery) loadRevisions(ctx context.Context, query *AiAgentRevisionQuery, nodes []*AiAgentApp, init func(*AiAgentApp), assign func(*AiAgentApp, *AiAgentRevision)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint32]*AiAgentApp)
+	nodeids := make(map[uint64]*AiAgentApp)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -463,7 +463,7 @@ func (_q *AiAgentAppQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *AiAgentAppQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(aiagentapp.Table, aiagentapp.Columns, sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(aiagentapp.Table, aiagentapp.Columns, sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

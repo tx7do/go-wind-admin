@@ -121,7 +121,7 @@ func (r *MonitorAlertRuleRepo) ListEnabled(ctx context.Context) ([]*monitorAlert
 	return dtos, nil
 }
 
-func (r *MonitorAlertRuleRepo) Get(ctx context.Context, id uint32) (*monitorAlertV1.MonitorAlertRule, error) {
+func (r *MonitorAlertRuleRepo) Get(ctx context.Context, id uint64) (*monitorAlertV1.MonitorAlertRule, error) {
 	if id == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
 	}
@@ -136,7 +136,7 @@ func (r *MonitorAlertRuleRepo) Get(ctx context.Context, id uint32) (*monitorAler
 }
 
 // Create 建一条规则；created_at 显式写入（mixin 列没有 DB 默认值，理由同规则表）。
-func (r *MonitorAlertRuleRepo) Create(ctx context.Context, req *monitorAlertV1.MonitorAlertRule, operatorID uint32) (uint32, error) {
+func (r *MonitorAlertRuleRepo) Create(ctx context.Context, req *monitorAlertV1.MonitorAlertRule, operatorID uint64) (uint64, error) {
 	if req == nil {
 		return 0, adminV1.ErrorBadRequest("invalid request")
 	}
@@ -166,7 +166,7 @@ func (r *MonitorAlertRuleRepo) Create(ctx context.Context, req *monitorAlertV1.M
 	return created.ID, nil
 }
 
-func (r *MonitorAlertRuleRepo) Update(ctx context.Context, req *monitorAlertV1.UpdateMonitorAlertRuleRequest, operatorID uint32) error {
+func (r *MonitorAlertRuleRepo) Update(ctx context.Context, req *monitorAlertV1.UpdateMonitorAlertRuleRequest, operatorID uint64) error {
 	if req == nil || req.Data == nil {
 		return adminV1.ErrorBadRequest("invalid request")
 	}
@@ -199,7 +199,7 @@ func (r *MonitorAlertRuleRepo) Update(ctx context.Context, req *monitorAlertV1.U
 // MarkFiring 评估器回写规则状态：firing 状态、本次指标值、告警时间。
 // 独立成一个写路径（不走 Update 的掩码语义）：评估回写是系统行为，
 // 与管理员的编辑互不覆盖——掩码更新永不触碰这三列，本方法只写这三列。
-func (r *MonitorAlertRuleRepo) MarkFiring(ctx context.Context, id uint32, firing bool, value *float64, alertedAt *time.Time) error {
+func (r *MonitorAlertRuleRepo) MarkFiring(ctx context.Context, id uint64, firing bool, value *float64, alertedAt *time.Time) error {
 	builder := r.entClient.Client().MonitorAlertRule.UpdateOneID(id).
 		SetLastFiring(firing).
 		SetNillableLastValue(value)
@@ -211,7 +211,7 @@ func (r *MonitorAlertRuleRepo) MarkFiring(ctx context.Context, id uint32, firing
 	return nil
 }
 
-func (r *MonitorAlertRuleRepo) Delete(ctx context.Context, id uint32) error {
+func (r *MonitorAlertRuleRepo) Delete(ctx context.Context, id uint64) error {
 	if id == 0 {
 		return adminV1.ErrorBadRequest("id is required")
 	}

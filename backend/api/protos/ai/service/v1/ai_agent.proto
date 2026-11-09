@@ -48,7 +48,7 @@ service AiAgentService {
 
 // Agent 编排应用
 message AiAgentApp {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "应用ID" }
   ]; // 应用ID
@@ -75,10 +75,10 @@ message AiAgentApp {
   ]; // 是否启用
 
   // 创建/更新入参带出（与 AiConversation 同口径）：租户隔离 mixin 无创建钩子，租户必须显式写
-  optional uint32 tenant_id = 6 [json_name = "tenantId"];
+  optional uint64 tenant_id = 6 [json_name = "tenantId"];
 
-  optional uint32 created_by = 100 [json_name = "createdBy"];
-  optional uint32 updated_by = 101 [json_name = "updatedBy"];
+  optional uint64 created_by = 100 [json_name = "createdBy"];
+  optional uint64 updated_by = 101 [json_name = "updatedBy"];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
@@ -90,8 +90,8 @@ message AiAgentApp {
 // 一次试运行产生多帧：每节点 node_start + node_end 各一帧，收尾 done 或 error 一帧。
 // 尽力而为丢帧可容忍：Run 同步响应携带完整 trace 与终态，以响应为准。
 message AgentRunEvent {
-  uint32 run_id = 1 [json_name = "runId"];   // 运行 ID
-  uint32 app_id = 2 [json_name = "appId"];   // 应用 ID
+  uint64 run_id = 1 [json_name = "runId"];   // 运行 ID
+  uint64 app_id = 2 [json_name = "appId"];   // 应用 ID
   uint32 seq = 3;                            // 帧序号（运行内单调递增，从 0 开始）
   string phase = 4;                          // node_start | node_end | error | done
   string node_id = 5 [json_name = "nodeId"]; // 节点 ID（phase=done 时为空）
@@ -109,8 +109,8 @@ message AiAgentRun {
     FAILED = 3;    // 节点执行/引擎错误（trace 保留部分执行）
   }
 
-  optional uint32 id = 1 [json_name = "id"]; // 运行ID
-  optional uint32 app_id = 2 [json_name = "appId"]; // 应用ID
+  optional uint64 id = 1 [json_name = "id"]; // 运行ID
+  optional uint64 app_id = 2 [json_name = "appId"]; // 应用ID
 
   optional Status status = 3 [json_name = "status"]; // 运行状态
 
@@ -138,7 +138,7 @@ message ListAiAgentAppsResponse {
 
 // 查询详情 - 请求
 message GetAiAgentAppRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 }
 
 // 创建 - 请求
@@ -148,19 +148,19 @@ message CreateAiAgentAppRequest {
 
 // 更新 - 请求
 message UpdateAiAgentAppRequest {
-  uint32 id = 1;
+  uint64 id = 1;
   AiAgentApp data = 2;
   google.protobuf.FieldMask update_mask = 3 [json_name = "updateMask"];
 }
 
 // 删除 - 请求
 message DeleteAiAgentAppRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 }
 
 // 试运行 - 请求
 message RunAiAgentAppRequest {
-  uint32 id = 1 [
+  uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "应用ID" }
   ]; // 应用ID
@@ -180,15 +180,15 @@ message ListAiAgentRunsResponse {
 
 // 运行详情 - 请求
 message GetAiAgentRunRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 }
 
 // Agent 应用版本快照（每次成功更新把更新前的 graph 留一行；
 // 恢复 = 快照写回主表，恢复动作本身先快照当前版本，可逆）
 message AiAgentRevision {
-  optional uint32 id = 1 [json_name = "id"]; // 快照ID
+  optional uint64 id = 1 [json_name = "id"]; // 快照ID
 
-  optional uint32 app_id = 2 [json_name = "appId"]; // 所属应用ID
+  optional uint64 app_id = 2 [json_name = "appId"]; // 所属应用ID
 
   // 更新前的图 DSL 快照
   optional string graph = 3 [
@@ -198,14 +198,14 @@ message AiAgentRevision {
 
   optional string source = 4 [json_name = "source"]; // SAVE | RESTORE
 
-  optional uint32 created_by = 100 [json_name = "createdBy"]; // 触发留底的操作人
+  optional uint64 created_by = 100 [json_name = "createdBy"]; // 触发留底的操作人
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
 }
 
 // 版本历史 - 请求
 message ListAiAgentRevisionsRequest {
-  uint32 app_id = 1 [
+  uint64 app_id = 1 [
     json_name = "appId",
     (gnostic.openapi.v3.property) = { description: "应用ID" }
   ]; // 应用ID
@@ -224,7 +224,7 @@ message ListAiAgentRevisionsResponse {
 
 // 恢复版本 - 请求（把快照 graph 写回主表；恢复前先快照当前版本）
 message RestoreAiAgentRevisionRequest {
-  uint32 id = 1 [
+  uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "快照ID" }
   ]; // 快照ID

@@ -29,12 +29,12 @@ const (
 // 策略评估日志
 type PolicyEvaluationLog struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Id                *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                        // 策略评估日志ID
-	TenantId          *uint32                `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                            // 租户ID
-	UserId            *uint32                `protobuf:"varint,3,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                  // 操作者用户ID
-	MembershipId      *uint32                `protobuf:"varint,4,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                // 成员身份ID
-	PermissionId      *uint32                `protobuf:"varint,10,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`               // 权限点ID
-	PolicyId          *uint32                `protobuf:"varint,11,opt,name=policy_id,json=policyId,proto3,oneof" json:"policy_id,omitempty"`                           // 策略ID（可能无策略）
+	Id                *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                        // 策略评估日志ID
+	TenantId          *uint64                `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                            // 租户ID
+	UserId            *uint64                `protobuf:"varint,3,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                  // 操作者用户ID
+	MembershipId      *uint64                `protobuf:"varint,4,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                // 成员身份ID
+	PermissionId      *uint64                `protobuf:"varint,10,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`               // 权限点ID
+	PolicyId          *uint64                `protobuf:"varint,11,opt,name=policy_id,json=policyId,proto3,oneof" json:"policy_id,omitempty"`                           // 策略ID（可能无策略）
 	RequestPath       *string                `protobuf:"bytes,12,opt,name=request_path,json=requestPath,proto3,oneof" json:"request_path,omitempty"`                   // 请求API路径
 	RequestMethod     *string                `protobuf:"bytes,13,opt,name=request_method,json=requestMethod,proto3,oneof" json:"request_method,omitempty"`             // 请求HTTP方法
 	Result            *bool                  `protobuf:"varint,20,opt,name=result,proto3,oneof" json:"result,omitempty"`                                               // 是否通过
@@ -80,42 +80,42 @@ func (*PolicyEvaluationLog) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_policy_evaluation_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PolicyEvaluationLog) GetId() uint32 {
+func (x *PolicyEvaluationLog) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PolicyEvaluationLog) GetTenantId() uint32 {
+func (x *PolicyEvaluationLog) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *PolicyEvaluationLog) GetUserId() uint32 {
+func (x *PolicyEvaluationLog) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *PolicyEvaluationLog) GetMembershipId() uint32 {
+func (x *PolicyEvaluationLog) GetMembershipId() uint64 {
 	if x != nil && x.MembershipId != nil {
 		return *x.MembershipId
 	}
 	return 0
 }
 
-func (x *PolicyEvaluationLog) GetPermissionId() uint32 {
+func (x *PolicyEvaluationLog) GetPermissionId() uint64 {
 	if x != nil && x.PermissionId != nil {
 		return *x.PermissionId
 	}
 	return 0
 }
 
-func (x *PolicyEvaluationLog) GetPolicyId() uint32 {
+func (x *PolicyEvaluationLog) GetPolicyId() uint64 {
 	if x != nil && x.PolicyId != nil {
 		return *x.PolicyId
 	}
@@ -301,7 +301,7 @@ func (x *GetPolicyEvaluationLogRequest) GetQueryBy() isGetPolicyEvaluationLogReq
 	return nil
 }
 
-func (x *GetPolicyEvaluationLogRequest) GetId() uint32 {
+func (x *GetPolicyEvaluationLogRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPolicyEvaluationLogRequest_Id); ok {
 			return x.Id
@@ -322,7 +322,7 @@ type isGetPolicyEvaluationLogRequest_QueryBy interface {
 }
 
 type GetPolicyEvaluationLogRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetPolicyEvaluationLogRequest_Id) isGetPolicyEvaluationLogRequest_QueryBy() {}
@@ -378,13 +378,13 @@ const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
 	"\n" +
 	"1permission/service/v1/policy_evaluation_log.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xf3\v\n" +
 	"\x13PolicyEvaluationLog\x12/\n" +
-	"\x02id\x18\x01 \x01(\rB\x1a\xbaG\x17\x92\x02\x14策略评估日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x125\n" +
-	"\auser_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\x06userId\x88\x01\x01\x12>\n" +
-	"\rmembership_id\x18\x04 \x01(\rB\x14\xbaG\x11\x92\x02\x0e成员身份IDH\x03R\fmembershipId\x88\x01\x01\x12;\n" +
+	"\x02id\x18\x01 \x01(\x04B\x1a\xbaG\x17\x92\x02\x14策略评估日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x125\n" +
+	"\auser_id\x18\x03 \x01(\x04B\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\x06userId\x88\x01\x01\x12>\n" +
+	"\rmembership_id\x18\x04 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e成员身份IDH\x03R\fmembershipId\x88\x01\x01\x12;\n" +
 	"\rpermission_id\x18\n" +
-	" \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x04R\fpermissionId\x88\x01\x01\x12E\n" +
-	"\tpolicy_id\x18\v \x01(\rB#\xbaG \x92\x02\x1d策略ID（可能无策略）H\x05R\bpolicyId\x88\x01\x01\x12=\n" +
+	" \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限点IDH\x04R\fpermissionId\x88\x01\x01\x12E\n" +
+	"\tpolicy_id\x18\v \x01(\x04B#\xbaG \x92\x02\x1d策略ID（可能无策略）H\x05R\bpolicyId\x88\x01\x01\x12=\n" +
 	"\frequest_path\x18\f \x01(\tB\x15\xbaG\x12\x92\x02\x0f请求API路径H\x06R\vrequestPath\x88\x01\x01\x12B\n" +
 	"\x0erequest_method\x18\r \x01(\tB\x16\xbaG\x13\x92\x02\x10请求HTTP方法H\aR\rrequestMethod\x88\x01\x01\x12/\n" +
 	"\x06result\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否通过H\bR\x06result\x88\x01\x01\x12K\n" +
@@ -425,7 +425,7 @@ const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2*.permission.service.v1.PolicyEvaluationLogR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xd0\x01\n" +
 	"\x1dGetPolicyEvaluationLogRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +

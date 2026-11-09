@@ -25,9 +25,9 @@ const (
 // 权限点 - API 关联关系
 type PermissionApi struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
-	PermissionId  *uint32                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
-	ApiId         *uint32                `protobuf:"varint,3,opt,name=api_id,json=apiId,proto3,oneof" json:"api_id,omitempty"`                      // API ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
+	PermissionId  *uint64                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
+	ApiId         *uint64                `protobuf:"varint,3,opt,name=api_id,json=apiId,proto3,oneof" json:"api_id,omitempty"`                      // API ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -62,21 +62,21 @@ func (*PermissionApi) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_api_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PermissionApi) GetId() uint32 {
+func (x *PermissionApi) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PermissionApi) GetPermissionId() uint32 {
+func (x *PermissionApi) GetPermissionId() uint64 {
 	if x != nil && x.PermissionId != nil {
 		return *x.PermissionId
 	}
 	return 0
 }
 
-func (x *PermissionApi) GetApiId() uint32 {
+func (x *PermissionApi) GetApiId() uint64 {
 	if x != nil && x.ApiId != nil {
 		return *x.ApiId
 	}
@@ -89,9 +89,9 @@ const file_permission_service_v1_permission_api_proto_rawDesc = "" +
 	"\n" +
 	"*permission/service/v1/permission_api.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\"\xb9\x01\n" +
 	"\rPermissionApi\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x02 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12(\n" +
-	"\x06api_id\x18\x03 \x01(\rB\f\xbaG\t\x92\x02\x06API IDH\x02R\x05apiId\x88\x01\x01B\x05\n" +
+	"\x02id\x18\x01 \x01(\x04B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
+	"\rpermission_id\x18\x02 \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12(\n" +
+	"\x06api_id\x18\x03 \x01(\x04B\f\xbaG\t\x92\x02\x06API IDH\x02R\x05apiId\x88\x01\x01B\x05\n" +
 	"\x03_idB\x10\n" +
 	"\x0e_permission_idB\t\n" +
 	"\a_api_idB\xe2\x01\n" +

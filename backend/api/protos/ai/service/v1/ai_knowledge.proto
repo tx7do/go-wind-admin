@@ -45,7 +45,7 @@ service AiKnowledgeBaseService {
 
 // AI 知识库
 message AiKnowledgeBase {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "知识库ID"}
   ]; // 知识库ID
@@ -60,7 +60,7 @@ message AiKnowledgeBase {
     (gnostic.openapi.v3.property) = {description: "描述"}
   ]; // 描述
 
-  optional uint32 provider_id = 4 [
+  optional uint64 provider_id = 4 [
     json_name = "providerId",
     (gnostic.openapi.v3.property) = {description: "向量化使用的模型提供商ID（其端点须支持 OpenAI 兼容 /v1/embeddings）"}
   ]; // 向量化提供商ID
@@ -70,12 +70,12 @@ message AiKnowledgeBase {
     (gnostic.openapi.v3.property) = {description: "embedding 模型名，如 text-embedding-3-small"}
   ]; // embedding 模型名
 
-  optional uint32 user_id = 6 [
+  optional uint64 user_id = 6 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "创建人用户ID"}
   ]; // 创建人用户ID
 
-  optional uint32 tenant_id = 7 [
+  optional uint64 tenant_id = 7 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID（0=平台级）"}
   ]; // 租户ID
@@ -85,9 +85,9 @@ message AiKnowledgeBase {
     (gnostic.openapi.v3.property) = {description: "文档数（读视图）"}
   ]; // 文档数
 
-  optional uint32 created_by = 100 [json_name = "createdBy"];
-  optional uint32 updated_by = 101 [json_name = "updatedBy"];
-  optional uint32 deleted_by = 102 [json_name = "deletedBy"];
+  optional uint64 created_by = 100 [json_name = "createdBy"];
+  optional uint64 updated_by = 101 [json_name = "updatedBy"];
+  optional uint64 deleted_by = 102 [json_name = "deletedBy"];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
@@ -103,7 +103,7 @@ message ListAiKnowledgeBaseResponse {
 // 查询知识库详情 - 请求
 message GetAiKnowledgeBaseRequest {
   oneof query_by {
-    uint32 id = 1;
+    uint64 id = 1;
   }
   optional google.protobuf.FieldMask view_mask = 100 [json_name = "viewMask"];
 }
@@ -115,7 +115,7 @@ message CreateAiKnowledgeBaseRequest {
 
 // 更新知识库 - 请求
 message UpdateAiKnowledgeBaseRequest {
-  uint32 id = 1;
+  uint64 id = 1;
   AiKnowledgeBase data = 2;
   google.protobuf.FieldMask update_mask = 3 [json_name = "updateMask"];
   optional bool allow_missing = 4 [json_name = "allowMissing"];
@@ -124,13 +124,13 @@ message UpdateAiKnowledgeBaseRequest {
 // 删除知识库 - 请求
 message DeleteAiKnowledgeBaseRequest {
   oneof query_by {
-    uint32 id = 1;
+    uint64 id = 1;
   }
 }
 
 // 上传文档 - 请求（纯文本；内容直接随请求体传输）
 message UploadAiDocRequest {
-  uint32 base_id = 1 [json_name = "baseId"]; // 知识库ID
+  uint64 base_id = 1 [json_name = "baseId"]; // 知识库ID
 
   string name = 2;   // 文档名称
   string content = 3; // 文档纯文本内容
@@ -138,7 +138,7 @@ message UploadAiDocRequest {
 
 // 上传文档文件 - 请求（文件字节经 protojson 即 base64 字符串传输）
 message UploadAiDocFileRequest {
-  uint32 base_id = 1 [json_name = "baseId"]; // 知识库ID
+  uint64 base_id = 1 [json_name = "baseId"]; // 知识库ID
 
   string file_name = 2 [json_name = "fileName"]; // 原始文件名（扩展名决定抽取器）
 
@@ -155,24 +155,24 @@ message UploadAiDocResponse {
 
 // AI 文档
 message AiDoc {
-  optional uint32 id = 1 [json_name = "id"]; // 文档ID
+  optional uint64 id = 1 [json_name = "id"]; // 文档ID
 
-  optional uint32 base_id = 2 [json_name = "baseId"]; // 所属知识库ID
+  optional uint64 base_id = 2 [json_name = "baseId"]; // 所属知识库ID
   optional string name = 3 [json_name = "name"];       // 文档名称
   optional uint32 chunk_count = 4 [json_name = "chunkCount"]; // 切片数
   optional string status = 5 [json_name = "status"];   // 状态：READY / FAILED
   optional string error_message = 6 [json_name = "errorMessage"]; // 失败原因
 
-  optional uint32 user_id = 10 [json_name = "userId"]; // 上传人
+  optional uint64 user_id = 10 [json_name = "userId"]; // 上传人
 
-  optional uint32 tenant_id = 12 [json_name = "tenantId"]; // 租户ID
+  optional uint64 tenant_id = 12 [json_name = "tenantId"]; // 租户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
 }
 
 // 查询文档列表 - 请求
 message ListAiDocsRequest {
-  uint32 base_id = 1 [json_name = "baseId"]; // 知识库ID
+  uint64 base_id = 1 [json_name = "baseId"]; // 知识库ID
 }
 
 // 查询文档列表 - 回应
@@ -183,13 +183,13 @@ message ListAiDocsResponse {
 
 // 删除文档 - 请求
 message DeleteAiDocRequest {
-  uint32 base_id = 1 [json_name = "baseId"]; // 知识库ID（路由参数）
-  uint32 id = 2;                               // 文档ID
+  uint64 base_id = 1 [json_name = "baseId"]; // 知识库ID（路由参数）
+  uint64 id = 2;                               // 文档ID
 }
 
 // 检索 - 请求
 message SearchAiKnowledgeRequest {
-  uint32 base_id = 1 [json_name = "baseId"]; // 知识库ID
+  uint64 base_id = 1 [json_name = "baseId"]; // 知识库ID
   string query = 2;                            // 查询文本
   optional uint32 top_k = 3 [json_name = "topK"]; // 返回条数，默认 3
 }

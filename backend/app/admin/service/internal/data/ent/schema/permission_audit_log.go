@@ -29,7 +29,7 @@ func (PermissionAuditLog) Annotations() []schema.Annotation {
 
 func (PermissionAuditLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("operator_id").
+		field.Uint64("operator_id").
 			Comment("操作者 用户ID").
 			Optional().
 			Nillable(),
@@ -120,9 +120,9 @@ func (PermissionAuditLog) Fields() []ent.Field {
 
 func (PermissionAuditLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.CreatedAt{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

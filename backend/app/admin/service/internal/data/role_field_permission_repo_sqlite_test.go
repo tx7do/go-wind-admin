@@ -35,9 +35,9 @@ func TestRoleFieldPermissionRepoSqlite_ReplaceAndList(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		tenantID   = uint32(7)
-		operatorID = uint32(42)
-		roleID     = uint32(500)
+		tenantID   = uint64(7)
+		operatorID = uint64(42)
+		roleID     = uint64(500)
 	)
 
 	// 首次替换：User 藏 email/phone，Order 藏 amount
@@ -66,7 +66,7 @@ func TestRoleFieldPermissionRepoSqlite_ReplaceAndList(t *testing.T) {
 	}
 
 	// 分组读视图：按 (role, resource) 聚合，字段列表完整
-	groups, err := repo.ListHiddenFieldGroupsByRoleIDs(ctx, []uint32{roleID})
+	groups, err := repo.ListHiddenFieldGroupsByRoleIDs(ctx, []uint64{roleID})
 	require.NoError(t, err)
 	require.Len(t, groups[roleID], 2, "User 与 Order 应聚成两组")
 	byResource := map[string]*permissionV1.RoleFieldPermission{}
@@ -156,7 +156,7 @@ func TestRoleFieldPermissionRepoSqlite_MultiRole(t *testing.T) {
 	}))
 	require.NoError(t, tx.Commit())
 
-	groups, err := repo.ListHiddenFieldGroupsByRoleIDs(ctx, []uint32{601, 602, 603})
+	groups, err := repo.ListHiddenFieldGroupsByRoleIDs(ctx, []uint64{601, 602, 603})
 	require.NoError(t, err)
 	require.Len(t, groups[601], 1, "角色 601 应只有 User 组")
 	require.Equal(t, []string{"salary"}, groups[601][0].GetHiddenFields())
@@ -178,7 +178,7 @@ func TestRoleFieldPermissionRepoSqlite_Validate(t *testing.T) {
 	repo := NewRoleFieldPermissionRepoForTest(entClient)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const roleID = uint32(700)
+	const roleID = uint64(700)
 
 	// 先落一份合法配置，作为"校验失败不得破坏现场"的对照组
 	tx, err := entClient.Client().Tx(ctx)
@@ -297,7 +297,7 @@ func TestRoleFieldPermissionRepoSqlite_Clean(t *testing.T) {
 }
 
 // countRoleFieldPermissionRows 统计某角色的配置行数。
-func countRoleFieldPermissionRows(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, roleID uint32) int {
+func countRoleFieldPermissionRows(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, roleID uint64) int {
 	t.Helper()
 	cnt, err := entClient.Client().RoleFieldPermission.Query().
 		Where(rolefieldpermission.RoleIDEQ(roleID)).

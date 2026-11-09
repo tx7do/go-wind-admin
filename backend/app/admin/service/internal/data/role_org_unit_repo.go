@@ -35,8 +35,8 @@ func NewRoleOrgUnitRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*en
 // validateOrgUnitsInTenant 校验单元 ID 集合全部属于指定租户，拒绝跨租户注入。
 // 显式 tenant 谓词在平台上下文（TenantPrivacy 跳过注入）下仍然生效；
 // 租户上下文下与 TenantPrivacy 的注入叠加为双重防线。
-func (r *RoleOrgUnitRepo) validateOrgUnitsInTenant(ctx context.Context, tenantID uint32, orgUnitIDs []uint32) error {
-	distinct := make(map[uint32]struct{}, len(orgUnitIDs))
+func (r *RoleOrgUnitRepo) validateOrgUnitsInTenant(ctx context.Context, tenantID uint64, orgUnitIDs []uint64) error {
+	distinct := make(map[uint64]struct{}, len(orgUnitIDs))
 	for _, id := range orgUnitIDs {
 		distinct[id] = struct{}{}
 	}
@@ -63,7 +63,7 @@ func (r *RoleOrgUnitRepo) validateOrgUnitsInTenant(ctx context.Context, tenantID
 func (r *RoleOrgUnitRepo) CleanOrgUnits(
 	ctx context.Context,
 	tx *ent.Tx,
-	roleID uint32,
+	roleID uint64,
 ) error {
 	if _, err := tx.RoleOrgUnit.Delete().
 		Where(
@@ -79,7 +79,7 @@ func (r *RoleOrgUnitRepo) CleanOrgUnits(
 // DeleteByOrgUnitIDs 按单元 id 集合清理角色授权绑定：组织单元子树被删除时
 // 级联调用（OrgUnitRepo.Delete 事务内），消灭角色数据范围配置里指向已删
 // 单元的 stale 引用（与权限删除级联清角色授权同一教义）。
-func (r *RoleOrgUnitRepo) DeleteByOrgUnitIDs(ctx context.Context, tx *ent.Tx, orgUnitIDs []uint32) error {
+func (r *RoleOrgUnitRepo) DeleteByOrgUnitIDs(ctx context.Context, tx *ent.Tx, orgUnitIDs []uint64) error {
 	if len(orgUnitIDs) == 0 {
 		return nil
 	}
@@ -96,8 +96,8 @@ func (r *RoleOrgUnitRepo) DeleteByOrgUnitIDs(ctx context.Context, tx *ent.Tx, or
 
 // AssignOrgUnits 给角色分配组织单元授权（upsert，不删除既有）
 func (r *RoleOrgUnitRepo) AssignOrgUnits(ctx context.Context, tx *ent.Tx,
-	tenantID, operatorID uint32,
-	roleID uint32, orgUnitIDs []uint32,
+	tenantID, operatorID uint64,
+	roleID uint64, orgUnitIDs []uint64,
 ) error {
 	if len(orgUnitIDs) == 0 {
 		return nil
@@ -137,8 +137,8 @@ func (r *RoleOrgUnitRepo) AssignOrgUnits(ctx context.Context, tx *ent.Tx,
 
 // ReplaceOrgUnits 整体替换角色的组织单元授权：先清空既有授权，再插入新集合。
 func (r *RoleOrgUnitRepo) ReplaceOrgUnits(ctx context.Context, tx *ent.Tx,
-	tenantID, operatorID uint32,
-	roleID uint32, orgUnitIDs []uint32,
+	tenantID, operatorID uint64,
+	roleID uint64, orgUnitIDs []uint64,
 ) error {
 	if err := r.CleanOrgUnits(ctx, tx, roleID); err != nil {
 		return err
@@ -152,7 +152,7 @@ func (r *RoleOrgUnitRepo) ReplaceOrgUnits(ctx context.Context, tx *ent.Tx,
 }
 
 // ListOrgUnitIDs 列出角色的组织单元ID列表
-func (r *RoleOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
+func (r *RoleOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, roleID uint64) ([]uint64, error) {
 	intIDs, err := r.entClient.Client().RoleOrgUnit.Query().
 		Where(
 			roleorgunit.RoleIDEQ(roleID),
@@ -163,17 +163,17 @@ func (r *RoleOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, roleID uint32) ([]
 		r.log.Errorf(ctx, "query org unit ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query org unit ids by role id failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }
 
 // ListOrgUnitIDsByRoleIDs 根据角色ID列表获取组织单元ID列表（按角色分组返回）
-func (r *RoleOrgUnitRepo) ListOrgUnitIDsByRoleIDs(ctx context.Context, roleIDs []uint32) (map[uint32][]uint32, error) {
+func (r *RoleOrgUnitRepo) ListOrgUnitIDsByRoleIDs(ctx context.Context, roleIDs []uint64) (map[uint64][]uint64, error) {
 	if len(roleIDs) == 0 {
-		return map[uint32][]uint32{}, nil
+		return map[uint64][]uint64{}, nil
 	}
 
 	entities, err := r.entClient.Client().RoleOrgUnit.Query().
@@ -187,7 +187,7 @@ func (r *RoleOrgUnitRepo) ListOrgUnitIDsByRoleIDs(ctx context.Context, roleIDs [
 		return nil, permissionV1.ErrorInternalServerError("query org unit ids by role ids failed")
 	}
 
-	result := make(map[uint32][]uint32, len(roleIDs))
+	result := make(map[uint64][]uint64, len(roleIDs))
 	for _, entity := range entities {
 		if entity.RoleID == nil || entity.OrgUnitID == nil {
 			continue

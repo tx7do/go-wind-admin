@@ -23,21 +23,21 @@ func (AiDoc) Annotations() []schema.Annotation {
 
 func (AiDoc) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("base_id").Comment("所属知识库ID（edge 外键）").Optional().Nillable(),
+		field.Uint64("base_id").Comment("所属知识库ID（edge 外键）").Optional().Nillable(),
 		field.String("name").Comment("文档名称").Optional().Nillable(),
 		field.Uint32("chunk_count").Comment("切片数").Optional().Nillable(),
 		field.String("status").Comment("状态：READY/FAILED").Optional().Nillable(),
 		field.Text("error_message").Comment("失败原因").Optional().Nillable(),
-		field.Uint32("user_id").Comment("上传人用户ID").Optional().Nillable(),
+		field.Uint64("user_id").Comment("上传人用户ID").Optional().Nillable(),
 	}
 }
 
 func (AiDoc) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

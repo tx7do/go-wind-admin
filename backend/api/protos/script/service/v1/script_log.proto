@@ -23,14 +23,14 @@ service ScriptLogService {
 
 // 脚本执行日志
 message ScriptLog {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "日志ID"
     }
   ]; // 日志ID
 
-  optional uint32 script_id = 2 [
+  optional uint64 script_id = 2 [
     json_name = "scriptId",
     (gnostic.openapi.v3.property) = {description: "脚本ID，试运行草稿为 0"}
   ]; // 脚本ID

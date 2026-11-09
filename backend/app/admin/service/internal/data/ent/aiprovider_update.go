@@ -70,14 +70,14 @@ func (_u *AiProviderUpdate) ClearDeletedAt() *AiProviderUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiProviderUpdate) SetCreatedBy(v uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetCreatedBy(v uint64) *AiProviderUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiProviderUpdate) SetNillableCreatedBy(v *uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetNillableCreatedBy(v *uint64) *AiProviderUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *AiProviderUpdate) SetNillableCreatedBy(v *uint32) *AiProviderUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AiProviderUpdate) AddCreatedBy(v int32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) AddCreatedBy(v int64) *AiProviderUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *AiProviderUpdate) ClearCreatedBy() *AiProviderUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiProviderUpdate) SetUpdatedBy(v uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetUpdatedBy(v uint64) *AiProviderUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiProviderUpdate) SetNillableUpdatedBy(v *uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetNillableUpdatedBy(v *uint64) *AiProviderUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *AiProviderUpdate) SetNillableUpdatedBy(v *uint32) *AiProviderUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AiProviderUpdate) AddUpdatedBy(v int32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) AddUpdatedBy(v int64) *AiProviderUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *AiProviderUpdate) ClearUpdatedBy() *AiProviderUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiProviderUpdate) SetDeletedBy(v uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetDeletedBy(v uint64) *AiProviderUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiProviderUpdate) SetNillableDeletedBy(v *uint32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) SetNillableDeletedBy(v *uint64) *AiProviderUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *AiProviderUpdate) SetNillableDeletedBy(v *uint32) *AiProviderUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AiProviderUpdate) AddDeletedBy(v int32) *AiProviderUpdate {
+func (_u *AiProviderUpdate) AddDeletedBy(v int64) *AiProviderUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -496,7 +496,7 @@ func (_u *AiProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(aiprovider.Table, aiprovider.Columns, sqlgraph.NewFieldSpec(aiprovider.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiprovider.Table, aiprovider.Columns, sqlgraph.NewFieldSpec(aiprovider.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -520,31 +520,31 @@ func (_u *AiProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		_spec.ClearField(aiprovider.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiprovider.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiprovider.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiprovider.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiprovider.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiprovider.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiprovider.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiprovider.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiprovider.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiprovider.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(aiprovider.FieldIsEnabled, field.TypeBool, value)
@@ -699,14 +699,14 @@ func (_u *AiProviderUpdateOne) ClearDeletedAt() *AiProviderUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiProviderUpdateOne) SetCreatedBy(v uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetCreatedBy(v uint64) *AiProviderUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiProviderUpdateOne) SetNillableCreatedBy(v *uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetNillableCreatedBy(v *uint64) *AiProviderUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -714,7 +714,7 @@ func (_u *AiProviderUpdateOne) SetNillableCreatedBy(v *uint32) *AiProviderUpdate
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AiProviderUpdateOne) AddCreatedBy(v int32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) AddCreatedBy(v int64) *AiProviderUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -726,14 +726,14 @@ func (_u *AiProviderUpdateOne) ClearCreatedBy() *AiProviderUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiProviderUpdateOne) SetUpdatedBy(v uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetUpdatedBy(v uint64) *AiProviderUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiProviderUpdateOne) SetNillableUpdatedBy(v *uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetNillableUpdatedBy(v *uint64) *AiProviderUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -741,7 +741,7 @@ func (_u *AiProviderUpdateOne) SetNillableUpdatedBy(v *uint32) *AiProviderUpdate
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AiProviderUpdateOne) AddUpdatedBy(v int32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) AddUpdatedBy(v int64) *AiProviderUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -753,14 +753,14 @@ func (_u *AiProviderUpdateOne) ClearUpdatedBy() *AiProviderUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiProviderUpdateOne) SetDeletedBy(v uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetDeletedBy(v uint64) *AiProviderUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiProviderUpdateOne) SetNillableDeletedBy(v *uint32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) SetNillableDeletedBy(v *uint64) *AiProviderUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -768,7 +768,7 @@ func (_u *AiProviderUpdateOne) SetNillableDeletedBy(v *uint32) *AiProviderUpdate
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AiProviderUpdateOne) AddDeletedBy(v int32) *AiProviderUpdateOne {
+func (_u *AiProviderUpdateOne) AddDeletedBy(v int64) *AiProviderUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -1138,7 +1138,7 @@ func (_u *AiProviderUpdateOne) sqlSave(ctx context.Context) (_node *AiProvider, 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(aiprovider.Table, aiprovider.Columns, sqlgraph.NewFieldSpec(aiprovider.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiprovider.Table, aiprovider.Columns, sqlgraph.NewFieldSpec(aiprovider.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiProvider.id" for update`)}
@@ -1179,31 +1179,31 @@ func (_u *AiProviderUpdateOne) sqlSave(ctx context.Context) (_node *AiProvider, 
 		_spec.ClearField(aiprovider.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiprovider.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiprovider.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiprovider.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiprovider.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiprovider.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiprovider.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiprovider.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiprovider.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiprovider.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(aiprovider.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiprovider.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(aiprovider.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(aiprovider.FieldIsEnabled, field.TypeBool, value)

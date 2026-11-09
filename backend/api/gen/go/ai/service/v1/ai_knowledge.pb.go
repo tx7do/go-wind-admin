@@ -29,17 +29,17 @@ const (
 // AI 知识库
 type AiKnowledgeBase struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                              // 知识库ID
+	Id             *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                              // 知识库ID
 	Name           *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                           // 知识库名称
 	Description    *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`                             // 描述
-	ProviderId     *uint32                `protobuf:"varint,4,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`            // 向量化提供商ID
+	ProviderId     *uint64                `protobuf:"varint,4,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`            // 向量化提供商ID
 	EmbeddingModel *string                `protobuf:"bytes,5,opt,name=embedding_model,json=embeddingModel,proto3,oneof" json:"embedding_model,omitempty"` // embedding 模型名
-	UserId         *uint32                `protobuf:"varint,6,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                        // 创建人用户ID
-	TenantId       *uint32                `protobuf:"varint,7,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                  // 租户ID
+	UserId         *uint64                `protobuf:"varint,6,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                        // 创建人用户ID
+	TenantId       *uint64                `protobuf:"varint,7,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                  // 租户ID
 	DocCount       *uint32                `protobuf:"varint,8,opt,name=doc_count,json=docCount,proto3,oneof" json:"doc_count,omitempty"`                  // 文档数
-	CreatedBy      *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy      *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
-	DeletedBy      *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`
+	CreatedBy      *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy      *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	DeletedBy      *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`
 	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
 	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
 	DeletedAt      *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
@@ -77,7 +77,7 @@ func (*AiKnowledgeBase) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AiKnowledgeBase) GetId() uint32 {
+func (x *AiKnowledgeBase) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -98,7 +98,7 @@ func (x *AiKnowledgeBase) GetDescription() string {
 	return ""
 }
 
-func (x *AiKnowledgeBase) GetProviderId() uint32 {
+func (x *AiKnowledgeBase) GetProviderId() uint64 {
 	if x != nil && x.ProviderId != nil {
 		return *x.ProviderId
 	}
@@ -112,14 +112,14 @@ func (x *AiKnowledgeBase) GetEmbeddingModel() string {
 	return ""
 }
 
-func (x *AiKnowledgeBase) GetUserId() uint32 {
+func (x *AiKnowledgeBase) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *AiKnowledgeBase) GetTenantId() uint32 {
+func (x *AiKnowledgeBase) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -133,21 +133,21 @@ func (x *AiKnowledgeBase) GetDocCount() uint32 {
 	return 0
 }
 
-func (x *AiKnowledgeBase) GetCreatedBy() uint32 {
+func (x *AiKnowledgeBase) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *AiKnowledgeBase) GetUpdatedBy() uint32 {
+func (x *AiKnowledgeBase) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *AiKnowledgeBase) GetDeletedBy() uint32 {
+func (x *AiKnowledgeBase) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -277,7 +277,7 @@ func (x *GetAiKnowledgeBaseRequest) GetQueryBy() isGetAiKnowledgeBaseRequest_Que
 	return nil
 }
 
-func (x *GetAiKnowledgeBaseRequest) GetId() uint32 {
+func (x *GetAiKnowledgeBaseRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetAiKnowledgeBaseRequest_Id); ok {
 			return x.Id
@@ -298,7 +298,7 @@ type isGetAiKnowledgeBaseRequest_QueryBy interface {
 }
 
 type GetAiKnowledgeBaseRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 func (*GetAiKnowledgeBaseRequest_Id) isGetAiKnowledgeBaseRequest_QueryBy() {}
@@ -351,7 +351,7 @@ func (x *CreateAiKnowledgeBaseRequest) GetData() *AiKnowledgeBase {
 // 更新知识库 - 请求
 type UpdateAiKnowledgeBaseRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *AiKnowledgeBase       `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"`
@@ -389,7 +389,7 @@ func (*UpdateAiKnowledgeBaseRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateAiKnowledgeBaseRequest) GetId() uint32 {
+func (x *UpdateAiKnowledgeBaseRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -465,7 +465,7 @@ func (x *DeleteAiKnowledgeBaseRequest) GetQueryBy() isDeleteAiKnowledgeBaseReque
 	return nil
 }
 
-func (x *DeleteAiKnowledgeBaseRequest) GetId() uint32 {
+func (x *DeleteAiKnowledgeBaseRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteAiKnowledgeBaseRequest_Id); ok {
 			return x.Id
@@ -479,7 +479,7 @@ type isDeleteAiKnowledgeBaseRequest_QueryBy interface {
 }
 
 type DeleteAiKnowledgeBaseRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 func (*DeleteAiKnowledgeBaseRequest_Id) isDeleteAiKnowledgeBaseRequest_QueryBy() {}
@@ -487,7 +487,7 @@ func (*DeleteAiKnowledgeBaseRequest_Id) isDeleteAiKnowledgeBaseRequest_QueryBy()
 // 上传文档 - 请求（纯文本；内容直接随请求体传输）
 type UploadAiDocRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BaseId        uint32                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
+	BaseId        uint64                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                    // 文档名称
 	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`              // 文档纯文本内容
 	unknownFields protoimpl.UnknownFields
@@ -524,7 +524,7 @@ func (*UploadAiDocRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UploadAiDocRequest) GetBaseId() uint32 {
+func (x *UploadAiDocRequest) GetBaseId() uint64 {
 	if x != nil {
 		return x.BaseId
 	}
@@ -548,7 +548,7 @@ func (x *UploadAiDocRequest) GetContent() string {
 // 上传文档文件 - 请求（文件字节经 protojson 即 base64 字符串传输）
 type UploadAiDocFileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BaseId        uint32                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"`                     // 知识库ID
+	BaseId        uint64                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"`                     // 知识库ID
 	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                // 原始文件名（扩展名决定抽取器）
 	ContentBase64 []byte                 `protobuf:"bytes,3,opt,name=content_base64,json=contentBase64,proto3" json:"content_base64,omitempty"` // 文件内容（≤10MB）
 	DocName       *string                `protobuf:"bytes,4,opt,name=doc_name,json=docName,proto3,oneof" json:"doc_name,omitempty"`             // 文档显示名，缺省取文件名去扩展名
@@ -586,7 +586,7 @@ func (*UploadAiDocFileRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UploadAiDocFileRequest) GetBaseId() uint32 {
+func (x *UploadAiDocFileRequest) GetBaseId() uint64 {
 	if x != nil {
 		return x.BaseId
 	}
@@ -670,14 +670,14 @@ func (x *UploadAiDocResponse) GetChunkCount() uint32 {
 // AI 文档
 type AiDoc struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 文档ID
-	BaseId        *uint32                `protobuf:"varint,2,opt,name=base_id,json=baseId,proto3,oneof" json:"base_id,omitempty"`                  // 所属知识库ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 文档ID
+	BaseId        *uint64                `protobuf:"varint,2,opt,name=base_id,json=baseId,proto3,oneof" json:"base_id,omitempty"`                  // 所属知识库ID
 	Name          *string                `protobuf:"bytes,3,opt,name=name,proto3,oneof" json:"name,omitempty"`                                     // 文档名称
 	ChunkCount    *uint32                `protobuf:"varint,4,opt,name=chunk_count,json=chunkCount,proto3,oneof" json:"chunk_count,omitempty"`      // 切片数
 	Status        *string                `protobuf:"bytes,5,opt,name=status,proto3,oneof" json:"status,omitempty"`                                 // 状态：READY / FAILED
 	ErrorMessage  *string                `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"` // 失败原因
-	UserId        *uint32                `protobuf:"varint,10,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                 // 上传人
-	TenantId      *uint32                `protobuf:"varint,12,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`           // 租户ID
+	UserId        *uint64                `protobuf:"varint,10,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                 // 上传人
+	TenantId      *uint64                `protobuf:"varint,12,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`           // 租户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -713,14 +713,14 @@ func (*AiDoc) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *AiDoc) GetId() uint32 {
+func (x *AiDoc) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *AiDoc) GetBaseId() uint32 {
+func (x *AiDoc) GetBaseId() uint64 {
 	if x != nil && x.BaseId != nil {
 		return *x.BaseId
 	}
@@ -755,14 +755,14 @@ func (x *AiDoc) GetErrorMessage() string {
 	return ""
 }
 
-func (x *AiDoc) GetUserId() uint32 {
+func (x *AiDoc) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *AiDoc) GetTenantId() uint32 {
+func (x *AiDoc) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -779,7 +779,7 @@ func (x *AiDoc) GetCreatedAt() *timestamppb.Timestamp {
 // 查询文档列表 - 请求
 type ListAiDocsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BaseId        uint32                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
+	BaseId        uint64                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -814,7 +814,7 @@ func (*ListAiDocsRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *ListAiDocsRequest) GetBaseId() uint32 {
+func (x *ListAiDocsRequest) GetBaseId() uint64 {
 	if x != nil {
 		return x.BaseId
 	}
@@ -877,8 +877,8 @@ func (x *ListAiDocsResponse) GetTotal() uint64 {
 // 删除文档 - 请求
 type DeleteAiDocRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BaseId        uint32                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID（路由参数）
-	Id            uint32                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`                       // 文档ID
+	BaseId        uint64                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID（路由参数）
+	Id            uint64                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`                       // 文档ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -913,14 +913,14 @@ func (*DeleteAiDocRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *DeleteAiDocRequest) GetBaseId() uint32 {
+func (x *DeleteAiDocRequest) GetBaseId() uint64 {
 	if x != nil {
 		return x.BaseId
 	}
 	return 0
 }
 
-func (x *DeleteAiDocRequest) GetId() uint32 {
+func (x *DeleteAiDocRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -930,7 +930,7 @@ func (x *DeleteAiDocRequest) GetId() uint32 {
 // 检索 - 请求
 type SearchAiKnowledgeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BaseId        uint32                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
+	BaseId        uint64                 `protobuf:"varint,1,opt,name=base_id,json=baseId,proto3" json:"base_id,omitempty"` // 知识库ID
 	Query         string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`                  // 查询文本
 	TopK          *uint32                `protobuf:"varint,3,opt,name=top_k,json=topK,proto3,oneof" json:"top_k,omitempty"` // 返回条数，默认 3
 	unknownFields protoimpl.UnknownFields
@@ -967,7 +967,7 @@ func (*SearchAiKnowledgeRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_knowledge_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *SearchAiKnowledgeRequest) GetBaseId() uint32 {
+func (x *SearchAiKnowledgeRequest) GetBaseId() uint64 {
 	if x != nil {
 		return x.BaseId
 	}
@@ -1108,21 +1108,21 @@ const file_ai_service_v1_ai_knowledge_proto_rawDesc = "" +
 	"\n" +
 	" ai/service/v1/ai_knowledge.proto\x12\rai.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xbc\b\n" +
 	"\x0fAiKnowledgeBase\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v知识库IDH\x00R\x02id\x88\x01\x01\x12.\n" +
+	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v知识库IDH\x00R\x02id\x88\x01\x01\x12.\n" +
 	"\x04name\x18\x02 \x01(\tB\x15\xbaG\x12\x92\x02\x0f知识库名称H\x01R\x04name\x88\x01\x01\x123\n" +
 	"\vdescription\x18\x03 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x02R\vdescription\x88\x01\x01\x12\x84\x01\n" +
-	"\vprovider_id\x18\x04 \x01(\rB^\xbaG[\x92\x02X向量化使用的模型提供商ID（其端点须支持 OpenAI 兼容 /v1/embeddings）H\x03R\n" +
+	"\vprovider_id\x18\x04 \x01(\x04B^\xbaG[\x92\x02X向量化使用的模型提供商ID（其端点须支持 OpenAI 兼容 /v1/embeddings）H\x03R\n" +
 	"providerId\x88\x01\x01\x12d\n" +
 	"\x0fembedding_model\x18\x05 \x01(\tB6\xbaG3\x92\x020embedding 模型名，如 text-embedding-3-smallH\x04R\x0eembeddingModel\x88\x01\x01\x125\n" +
-	"\auser_id\x18\x06 \x01(\rB\x17\xbaG\x14\x92\x02\x11创建人用户IDH\x05R\x06userId\x88\x01\x01\x12A\n" +
-	"\ttenant_id\x18\a \x01(\rB\x1f\xbaG\x1c\x92\x02\x19租户ID（0=平台级）H\x06R\btenantId\x88\x01\x01\x12@\n" +
+	"\auser_id\x18\x06 \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建人用户IDH\x05R\x06userId\x88\x01\x01\x12A\n" +
+	"\ttenant_id\x18\a \x01(\x04B\x1f\xbaG\x1c\x92\x02\x19租户ID（0=平台级）H\x06R\btenantId\x88\x01\x01\x12@\n" +
 	"\tdoc_count\x18\b \x01(\rB\x1e\xbaG\x1b\x92\x02\x18文档数（读视图）H\aR\bdocCount\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\bR\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_by\x18d \x01(\x04H\bR\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\tR\tupdatedBy\x88\x01\x01\x12\"\n" +
+	"updated_by\x18e \x01(\x04H\tR\tupdatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rH\n" +
+	"deleted_by\x18f \x01(\x04H\n" +
 	"R\tdeletedBy\x88\x01\x01\x12?\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\vR\tcreatedAt\x88\x01\x01\x12?\n" +
@@ -1151,7 +1151,7 @@ const file_ai_service_v1_ai_knowledge_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1e.ai.service.v1.AiKnowledgeBaseR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\x85\x01\n" +
 	"\x19GetAiKnowledgeBaseRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x12<\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x12<\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskH\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
 	"\bquery_byB\f\n" +
@@ -1160,22 +1160,22 @@ const file_ai_service_v1_ai_knowledge_proto_rawDesc = "" +
 	"\x1cCreateAiKnowledgeBaseRequest\x122\n" +
 	"\x04data\x18\x01 \x01(\v2\x1e.ai.service.v1.AiKnowledgeBaseR\x04data\"\xdb\x01\n" +
 	"\x1cUpdateAiKnowledgeBaseRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x122\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x122\n" +
 	"\x04data\x18\x02 \x01(\v2\x1e.ai.service.v1.AiKnowledgeBaseR\x04data\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12(\n" +
 	"\rallow_missing\x18\x04 \x01(\bH\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"<\n" +
 	"\x1cDeleteAiKnowledgeBaseRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02idB\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"[\n" +
 	"\x12UploadAiDocRequest\x12\x17\n" +
-	"\abase_id\x18\x01 \x01(\rR\x06baseId\x12\x12\n" +
+	"\abase_id\x18\x01 \x01(\x04R\x06baseId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\"\xa2\x01\n" +
 	"\x16UploadAiDocFileRequest\x12\x17\n" +
-	"\abase_id\x18\x01 \x01(\rR\x06baseId\x12\x1b\n" +
+	"\abase_id\x18\x01 \x01(\x04R\x06baseId\x12\x1b\n" +
 	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12%\n" +
 	"\x0econtent_base64\x18\x03 \x01(\fR\rcontentBase64\x12\x1e\n" +
 	"\bdoc_name\x18\x04 \x01(\tH\x00R\adocName\x88\x01\x01B\v\n" +
@@ -1185,16 +1185,16 @@ const file_ai_service_v1_ai_knowledge_proto_rawDesc = "" +
 	"\vchunk_count\x18\x02 \x01(\rR\n" +
 	"chunkCount\"\xb3\x03\n" +
 	"\x05AiDoc\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12\x1c\n" +
-	"\abase_id\x18\x02 \x01(\rH\x01R\x06baseId\x88\x01\x01\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x88\x01\x01\x12\x1c\n" +
+	"\abase_id\x18\x02 \x01(\x04H\x01R\x06baseId\x88\x01\x01\x12\x17\n" +
 	"\x04name\x18\x03 \x01(\tH\x02R\x04name\x88\x01\x01\x12$\n" +
 	"\vchunk_count\x18\x04 \x01(\rH\x03R\n" +
 	"chunkCount\x88\x01\x01\x12\x1b\n" +
 	"\x06status\x18\x05 \x01(\tH\x04R\x06status\x88\x01\x01\x12(\n" +
 	"\rerror_message\x18\x06 \x01(\tH\x05R\ferrorMessage\x88\x01\x01\x12\x1c\n" +
 	"\auser_id\x18\n" +
-	" \x01(\rH\x06R\x06userId\x88\x01\x01\x12 \n" +
-	"\ttenant_id\x18\f \x01(\rH\aR\btenantId\x88\x01\x01\x12?\n" +
+	" \x01(\x04H\x06R\x06userId\x88\x01\x01\x12 \n" +
+	"\ttenant_id\x18\f \x01(\x04H\aR\btenantId\x88\x01\x01\x12?\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\bR\tcreatedAt\x88\x01\x01B\x05\n" +
 	"\x03_idB\n" +
@@ -1210,15 +1210,15 @@ const file_ai_service_v1_ai_knowledge_proto_rawDesc = "" +
 	"_tenant_idB\r\n" +
 	"\v_created_at\",\n" +
 	"\x11ListAiDocsRequest\x12\x17\n" +
-	"\abase_id\x18\x01 \x01(\rR\x06baseId\"V\n" +
+	"\abase_id\x18\x01 \x01(\x04R\x06baseId\"V\n" +
 	"\x12ListAiDocsResponse\x12*\n" +
 	"\x05items\x18\x01 \x03(\v2\x14.ai.service.v1.AiDocR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"=\n" +
 	"\x12DeleteAiDocRequest\x12\x17\n" +
-	"\abase_id\x18\x01 \x01(\rR\x06baseId\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\rR\x02id\"m\n" +
+	"\abase_id\x18\x01 \x01(\x04R\x06baseId\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\x04R\x02id\"m\n" +
 	"\x18SearchAiKnowledgeRequest\x12\x17\n" +
-	"\abase_id\x18\x01 \x01(\rR\x06baseId\x12\x14\n" +
+	"\abase_id\x18\x01 \x01(\x04R\x06baseId\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12\x18\n" +
 	"\x05top_k\x18\x03 \x01(\rH\x00R\x04topK\x88\x01\x01B\b\n" +
 	"\x06_top_k\"\x87\x01\n" +

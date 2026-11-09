@@ -104,7 +104,7 @@ func (r *PermissionAuditLogRepo) List(ctx context.Context, req *paginationV1.Pag
 	}, nil
 }
 
-func (r *PermissionAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PermissionAuditLogRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().PermissionAuditLog.Query().
 		Where(permissionauditlog.IDEQ(id)).
 		Exist(ctx)

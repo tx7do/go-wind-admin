@@ -8,12 +8,12 @@ import (
 
 // Position 对应表 sys_positions
 type Position struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Name                *string    `gorm:"column:name;type:varchar(255);comment:职位名称"`
 	Code                *string    `gorm:"column:code;type:varchar(128);comment:唯一编码"`
-	OrgUnitId           *uint32    `gorm:"column:org_unit_id;type:int unsigned;comment:所属组织单元ID"`
-	ReportsToPositionId *uint32    `gorm:"column:reports_to_position_id;type:int unsigned;comment:汇报对象职位ID"`
+	OrgUnitId           *uint64    `gorm:"column:org_unit_id;type:int unsigned;comment:所属组织单元ID"`
+	ReportsToPositionId *uint64    `gorm:"column:reports_to_position_id;type:int unsigned;comment:汇报对象职位ID"`
 	Description         *string    `gorm:"column:description;type:varchar(1024);comment:职能描述"`
 	JobFamily           *string    `gorm:"column:job_family;type:varchar(255);comment:职位族"`
 	JobGrade            *string    `gorm:"column:job_grade;type:varchar(255);comment:职级"`
@@ -25,10 +25,10 @@ type Position struct {
 	EndAt               *time.Time `gorm:"column:end_at;type:datetime;comment:结束有效期（UTC）"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.SortOrder
 	mixin.Remark
-	mixin.TenantID
+	mixin.TenantID64
 	mixin.SwitchStatus
 }
 

@@ -48,12 +48,12 @@ func (DictEntryI18n) Fields() []ent.Field {
 // Mixin of the DictEntryI18n.
 func (DictEntryI18n) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.Description{},
 		mixin.SortOrder{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

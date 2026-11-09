@@ -35,7 +35,7 @@ func (NotificationPreference) Annotations() []schema.Annotation {
 // Fields of the NotificationPreference.
 func (NotificationPreference) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Uint64("user_id").
 			Comment("用户ID（唯一，每用户一行）").
 			Unique(),
 
@@ -51,7 +51,7 @@ func (NotificationPreference) Fields() []ent.Field {
 			Comment("静音结束：自当日 00:00 起的分钟数（0-1439）；跨零点窗口 start > end 合法").
 			Default(480), // 08:00
 
-		field.JSON("muted_category_ids", []uint32{}).
+		field.JSON("muted_category_ids", []uint64{}).
 			Comment("退订的站内信分类ID列表（仅约束全员广播，点对点定向发送不受影响）").
 			Optional(),
 	}
@@ -60,8 +60,8 @@ func (NotificationPreference) Fields() []ent.Field {
 // Mixin of the NotificationPreference.
 func (NotificationPreference) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 	}
 }

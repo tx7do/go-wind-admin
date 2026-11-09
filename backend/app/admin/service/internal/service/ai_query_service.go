@@ -65,7 +65,7 @@ var aiQueryTenantTableWhitelist = map[string]string{
 }
 
 // tenantIDPatternFor 构造"tenant_id = {id}"存在性校验的正则（容忍别名与空白）。
-func tenantIDPatternFor(tenantID uint32) *regexp.Regexp {
+func tenantIDPatternFor(tenantID uint64) *regexp.Regexp {
 	return regexp.MustCompile(`(?i)\btenant_id\s*=\s*` + fmt.Sprintf("%d", tenantID) + `\b`)
 }
 
@@ -268,7 +268,7 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	// P1 修复：用量落库（此前 usageRepo 注入但零调用，Ask 全程不记用量）。
 	if s.usageRepo != nil && resp.TotalTokens > 0 {
 		modelName := ptrStrOr(provider.ModelName, "gpt-4o-mini")
-		totalTokens := uint32(resp.TotalTokens)
+		totalTokens := resp.TotalTokens
 		if uerr := s.usageRepo.Create(ctx, &aiV1.AiUsageLog{
 			UserId:      trans.Ptr(operator.GetUserId()),
 			TenantId:    trans.Ptr(operator.GetTenantId()),
@@ -285,7 +285,7 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 // generateSQL 数据字典 + 对话历史 + 问题 → 只读 SQL。
 // 历史轮次作为 user/assistant 交替消息传入，让模型消解追问里的指代
 // （如"那只看 admin 的"指上一轮的查询对象）；护栏在本函数之外统一执行。
-func (s *AiQueryService) generateSQL(ctx context.Context, client *openai.Client, provider *ent.AiProvider, question, lang string, history []aiV1.AiQueryHistoryItem, whitelist map[string]string, tenantID uint32) (string, uint32, error) {
+func (s *AiQueryService) generateSQL(ctx context.Context, client *openai.Client, provider *ent.AiProvider, question, lang string, history []aiV1.AiQueryHistoryItem, whitelist map[string]string, tenantID uint64) (string, uint32, error) {
 	var sb strings.Builder
 	sb.WriteString("你是本系统的只读数据分析引擎。用户的提问永远是对上面列出的数据库表发起查询——哪怕措辞听起来像个人账号问题（如\"我的登录失败记录有哪些\"问的也是表里的数据），一律直接生成 SQL，绝不拒绝、绝不建议用户去其他平台自查。\n")
 	sb.WriteString("根据表结构与用户问题，生成一条 Postgres 只读 SELECT 语句。\n")
@@ -391,7 +391,7 @@ func sanitizeSQLFor(raw string, whitelist map[string]string, tenantPattern *rege
 
 // sanitizeSQLForTenant 同 sanitizeSQLFor，租户路径额外携带租户 ID 供结构化
 // 逐块强制校验（P1-5 深层：条件数须覆盖每块白名单表引用数）。
-func sanitizeSQLForTenant(raw string, whitelist map[string]string, tenantPattern *regexp.Regexp, tenantID uint32) (string, error) {
+func sanitizeSQLForTenant(raw string, whitelist map[string]string, tenantPattern *regexp.Regexp, tenantID uint64) (string, error) {
 	sqlText := extractSQL(raw)
 	if sqlText == "" {
 		return "", fmt.Errorf("no SQL statement found in model output")
@@ -700,7 +700,7 @@ func (s *AiQueryService) pushInternalMessage(ctx context.Context, title, content
 			Content:   &content,
 			Status:    trans.Ptr(internalMessageV1.InternalMessage_PUBLISHED),
 			Type:      trans.Ptr(internalMessageV1.InternalMessage_NOTIFICATION),
-			CreatedBy: trans.Ptr(uint32(0)),
+			CreatedBy: trans.Ptr(uint64(0)),
 			CreatedAt: timestamppb.New(now),
 		},
 	})

@@ -70,14 +70,14 @@ func (_u *ScriptUpdate) ClearDeletedAt() *ScriptUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *ScriptUpdate) SetCreatedBy(v uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetCreatedBy(v uint64) *ScriptUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *ScriptUpdate) SetNillableCreatedBy(v *uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetNillableCreatedBy(v *uint64) *ScriptUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *ScriptUpdate) SetNillableCreatedBy(v *uint32) *ScriptUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *ScriptUpdate) AddCreatedBy(v int32) *ScriptUpdate {
+func (_u *ScriptUpdate) AddCreatedBy(v int64) *ScriptUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *ScriptUpdate) ClearCreatedBy() *ScriptUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *ScriptUpdate) SetUpdatedBy(v uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetUpdatedBy(v uint64) *ScriptUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *ScriptUpdate) SetNillableUpdatedBy(v *uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetNillableUpdatedBy(v *uint64) *ScriptUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *ScriptUpdate) SetNillableUpdatedBy(v *uint32) *ScriptUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *ScriptUpdate) AddUpdatedBy(v int32) *ScriptUpdate {
+func (_u *ScriptUpdate) AddUpdatedBy(v int64) *ScriptUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *ScriptUpdate) ClearUpdatedBy() *ScriptUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *ScriptUpdate) SetDeletedBy(v uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetDeletedBy(v uint64) *ScriptUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *ScriptUpdate) SetNillableDeletedBy(v *uint32) *ScriptUpdate {
+func (_u *ScriptUpdate) SetNillableDeletedBy(v *uint64) *ScriptUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *ScriptUpdate) SetNillableDeletedBy(v *uint32) *ScriptUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *ScriptUpdate) AddDeletedBy(v int32) *ScriptUpdate {
+func (_u *ScriptUpdate) AddDeletedBy(v int64) *ScriptUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -396,7 +396,7 @@ func (_u *ScriptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(script.Table, script.Columns, sqlgraph.NewFieldSpec(script.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(script.Table, script.Columns, sqlgraph.NewFieldSpec(script.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -420,31 +420,31 @@ func (_u *ScriptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(script.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(script.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(script.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(script.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(script.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(script.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(script.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(script.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(script.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(script.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(script.FieldIsEnabled, field.TypeBool, value)
@@ -569,14 +569,14 @@ func (_u *ScriptUpdateOne) ClearDeletedAt() *ScriptUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *ScriptUpdateOne) SetCreatedBy(v uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetCreatedBy(v uint64) *ScriptUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *ScriptUpdateOne) SetNillableCreatedBy(v *uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetNillableCreatedBy(v *uint64) *ScriptUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -584,7 +584,7 @@ func (_u *ScriptUpdateOne) SetNillableCreatedBy(v *uint32) *ScriptUpdateOne {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *ScriptUpdateOne) AddCreatedBy(v int32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) AddCreatedBy(v int64) *ScriptUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -596,14 +596,14 @@ func (_u *ScriptUpdateOne) ClearCreatedBy() *ScriptUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *ScriptUpdateOne) SetUpdatedBy(v uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetUpdatedBy(v uint64) *ScriptUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *ScriptUpdateOne) SetNillableUpdatedBy(v *uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetNillableUpdatedBy(v *uint64) *ScriptUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -611,7 +611,7 @@ func (_u *ScriptUpdateOne) SetNillableUpdatedBy(v *uint32) *ScriptUpdateOne {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *ScriptUpdateOne) AddUpdatedBy(v int32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) AddUpdatedBy(v int64) *ScriptUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -623,14 +623,14 @@ func (_u *ScriptUpdateOne) ClearUpdatedBy() *ScriptUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *ScriptUpdateOne) SetDeletedBy(v uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetDeletedBy(v uint64) *ScriptUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *ScriptUpdateOne) SetNillableDeletedBy(v *uint32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) SetNillableDeletedBy(v *uint64) *ScriptUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -638,7 +638,7 @@ func (_u *ScriptUpdateOne) SetNillableDeletedBy(v *uint32) *ScriptUpdateOne {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *ScriptUpdateOne) AddDeletedBy(v int32) *ScriptUpdateOne {
+func (_u *ScriptUpdateOne) AddDeletedBy(v int64) *ScriptUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -908,7 +908,7 @@ func (_u *ScriptUpdateOne) sqlSave(ctx context.Context) (_node *Script, err erro
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(script.Table, script.Columns, sqlgraph.NewFieldSpec(script.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(script.Table, script.Columns, sqlgraph.NewFieldSpec(script.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Script.id" for update`)}
@@ -949,31 +949,31 @@ func (_u *ScriptUpdateOne) sqlSave(ctx context.Context) (_node *Script, err erro
 		_spec.ClearField(script.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(script.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(script.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(script.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(script.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(script.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(script.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(script.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(script.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(script.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(script.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(script.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(script.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(script.FieldIsEnabled, field.TypeBool, value)

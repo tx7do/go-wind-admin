@@ -128,7 +128,7 @@ func (r *AiUsageLogRepo) Create(ctx context.Context, data *aiV1.AiUsageLog) erro
 }
 
 // SumTokensByTenantSince 统计租户自某时刻起消耗的总 token 数（配额检查用）。
-func (r *AiUsageLogRepo) SumTokensByTenantSince(ctx context.Context, tenantId uint32, since time.Time) (uint64, error) {
+func (r *AiUsageLogRepo) SumTokensByTenantSince(ctx context.Context, tenantId uint64, since time.Time) (uint64, error) {
 	sum := uint64(0)
 	var rows []struct {
 		Total uint64 `sql:"total"`
@@ -153,7 +153,7 @@ func (r *AiUsageLogRepo) SumTokensByTenantSince(ctx context.Context, tenantId ui
 // FetchTenantTokenQuotaLimit 读租户套餐上的 AI_TOKENS 配额上限。
 // 返回 (上限, 是否配置, 错误)：未配置=false 时调用方视为不限量（配额缺省语义与
 // 其他维度一致——没配的维度不设限）。
-func (r *AiUsageLogRepo) FetchTenantTokenQuotaLimit(ctx context.Context, tenantId uint32) (uint64, bool, error) {
+func (r *AiUsageLogRepo) FetchTenantTokenQuotaLimit(ctx context.Context, tenantId uint64) (uint64, bool, error) {
 	if tenantId == 0 {
 		return 0, false, nil
 	}
@@ -187,7 +187,7 @@ func (r *AiUsageLogRepo) FetchTenantTokenQuotaLimit(ctx context.Context, tenantI
 // 口径与本表列表一致：租户管理员只算本租户，平台管理员（tenantId=0）算全量。
 // 这里换 SystemContext 是为了绕开 privacy 做聚合，谓词就得自己按 viewer 补——原先无条件
 // TenantIDEQ(tenantId) 让平台管理员的摘要只统计 tenant_id=0 的行，与它下方全量的流水列表对不上。
-func (r *AiUsageLogRepo) MonthStats(ctx context.Context, tenantId uint32, monthStart time.Time) (uint64, uint64, error) {
+func (r *AiUsageLogRepo) MonthStats(ctx context.Context, tenantId uint64, monthStart time.Time) (uint64, uint64, error) {
 	sysCtx := viewer.WithSystemContext(ctx)
 	var rows []struct {
 		Total uint64 `sql:"total"`

@@ -55,7 +55,7 @@ func (f *fakeSender) Send(_ context.Context, req *channel.SendRequest) (*channel
 	return f.receipt, f.err
 }
 
-func (f *fakeSender) Precheck(_ context.Context, _ uint32) error { return f.precheckErr }
+func (f *fakeSender) Precheck(_ context.Context, _ uint64) error { return f.precheckErr }
 
 type notificationSvcEnv struct {
 	svc   *NotificationService
@@ -164,7 +164,7 @@ func TestNotificationServiceSqlite_SendSent(t *testing.T) {
 	require.Equal(t, notificationV1.EventType_PASSWORD_RESET_CODE, got.GetEventType(),
 		"枚举读回应如实（schema 侧 Optional().Nillable() 是这一条的前提）")
 	require.Equal(t, notificationV1.Channel_EMAIL, got.GetChannel())
-	require.Equal(t, uint32(42), got.GetChannelId(), "自选渠道的结果要落档，排障时才答得出走的哪个 SMTP")
+	require.Equal(t, uint64(42), got.GetChannelId(), "自选渠道的结果要落档，排障时才答得出走的哪个 SMTP")
 	require.Equal(t, "b***@example.com", got.GetTarget())
 	require.NotNil(t, got.GetSentAt())
 	require.Empty(t, got.GetLastError())
@@ -187,7 +187,7 @@ func TestNotificationServiceSqlite_SendFailed(t *testing.T) {
 	// 渠道已经选出（替身带回了回执），失败的"是哪条 SMTP"因此是已知事实，必须一起落账：
 	// 只有 last_error 文本里那句 via channel [42] 是可读性，不是可查询性。
 	require.NotNil(t, got.ChannelId, "账号已选出的失败要落 channel_id")
-	require.Equal(t, uint32(42), got.GetChannelId())
+	require.Equal(t, uint64(42), got.GetChannelId())
 }
 
 // TestNotificationServiceSqlite_SendSkipped 渠道没配/没启用：SKIPPED，与"渠道报错"区分开。

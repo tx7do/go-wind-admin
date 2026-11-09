@@ -4,7 +4,7 @@ import "github.com/tx7do/go-crud/gorm/mixin"
 
 // Api 对应表 sys_apis
 type Api struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Description       *string `gorm:"column:description;type:varchar(255);comment:描述"`
 	Module            *string `gorm:"column:module;type:varchar(128);comment:所属业务模块"`
@@ -16,7 +16,7 @@ type Api struct {
 	BusinessModule    *string `gorm:"column:business_module;type:varchar(128);comment:业务模块"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.SwitchStatus
 }
 

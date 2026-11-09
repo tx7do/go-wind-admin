@@ -110,7 +110,7 @@ func (r *DataAccessAuditLogRepo) List(ctx context.Context, req *paginationV1.Pag
 	}, nil
 }
 
-func (r *DataAccessAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *DataAccessAuditLogRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().DataAccessAuditLog.Query().
 		Where(dataaccessauditlog.IDEQ(id)).
 		Exist(ctx)

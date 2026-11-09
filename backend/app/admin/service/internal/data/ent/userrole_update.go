@@ -70,14 +70,14 @@ func (_u *UserRoleUpdate) ClearDeletedAt() *UserRoleUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *UserRoleUpdate) SetCreatedBy(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetCreatedBy(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableCreatedBy(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableCreatedBy(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *UserRoleUpdate) SetNillableCreatedBy(v *uint32) *UserRoleUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *UserRoleUpdate) AddCreatedBy(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddCreatedBy(v int64) *UserRoleUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *UserRoleUpdate) ClearCreatedBy() *UserRoleUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *UserRoleUpdate) SetUpdatedBy(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetUpdatedBy(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableUpdatedBy(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableUpdatedBy(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *UserRoleUpdate) SetNillableUpdatedBy(v *uint32) *UserRoleUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *UserRoleUpdate) AddUpdatedBy(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddUpdatedBy(v int64) *UserRoleUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *UserRoleUpdate) ClearUpdatedBy() *UserRoleUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *UserRoleUpdate) SetDeletedBy(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetDeletedBy(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableDeletedBy(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableDeletedBy(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *UserRoleUpdate) SetNillableDeletedBy(v *uint32) *UserRoleUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *UserRoleUpdate) AddDeletedBy(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddDeletedBy(v int64) *UserRoleUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -151,14 +151,14 @@ func (_u *UserRoleUpdate) ClearDeletedBy() *UserRoleUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserRoleUpdate) SetUserID(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetUserID(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableUserID(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableUserID(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -166,20 +166,20 @@ func (_u *UserRoleUpdate) SetNillableUserID(v *uint32) *UserRoleUpdate {
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *UserRoleUpdate) AddUserID(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddUserID(v int64) *UserRoleUpdate {
 	_u.mutation.AddUserID(v)
 	return _u
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *UserRoleUpdate) SetRoleID(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetRoleID(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableRoleID(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableRoleID(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -187,7 +187,7 @@ func (_u *UserRoleUpdate) SetNillableRoleID(v *uint32) *UserRoleUpdate {
 }
 
 // AddRoleID adds value to the "role_id" field.
-func (_u *UserRoleUpdate) AddRoleID(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddRoleID(v int64) *UserRoleUpdate {
 	_u.mutation.AddRoleID(v)
 	return _u
 }
@@ -253,14 +253,14 @@ func (_u *UserRoleUpdate) ClearAssignedAt() *UserRoleUpdate {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_u *UserRoleUpdate) SetAssignedBy(v uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetAssignedBy(v uint64) *UserRoleUpdate {
 	_u.mutation.ResetAssignedBy()
 	_u.mutation.SetAssignedBy(v)
 	return _u
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_u *UserRoleUpdate) SetNillableAssignedBy(v *uint32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) SetNillableAssignedBy(v *uint64) *UserRoleUpdate {
 	if v != nil {
 		_u.SetAssignedBy(*v)
 	}
@@ -268,7 +268,7 @@ func (_u *UserRoleUpdate) SetNillableAssignedBy(v *uint32) *UserRoleUpdate {
 }
 
 // AddAssignedBy adds value to the "assigned_by" field.
-func (_u *UserRoleUpdate) AddAssignedBy(v int32) *UserRoleUpdate {
+func (_u *UserRoleUpdate) AddAssignedBy(v int64) *UserRoleUpdate {
 	_u.mutation.AddAssignedBy(v)
 	return _u
 }
@@ -359,7 +359,7 @@ func (_u *UserRoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(userrole.Table, userrole.Columns, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(userrole.Table, userrole.Columns, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -383,46 +383,46 @@ func (_u *UserRoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(userrole.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(userrole.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(userrole.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(userrole.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(userrole.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(userrole.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(userrole.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(userrole.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(userrole.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(userrole.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(userrole.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(userrole.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(userrole.FieldRoleID, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.StartAt(); ok {
 		_spec.SetField(userrole.FieldStartAt, field.TypeTime, value)
@@ -443,13 +443,13 @@ func (_u *UserRoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(userrole.FieldAssignedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedBy(); ok {
-		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedAssignedBy(); ok {
-		_spec.AddField(userrole.FieldAssignedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldAssignedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.AssignedByCleared() {
-		_spec.ClearField(userrole.FieldAssignedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldAssignedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsPrimary(); ok {
 		_spec.SetField(userrole.FieldIsPrimary, field.TypeBool, value)
@@ -520,14 +520,14 @@ func (_u *UserRoleUpdateOne) ClearDeletedAt() *UserRoleUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *UserRoleUpdateOne) SetCreatedBy(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetCreatedBy(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableCreatedBy(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableCreatedBy(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -535,7 +535,7 @@ func (_u *UserRoleUpdateOne) SetNillableCreatedBy(v *uint32) *UserRoleUpdateOne 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *UserRoleUpdateOne) AddCreatedBy(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddCreatedBy(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -547,14 +547,14 @@ func (_u *UserRoleUpdateOne) ClearCreatedBy() *UserRoleUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *UserRoleUpdateOne) SetUpdatedBy(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetUpdatedBy(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableUpdatedBy(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableUpdatedBy(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -562,7 +562,7 @@ func (_u *UserRoleUpdateOne) SetNillableUpdatedBy(v *uint32) *UserRoleUpdateOne 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *UserRoleUpdateOne) AddUpdatedBy(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddUpdatedBy(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -574,14 +574,14 @@ func (_u *UserRoleUpdateOne) ClearUpdatedBy() *UserRoleUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *UserRoleUpdateOne) SetDeletedBy(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetDeletedBy(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableDeletedBy(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableDeletedBy(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -589,7 +589,7 @@ func (_u *UserRoleUpdateOne) SetNillableDeletedBy(v *uint32) *UserRoleUpdateOne 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *UserRoleUpdateOne) AddDeletedBy(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddDeletedBy(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -601,14 +601,14 @@ func (_u *UserRoleUpdateOne) ClearDeletedBy() *UserRoleUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserRoleUpdateOne) SetUserID(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetUserID(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableUserID(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableUserID(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -616,20 +616,20 @@ func (_u *UserRoleUpdateOne) SetNillableUserID(v *uint32) *UserRoleUpdateOne {
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *UserRoleUpdateOne) AddUserID(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddUserID(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddUserID(v)
 	return _u
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *UserRoleUpdateOne) SetRoleID(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetRoleID(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableRoleID(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableRoleID(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -637,7 +637,7 @@ func (_u *UserRoleUpdateOne) SetNillableRoleID(v *uint32) *UserRoleUpdateOne {
 }
 
 // AddRoleID adds value to the "role_id" field.
-func (_u *UserRoleUpdateOne) AddRoleID(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddRoleID(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddRoleID(v)
 	return _u
 }
@@ -703,14 +703,14 @@ func (_u *UserRoleUpdateOne) ClearAssignedAt() *UserRoleUpdateOne {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_u *UserRoleUpdateOne) SetAssignedBy(v uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetAssignedBy(v uint64) *UserRoleUpdateOne {
 	_u.mutation.ResetAssignedBy()
 	_u.mutation.SetAssignedBy(v)
 	return _u
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_u *UserRoleUpdateOne) SetNillableAssignedBy(v *uint32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) SetNillableAssignedBy(v *uint64) *UserRoleUpdateOne {
 	if v != nil {
 		_u.SetAssignedBy(*v)
 	}
@@ -718,7 +718,7 @@ func (_u *UserRoleUpdateOne) SetNillableAssignedBy(v *uint32) *UserRoleUpdateOne
 }
 
 // AddAssignedBy adds value to the "assigned_by" field.
-func (_u *UserRoleUpdateOne) AddAssignedBy(v int32) *UserRoleUpdateOne {
+func (_u *UserRoleUpdateOne) AddAssignedBy(v int64) *UserRoleUpdateOne {
 	_u.mutation.AddAssignedBy(v)
 	return _u
 }
@@ -822,7 +822,7 @@ func (_u *UserRoleUpdateOne) sqlSave(ctx context.Context) (_node *UserRole, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(userrole.Table, userrole.Columns, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(userrole.Table, userrole.Columns, sqlgraph.NewFieldSpec(userrole.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserRole.id" for update`)}
@@ -863,46 +863,46 @@ func (_u *UserRoleUpdateOne) sqlSave(ctx context.Context) (_node *UserRole, err 
 		_spec.ClearField(userrole.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(userrole.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(userrole.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(userrole.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(userrole.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(userrole.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(userrole.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(userrole.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(userrole.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(userrole.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(userrole.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(userrole.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(userrole.FieldRoleID, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.StartAt(); ok {
 		_spec.SetField(userrole.FieldStartAt, field.TypeTime, value)
@@ -923,13 +923,13 @@ func (_u *UserRoleUpdateOne) sqlSave(ctx context.Context) (_node *UserRole, err 
 		_spec.ClearField(userrole.FieldAssignedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedBy(); ok {
-		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint32, value)
+		_spec.SetField(userrole.FieldAssignedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedAssignedBy(); ok {
-		_spec.AddField(userrole.FieldAssignedBy, field.TypeUint32, value)
+		_spec.AddField(userrole.FieldAssignedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.AssignedByCleared() {
-		_spec.ClearField(userrole.FieldAssignedBy, field.TypeUint32)
+		_spec.ClearField(userrole.FieldAssignedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsPrimary(); ok {
 		_spec.SetField(userrole.FieldIsPrimary, field.TypeBool, value)

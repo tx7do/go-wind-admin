@@ -30,12 +30,12 @@ func (InternalMessageRecipient) Annotations() []schema.Annotation {
 // Fields of the InternalMessageRecipient.
 func (InternalMessageRecipient) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("message_id").
+		field.Uint64("message_id").
 			Comment("站内信内容ID").
 			Optional().
 			Nillable(),
 
-		field.Uint32("recipient_user_id").
+		field.Uint64("recipient_user_id").
 			Comment("接收者用户ID").
 			Optional().
 			Nillable(),
@@ -67,9 +67,9 @@ func (InternalMessageRecipient) Fields() []ent.Field {
 // Mixin of the InternalMessageRecipient.
 func (InternalMessageRecipient) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

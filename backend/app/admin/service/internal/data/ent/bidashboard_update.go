@@ -71,14 +71,14 @@ func (_u *BiDashboardUpdate) ClearDeletedAt() *BiDashboardUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *BiDashboardUpdate) SetCreatedBy(v uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetCreatedBy(v uint64) *BiDashboardUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *BiDashboardUpdate) SetNillableCreatedBy(v *uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetNillableCreatedBy(v *uint64) *BiDashboardUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *BiDashboardUpdate) SetNillableCreatedBy(v *uint32) *BiDashboardUpdate 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *BiDashboardUpdate) AddCreatedBy(v int32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) AddCreatedBy(v int64) *BiDashboardUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *BiDashboardUpdate) ClearCreatedBy() *BiDashboardUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *BiDashboardUpdate) SetUpdatedBy(v uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetUpdatedBy(v uint64) *BiDashboardUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *BiDashboardUpdate) SetNillableUpdatedBy(v *uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetNillableUpdatedBy(v *uint64) *BiDashboardUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *BiDashboardUpdate) SetNillableUpdatedBy(v *uint32) *BiDashboardUpdate 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *BiDashboardUpdate) AddUpdatedBy(v int32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) AddUpdatedBy(v int64) *BiDashboardUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *BiDashboardUpdate) ClearUpdatedBy() *BiDashboardUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *BiDashboardUpdate) SetDeletedBy(v uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetDeletedBy(v uint64) *BiDashboardUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *BiDashboardUpdate) SetNillableDeletedBy(v *uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) SetNillableDeletedBy(v *uint64) *BiDashboardUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *BiDashboardUpdate) SetNillableDeletedBy(v *uint32) *BiDashboardUpdate 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *BiDashboardUpdate) AddDeletedBy(v int32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) AddDeletedBy(v int64) *BiDashboardUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -433,14 +433,14 @@ func (_u *BiDashboardUpdate) ClearVersion() *BiDashboardUpdate {
 }
 
 // AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by IDs.
-func (_u *BiDashboardUpdate) AddRevisionIDs(ids ...uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) AddRevisionIDs(ids ...uint64) *BiDashboardUpdate {
 	_u.mutation.AddRevisionIDs(ids...)
 	return _u
 }
 
 // AddRevisions adds the "revisions" edges to the BiDashboardRevision entity.
 func (_u *BiDashboardUpdate) AddRevisions(v ...*BiDashboardRevision) *BiDashboardUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -459,14 +459,14 @@ func (_u *BiDashboardUpdate) ClearRevisions() *BiDashboardUpdate {
 }
 
 // RemoveRevisionIDs removes the "revisions" edge to BiDashboardRevision entities by IDs.
-func (_u *BiDashboardUpdate) RemoveRevisionIDs(ids ...uint32) *BiDashboardUpdate {
+func (_u *BiDashboardUpdate) RemoveRevisionIDs(ids ...uint64) *BiDashboardUpdate {
 	_u.mutation.RemoveRevisionIDs(ids...)
 	return _u
 }
 
 // RemoveRevisions removes "revisions" edges to BiDashboardRevision entities.
 func (_u *BiDashboardUpdate) RemoveRevisions(v ...*BiDashboardRevision) *BiDashboardUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -520,7 +520,7 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(bidashboard.Table, bidashboard.Columns, sqlgraph.NewFieldSpec(bidashboard.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(bidashboard.Table, bidashboard.Columns, sqlgraph.NewFieldSpec(bidashboard.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -544,31 +544,31 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(bidashboard.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(bidashboard.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(bidashboard.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(bidashboard.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(bidashboard.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(bidashboard.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(bidashboard.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(bidashboard.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(bidashboard.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(bidashboard.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(bidashboard.FieldIsEnabled, field.TypeBool, value)
@@ -586,7 +586,7 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(bidashboard.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(bidashboard.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(bidashboard.FieldName, field.TypeString, value)
@@ -668,7 +668,7 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -681,7 +681,7 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -697,7 +697,7 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -768,14 +768,14 @@ func (_u *BiDashboardUpdateOne) ClearDeletedAt() *BiDashboardUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *BiDashboardUpdateOne) SetCreatedBy(v uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetCreatedBy(v uint64) *BiDashboardUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *BiDashboardUpdateOne) SetNillableCreatedBy(v *uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetNillableCreatedBy(v *uint64) *BiDashboardUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -783,7 +783,7 @@ func (_u *BiDashboardUpdateOne) SetNillableCreatedBy(v *uint32) *BiDashboardUpda
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *BiDashboardUpdateOne) AddCreatedBy(v int32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) AddCreatedBy(v int64) *BiDashboardUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -795,14 +795,14 @@ func (_u *BiDashboardUpdateOne) ClearCreatedBy() *BiDashboardUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *BiDashboardUpdateOne) SetUpdatedBy(v uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetUpdatedBy(v uint64) *BiDashboardUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *BiDashboardUpdateOne) SetNillableUpdatedBy(v *uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetNillableUpdatedBy(v *uint64) *BiDashboardUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -810,7 +810,7 @@ func (_u *BiDashboardUpdateOne) SetNillableUpdatedBy(v *uint32) *BiDashboardUpda
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *BiDashboardUpdateOne) AddUpdatedBy(v int32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) AddUpdatedBy(v int64) *BiDashboardUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -822,14 +822,14 @@ func (_u *BiDashboardUpdateOne) ClearUpdatedBy() *BiDashboardUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *BiDashboardUpdateOne) SetDeletedBy(v uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetDeletedBy(v uint64) *BiDashboardUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *BiDashboardUpdateOne) SetNillableDeletedBy(v *uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) SetNillableDeletedBy(v *uint64) *BiDashboardUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -837,7 +837,7 @@ func (_u *BiDashboardUpdateOne) SetNillableDeletedBy(v *uint32) *BiDashboardUpda
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *BiDashboardUpdateOne) AddDeletedBy(v int32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) AddDeletedBy(v int64) *BiDashboardUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -1130,14 +1130,14 @@ func (_u *BiDashboardUpdateOne) ClearVersion() *BiDashboardUpdateOne {
 }
 
 // AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by IDs.
-func (_u *BiDashboardUpdateOne) AddRevisionIDs(ids ...uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) AddRevisionIDs(ids ...uint64) *BiDashboardUpdateOne {
 	_u.mutation.AddRevisionIDs(ids...)
 	return _u
 }
 
 // AddRevisions adds the "revisions" edges to the BiDashboardRevision entity.
 func (_u *BiDashboardUpdateOne) AddRevisions(v ...*BiDashboardRevision) *BiDashboardUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1156,14 +1156,14 @@ func (_u *BiDashboardUpdateOne) ClearRevisions() *BiDashboardUpdateOne {
 }
 
 // RemoveRevisionIDs removes the "revisions" edge to BiDashboardRevision entities by IDs.
-func (_u *BiDashboardUpdateOne) RemoveRevisionIDs(ids ...uint32) *BiDashboardUpdateOne {
+func (_u *BiDashboardUpdateOne) RemoveRevisionIDs(ids ...uint64) *BiDashboardUpdateOne {
 	_u.mutation.RemoveRevisionIDs(ids...)
 	return _u
 }
 
 // RemoveRevisions removes "revisions" edges to BiDashboardRevision entities.
 func (_u *BiDashboardUpdateOne) RemoveRevisions(v ...*BiDashboardRevision) *BiDashboardUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1230,7 +1230,7 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(bidashboard.Table, bidashboard.Columns, sqlgraph.NewFieldSpec(bidashboard.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(bidashboard.Table, bidashboard.Columns, sqlgraph.NewFieldSpec(bidashboard.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "BiDashboard.id" for update`)}
@@ -1271,31 +1271,31 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 		_spec.ClearField(bidashboard.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(bidashboard.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(bidashboard.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(bidashboard.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(bidashboard.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(bidashboard.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(bidashboard.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(bidashboard.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(bidashboard.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(bidashboard.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(bidashboard.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(bidashboard.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(bidashboard.FieldIsEnabled, field.TypeBool, value)
@@ -1313,7 +1313,7 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 		_spec.ClearField(bidashboard.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(bidashboard.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(bidashboard.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(bidashboard.FieldName, field.TypeString, value)
@@ -1395,7 +1395,7 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1408,7 +1408,7 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1424,7 +1424,7 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 			Columns: []string{bidashboard.RevisionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

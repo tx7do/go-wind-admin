@@ -37,7 +37,7 @@ func (Permission) Fields() []ent.Field {
 			Nillable().
 			Comment("权限编码（如：opm:user:delete、order:export）"),
 
-		field.Uint32("group_id").
+		field.Uint64("group_id").
 			Optional().
 			Nillable().
 			Comment("关联权限分组 ID"),
@@ -46,9 +46,9 @@ func (Permission) Fields() []ent.Field {
 
 func (Permission) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.SwitchStatus{},
 		mixin.Description{},
 	}

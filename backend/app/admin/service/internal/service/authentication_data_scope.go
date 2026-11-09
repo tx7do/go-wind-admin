@@ -33,9 +33,9 @@ const maxDataScopeUnitIds = 256
 // refresh 流程同样走本函数，配置变更最迟随下次刷新令牌生效。
 func (s *AuthenticationService) aggregateDataScopes(
 	ctx context.Context,
-	tenantID uint32,
-	userID uint32,
-	roleIDs []uint32,
+	tenantID uint64,
+	userID uint64,
+	roleIDs []uint64,
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) {
 	// 平台上下文：无租户隔离维度，整体全量。
@@ -56,7 +56,7 @@ func (s *AuthenticationService) aggregateDataScopes(
 	unitTypes := make(map[identityV1.DataScope]struct{})
 	needOwnUnits := false
 	needDescendants := false
-	var selectedUnitRoleIDs []uint32
+	var selectedUnitRoleIDs []uint64
 
 	for _, role := range roles {
 		switch role.GetDataScope() {

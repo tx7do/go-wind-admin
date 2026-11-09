@@ -59,7 +59,7 @@ func TestPlanModuleServiceSqlite_Create_AssociatesPlan(t *testing.T) {
 	require.Len(t, rows, 1, "plan_module 表应落库 1 条记录")
 	require.Equal(t, entPlanModule.ModuleDashboard, *rows[0].Module, "module 应经转换器落库为 DASHBOARD")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint32(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	// 外键回归断言：白名单行必须挂在请求指定的父套餐上，而非 NULL
 	linked, err := entClient.Client().PlanModule.Query().

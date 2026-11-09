@@ -65,13 +65,13 @@ func (_c *RoleOrgUnitCreate) SetNillableDeletedAt(v *time.Time) *RoleOrgUnitCrea
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *RoleOrgUnitCreate) SetCreatedBy(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetCreatedBy(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *RoleOrgUnitCreate) SetNillableCreatedBy(v *uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetNillableCreatedBy(v *uint64) *RoleOrgUnitCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *RoleOrgUnitCreate) SetNillableCreatedBy(v *uint32) *RoleOrgUnitCreate 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *RoleOrgUnitCreate) SetUpdatedBy(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetUpdatedBy(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *RoleOrgUnitCreate) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetNillableUpdatedBy(v *uint64) *RoleOrgUnitCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *RoleOrgUnitCreate) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitCreate 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *RoleOrgUnitCreate) SetDeletedBy(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetDeletedBy(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *RoleOrgUnitCreate) SetNillableDeletedBy(v *uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetNillableDeletedBy(v *uint64) *RoleOrgUnitCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *RoleOrgUnitCreate) SetNillableDeletedBy(v *uint32) *RoleOrgUnitCreate 
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *RoleOrgUnitCreate) SetTenantID(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetTenantID(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *RoleOrgUnitCreate) SetNillableTenantID(v *uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetNillableTenantID(v *uint64) *RoleOrgUnitCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,19 +121,19 @@ func (_c *RoleOrgUnitCreate) SetNillableTenantID(v *uint32) *RoleOrgUnitCreate {
 }
 
 // SetRoleID sets the "role_id" field.
-func (_c *RoleOrgUnitCreate) SetRoleID(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetRoleID(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetRoleID(v)
 	return _c
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_c *RoleOrgUnitCreate) SetOrgUnitID(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetOrgUnitID(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetOrgUnitID(v)
 	return _c
 }
 
 // SetID sets the "id" field.
-func (_c *RoleOrgUnitCreate) SetID(v uint32) *RoleOrgUnitCreate {
+func (_c *RoleOrgUnitCreate) SetID(v uint64) *RoleOrgUnitCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -211,7 +211,7 @@ func (_c *RoleOrgUnitCreate) sqlSave(ctx context.Context) (*RoleOrgUnit, error) 
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -221,7 +221,7 @@ func (_c *RoleOrgUnitCreate) sqlSave(ctx context.Context) (*RoleOrgUnit, error) 
 func (_c *RoleOrgUnitCreate) createSpec() (*RoleOrgUnit, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RoleOrgUnit{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(roleorgunit.Table, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(roleorgunit.Table, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -241,27 +241,27 @@ func (_c *RoleOrgUnitCreate) createSpec() (*RoleOrgUnit, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(roleorgunit.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.RoleID(); ok {
-		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint64, value)
 		_node.RoleID = &value
 	}
 	if value, ok := _c.mutation.OrgUnitID(); ok {
-		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint64, value)
 		_node.OrgUnitID = &value
 	}
 	return _node, _spec
@@ -353,7 +353,7 @@ func (u *RoleOrgUnitUpsert) ClearDeletedAt() *RoleOrgUnitUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleOrgUnitUpsert) SetCreatedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) SetCreatedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Set(roleorgunit.FieldCreatedBy, v)
 	return u
 }
@@ -365,7 +365,7 @@ func (u *RoleOrgUnitUpsert) UpdateCreatedBy() *RoleOrgUnitUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleOrgUnitUpsert) AddCreatedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) AddCreatedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Add(roleorgunit.FieldCreatedBy, v)
 	return u
 }
@@ -377,7 +377,7 @@ func (u *RoleOrgUnitUpsert) ClearCreatedBy() *RoleOrgUnitUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleOrgUnitUpsert) SetUpdatedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) SetUpdatedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Set(roleorgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -389,7 +389,7 @@ func (u *RoleOrgUnitUpsert) UpdateUpdatedBy() *RoleOrgUnitUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleOrgUnitUpsert) AddUpdatedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) AddUpdatedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Add(roleorgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -401,7 +401,7 @@ func (u *RoleOrgUnitUpsert) ClearUpdatedBy() *RoleOrgUnitUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleOrgUnitUpsert) SetDeletedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) SetDeletedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Set(roleorgunit.FieldDeletedBy, v)
 	return u
 }
@@ -413,7 +413,7 @@ func (u *RoleOrgUnitUpsert) UpdateDeletedBy() *RoleOrgUnitUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleOrgUnitUpsert) AddDeletedBy(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) AddDeletedBy(v uint64) *RoleOrgUnitUpsert {
 	u.Add(roleorgunit.FieldDeletedBy, v)
 	return u
 }
@@ -425,7 +425,7 @@ func (u *RoleOrgUnitUpsert) ClearDeletedBy() *RoleOrgUnitUpsert {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleOrgUnitUpsert) SetRoleID(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) SetRoleID(v uint64) *RoleOrgUnitUpsert {
 	u.Set(roleorgunit.FieldRoleID, v)
 	return u
 }
@@ -437,13 +437,13 @@ func (u *RoleOrgUnitUpsert) UpdateRoleID() *RoleOrgUnitUpsert {
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleOrgUnitUpsert) AddRoleID(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) AddRoleID(v uint64) *RoleOrgUnitUpsert {
 	u.Add(roleorgunit.FieldRoleID, v)
 	return u
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *RoleOrgUnitUpsert) SetOrgUnitID(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) SetOrgUnitID(v uint64) *RoleOrgUnitUpsert {
 	u.Set(roleorgunit.FieldOrgUnitID, v)
 	return u
 }
@@ -455,7 +455,7 @@ func (u *RoleOrgUnitUpsert) UpdateOrgUnitID() *RoleOrgUnitUpsert {
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *RoleOrgUnitUpsert) AddOrgUnitID(v uint32) *RoleOrgUnitUpsert {
+func (u *RoleOrgUnitUpsert) AddOrgUnitID(v uint64) *RoleOrgUnitUpsert {
 	u.Add(roleorgunit.FieldOrgUnitID, v)
 	return u
 }
@@ -557,14 +557,14 @@ func (u *RoleOrgUnitUpsertOne) ClearDeletedAt() *RoleOrgUnitUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleOrgUnitUpsertOne) SetCreatedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) SetCreatedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleOrgUnitUpsertOne) AddCreatedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) AddCreatedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -585,14 +585,14 @@ func (u *RoleOrgUnitUpsertOne) ClearCreatedBy() *RoleOrgUnitUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleOrgUnitUpsertOne) SetUpdatedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) SetUpdatedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleOrgUnitUpsertOne) AddUpdatedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) AddUpdatedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -613,14 +613,14 @@ func (u *RoleOrgUnitUpsertOne) ClearUpdatedBy() *RoleOrgUnitUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleOrgUnitUpsertOne) SetDeletedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) SetDeletedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleOrgUnitUpsertOne) AddDeletedBy(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) AddDeletedBy(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -641,14 +641,14 @@ func (u *RoleOrgUnitUpsertOne) ClearDeletedBy() *RoleOrgUnitUpsertOne {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleOrgUnitUpsertOne) SetRoleID(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) SetRoleID(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleOrgUnitUpsertOne) AddRoleID(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) AddRoleID(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddRoleID(v)
 	})
@@ -662,14 +662,14 @@ func (u *RoleOrgUnitUpsertOne) UpdateRoleID() *RoleOrgUnitUpsertOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *RoleOrgUnitUpsertOne) SetOrgUnitID(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) SetOrgUnitID(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *RoleOrgUnitUpsertOne) AddOrgUnitID(v uint32) *RoleOrgUnitUpsertOne {
+func (u *RoleOrgUnitUpsertOne) AddOrgUnitID(v uint64) *RoleOrgUnitUpsertOne {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -698,7 +698,7 @@ func (u *RoleOrgUnitUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RoleOrgUnitUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *RoleOrgUnitUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -707,7 +707,7 @@ func (u *RoleOrgUnitUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RoleOrgUnitUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *RoleOrgUnitUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -764,7 +764,7 @@ func (_c *RoleOrgUnitCreateBulk) Save(ctx context.Context) ([]*RoleOrgUnit, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -945,14 +945,14 @@ func (u *RoleOrgUnitUpsertBulk) ClearDeletedAt() *RoleOrgUnitUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleOrgUnitUpsertBulk) SetCreatedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) SetCreatedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleOrgUnitUpsertBulk) AddCreatedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) AddCreatedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -973,14 +973,14 @@ func (u *RoleOrgUnitUpsertBulk) ClearCreatedBy() *RoleOrgUnitUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleOrgUnitUpsertBulk) SetUpdatedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) SetUpdatedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleOrgUnitUpsertBulk) AddUpdatedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) AddUpdatedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1001,14 +1001,14 @@ func (u *RoleOrgUnitUpsertBulk) ClearUpdatedBy() *RoleOrgUnitUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleOrgUnitUpsertBulk) SetDeletedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) SetDeletedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleOrgUnitUpsertBulk) AddDeletedBy(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) AddDeletedBy(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1029,14 +1029,14 @@ func (u *RoleOrgUnitUpsertBulk) ClearDeletedBy() *RoleOrgUnitUpsertBulk {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleOrgUnitUpsertBulk) SetRoleID(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) SetRoleID(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleOrgUnitUpsertBulk) AddRoleID(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) AddRoleID(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddRoleID(v)
 	})
@@ -1050,14 +1050,14 @@ func (u *RoleOrgUnitUpsertBulk) UpdateRoleID() *RoleOrgUnitUpsertBulk {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *RoleOrgUnitUpsertBulk) SetOrgUnitID(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) SetOrgUnitID(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *RoleOrgUnitUpsertBulk) AddOrgUnitID(v uint32) *RoleOrgUnitUpsertBulk {
+func (u *RoleOrgUnitUpsertBulk) AddOrgUnitID(v uint64) *RoleOrgUnitUpsertBulk {
 	return u.Update(func(s *RoleOrgUnitUpsert) {
 		s.AddOrgUnitID(v)
 	})

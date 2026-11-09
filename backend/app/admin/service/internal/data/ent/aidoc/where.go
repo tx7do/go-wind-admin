@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.AiDoc {
+func ID(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.AiDoc {
+func IDEQ(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.AiDoc {
+func IDNEQ(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.AiDoc {
+func IDIn(ids ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.AiDoc {
+func IDNotIn(ids ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.AiDoc {
+func IDGT(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.AiDoc {
+func IDGTE(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.AiDoc {
+func IDLT(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.AiDoc {
+func IDLTE(id uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,27 +71,27 @@ func DeletedAt(v time.Time) predicate.AiDoc {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.AiDoc {
+func CreatedBy(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.AiDoc {
+func UpdatedBy(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.AiDoc {
+func DeletedBy(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.AiDoc {
+func TenantID(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldTenantID, v))
 }
 
 // BaseID applies equality check predicate on the "base_id" field. It's identical to BaseIDEQ.
-func BaseID(v uint32) predicate.AiDoc {
+func BaseID(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldBaseID, v))
 }
 
@@ -116,7 +116,7 @@ func ErrorMessage(v string) predicate.AiDoc {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint32) predicate.AiDoc {
+func UserID(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldUserID, v))
 }
 
@@ -271,42 +271,42 @@ func DeletedAtNotNil() predicate.AiDoc {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.AiDoc {
+func CreatedByEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.AiDoc {
+func CreatedByNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.AiDoc {
+func CreatedByIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.AiDoc {
+func CreatedByNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.AiDoc {
+func CreatedByGT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.AiDoc {
+func CreatedByGTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.AiDoc {
+func CreatedByLT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.AiDoc {
+func CreatedByLTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -321,42 +321,42 @@ func CreatedByNotNil() predicate.AiDoc {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.AiDoc {
+func UpdatedByEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.AiDoc {
+func UpdatedByNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.AiDoc {
+func UpdatedByIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.AiDoc {
+func UpdatedByNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.AiDoc {
+func UpdatedByGT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.AiDoc {
+func UpdatedByGTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.AiDoc {
+func UpdatedByLT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.AiDoc {
+func UpdatedByLTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -371,42 +371,42 @@ func UpdatedByNotNil() predicate.AiDoc {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.AiDoc {
+func DeletedByEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.AiDoc {
+func DeletedByNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.AiDoc {
+func DeletedByIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.AiDoc {
+func DeletedByNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.AiDoc {
+func DeletedByGT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.AiDoc {
+func DeletedByGTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.AiDoc {
+func DeletedByLT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.AiDoc {
+func DeletedByLTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -421,42 +421,42 @@ func DeletedByNotNil() predicate.AiDoc {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.AiDoc {
+func TenantIDEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.AiDoc {
+func TenantIDNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.AiDoc {
+func TenantIDIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.AiDoc {
+func TenantIDNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.AiDoc {
+func TenantIDGT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.AiDoc {
+func TenantIDGTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.AiDoc {
+func TenantIDLT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.AiDoc {
+func TenantIDLTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -471,22 +471,22 @@ func TenantIDNotNil() predicate.AiDoc {
 }
 
 // BaseIDEQ applies the EQ predicate on the "base_id" field.
-func BaseIDEQ(v uint32) predicate.AiDoc {
+func BaseIDEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldBaseID, v))
 }
 
 // BaseIDNEQ applies the NEQ predicate on the "base_id" field.
-func BaseIDNEQ(v uint32) predicate.AiDoc {
+func BaseIDNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldBaseID, v))
 }
 
 // BaseIDIn applies the In predicate on the "base_id" field.
-func BaseIDIn(vs ...uint32) predicate.AiDoc {
+func BaseIDIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldBaseID, vs...))
 }
 
 // BaseIDNotIn applies the NotIn predicate on the "base_id" field.
-func BaseIDNotIn(vs ...uint32) predicate.AiDoc {
+func BaseIDNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldBaseID, vs...))
 }
 
@@ -776,42 +776,42 @@ func ErrorMessageContainsFold(v string) predicate.AiDoc {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint32) predicate.AiDoc {
+func UserIDEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint32) predicate.AiDoc {
+func UserIDNEQ(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint32) predicate.AiDoc {
+func UserIDIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint32) predicate.AiDoc {
+func UserIDNotIn(vs ...uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint32) predicate.AiDoc {
+func UserIDGT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint32) predicate.AiDoc {
+func UserIDGTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint32) predicate.AiDoc {
+func UserIDLT(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint32) predicate.AiDoc {
+func UserIDLTE(v uint64) predicate.AiDoc {
 	return predicate.AiDoc(sql.FieldLTE(FieldUserID, v))
 }
 

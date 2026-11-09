@@ -70,14 +70,14 @@ func (_u *AccessKeyUpdate) ClearDeletedAt() *AccessKeyUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AccessKeyUpdate) SetCreatedBy(v uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetCreatedBy(v uint64) *AccessKeyUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AccessKeyUpdate) SetNillableCreatedBy(v *uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetNillableCreatedBy(v *uint64) *AccessKeyUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *AccessKeyUpdate) SetNillableCreatedBy(v *uint32) *AccessKeyUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AccessKeyUpdate) AddCreatedBy(v int32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) AddCreatedBy(v int64) *AccessKeyUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *AccessKeyUpdate) ClearCreatedBy() *AccessKeyUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AccessKeyUpdate) SetUpdatedBy(v uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetUpdatedBy(v uint64) *AccessKeyUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AccessKeyUpdate) SetNillableUpdatedBy(v *uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetNillableUpdatedBy(v *uint64) *AccessKeyUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *AccessKeyUpdate) SetNillableUpdatedBy(v *uint32) *AccessKeyUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AccessKeyUpdate) AddUpdatedBy(v int32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) AddUpdatedBy(v int64) *AccessKeyUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *AccessKeyUpdate) ClearUpdatedBy() *AccessKeyUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AccessKeyUpdate) SetDeletedBy(v uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetDeletedBy(v uint64) *AccessKeyUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AccessKeyUpdate) SetNillableDeletedBy(v *uint32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) SetNillableDeletedBy(v *uint64) *AccessKeyUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *AccessKeyUpdate) SetNillableDeletedBy(v *uint32) *AccessKeyUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AccessKeyUpdate) AddDeletedBy(v int32) *AccessKeyUpdate {
+func (_u *AccessKeyUpdate) AddDeletedBy(v int64) *AccessKeyUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -316,7 +316,7 @@ func (_u *AccessKeyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(accesskey.Table, accesskey.Columns, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(accesskey.Table, accesskey.Columns, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -340,37 +340,37 @@ func (_u *AccessKeyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(accesskey.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(accesskey.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(accesskey.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(accesskey.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(accesskey.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(accesskey.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(accesskey.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(accesskey.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(accesskey.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(accesskey.FieldStatus, field.TypeEnum, value)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(accesskey.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(accesskey.FieldName, field.TypeString, value)
@@ -465,14 +465,14 @@ func (_u *AccessKeyUpdateOne) ClearDeletedAt() *AccessKeyUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AccessKeyUpdateOne) SetCreatedBy(v uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetCreatedBy(v uint64) *AccessKeyUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AccessKeyUpdateOne) SetNillableCreatedBy(v *uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetNillableCreatedBy(v *uint64) *AccessKeyUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -480,7 +480,7 @@ func (_u *AccessKeyUpdateOne) SetNillableCreatedBy(v *uint32) *AccessKeyUpdateOn
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AccessKeyUpdateOne) AddCreatedBy(v int32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) AddCreatedBy(v int64) *AccessKeyUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -492,14 +492,14 @@ func (_u *AccessKeyUpdateOne) ClearCreatedBy() *AccessKeyUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AccessKeyUpdateOne) SetUpdatedBy(v uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetUpdatedBy(v uint64) *AccessKeyUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AccessKeyUpdateOne) SetNillableUpdatedBy(v *uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetNillableUpdatedBy(v *uint64) *AccessKeyUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -507,7 +507,7 @@ func (_u *AccessKeyUpdateOne) SetNillableUpdatedBy(v *uint32) *AccessKeyUpdateOn
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AccessKeyUpdateOne) AddUpdatedBy(v int32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) AddUpdatedBy(v int64) *AccessKeyUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -519,14 +519,14 @@ func (_u *AccessKeyUpdateOne) ClearUpdatedBy() *AccessKeyUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AccessKeyUpdateOne) SetDeletedBy(v uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetDeletedBy(v uint64) *AccessKeyUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AccessKeyUpdateOne) SetNillableDeletedBy(v *uint32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) SetNillableDeletedBy(v *uint64) *AccessKeyUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -534,7 +534,7 @@ func (_u *AccessKeyUpdateOne) SetNillableDeletedBy(v *uint32) *AccessKeyUpdateOn
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AccessKeyUpdateOne) AddDeletedBy(v int32) *AccessKeyUpdateOne {
+func (_u *AccessKeyUpdateOne) AddDeletedBy(v int64) *AccessKeyUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -724,7 +724,7 @@ func (_u *AccessKeyUpdateOne) sqlSave(ctx context.Context) (_node *AccessKey, er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(accesskey.Table, accesskey.Columns, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(accesskey.Table, accesskey.Columns, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AccessKey.id" for update`)}
@@ -765,37 +765,37 @@ func (_u *AccessKeyUpdateOne) sqlSave(ctx context.Context) (_node *AccessKey, er
 		_spec.ClearField(accesskey.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(accesskey.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(accesskey.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(accesskey.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(accesskey.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(accesskey.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(accesskey.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(accesskey.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(accesskey.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(accesskey.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(accesskey.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(accesskey.FieldStatus, field.TypeEnum, value)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(accesskey.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(accesskey.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(accesskey.FieldName, field.TypeString, value)

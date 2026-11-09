@@ -39,7 +39,7 @@ func newAiMessageServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent.
 }
 
 // aiMsgSeedMessage 直插一条归属指定用户/会话的消息行。
-func aiMsgSeedMessage(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, conversationID, userID uint32, content string) uint32 {
+func aiMsgSeedMessage(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, conversationID, userID uint64, content string) uint64 {
 	t.Helper()
 	row, err := entClient.Client().AiMessage.Create().
 		SetNillableConversationID(trans.Ptr(conversationID)).
@@ -75,7 +75,7 @@ func TestAiMessageService_ListForcedOwnerFilter(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), resp.GetTotal(), "同一会话里甲只能看到自己的两条消息")
 	for _, item := range resp.GetItems() {
-		require.Equal(t, uint32(33), item.GetUserId(), "列表里的消息必须全归属当前用户")
+		require.Equal(t, uint64(33), item.GetUserId(), "列表里的消息必须全归属当前用户")
 	}
 
 	// filter 注入 attempt：伪造 user_id 条件想读乙的消息——归属谓词强制 AND，读不到
@@ -123,7 +123,7 @@ func TestAiMessageService_DeleteOwnership(t *testing.T) {
 	row, err := entClient.Client().AiMessage.Query().
 		Where(aimessage.IDEQ(othersMsg)).Only(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint32(44), *row.UserID, "被拒绝删除的他人消息必须原样保留")
+	require.Equal(t, uint64(44), *row.UserID, "被拒绝删除的他人消息必须原样保留")
 
 	// 自己的消息：删除生效
 	_, err = svc.Delete(opCtx, &aiV1.DeleteAiMessageRequest{

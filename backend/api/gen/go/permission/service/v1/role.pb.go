@@ -224,7 +224,7 @@ func (RoleMetadata_Scope) EnumDescriptor() ([]byte, []int) {
 // 角色
 type Role struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                   // 角色ID
+	Id               *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                   // 角色ID
 	Name             *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                // 角色名称
 	Code             *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                                // 角色标识码（如：ADMIN, VIEWER）
 	SortOrder        *uint32                `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`                                    // 排序顺序，值越小越靠前
@@ -233,16 +233,16 @@ type Role struct {
 	IsProtected      *bool                  `protobuf:"varint,7,opt,name=is_protected,json=isProtected,proto3,oneof" json:"is_protected,omitempty"`                              // 受保护角色，仅平台管理员可修改
 	Type             *Role_Type             `protobuf:"varint,8,opt,name=type,proto3,enum=permission.service.v1.Role_Type,oneof" json:"type,omitempty"`                          // 角色类型
 	DataScope        *v1.DataScope          `protobuf:"varint,9,opt,name=data_scope,json=dataScope,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
-	Permissions      []uint32               `protobuf:"varint,10,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                                               // 绑定的权限点ID列表
-	OrgUnits         []uint32               `protobuf:"varint,11,rep,packed,name=org_units,json=orgUnits,proto3" json:"org_units,omitempty"`                                     // SELECTED_UNITS 档位下自定义授权的组织单元ID列表
+	Permissions      []uint64               `protobuf:"varint,10,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                                               // 绑定的权限点ID列表
+	OrgUnits         []uint64               `protobuf:"varint,11,rep,packed,name=org_units,json=orgUnits,proto3" json:"org_units,omitempty"`                                     // SELECTED_UNITS 档位下自定义授权的组织单元ID列表
 	FieldPermissions []*RoleFieldPermission `protobuf:"bytes,12,rep,name=field_permissions,json=fieldPermissions,proto3" json:"field_permissions,omitempty"`                     // 字段权限配置（角色在各资源上隐藏的字段集，黑名单语义）
-	ParentId         *uint32                `protobuf:"varint,13,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                                      // 父角色ID，0表示无父级（根角色）；子角色的权限集不得超出父角色已绑定的权限集
+	ParentId         *uint64                `protobuf:"varint,13,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                                      // 父角色ID，0表示无父级（根角色）；子角色的权限集不得超出父角色已绑定的权限集
 	ParentName       *string                `protobuf:"bytes,14,opt,name=parent_name,json=parentName,proto3,oneof" json:"parent_name,omitempty"`                                 // 父角色名称（响应回填）
-	TenantId         *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                      // 租户ID，0代表系统全局角色
+	TenantId         *uint64                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                      // 租户ID，0代表系统全局角色
 	TenantName       *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                 // 租户名称
-	CreatedBy        *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                  // 创建者ID
-	UpdatedBy        *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                  // 更新者ID
-	DeletedBy        *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                  // 删除者用户ID
+	CreatedBy        *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                  // 创建者ID
+	UpdatedBy        *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                  // 更新者ID
+	DeletedBy        *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                  // 删除者用户ID
 	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                   // 创建时间
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                   // 更新时间
 	DeletedAt        *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                   // 删除时间
@@ -280,7 +280,7 @@ func (*Role) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Role) GetId() uint32 {
+func (x *Role) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -343,14 +343,14 @@ func (x *Role) GetDataScope() v1.DataScope {
 	return v1.DataScope(0)
 }
 
-func (x *Role) GetPermissions() []uint32 {
+func (x *Role) GetPermissions() []uint64 {
 	if x != nil {
 		return x.Permissions
 	}
 	return nil
 }
 
-func (x *Role) GetOrgUnits() []uint32 {
+func (x *Role) GetOrgUnits() []uint64 {
 	if x != nil {
 		return x.OrgUnits
 	}
@@ -364,7 +364,7 @@ func (x *Role) GetFieldPermissions() []*RoleFieldPermission {
 	return nil
 }
 
-func (x *Role) GetParentId() uint32 {
+func (x *Role) GetParentId() uint64 {
 	if x != nil && x.ParentId != nil {
 		return *x.ParentId
 	}
@@ -378,7 +378,7 @@ func (x *Role) GetParentName() string {
 	return ""
 }
 
-func (x *Role) GetTenantId() uint32 {
+func (x *Role) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -392,21 +392,21 @@ func (x *Role) GetTenantName() string {
 	return ""
 }
 
-func (x *Role) GetCreatedBy() uint32 {
+func (x *Role) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Role) GetUpdatedBy() uint32 {
+func (x *Role) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Role) GetDeletedBy() uint32 {
+func (x *Role) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -569,8 +569,8 @@ func (x *RoleOverride) GetSecurityPolicy() *RoleOverride_SecurityPolicy {
 // 角色元数据
 type RoleMetadata struct {
 	state             protoimpl.MessageState   `protogen:"open.v1"`
-	Id                *uint32                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                      // 角色元数据ID
-	RoleId            *uint32                  `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                                                // 角色ID
+	Id                *uint64                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                      // 角色元数据ID
+	RoleId            *uint64                  `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                                                // 角色ID
 	IsTemplate        *bool                    `protobuf:"varint,3,opt,name=is_template,json=isTemplate,proto3,oneof" json:"is_template,omitempty"`                                                    // 是否是模版
 	TemplateFor       *string                  `protobuf:"bytes,4,opt,name=template_for,json=templateFor,proto3,oneof" json:"template_for,omitempty"`                                                  // 模板适用对象
 	TemplateVersion   *int32                   `protobuf:"varint,5,opt,name=template_version,json=templateVersion,proto3,oneof" json:"template_version,omitempty"`                                     // 模板版本号
@@ -579,10 +579,10 @@ type RoleMetadata struct {
 	SyncPolicy        *RoleMetadata_SyncPolicy `protobuf:"varint,8,opt,name=sync_policy,json=syncPolicy,proto3,enum=permission.service.v1.RoleMetadata_SyncPolicy,oneof" json:"sync_policy,omitempty"` // 同步策略
 	Scope             *RoleMetadata_Scope      `protobuf:"varint,9,opt,name=scope,proto3,enum=permission.service.v1.RoleMetadata_Scope,oneof" json:"scope,omitempty"`                                  // 作用域
 	CustomOverrides   *RoleOverride            `protobuf:"bytes,10,opt,name=custom_overrides,json=customOverrides,proto3" json:"custom_overrides,omitempty"`                                           // 租户自定义覆盖项
-	TenantId          *uint32                  `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID，0代表系统全局角色
-	CreatedBy         *uint32                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                     // 创建者ID
-	UpdatedBy         *uint32                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                     // 更新者ID
-	DeletedBy         *uint32                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                     // 删除者用户ID
+	TenantId          *uint64                  `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID，0代表系统全局角色
+	CreatedBy         *uint64                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                     // 创建者ID
+	UpdatedBy         *uint64                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                     // 更新者ID
+	DeletedBy         *uint64                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                     // 删除者用户ID
 	CreatedAt         *timestamppb.Timestamp   `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                      // 创建时间
 	UpdatedAt         *timestamppb.Timestamp   `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                      // 更新时间
 	DeletedAt         *timestamppb.Timestamp   `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                      // 删除时间
@@ -620,14 +620,14 @@ func (*RoleMetadata) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *RoleMetadata) GetId() uint32 {
+func (x *RoleMetadata) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *RoleMetadata) GetRoleId() uint32 {
+func (x *RoleMetadata) GetRoleId() uint64 {
 	if x != nil && x.RoleId != nil {
 		return *x.RoleId
 	}
@@ -690,28 +690,28 @@ func (x *RoleMetadata) GetCustomOverrides() *RoleOverride {
 	return nil
 }
 
-func (x *RoleMetadata) GetTenantId() uint32 {
+func (x *RoleMetadata) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *RoleMetadata) GetCreatedBy() uint32 {
+func (x *RoleMetadata) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *RoleMetadata) GetUpdatedBy() uint32 {
+func (x *RoleMetadata) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *RoleMetadata) GetDeletedBy() uint32 {
+func (x *RoleMetadata) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -843,7 +843,7 @@ func (x *GetRoleRequest) GetQueryBy() isGetRoleRequest_QueryBy {
 	return nil
 }
 
-func (x *GetRoleRequest) GetId() uint32 {
+func (x *GetRoleRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetRoleRequest_Id); ok {
 			return x.Id
@@ -882,7 +882,7 @@ type isGetRoleRequest_QueryBy interface {
 }
 
 type GetRoleRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type GetRoleRequest_Name struct {
@@ -947,7 +947,7 @@ func (x *CreateRoleRequest) GetData() *Role {
 // 更新角色 - 请求
 type UpdateRoleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Role                  `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -985,7 +985,7 @@ func (*UpdateRoleRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateRoleRequest) GetId() uint32 {
+func (x *UpdateRoleRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -1061,7 +1061,7 @@ func (x *DeleteRoleRequest) GetQueryBy() isDeleteRoleRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteRoleRequest) GetId() uint32 {
+func (x *DeleteRoleRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteRoleRequest_Id); ok {
 			return x.Id
@@ -1075,7 +1075,7 @@ type isDeleteRoleRequest_QueryBy interface {
 }
 
 type DeleteRoleRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteRoleRequest_Id) isDeleteRoleRequest_QueryBy() {}
@@ -1170,7 +1170,7 @@ func (x *BatchCreateRolesResponse) GetCreatedIds() []int32 {
 
 type GetRoleCodesByRoleIdsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleIds       []uint32               `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
+	RoleIds       []uint64               `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1205,7 +1205,7 @@ func (*GetRoleCodesByRoleIdsRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *GetRoleCodesByRoleIdsRequest) GetRoleIds() []uint32 {
+func (x *GetRoleCodesByRoleIdsRequest) GetRoleIds() []uint64 {
 	if x != nil {
 		return x.RoleIds
 	}
@@ -1310,7 +1310,7 @@ func (x *GetRolesByRoleCodesRequest) GetViewMask() *fieldmaskpb.FieldMask {
 
 type GetRolesByRoleIdsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleIds       []uint32               `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
+	RoleIds       []uint64               `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
 	ViewMask      *fieldmaskpb.FieldMask `protobuf:"bytes,100,opt,name=view_mask,json=viewMask,proto3,oneof" json:"view_mask,omitempty"` // 视图字段过滤器，用于控制返回的字段
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1346,7 +1346,7 @@ func (*GetRolesByRoleIdsRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *GetRolesByRoleIdsRequest) GetRoleIds() []uint32 {
+func (x *GetRolesByRoleIdsRequest) GetRoleIds() []uint64 {
 	if x != nil {
 		return x.RoleIds
 	}
@@ -1516,7 +1516,7 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\n" +
 	" permission/service/v1/role.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1fidentity/service/v1/types.proto\x1a\x1epagination/v1/pagination.proto\"\x81\x10\n" +
 	"\x04Role\x12#\n" +
-	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x00R\x02id\x88\x01\x01\x12+\n" +
+	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b角色IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f角色名称H\x01R\x04name\x88\x01\x01\x12O\n" +
 	"\x04code\x18\x03 \x01(\tB6\xbaG3:\x1f\x12\x1dplatform:admin, tenant:admin1\x92\x02\x0f角色标识码H\x02R\x04code\x88\x01\x01\x12K\n" +
 	"\n" +
@@ -1528,22 +1528,22 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\n" +
 	"data_scope\x18\t \x01(\x0e2\x1e.identity.service.v1.DataScopeB\x18\xbaG\x15\x92\x02\x12数据权限范围H\bR\tdataScope\x88\x01\x01\x12B\n" +
 	"\vpermissions\x18\n" +
-	" \x03(\rB \xbaG\x1d\x92\x02\x1a绑定的权限点ID列表R\vpermissions\x12a\n" +
-	"\torg_units\x18\v \x03(\rBD\xbaGA\x92\x02>SELECTED_UNITS 档位下自定义授权的组织单元ID列表R\borgUnits\x12\xb0\x01\n" +
+	" \x03(\x04B \xbaG\x1d\x92\x02\x1a绑定的权限点ID列表R\vpermissions\x12a\n" +
+	"\torg_units\x18\v \x03(\x04BD\xbaGA\x92\x02>SELECTED_UNITS 档位下自定义授权的组织单元ID列表R\borgUnits\x12\xb0\x01\n" +
 	"\x11field_permissions\x18\f \x03(\v2*.permission.service.v1.RoleFieldPermissionBW\xbaGT\x92\x02Q字段权限配置（角色在各资源上隐藏的字段集，黑名单语义）R\x10fieldPermissions\x12U\n" +
-	"\tparent_id\x18\r \x01(\rB3\xbaG0\x92\x02-父角色ID，0表示无父级（根角色）H\tR\bparentId\x88\x01\x01\x12M\n" +
+	"\tparent_id\x18\r \x01(\x04B3\xbaG0\x92\x02-父角色ID，0表示无父级（根角色）H\tR\bparentId\x88\x01\x01\x12M\n" +
 	"\vparent_name\x18\x0e \x01(\tB'\xbaG$\x92\x02!父角色名称（响应回填）H\n" +
 	"R\n" +
 	"parentName\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\vR\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18( \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\vR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\fR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\rR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\rR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\x0eR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x0eR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x0fR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x0fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x10R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -1601,8 +1601,8 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\r_display_nameB\x0e\n" +
 	"\f_description\"\xd9\f\n" +
 	"\fRoleMetadata\x12,\n" +
-	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11角色元数据IDH\x00R\x02id\x88\x01\x01\x12,\n" +
-	"\arole_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
+	"\x02id\x18\x01 \x01(\x04B\x17\xbaG\x14\x92\x02\x11角色元数据IDH\x00R\x02id\x88\x01\x01\x12,\n" +
+	"\arole_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
 	"\vis_template\x18\x03 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否是模版H\x02R\n" +
 	"isTemplate\x88\x01\x01\x12@\n" +
 	"\ftemplate_for\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12模板适用对象H\x03R\vtemplateFor\x88\x01\x01\x12E\n" +
@@ -1614,14 +1614,14 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\x05scope\x18\t \x01(\x0e2).permission.service.v1.RoleMetadata.ScopeB\x0f\xbaG\f\x92\x02\t作用域H\bR\x05scope\x88\x01\x01\x12n\n" +
 	"\x10custom_overrides\x18\n" +
 	" \x01(\v2#.permission.service.v1.RoleOverrideB\x1e\xbaG\x1b\x92\x02\x18租户自定义覆盖项R\x0fcustomOverrides\x12L\n" +
-	"\ttenant_id\x18\x14 \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\tR\btenantId\x88\x01\x01\x125\n" +
+	"\ttenant_id\x18\x14 \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\tR\btenantId\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
 	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -1660,7 +1660,7 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1b.permission.service.v1.RoleR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\x93\x02\n" +
 	"\x0eGetRoleRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12$\n" +
 	"\x04name\x18\x02 \x01(\tB\x0e\xbaG\v\x18\x01\x92\x02\x06名称H\x00R\x04name\x12*\n" +
 	"\x04code\x18\x03 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f唯一编码H\x00R\x04code\x12w\n" +
@@ -1672,14 +1672,14 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\x11CreateRoleRequest\x12/\n" +
 	"\x04data\x18\x01 \x01(\v2\x1b.permission.service.v1.RoleR\x04data\"\x92\x03\n" +
 	"\x11UpdateRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12/\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12/\n" +
 	"\x04data\x18\x02 \x01(\v2\x1b.permission.service.v1.RoleR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"=\n" +
 	"\x11DeleteRoleRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"L\n" +
@@ -1689,7 +1689,7 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的角色ID列表R\n" +
 	"createdIds\"O\n" +
 	"\x1cGetRoleCodesByRoleIdsRequest\x12/\n" +
-	"\brole_ids\x18\x01 \x03(\rB\x14\xbaG\x11\x92\x02\x0e角色ID列表R\aroleIds\"U\n" +
+	"\brole_ids\x18\x01 \x03(\x04B\x14\xbaG\x11\x92\x02\x0e角色ID列表R\aroleIds\"U\n" +
 	"\x1dGetRoleCodesByRoleIdsResponse\x124\n" +
 	"\n" +
 	"role_codes\x18\x01 \x03(\tB\x15\xbaG\x12\x92\x02\x0f角色值列表R\troleCodes\"\xd9\x01\n" +
@@ -1700,7 +1700,7 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"\xd2\x01\n" +
 	"\x18GetRolesByRoleIdsRequest\x12/\n" +
-	"\brole_ids\x18\x01 \x03(\rB\x14\xbaG\x11\x92\x02\x0e角色ID列表R\aroleIds\x12w\n" +
+	"\brole_ids\x18\x01 \x03(\x04B\x14\xbaG\x11\x92\x02\x0e角色ID列表R\aroleIds\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x00R\bviewMask\x88\x01\x01B\f\n" +
 	"\n" +
 	"_view_mask\")\n" +

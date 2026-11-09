@@ -114,7 +114,7 @@ func (r *OperationAuditLogRepo) List(ctx context.Context, req *paginationV1.Pagi
 	}, nil
 }
 
-func (r *OperationAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *OperationAuditLogRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().OperationAuditLog.Query().
 		Where(operationauditlog.IDEQ(id)).
 		Exist(ctx)
@@ -224,7 +224,7 @@ func (r *OperationAuditLogRepo) DigestStats(ctx context.Context, from, to time.T
 
 	// 涉及用户数（去重 user_id）
 	var userRows []struct {
-		UserID uint32 `sql:"user_id"`
+		UserID uint64 `sql:"user_id"`
 		Cnt    int    `sql:"cnt"`
 	}
 	if err = client.Clone().

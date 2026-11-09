@@ -85,8 +85,8 @@ func (_q *InternalMessageCategoryQuery) FirstX(ctx context.Context) *InternalMes
 
 // FirstID returns the first InternalMessageCategory ID from the query.
 // Returns a *NotFoundError when no InternalMessageCategory ID was found.
-func (_q *InternalMessageCategoryQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *InternalMessageCategoryQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -98,7 +98,7 @@ func (_q *InternalMessageCategoryQuery) FirstID(ctx context.Context) (id uint32,
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *InternalMessageCategoryQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *InternalMessageCategoryQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -136,8 +136,8 @@ func (_q *InternalMessageCategoryQuery) OnlyX(ctx context.Context) *InternalMess
 // OnlyID is like Only, but returns the only InternalMessageCategory ID in the query.
 // Returns a *NotSingularError when more than one InternalMessageCategory ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *InternalMessageCategoryQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *InternalMessageCategoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -153,7 +153,7 @@ func (_q *InternalMessageCategoryQuery) OnlyID(ctx context.Context) (id uint32, 
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *InternalMessageCategoryQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *InternalMessageCategoryQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,7 +181,7 @@ func (_q *InternalMessageCategoryQuery) AllX(ctx context.Context) []*InternalMes
 }
 
 // IDs executes the query and returns a list of InternalMessageCategory IDs.
-func (_q *InternalMessageCategoryQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *InternalMessageCategoryQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -193,7 +193,7 @@ func (_q *InternalMessageCategoryQuery) IDs(ctx context.Context) (ids []uint32, 
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *InternalMessageCategoryQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *InternalMessageCategoryQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -381,7 +381,7 @@ func (_q *InternalMessageCategoryQuery) sqlCount(ctx context.Context) (int, erro
 }
 
 func (_q *InternalMessageCategoryQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

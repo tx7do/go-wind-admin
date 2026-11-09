@@ -65,13 +65,13 @@ func (_c *LanguageCreate) SetNillableDeletedAt(v *time.Time) *LanguageCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *LanguageCreate) SetCreatedBy(v uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetCreatedBy(v uint64) *LanguageCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *LanguageCreate) SetNillableCreatedBy(v *uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetNillableCreatedBy(v *uint64) *LanguageCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *LanguageCreate) SetNillableCreatedBy(v *uint32) *LanguageCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *LanguageCreate) SetUpdatedBy(v uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetUpdatedBy(v uint64) *LanguageCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *LanguageCreate) SetNillableUpdatedBy(v *uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetNillableUpdatedBy(v *uint64) *LanguageCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *LanguageCreate) SetNillableUpdatedBy(v *uint32) *LanguageCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *LanguageCreate) SetDeletedBy(v uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetDeletedBy(v uint64) *LanguageCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *LanguageCreate) SetNillableDeletedBy(v *uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetNillableDeletedBy(v *uint64) *LanguageCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -191,7 +191,7 @@ func (_c *LanguageCreate) SetNillableIsDefault(v *bool) *LanguageCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *LanguageCreate) SetID(v uint32) *LanguageCreate {
+func (_c *LanguageCreate) SetID(v uint64) *LanguageCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -283,7 +283,7 @@ func (_c *LanguageCreate) sqlSave(ctx context.Context) (*Language, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -293,7 +293,7 @@ func (_c *LanguageCreate) sqlSave(ctx context.Context) (*Language, error) {
 func (_c *LanguageCreate) createSpec() (*Language, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Language{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(language.Table, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(language.Table, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -313,15 +313,15 @@ func (_c *LanguageCreate) createSpec() (*Language, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(language.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(language.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(language.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
@@ -437,7 +437,7 @@ func (u *LanguageUpsert) ClearDeletedAt() *LanguageUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LanguageUpsert) SetCreatedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) SetCreatedBy(v uint64) *LanguageUpsert {
 	u.Set(language.FieldCreatedBy, v)
 	return u
 }
@@ -449,7 +449,7 @@ func (u *LanguageUpsert) UpdateCreatedBy() *LanguageUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LanguageUpsert) AddCreatedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) AddCreatedBy(v uint64) *LanguageUpsert {
 	u.Add(language.FieldCreatedBy, v)
 	return u
 }
@@ -461,7 +461,7 @@ func (u *LanguageUpsert) ClearCreatedBy() *LanguageUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LanguageUpsert) SetUpdatedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) SetUpdatedBy(v uint64) *LanguageUpsert {
 	u.Set(language.FieldUpdatedBy, v)
 	return u
 }
@@ -473,7 +473,7 @@ func (u *LanguageUpsert) UpdateUpdatedBy() *LanguageUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LanguageUpsert) AddUpdatedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) AddUpdatedBy(v uint64) *LanguageUpsert {
 	u.Add(language.FieldUpdatedBy, v)
 	return u
 }
@@ -485,7 +485,7 @@ func (u *LanguageUpsert) ClearUpdatedBy() *LanguageUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LanguageUpsert) SetDeletedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) SetDeletedBy(v uint64) *LanguageUpsert {
 	u.Set(language.FieldDeletedBy, v)
 	return u
 }
@@ -497,7 +497,7 @@ func (u *LanguageUpsert) UpdateDeletedBy() *LanguageUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LanguageUpsert) AddDeletedBy(v uint32) *LanguageUpsert {
+func (u *LanguageUpsert) AddDeletedBy(v uint64) *LanguageUpsert {
 	u.Add(language.FieldDeletedBy, v)
 	return u
 }
@@ -701,14 +701,14 @@ func (u *LanguageUpsertOne) ClearDeletedAt() *LanguageUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LanguageUpsertOne) SetCreatedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) SetCreatedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LanguageUpsertOne) AddCreatedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) AddCreatedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -729,14 +729,14 @@ func (u *LanguageUpsertOne) ClearCreatedBy() *LanguageUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LanguageUpsertOne) SetUpdatedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) SetUpdatedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LanguageUpsertOne) AddUpdatedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) AddUpdatedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -757,14 +757,14 @@ func (u *LanguageUpsertOne) ClearUpdatedBy() *LanguageUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LanguageUpsertOne) SetDeletedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) SetDeletedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LanguageUpsertOne) AddDeletedBy(v uint32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) AddDeletedBy(v uint64) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -912,7 +912,7 @@ func (u *LanguageUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *LanguageUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *LanguageUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -921,7 +921,7 @@ func (u *LanguageUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *LanguageUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *LanguageUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -978,7 +978,7 @@ func (_c *LanguageCreateBulk) Save(ctx context.Context) ([]*Language, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1159,14 +1159,14 @@ func (u *LanguageUpsertBulk) ClearDeletedAt() *LanguageUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LanguageUpsertBulk) SetCreatedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) SetCreatedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LanguageUpsertBulk) AddCreatedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) AddCreatedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1187,14 +1187,14 @@ func (u *LanguageUpsertBulk) ClearCreatedBy() *LanguageUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LanguageUpsertBulk) SetUpdatedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) SetUpdatedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LanguageUpsertBulk) AddUpdatedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) AddUpdatedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1215,14 +1215,14 @@ func (u *LanguageUpsertBulk) ClearUpdatedBy() *LanguageUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LanguageUpsertBulk) SetDeletedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) SetDeletedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LanguageUpsertBulk) AddDeletedBy(v uint32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) AddDeletedBy(v uint64) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddDeletedBy(v)
 	})

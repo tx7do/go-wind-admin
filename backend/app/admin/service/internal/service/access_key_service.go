@@ -104,7 +104,7 @@ func (s *AccessKeyService) Create(ctx context.Context, req *accesskeyV1.CreateAc
 
 	return &accesskeyV1.CreateAccessKeyResponse{
 		Data: &accesskeyV1.AccessKey{
-			Id:        trans.Ptr(uint32(entity.ID)),
+			Id:        trans.Ptr(uint64(entity.ID)),
 			Name:      entity.Name,
 			AccessKey: entity.AccessKey,
 			Status:    s.statusProto(entity.Status),

@@ -130,7 +130,7 @@ func TestTenantMutationGuard(t *testing.T) {
 }
 
 // dictTypeIDByCode 在指定租户视角下按 type_code 反查主键。
-func dictTypeIDByCode(client *ent.Client, ctx context.Context, code string) uint32 {
+func dictTypeIDByCode(client *ent.Client, ctx context.Context, code string) uint64 {
 	row := client.DictType.Query().Where(dicttype.TypeCodeEQ(code)).OnlyX(ctx)
 	return row.ID
 }
@@ -193,7 +193,7 @@ func TestTenantMutationGuardAccessKey(t *testing.T) {
 }
 
 // accessKeyIDByKey 在指定租户视角下按 access_key 反查主键。
-func accessKeyIDByKey(client *ent.Client, ctx context.Context, key string) uint32 {
+func accessKeyIDByKey(client *ent.Client, ctx context.Context, key string) uint64 {
 	row := client.AccessKey.Query().Where(accesskey.AccessKeyEQ(key)).OnlyX(ctx)
 	return row.ID
 }

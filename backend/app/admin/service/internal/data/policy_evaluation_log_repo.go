@@ -103,7 +103,7 @@ func (r *PolicyEvaluationLogRepo) List(ctx context.Context, req *paginationV1.Pa
 	}, nil
 }
 
-func (r *PolicyEvaluationLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PolicyEvaluationLogRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().PolicyEvaluationLog.Query().
 		Where(policyevaluationlog.IDEQ(id)).
 		Exist(ctx)
@@ -176,7 +176,7 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 // 任一环缺数据（端点未授权 / 角色未授权 / 无策略行）对应 ID 返回 0，不报错——
 // 评估埋点尽力而为，绝不影响鉴权主流程。调用方需自行做 TTL 缓存。
 // 各走索引的单表查询（曾试过一条 Modify 联表，pgx 参数类型推断 42P18）。
-func (r *PolicyEvaluationLogRepo) ResolvePermissionPolicyByRoute(ctx context.Context, roleCode, path, method string) (permissionID uint32, policyID uint32) {
+func (r *PolicyEvaluationLogRepo) ResolvePermissionPolicyByRoute(ctx context.Context, roleCode, path, method string) (permissionID uint64, policyID uint64) {
 	if roleCode == "" || path == "" || method == "" {
 		return 0, 0
 	}

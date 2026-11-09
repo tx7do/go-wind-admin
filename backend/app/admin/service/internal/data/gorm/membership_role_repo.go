@@ -59,7 +59,7 @@ func (r *MembershipRoleRepo) init() {
 }
 
 // CleanRelationsByMembershipID 删除会员的所有角色关联
-func (r *MembershipRoleRepo) CleanRelationsByMembershipID(ctx context.Context, membershipID uint32) error {
+func (r *MembershipRoleRepo) CleanRelationsByMembershipID(ctx context.Context, membershipID uint64) error {
 	if membershipID == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func (r *MembershipRoleRepo) CleanRelationsByMembershipID(ctx context.Context, m
 }
 
 // CleanRelationsByMembershipIDs 删除多个会员的所有角色关联
-func (r *MembershipRoleRepo) CleanRelationsByMembershipIDs(ctx context.Context, membershipIDs []uint32) error {
+func (r *MembershipRoleRepo) CleanRelationsByMembershipIDs(ctx context.Context, membershipIDs []uint64) error {
 	if len(membershipIDs) == 0 {
 		return nil
 	}
@@ -89,7 +89,7 @@ func (r *MembershipRoleRepo) CleanRelationsByMembershipIDs(ctx context.Context, 
 }
 
 // CleanRelationsByRoleID 删除角色的所有会员关联
-func (r *MembershipRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID uint32) error {
+func (r *MembershipRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID uint64) error {
 	if roleID == 0 {
 		return nil
 	}
@@ -104,7 +104,7 @@ func (r *MembershipRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID 
 }
 
 // CleanRelationsByRoleIDs 删除多个角色的所有会员关联
-func (r *MembershipRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []uint32) error {
+func (r *MembershipRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []uint64) error {
 	if len(roleIDs) == 0 {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (r *MembershipRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleID
 }
 
 // RemoveRolesFromMembership 移除角色
-func (r *MembershipRoleRepo) RemoveRolesFromMembership(ctx context.Context, membershipID uint32, roleIDs []uint32) error {
+func (r *MembershipRoleRepo) RemoveRolesFromMembership(ctx context.Context, membershipID uint64, roleIDs []uint64) error {
 	if membershipID == 0 || len(roleIDs) == 0 {
 		return nil
 	}
@@ -137,7 +137,7 @@ func (r *MembershipRoleRepo) RemoveRolesFromMembership(ctx context.Context, memb
 
 // AssignMembershipRoles 分配角色
 func (r *MembershipRoleRepo) AssignMembershipRoles(ctx context.Context,
-	membershipID uint32,
+	membershipID uint64,
 	datas []*permissionV1.MembershipRole,
 ) error {
 	if membershipID == 0 || len(datas) == 0 {
@@ -158,9 +158,9 @@ func (r *MembershipRoleRepo) AssignMembershipRoles(ctx context.Context,
 }
 
 // ListRoleIDs 获取用户关联的角色ID列表
-func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
 	if membershipID == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.MembershipRole{}).Where("membership_id = ?", membershipID)
@@ -170,7 +170,7 @@ func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint3
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint32
+	var ids []uint64
 	if err := db.Pluck("role_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query role ids by membership id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids by membership id failed")
@@ -179,9 +179,9 @@ func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint3
 }
 
 // ListMembershipIDs 获取角色关联的会员ID列表
-func (r *MembershipRoleRepo) ListMembershipIDs(ctx context.Context, roleID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipRoleRepo) ListMembershipIDs(ctx context.Context, roleID uint64, excludeExpired bool) ([]uint64, error) {
 	if roleID == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.MembershipRole{}).Where("role_id = ?", roleID)
@@ -191,7 +191,7 @@ func (r *MembershipRoleRepo) ListMembershipIDs(ctx context.Context, roleID uint3
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint32
+	var ids []uint64
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query membership ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query membership ids by role id failed")
@@ -200,7 +200,7 @@ func (r *MembershipRoleRepo) ListMembershipIDs(ctx context.Context, roleID uint3
 }
 
 // ListMembershipIDsByRoleIDs 获取多个角色关联的会员ID列表
-func (r *MembershipRoleRepo) ListMembershipIDsByRoleIDs(ctx context.Context, roleIDs []uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipRoleRepo) ListMembershipIDsByRoleIDs(ctx context.Context, roleIDs []uint64, excludeExpired bool) ([]uint64, error) {
 	if len(roleIDs) == 0 {
 		return nil, nil
 	}
@@ -212,7 +212,7 @@ func (r *MembershipRoleRepo) ListMembershipIDsByRoleIDs(ctx context.Context, rol
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint32
+	var ids []uint64
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query membership ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query membership ids by role ids failed")

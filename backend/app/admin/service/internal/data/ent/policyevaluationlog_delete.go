@@ -40,7 +40,7 @@ func (_d *PolicyEvaluationLogDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *PolicyEvaluationLogDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(policyevaluationlog.Table, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(policyevaluationlog.Table, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

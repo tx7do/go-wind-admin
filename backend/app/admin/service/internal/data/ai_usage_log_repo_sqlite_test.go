@@ -28,7 +28,7 @@ import (
 // seedUsageLog 直插一条指定租户/总量/时间的用量行：repo 的 Create 只写 now，
 // 而时间下界聚合的窗口前老账需要钉死的历史时间（Update builder 保护 created_at
 // 不可改，只能建行时显式 SetCreatedAt）。
-func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint32, totalTokens uint32, createdAt time.Time) uint32 {
+func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint64, totalTokens uint32, createdAt time.Time) uint64 {
 	t.Helper()
 	entity, err := entClient.Client().AiUsageLog.Create().
 		SetTenantID(tenantID).
@@ -41,11 +41,11 @@ func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx c
 }
 
 // newUsageLog 构造一条用量流水载荷，字段可按需覆盖。
-func newUsageLog(tenantID uint32, totalTokens uint32) *aiV1.AiUsageLog {
+func newUsageLog(tenantID uint64, totalTokens uint32) *aiV1.AiUsageLog {
 	return &aiV1.AiUsageLog{
-		ProviderId:       trans.Ptr(uint32(11)),
-		ConversationId:   trans.Ptr(uint32(22)),
-		UserId:           trans.Ptr(uint32(33)),
+		ProviderId:       trans.Ptr(uint64(11)),
+		ConversationId:   trans.Ptr(uint64(22)),
+		UserId:           trans.Ptr(uint64(33)),
 		TenantId:         trans.Ptr(tenantID),
 		ModelName:        trans.Ptr("qwen-max"),
 		PromptTokens:     trans.Ptr(totalTokens / 2),
@@ -68,10 +68,10 @@ func TestAiUsageLogRepoSqlite_Create(t *testing.T) {
 
 	row, err := entClient.Client().AiUsageLog.Query().First(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint32(11), *row.ProviderID, "provider_id 应按载荷落库")
-	require.Equal(t, uint32(22), *row.ConversationID)
-	require.Equal(t, uint32(33), *row.UserID)
-	require.Equal(t, uint32(7), *row.TenantID, "租户归属必须落库：配额聚合按它分组")
+	require.Equal(t, uint64(11), *row.ProviderID, "provider_id 应按载荷落库")
+	require.Equal(t, uint64(22), *row.ConversationID)
+	require.Equal(t, uint64(33), *row.UserID)
+	require.Equal(t, uint64(7), *row.TenantID, "租户归属必须落库：配额聚合按它分组")
 	require.Equal(t, "qwen-max", *row.ModelName)
 	require.Equal(t, uint32(250), *row.PromptTokens)
 	require.Equal(t, uint32(250), *row.CompletionTokens)

@@ -50,7 +50,7 @@ enum OSSProvider {
 
 // 文件
 message File {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "文件ID" }
@@ -126,7 +126,7 @@ message File {
     (gnostic.openapi.v3.property) = { description: "文件内容hash值" }
   ];  // 文件内容hash值
 
-  optional uint32 tenant_id = 40 [
+  optional uint64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
   ];  // 租户ID，0代表系统全局角色
@@ -135,9 +135,9 @@ message File {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -153,7 +153,7 @@ message ListFileResponse {
 // 查询 - 请求
 message GetFileRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
@@ -174,7 +174,7 @@ message CreateFileRequest {
 
 // 更新 - 请求
 message UpdateFileRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 
   File data = 2;
 
@@ -195,7 +195,7 @@ message UpdateFileRequest {
 // 删除 - 请求
 message DeleteFileRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID

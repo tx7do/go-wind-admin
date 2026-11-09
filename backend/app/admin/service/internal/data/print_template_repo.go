@@ -102,7 +102,7 @@ func (r *PrintTemplateRepo) List(ctx context.Context, req *paginationV1.PagingRe
 	}, nil
 }
 
-func (r *PrintTemplateRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PrintTemplateRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().PrintTemplate.Query().
 		Where(printtemplate.IDEQ(id)).
 		Exist(ctx)
@@ -155,7 +155,7 @@ func (r *PrintTemplateRepo) Create(ctx context.Context, req *printV1.CreatePrint
 
 // CountByTenant 统计指定租户的打印模板数（builtin 行 tenant_id=0 不计入）。
 // 模板数配额（TEMPLATE_COUNT）的资源计数 accessor。
-func (r *PrintTemplateRepo) CountByTenant(ctx context.Context, tenantID uint32) (int64, error) {
+func (r *PrintTemplateRepo) CountByTenant(ctx context.Context, tenantID uint64) (int64, error) {
 	n, err := r.entClient.Client().PrintTemplate.Query().
 		Where(printtemplate.TenantIDEQ(tenantID)).
 		Count(ctx)

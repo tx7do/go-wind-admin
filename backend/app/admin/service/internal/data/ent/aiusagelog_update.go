@@ -29,14 +29,14 @@ func (_u *AiUsageLogUpdate) Where(ps ...predicate.AiUsageLog) *AiUsageLogUpdate 
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_u *AiUsageLogUpdate) SetProviderID(v uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetProviderID(v uint64) *AiUsageLogUpdate {
 	_u.mutation.ResetProviderID()
 	_u.mutation.SetProviderID(v)
 	return _u
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdate) SetNillableProviderID(v *uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetNillableProviderID(v *uint64) *AiUsageLogUpdate {
 	if v != nil {
 		_u.SetProviderID(*v)
 	}
@@ -44,7 +44,7 @@ func (_u *AiUsageLogUpdate) SetNillableProviderID(v *uint32) *AiUsageLogUpdate {
 }
 
 // AddProviderID adds value to the "provider_id" field.
-func (_u *AiUsageLogUpdate) AddProviderID(v int32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) AddProviderID(v int64) *AiUsageLogUpdate {
 	_u.mutation.AddProviderID(v)
 	return _u
 }
@@ -56,14 +56,14 @@ func (_u *AiUsageLogUpdate) ClearProviderID() *AiUsageLogUpdate {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *AiUsageLogUpdate) SetConversationID(v uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetConversationID(v uint64) *AiUsageLogUpdate {
 	_u.mutation.ResetConversationID()
 	_u.mutation.SetConversationID(v)
 	return _u
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdate) SetNillableConversationID(v *uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetNillableConversationID(v *uint64) *AiUsageLogUpdate {
 	if v != nil {
 		_u.SetConversationID(*v)
 	}
@@ -71,7 +71,7 @@ func (_u *AiUsageLogUpdate) SetNillableConversationID(v *uint32) *AiUsageLogUpda
 }
 
 // AddConversationID adds value to the "conversation_id" field.
-func (_u *AiUsageLogUpdate) AddConversationID(v int32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) AddConversationID(v int64) *AiUsageLogUpdate {
 	_u.mutation.AddConversationID(v)
 	return _u
 }
@@ -83,14 +83,14 @@ func (_u *AiUsageLogUpdate) ClearConversationID() *AiUsageLogUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiUsageLogUpdate) SetUserID(v uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetUserID(v uint64) *AiUsageLogUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdate) SetNillableUserID(v *uint32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) SetNillableUserID(v *uint64) *AiUsageLogUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -98,7 +98,7 @@ func (_u *AiUsageLogUpdate) SetNillableUserID(v *uint32) *AiUsageLogUpdate {
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *AiUsageLogUpdate) AddUserID(v int32) *AiUsageLogUpdate {
+func (_u *AiUsageLogUpdate) AddUserID(v int64) *AiUsageLogUpdate {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -276,7 +276,7 @@ func (_u *AiUsageLogUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AiU
 }
 
 func (_u *AiUsageLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aiusagelog.Table, aiusagelog.Columns, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiusagelog.Table, aiusagelog.Columns, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -288,34 +288,34 @@ func (_u *AiUsageLogUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		_spec.ClearField(aiusagelog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiusagelog.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ProviderID(); ok {
-		_spec.SetField(aiusagelog.FieldProviderID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldProviderID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedProviderID(); ok {
-		_spec.AddField(aiusagelog.FieldProviderID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldProviderID, field.TypeUint64, value)
 	}
 	if _u.mutation.ProviderIDCleared() {
-		_spec.ClearField(aiusagelog.FieldProviderID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldProviderID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ConversationID(); ok {
-		_spec.SetField(aiusagelog.FieldConversationID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldConversationID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedConversationID(); ok {
-		_spec.AddField(aiusagelog.FieldConversationID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldConversationID, field.TypeUint64, value)
 	}
 	if _u.mutation.ConversationIDCleared() {
-		_spec.ClearField(aiusagelog.FieldConversationID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldConversationID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aiusagelog.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aiusagelog.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aiusagelog.FieldUserID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ModelName(); ok {
 		_spec.SetField(aiusagelog.FieldModelName, field.TypeString, value)
@@ -382,14 +382,14 @@ type AiUsageLogUpdateOne struct {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_u *AiUsageLogUpdateOne) SetProviderID(v uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetProviderID(v uint64) *AiUsageLogUpdateOne {
 	_u.mutation.ResetProviderID()
 	_u.mutation.SetProviderID(v)
 	return _u
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdateOne) SetNillableProviderID(v *uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetNillableProviderID(v *uint64) *AiUsageLogUpdateOne {
 	if v != nil {
 		_u.SetProviderID(*v)
 	}
@@ -397,7 +397,7 @@ func (_u *AiUsageLogUpdateOne) SetNillableProviderID(v *uint32) *AiUsageLogUpdat
 }
 
 // AddProviderID adds value to the "provider_id" field.
-func (_u *AiUsageLogUpdateOne) AddProviderID(v int32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) AddProviderID(v int64) *AiUsageLogUpdateOne {
 	_u.mutation.AddProviderID(v)
 	return _u
 }
@@ -409,14 +409,14 @@ func (_u *AiUsageLogUpdateOne) ClearProviderID() *AiUsageLogUpdateOne {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *AiUsageLogUpdateOne) SetConversationID(v uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetConversationID(v uint64) *AiUsageLogUpdateOne {
 	_u.mutation.ResetConversationID()
 	_u.mutation.SetConversationID(v)
 	return _u
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdateOne) SetNillableConversationID(v *uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetNillableConversationID(v *uint64) *AiUsageLogUpdateOne {
 	if v != nil {
 		_u.SetConversationID(*v)
 	}
@@ -424,7 +424,7 @@ func (_u *AiUsageLogUpdateOne) SetNillableConversationID(v *uint32) *AiUsageLogU
 }
 
 // AddConversationID adds value to the "conversation_id" field.
-func (_u *AiUsageLogUpdateOne) AddConversationID(v int32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) AddConversationID(v int64) *AiUsageLogUpdateOne {
 	_u.mutation.AddConversationID(v)
 	return _u
 }
@@ -436,14 +436,14 @@ func (_u *AiUsageLogUpdateOne) ClearConversationID() *AiUsageLogUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiUsageLogUpdateOne) SetUserID(v uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetUserID(v uint64) *AiUsageLogUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiUsageLogUpdateOne) SetNillableUserID(v *uint32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) SetNillableUserID(v *uint64) *AiUsageLogUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -451,7 +451,7 @@ func (_u *AiUsageLogUpdateOne) SetNillableUserID(v *uint32) *AiUsageLogUpdateOne
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *AiUsageLogUpdateOne) AddUserID(v int32) *AiUsageLogUpdateOne {
+func (_u *AiUsageLogUpdateOne) AddUserID(v int64) *AiUsageLogUpdateOne {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -642,7 +642,7 @@ func (_u *AiUsageLogUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (_u *AiUsageLogUpdateOne) sqlSave(ctx context.Context) (_node *AiUsageLog, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aiusagelog.Table, aiusagelog.Columns, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiusagelog.Table, aiusagelog.Columns, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiUsageLog.id" for update`)}
@@ -671,34 +671,34 @@ func (_u *AiUsageLogUpdateOne) sqlSave(ctx context.Context) (_node *AiUsageLog, 
 		_spec.ClearField(aiusagelog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiusagelog.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ProviderID(); ok {
-		_spec.SetField(aiusagelog.FieldProviderID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldProviderID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedProviderID(); ok {
-		_spec.AddField(aiusagelog.FieldProviderID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldProviderID, field.TypeUint64, value)
 	}
 	if _u.mutation.ProviderIDCleared() {
-		_spec.ClearField(aiusagelog.FieldProviderID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldProviderID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ConversationID(); ok {
-		_spec.SetField(aiusagelog.FieldConversationID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldConversationID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedConversationID(); ok {
-		_spec.AddField(aiusagelog.FieldConversationID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldConversationID, field.TypeUint64, value)
 	}
 	if _u.mutation.ConversationIDCleared() {
-		_spec.ClearField(aiusagelog.FieldConversationID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldConversationID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aiusagelog.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(aiusagelog.FieldUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aiusagelog.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(aiusagelog.FieldUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aiusagelog.FieldUserID, field.TypeUint32)
+		_spec.ClearField(aiusagelog.FieldUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.ModelName(); ok {
 		_spec.SetField(aiusagelog.FieldModelName, field.TypeString, value)

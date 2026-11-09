@@ -45,7 +45,7 @@ func TestAccessKeyRepoSqlite_Create(t *testing.T) {
 	createdDefault, err := repo.Create(ctx, &accesskeyV1.CreateAccessKeyRequest{},
 		&accesskeyV1.AccessKey{
 			Name:     trans.Ptr("默认状态凭证"),
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 		},
 		"AKSQLITE-DEFAULT-ON", "sh-default")
 	require.NoError(t, err, "Create（未指定状态）应成功")
@@ -131,7 +131,7 @@ func TestAccessKeyRepoSqlite_StatusReadView(t *testing.T) {
 		{accesskeyV1.AccessKey_OFF, entAccessKey.StatusOff, "读视图凭证-停用"},
 	}
 
-	createdIDs := make(map[accesskeyV1.AccessKey_Status]uint32, len(cases))
+	createdIDs := make(map[accesskeyV1.AccessKey_Status]uint64, len(cases))
 	for _, c := range cases {
 		created, err := repo.Create(ctx, &accesskeyV1.CreateAccessKeyRequest{},
 			&accesskeyV1.AccessKey{
@@ -374,8 +374,8 @@ func TestAccessKeyRepoSqlite_ListCountPagingAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint32{firstID, secondID},
-		[]uint32{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []uint64{firstID, secondID},
+		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 
 	// Delete：删除后计数归零；删除不存在的 ID 无命中不报错
 	require.NoError(t, repo.Delete(ctx, &accesskeyV1.DeleteAccessKeyRequest{

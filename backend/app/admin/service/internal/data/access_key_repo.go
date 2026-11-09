@@ -119,7 +119,7 @@ func (r *AccessKeyRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	}, nil
 }
 
-func (r *AccessKeyRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *AccessKeyRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().AccessKey.Query().
 		Where(accesskey.IDEQ(id)).
 		Exist(ctx)
@@ -236,7 +236,7 @@ func (r *AccessKeyRepo) Delete(ctx context.Context, req *accesskeyV1.DeleteAcces
 }
 
 // UpdateSecretHash 重置密钥摘要（轮换）。旧的已签发机器令牌在自身过期前仍有效。
-func (r *AccessKeyRepo) UpdateSecretHash(ctx context.Context, id uint32, secretHash string) error {
+func (r *AccessKeyRepo) UpdateSecretHash(ctx context.Context, id uint64, secretHash string) error {
 	err := r.entClient.Client().AccessKey.UpdateOneID(id).
 		SetSecretHash(secretHash).
 		SetUpdatedAt(time.Now()).
@@ -262,7 +262,7 @@ func (r *AccessKeyRepo) GetByAccessKeyBySystem(ctx context.Context, accessKey st
 }
 
 // TouchLastUsedBySystem 刷新最近使用时间（系统旁路；尽力而为，失败不影响交换）。
-func (r *AccessKeyRepo) TouchLastUsedBySystem(ctx context.Context, id uint32) {
+func (r *AccessKeyRepo) TouchLastUsedBySystem(ctx context.Context, id uint64) {
 	svCtx := viewer.WithSystemContext(ctx)
 	err := r.entClient.Client().AccessKey.UpdateOneID(id).
 		SetLastUsedAt(time.Now()).

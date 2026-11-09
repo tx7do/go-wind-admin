@@ -317,7 +317,7 @@ func (s *AuthenticationService) SsoLogin(ctx context.Context, req *authenticatio
 	}
 
 	// 4. 定位/预置用户
-	tenantID := uint32(0)
+	tenantID := uint64(0)
 	if cfg.TenantCode != "" {
 		tenant, terr := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
 			QueryBy: &identityV1.GetTenantRequest_Code{Code: cfg.TenantCode},
@@ -474,7 +474,7 @@ func (s *AuthenticationService) ssoFetchUserinfo(ctx context.Context, userinfoEn
 
 // ssoAutoCreateUser 按邮箱预置用户：username 取邮箱本地部分，无密码凭证
 // （管理员设置密码前该账号无法密码登录），状态 ON。
-func (s *AuthenticationService) ssoAutoCreateUser(ctx context.Context, tenantID uint32, email string) (*identityV1.User, error) {
+func (s *AuthenticationService) ssoAutoCreateUser(ctx context.Context, tenantID uint64, email string) (*identityV1.User, error) {
 	local := email
 	if at := strings.Index(local, "@"); at > 0 {
 		local = local[:at]

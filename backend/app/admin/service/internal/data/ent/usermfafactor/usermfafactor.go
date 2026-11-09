@@ -72,13 +72,13 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID uint64
 	// SecretHashValidator is a validator for the "secret_hash" field. It is called by the builders before save.
 	SecretHashValidator func(string) error
 	// DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	DisplayNameValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // Method defines the type for the "method" enum field.

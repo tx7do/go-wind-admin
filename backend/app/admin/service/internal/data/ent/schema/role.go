@@ -75,7 +75,7 @@ func (Role) Fields() []ent.Field {
 
 		// 父角色ID，0表示无父级（根角色）。不做自引用 edge（无需 FK 约束），
 		// 层级语义（子角色权限 ⊆ 父角色已绑定权限集）在 service 层校验。
-		field.Uint32("parent_id").
+		field.Uint64("parent_id").
 			Comment("父角色ID，0表示无父级").
 			Optional().
 			Nillable(),
@@ -85,13 +85,13 @@ func (Role) Fields() []ent.Field {
 // Mixin of the Role.
 func (Role) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.Remark{},
 		mixin.Description{},
 		mixin.SortOrder{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 		mixin.SwitchStatus{},
 	}
 }

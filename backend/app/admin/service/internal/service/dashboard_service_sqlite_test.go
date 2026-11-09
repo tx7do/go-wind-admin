@@ -231,7 +231,7 @@ func int32Ptr(v int32) *int32 {
 	return &v
 }
 
-// int32PtrU32 造 *uint32（UserTokenPayload.TenantId 是可选标量）。
-func int32PtrU32(v uint32) *uint32 {
+// int32PtrU32 造 *uint64（UserTokenPayload.TenantId 是可选标量）。
+func int32PtrU32(v uint64) *uint64 {
 	return &v
 }

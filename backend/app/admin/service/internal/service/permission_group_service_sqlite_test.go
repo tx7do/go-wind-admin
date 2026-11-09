@@ -80,7 +80,7 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 
 	svc.init()
 
-	rootID := uint32(0)
+	rootID := uint64(0)
 	rows, err := entClient.Client().PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(constants.DefaultPermissionGroups))
@@ -106,14 +106,14 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 	afterRows, err := entClient.Client().PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, afterRows, len(constants.DefaultPermissionGroups)+1, "播种树之外应新增 1 个分组")
-	var createdID uint32
+	var createdID uint64
 	for _, r := range afterRows {
 		if r.Name != nil && *r.Name == "服务层新分组" {
 			createdID = r.ID
 			require.NotNil(t, r.ParentID, "ParentId 应落库为指向父分组的外键")
 			require.Equal(t, rootID, *r.ParentID, "外键应指向根分组")
 			require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-			require.Equal(t, uint32(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+			require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 			require.Equal(t, entPermissionGroup.StatusOn, *r.Status, "status 应经转换器落库为 ON")
 		}
 	}

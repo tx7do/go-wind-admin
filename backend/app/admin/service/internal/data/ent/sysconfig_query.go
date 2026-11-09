@@ -84,8 +84,8 @@ func (_q *SysConfigQuery) FirstX(ctx context.Context) *SysConfig {
 
 // FirstID returns the first SysConfig ID from the query.
 // Returns a *NotFoundError when no SysConfig ID was found.
-func (_q *SysConfigQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *SysConfigQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func (_q *SysConfigQuery) FirstID(ctx context.Context) (id uint32, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *SysConfigQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *SysConfigQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -135,8 +135,8 @@ func (_q *SysConfigQuery) OnlyX(ctx context.Context) *SysConfig {
 // OnlyID is like Only, but returns the only SysConfig ID in the query.
 // Returns a *NotSingularError when more than one SysConfig ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *SysConfigQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *SysConfigQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -152,7 +152,7 @@ func (_q *SysConfigQuery) OnlyID(ctx context.Context) (id uint32, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *SysConfigQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *SysConfigQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -180,7 +180,7 @@ func (_q *SysConfigQuery) AllX(ctx context.Context) []*SysConfig {
 }
 
 // IDs executes the query and returns a list of SysConfig IDs.
-func (_q *SysConfigQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *SysConfigQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -192,7 +192,7 @@ func (_q *SysConfigQuery) IDs(ctx context.Context) (ids []uint32, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *SysConfigQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *SysConfigQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -374,7 +374,7 @@ func (_q *SysConfigQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *SysConfigQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(sysconfig.Table, sysconfig.Columns, sqlgraph.NewFieldSpec(sysconfig.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(sysconfig.Table, sysconfig.Columns, sqlgraph.NewFieldSpec(sysconfig.FieldID, field.TypeUint64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -192,8 +192,8 @@ func TestDataAccessAuditLogHandleViaServer(t *testing.T) {
 			assert.Equal(t, "req-da-1", rec.GetRequestId(), "RequestId ← X-Request-ID 头")
 			assert.Equal(t, testDAEvents()[i].SqlText, rec.GetSqlText(), "事件按注入顺序落库")
 			// 令牌身份映射到记录的 UserId/TenantId/Username。
-			assert.Equal(t, uint32(42), rec.GetUserId(), "UserId ← 令牌 uid")
-			assert.Equal(t, uint32(7), rec.GetTenantId(), "TenantId ← 令牌 tid")
+			assert.Equal(t, uint64(42), rec.GetUserId(), "UserId ← 令牌 uid")
+			assert.Equal(t, uint64(7), rec.GetTenantId(), "TenantId ← 令牌 tid")
 			assert.Equal(t, "alice", rec.GetUsername(), "Username ← 令牌 sub")
 		}
 		// 落库后 accumulator 必须清空。

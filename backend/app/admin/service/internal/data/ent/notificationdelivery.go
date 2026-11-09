@@ -17,7 +17,7 @@ type NotificationDelivery struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,21 +25,21 @@ type NotificationDelivery struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint32 `json:"created_by,omitempty"`
+	CreatedBy *uint64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint32 `json:"updated_by,omitempty"`
+	UpdatedBy *uint64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint32 `json:"deleted_by,omitempty"`
+	DeletedBy *uint64 `json:"deleted_by,omitempty"`
 	// 业务事件类型
 	EventType *notificationdelivery.EventType `json:"event_type,omitempty"`
 	// 投递渠道
 	Channel *notificationdelivery.Channel `json:"channel,omitempty"`
 	// 实际选中的渠道配置ID
-	ChannelID *uint32 `json:"channel_id,omitempty"`
+	ChannelID *uint64 `json:"channel_id,omitempty"`
 	// 收件用户ID（直发模式可为空）
-	RecipientUserID *uint32 `json:"recipient_user_id,omitempty"`
+	RecipientUserID *uint64 `json:"recipient_user_id,omitempty"`
 	// 关联业务对象ID（按事件类型解释）
-	RelatedID *uint32 `json:"related_id,omitempty"`
+	RelatedID *uint64 `json:"related_id,omitempty"`
 	// 投递目标（脱敏后的地址）
 	Target *string `json:"target,omitempty"`
 	// 投递状态
@@ -88,7 +88,7 @@ func (_m *NotificationDelivery) assignValues(columns []string, values []any) err
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case notificationdelivery.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -114,22 +114,22 @@ func (_m *NotificationDelivery) assignValues(columns []string, values []any) err
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint32)
-				*_m.CreatedBy = uint32(value.Int64)
+				_m.CreatedBy = new(uint64)
+				*_m.CreatedBy = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint32)
-				*_m.UpdatedBy = uint32(value.Int64)
+				_m.UpdatedBy = new(uint64)
+				*_m.UpdatedBy = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint32)
-				*_m.DeletedBy = uint32(value.Int64)
+				_m.DeletedBy = new(uint64)
+				*_m.DeletedBy = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldEventType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -149,22 +149,22 @@ func (_m *NotificationDelivery) assignValues(columns []string, values []any) err
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field channel_id", values[i])
 			} else if value.Valid {
-				_m.ChannelID = new(uint32)
-				*_m.ChannelID = uint32(value.Int64)
+				_m.ChannelID = new(uint64)
+				*_m.ChannelID = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldRecipientUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field recipient_user_id", values[i])
 			} else if value.Valid {
-				_m.RecipientUserID = new(uint32)
-				*_m.RecipientUserID = uint32(value.Int64)
+				_m.RecipientUserID = new(uint64)
+				*_m.RecipientUserID = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldRelatedID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field related_id", values[i])
 			} else if value.Valid {
-				_m.RelatedID = new(uint32)
-				*_m.RelatedID = uint32(value.Int64)
+				_m.RelatedID = new(uint64)
+				*_m.RelatedID = uint64(value.Int64)
 			}
 		case notificationdelivery.FieldTarget:
 			if value, ok := values[i].(*sql.NullString); !ok {

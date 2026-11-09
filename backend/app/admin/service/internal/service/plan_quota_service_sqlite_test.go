@@ -61,7 +61,7 @@ func TestPlanQuotaServiceSqlite_Create_AssociatesPlan(t *testing.T) {
 	require.Equal(t, entPlanQuota.QuotaTypeUserLimit, *rows[0].QuotaType, "quota_type 应经转换器落库为 USER_LIMIT")
 	require.Equal(t, uint64(42), *rows[0].QuotaValue, "quota_value 应按请求落库")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint32(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	// 外键回归断言：配额行必须挂在请求指定的父套餐上，而非 NULL
 	linked, err := entClient.Client().PlanQuota.Query().

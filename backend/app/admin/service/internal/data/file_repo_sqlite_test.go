@@ -54,7 +54,7 @@ func TestFileRepoSqlite_Create(t *testing.T) {
 			Size:          trans.Ptr(uint64(512)),
 			LinkUrl:       trans.Ptr("https://oss.example/bucket-alpha/saved_1.bin"),
 			ContentHash:   trans.Ptr("sha256:abc"),
-			CreatedBy:     trans.Ptr(uint32(21)),
+			CreatedBy:     trans.Ptr(uint64(21)),
 		},
 	})
 	require.NoError(t, err, "repo.Create 写入 SQLite 应成功")
@@ -75,7 +75,7 @@ func TestFileRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, "512B", *row.SizeFormat, "512 字节应格式化为 512B")
 	require.Equal(t, "https://oss.example/bucket-alpha/saved_1.bin", *row.LinkURL, "link_url 应按请求落库")
 	require.Equal(t, "sha256:abc", *row.ContentHash, "content_hash 应按请求落库")
-	require.Equal(t, uint32(21), *row.CreatedBy, "created_by 应按请求落库")
+	require.Equal(t, uint64(21), *row.CreatedBy, "created_by 应按请求落库")
 	require.False(t, row.CreatedAt.IsZero(), "created_at 应由 repo 写入")
 }
 
@@ -236,8 +236,8 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint32{firstID, secondID},
-		[]uint32{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []uint64{firstID, secondID},
+		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestFileRepoSqlite_Get 验证 Get 按主键的命中与未命中。
@@ -377,7 +377,7 @@ func TestFileRepoSqlite_DeleteAndUniqueGuid(t *testing.T) {
 	// 跨租户同 guid：允许（唯一性按租户维度）
 	require.NoError(t, repo.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
-			TenantId: trans.Ptr(uint32(5)),
+			TenantId: trans.Ptr(uint64(5)),
 			FileGuid: trans.Ptr("guid-sqlite-file-uniq-1"),
 			FileName: trans.Ptr("uniq-other-tenant.bin"),
 		},

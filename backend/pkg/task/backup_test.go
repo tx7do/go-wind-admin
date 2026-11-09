@@ -10,7 +10,7 @@ import (
 func TestCreateBackupTaskID(t *testing.T) {
 	cases := []struct {
 		name   string
-		taskId uint32
+		taskId uint64
 		want   string
 	}{
 		{"zero", 0, "backup:0"},

@@ -52,7 +52,7 @@ func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlin
 		return nil, err
 	}
 	// 租户管理员只看本租户会话；平台管理员看全量
-	tenantFilter := uint32(0)
+	tenantFilter := uint64(0)
 	if !operator.GetIsPlatformAdmin() {
 		tenantFilter = operator.GetTenantId()
 	}

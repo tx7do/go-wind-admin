@@ -70,14 +70,14 @@ func (_u *APIUpdate) ClearDeletedAt() *APIUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *APIUpdate) SetCreatedBy(v uint32) *APIUpdate {
+func (_u *APIUpdate) SetCreatedBy(v uint64) *APIUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *APIUpdate) SetNillableCreatedBy(v *uint32) *APIUpdate {
+func (_u *APIUpdate) SetNillableCreatedBy(v *uint64) *APIUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *APIUpdate) SetNillableCreatedBy(v *uint32) *APIUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *APIUpdate) AddCreatedBy(v int32) *APIUpdate {
+func (_u *APIUpdate) AddCreatedBy(v int64) *APIUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *APIUpdate) ClearCreatedBy() *APIUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *APIUpdate) SetUpdatedBy(v uint32) *APIUpdate {
+func (_u *APIUpdate) SetUpdatedBy(v uint64) *APIUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *APIUpdate) SetNillableUpdatedBy(v *uint32) *APIUpdate {
+func (_u *APIUpdate) SetNillableUpdatedBy(v *uint64) *APIUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *APIUpdate) SetNillableUpdatedBy(v *uint32) *APIUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *APIUpdate) AddUpdatedBy(v int32) *APIUpdate {
+func (_u *APIUpdate) AddUpdatedBy(v int64) *APIUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *APIUpdate) ClearUpdatedBy() *APIUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *APIUpdate) SetDeletedBy(v uint32) *APIUpdate {
+func (_u *APIUpdate) SetDeletedBy(v uint64) *APIUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *APIUpdate) SetNillableDeletedBy(v *uint32) *APIUpdate {
+func (_u *APIUpdate) SetNillableDeletedBy(v *uint64) *APIUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *APIUpdate) SetNillableDeletedBy(v *uint32) *APIUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *APIUpdate) AddDeletedBy(v int32) *APIUpdate {
+func (_u *APIUpdate) AddDeletedBy(v int64) *APIUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -386,7 +386,7 @@ func (_u *APIUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(api.Table, api.Columns, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(api.Table, api.Columns, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -410,31 +410,31 @@ func (_u *APIUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(api.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(api.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(api.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(api.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(api.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(api.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(api.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(api.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(api.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(api.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(api.FieldStatus, field.TypeEnum, value)
@@ -550,14 +550,14 @@ func (_u *APIUpdateOne) ClearDeletedAt() *APIUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *APIUpdateOne) SetCreatedBy(v uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetCreatedBy(v uint64) *APIUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *APIUpdateOne) SetNillableCreatedBy(v *uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetNillableCreatedBy(v *uint64) *APIUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -565,7 +565,7 @@ func (_u *APIUpdateOne) SetNillableCreatedBy(v *uint32) *APIUpdateOne {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *APIUpdateOne) AddCreatedBy(v int32) *APIUpdateOne {
+func (_u *APIUpdateOne) AddCreatedBy(v int64) *APIUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -577,14 +577,14 @@ func (_u *APIUpdateOne) ClearCreatedBy() *APIUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *APIUpdateOne) SetUpdatedBy(v uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetUpdatedBy(v uint64) *APIUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *APIUpdateOne) SetNillableUpdatedBy(v *uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetNillableUpdatedBy(v *uint64) *APIUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -592,7 +592,7 @@ func (_u *APIUpdateOne) SetNillableUpdatedBy(v *uint32) *APIUpdateOne {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *APIUpdateOne) AddUpdatedBy(v int32) *APIUpdateOne {
+func (_u *APIUpdateOne) AddUpdatedBy(v int64) *APIUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -604,14 +604,14 @@ func (_u *APIUpdateOne) ClearUpdatedBy() *APIUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *APIUpdateOne) SetDeletedBy(v uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetDeletedBy(v uint64) *APIUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *APIUpdateOne) SetNillableDeletedBy(v *uint32) *APIUpdateOne {
+func (_u *APIUpdateOne) SetNillableDeletedBy(v *uint64) *APIUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -619,7 +619,7 @@ func (_u *APIUpdateOne) SetNillableDeletedBy(v *uint32) *APIUpdateOne {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *APIUpdateOne) AddDeletedBy(v int32) *APIUpdateOne {
+func (_u *APIUpdateOne) AddDeletedBy(v int64) *APIUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -879,7 +879,7 @@ func (_u *APIUpdateOne) sqlSave(ctx context.Context) (_node *Api, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(api.Table, api.Columns, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(api.Table, api.Columns, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Api.id" for update`)}
@@ -920,31 +920,31 @@ func (_u *APIUpdateOne) sqlSave(ctx context.Context) (_node *Api, err error) {
 		_spec.ClearField(api.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(api.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(api.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(api.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(api.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(api.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(api.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(api.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(api.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(api.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(api.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(api.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(api.FieldStatus, field.TypeEnum, value)

@@ -23,7 +23,7 @@ func (AiAgentRun) Annotations() []schema.Annotation {
 
 func (AiAgentRun) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("app_id").
+		field.Uint64("app_id").
 			Comment("应用ID").
 			Optional().
 			Nillable(),
@@ -66,10 +66,10 @@ func (AiAgentRun) Fields() []ent.Field {
 
 func (AiAgentRun) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

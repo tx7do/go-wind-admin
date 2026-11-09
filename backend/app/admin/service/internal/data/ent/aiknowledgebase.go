@@ -17,7 +17,7 @@ type AiKnowledgeBase struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,23 +25,23 @@ type AiKnowledgeBase struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint32 `json:"created_by,omitempty"`
+	CreatedBy *uint64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint32 `json:"updated_by,omitempty"`
+	UpdatedBy *uint64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint32 `json:"deleted_by,omitempty"`
+	DeletedBy *uint64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint32 `json:"tenant_id,omitempty"`
+	TenantID *uint64 `json:"tenant_id,omitempty"`
 	// 知识库名称
 	Name *string `json:"name,omitempty"`
 	// 描述
 	Description *string `json:"description,omitempty"`
 	// 向量化使用的模型提供商ID
-	ProviderID *uint32 `json:"provider_id,omitempty"`
+	ProviderID *uint64 `json:"provider_id,omitempty"`
 	// embedding 模型名
 	EmbeddingModel *string `json:"embedding_model,omitempty"`
 	// 创建人用户ID
-	UserID *uint32 `json:"user_id,omitempty"`
+	UserID *uint64 `json:"user_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AiKnowledgeBaseQuery when eager-loading is set.
 	Edges        AiKnowledgeBaseEdges `json:"edges"`
@@ -97,7 +97,7 @@ func (_m *AiKnowledgeBase) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case aiknowledgebase.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -123,29 +123,29 @@ func (_m *AiKnowledgeBase) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint32)
-				*_m.CreatedBy = uint32(value.Int64)
+				_m.CreatedBy = new(uint64)
+				*_m.CreatedBy = uint64(value.Int64)
 			}
 		case aiknowledgebase.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint32)
-				*_m.UpdatedBy = uint32(value.Int64)
+				_m.UpdatedBy = new(uint64)
+				*_m.UpdatedBy = uint64(value.Int64)
 			}
 		case aiknowledgebase.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint32)
-				*_m.DeletedBy = uint32(value.Int64)
+				_m.DeletedBy = new(uint64)
+				*_m.DeletedBy = uint64(value.Int64)
 			}
 		case aiknowledgebase.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint32)
-				*_m.TenantID = uint32(value.Int64)
+				_m.TenantID = new(uint64)
+				*_m.TenantID = uint64(value.Int64)
 			}
 		case aiknowledgebase.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -165,8 +165,8 @@ func (_m *AiKnowledgeBase) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field provider_id", values[i])
 			} else if value.Valid {
-				_m.ProviderID = new(uint32)
-				*_m.ProviderID = uint32(value.Int64)
+				_m.ProviderID = new(uint64)
+				*_m.ProviderID = uint64(value.Int64)
 			}
 		case aiknowledgebase.FieldEmbeddingModel:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -179,8 +179,8 @@ func (_m *AiKnowledgeBase) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint32)
-				*_m.UserID = uint32(value.Int64)
+				_m.UserID = new(uint64)
+				*_m.UserID = uint64(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

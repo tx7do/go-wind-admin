@@ -143,7 +143,7 @@ func TestOrgUnitRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetOrgUnitRequest{
@@ -178,7 +178,7 @@ func TestOrgUnitRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	err = repo.Update(ctx, &identityV1.UpdateOrgUnitRequest{
 		Id:         createdID,
@@ -210,7 +210,7 @@ func TestOrgUnitRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &identityV1.DeleteOrgUnitRequest{
 		QueryBy: &identityV1.DeleteOrgUnitRequest_Id{Id: createdID},

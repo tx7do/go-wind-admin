@@ -48,16 +48,16 @@ func newRecipientServiceForTest(t *testing.T) (*InternalMessageRecipientService,
 }
 
 // inboxTestTenantID 是收件箱测试的公共租户（消息与收件行都落它名下）。
-const inboxTestTenantID = uint32(5)
+const inboxTestTenantID = uint64(5)
 
 // newUserViewerCtx 构造租户 5 的普通用户 viewer 上下文（会触发归属谓词）。
-func newUserViewerCtx(uid uint32) context.Context {
+func newUserViewerCtx(uid uint64) context.Context {
 	return crudViewer.WithContext(context.Background(),
 		crudViewer.NewUserContext(uint64(uid), uint64(inboxTestTenantID), 0, "", nil))
 }
 
 // seedInboxRow 落一条父消息 + 指定用户的收件行，返回收件行 ID。
-func seedInboxRow(t *testing.T, svc *InternalMessageRecipientService, recipientUserID uint32, title, content string) uint32 {
+func seedInboxRow(t *testing.T, svc *InternalMessageRecipientService, recipientUserID uint64, title, content string) uint64 {
 	t.Helper()
 	sysCtx := enttest.NewSystemContext(context.Background())
 
@@ -114,7 +114,7 @@ func TestInternalMessageRecipientService_ReadAndDeletePassthrough(t *testing.T) 
 	id := seedInboxRow(t, svc, 71, "待读通知", "点了已读才安心")
 
 	_, err := svc.MarkNotificationAsRead(opCtx71, &internalMessageV1.MarkNotificationAsReadRequest{
-		RecipientIds: []uint32{id},
+		RecipientIds: []uint64{id},
 	})
 	require.NoError(t, err)
 
@@ -127,13 +127,13 @@ func TestInternalMessageRecipientService_ReadAndDeletePassthrough(t *testing.T) 
 		"标记已读后状态应为 READ")
 
 	_, err = svc.MarkNotificationsStatus(opCtx71, &internalMessageV1.MarkNotificationsStatusRequest{
-		RecipientIds: []uint32{id},
+		RecipientIds: []uint64{id},
 		NewStatus:    internalMessageV1.InternalMessageRecipient_READ,
 	})
 	require.NoError(t, err, "批量状态修改应连通")
 
 	_, err = svc.DeleteNotificationFromInbox(opCtx71, &internalMessageV1.DeleteNotificationFromInboxRequest{
-		RecipientIds: []uint32{id},
+		RecipientIds: []uint64{id},
 	})
 	require.NoError(t, err)
 

@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.RoleOrgUnit {
+func ID(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.RoleOrgUnit {
+func IDEQ(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.RoleOrgUnit {
+func IDNEQ(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.RoleOrgUnit {
+func IDIn(ids ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.RoleOrgUnit {
+func IDNotIn(ids ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.RoleOrgUnit {
+func IDGT(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.RoleOrgUnit {
+func IDGTE(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.RoleOrgUnit {
+func IDLT(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.RoleOrgUnit {
+func IDLTE(id uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,32 +70,32 @@ func DeletedAt(v time.Time) predicate.RoleOrgUnit {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.RoleOrgUnit {
+func CreatedBy(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.RoleOrgUnit {
+func UpdatedBy(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.RoleOrgUnit {
+func DeletedBy(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.RoleOrgUnit {
+func TenantID(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldTenantID, v))
 }
 
 // RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
-func RoleID(v uint32) predicate.RoleOrgUnit {
+func RoleID(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldRoleID, v))
 }
 
 // OrgUnitID applies equality check predicate on the "org_unit_id" field. It's identical to OrgUnitIDEQ.
-func OrgUnitID(v uint32) predicate.RoleOrgUnit {
+func OrgUnitID(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldOrgUnitID, v))
 }
 
@@ -250,42 +250,42 @@ func DeletedAtNotNil() predicate.RoleOrgUnit {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.RoleOrgUnit {
+func CreatedByEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.RoleOrgUnit {
+func CreatedByNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.RoleOrgUnit {
+func CreatedByIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func CreatedByNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.RoleOrgUnit {
+func CreatedByGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.RoleOrgUnit {
+func CreatedByGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.RoleOrgUnit {
+func CreatedByLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.RoleOrgUnit {
+func CreatedByLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -300,42 +300,42 @@ func CreatedByNotNil() predicate.RoleOrgUnit {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.RoleOrgUnit {
+func UpdatedByEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.RoleOrgUnit {
+func UpdatedByNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.RoleOrgUnit {
+func UpdatedByIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func UpdatedByNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.RoleOrgUnit {
+func UpdatedByGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.RoleOrgUnit {
+func UpdatedByGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.RoleOrgUnit {
+func UpdatedByLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.RoleOrgUnit {
+func UpdatedByLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -350,42 +350,42 @@ func UpdatedByNotNil() predicate.RoleOrgUnit {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.RoleOrgUnit {
+func DeletedByEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.RoleOrgUnit {
+func DeletedByNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.RoleOrgUnit {
+func DeletedByIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func DeletedByNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.RoleOrgUnit {
+func DeletedByGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.RoleOrgUnit {
+func DeletedByGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.RoleOrgUnit {
+func DeletedByLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.RoleOrgUnit {
+func DeletedByLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -400,42 +400,42 @@ func DeletedByNotNil() predicate.RoleOrgUnit {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.RoleOrgUnit {
+func TenantIDEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.RoleOrgUnit {
+func TenantIDNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.RoleOrgUnit {
+func TenantIDIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func TenantIDNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.RoleOrgUnit {
+func TenantIDGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.RoleOrgUnit {
+func TenantIDGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.RoleOrgUnit {
+func TenantIDLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.RoleOrgUnit {
+func TenantIDLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -450,82 +450,82 @@ func TenantIDNotNil() predicate.RoleOrgUnit {
 }
 
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
-func RoleIDEQ(v uint32) predicate.RoleOrgUnit {
+func RoleIDEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldRoleID, v))
 }
 
 // RoleIDNEQ applies the NEQ predicate on the "role_id" field.
-func RoleIDNEQ(v uint32) predicate.RoleOrgUnit {
+func RoleIDNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldRoleID, v))
 }
 
 // RoleIDIn applies the In predicate on the "role_id" field.
-func RoleIDIn(vs ...uint32) predicate.RoleOrgUnit {
+func RoleIDIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldRoleID, vs...))
 }
 
 // RoleIDNotIn applies the NotIn predicate on the "role_id" field.
-func RoleIDNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func RoleIDNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
 // RoleIDGT applies the GT predicate on the "role_id" field.
-func RoleIDGT(v uint32) predicate.RoleOrgUnit {
+func RoleIDGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldRoleID, v))
 }
 
 // RoleIDGTE applies the GTE predicate on the "role_id" field.
-func RoleIDGTE(v uint32) predicate.RoleOrgUnit {
+func RoleIDGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldRoleID, v))
 }
 
 // RoleIDLT applies the LT predicate on the "role_id" field.
-func RoleIDLT(v uint32) predicate.RoleOrgUnit {
+func RoleIDLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldRoleID, v))
 }
 
 // RoleIDLTE applies the LTE predicate on the "role_id" field.
-func RoleIDLTE(v uint32) predicate.RoleOrgUnit {
+func RoleIDLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldRoleID, v))
 }
 
 // OrgUnitIDEQ applies the EQ predicate on the "org_unit_id" field.
-func OrgUnitIDEQ(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldEQ(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDNEQ applies the NEQ predicate on the "org_unit_id" field.
-func OrgUnitIDNEQ(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDNEQ(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNEQ(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDIn applies the In predicate on the "org_unit_id" field.
-func OrgUnitIDIn(vs ...uint32) predicate.RoleOrgUnit {
+func OrgUnitIDIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldIn(FieldOrgUnitID, vs...))
 }
 
 // OrgUnitIDNotIn applies the NotIn predicate on the "org_unit_id" field.
-func OrgUnitIDNotIn(vs ...uint32) predicate.RoleOrgUnit {
+func OrgUnitIDNotIn(vs ...uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldNotIn(FieldOrgUnitID, vs...))
 }
 
 // OrgUnitIDGT applies the GT predicate on the "org_unit_id" field.
-func OrgUnitIDGT(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDGT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGT(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDGTE applies the GTE predicate on the "org_unit_id" field.
-func OrgUnitIDGTE(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDGTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldGTE(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDLT applies the LT predicate on the "org_unit_id" field.
-func OrgUnitIDLT(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDLT(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLT(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDLTE applies the LTE predicate on the "org_unit_id" field.
-func OrgUnitIDLTE(v uint32) predicate.RoleOrgUnit {
+func OrgUnitIDLTE(v uint64) predicate.RoleOrgUnit {
 	return predicate.RoleOrgUnit(sql.FieldLTE(FieldOrgUnitID, v))
 }
 

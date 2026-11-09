@@ -310,7 +310,7 @@ func (s *AiAgentService) ListRuns(ctx context.Context, req *paginationV1.PagingR
 
 // loadSubflowGraph subflow 节点的真实现：加载目标应用（enabled 校验）并解析其图。
 // 同租户隔离（ent viewer 租户谓词）：跨租户引用查不到即报错，不越权。
-func (s *AiAgentService) loadSubflowGraph(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+func (s *AiAgentService) loadSubflowGraph(ctx context.Context, appID uint64) (string, *agentGraph, error) {
 	app, err := s.appRepo.GetEntityByID(ctx, appID)
 	if err != nil {
 		return "", nil, err
@@ -518,9 +518,9 @@ func (s *AiAgentService) runLLMForAgent(operator *authenticationV1.UserTokenPayl
 			return "", agentUsage{}, err
 		}
 		return answer, agentUsage{
-			Prompt:     uint32(usage.PromptTokens),
-			Completion: uint32(usage.CompletionTokens),
-			Total:      uint32(usage.TotalTokens),
+			Prompt:     uint64(usage.PromptTokens),
+			Completion: uint64(usage.CompletionTokens),
+			Total:      uint64(usage.TotalTokens),
 		}, nil
 	}
 }

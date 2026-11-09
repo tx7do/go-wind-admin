@@ -77,26 +77,26 @@ func joinMenuFullPathGorm(parentFullPath, path string) string {
 }
 
 // buildMenuFullPathIDIndex 全量菜单行树遍历，产出 id→全路径映射。
-func (r *PermissionMenuRepo) buildMenuFullPathIDIndex(ctx context.Context) (map[uint32]string, error) {
+func (r *PermissionMenuRepo) buildMenuFullPathIDIndex(ctx context.Context) (map[uint64]string, error) {
 	var rows []*models.Menu
 	if err := r.client.DB.WithContext(ctx).Model(&models.Menu{}).Find(&rows).Error; err != nil {
 		r.log.Errorf(ctx, "query existing menus failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query existing menus failed")
 	}
 
-	childrenOf := make(map[uint32][]*models.Menu, len(rows))
+	childrenOf := make(map[uint64][]*models.Menu, len(rows))
 	var roots []*models.Menu
 	for _, row := range rows {
-		// models.Menu 经 mixin.Tree 内嵌 ParentID struct，父指针在其内层字段
-		if row.ParentID.ParentID == nil || *row.ParentID.ParentID == 0 {
+		// models.Menu 经 mixin.Tree64 内嵌 ParentID64，父指针经字段提升直接可达
+		if row.ParentID == nil || *row.ParentID == 0 {
 			roots = append(roots, row)
 		} else {
-			childrenOf[*row.ParentID.ParentID] = append(childrenOf[*row.ParentID.ParentID], row)
+			childrenOf[*row.ParentID] = append(childrenOf[*row.ParentID], row)
 		}
 	}
 
-	byID := make(map[uint32]string, len(rows))
-	visited := make(map[uint32]bool, len(rows))
+	byID := make(map[uint64]string, len(rows))
+	visited := make(map[uint64]bool, len(rows))
 	var walk func(rows []*models.Menu, parentFullPath string)
 	walk = func(rows []*models.Menu, parentFullPath string) {
 		for _, row := range rows {
@@ -123,7 +123,7 @@ func derefStrPtr(p *string) string {
 
 // resolveFullPaths 把菜单引用（id 列表）解析成全路径身份快照；解析不到随 missing
 // 返回由调用方整体失败（不吞错铁律）。
-func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uint32) (fullPaths []string, missing []uint32, err error) {
+func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uint64) (fullPaths []string, missing []uint64, err error) {
 	if len(menuIDs) == 0 {
 		return nil, nil, nil
 	}
@@ -151,7 +151,7 @@ func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uin
 }
 
 // ListMenuFullPaths 列出权限关联的菜单全路径快照（绑定表即真相，不回查 sys_menus）。
-func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionIDs []uint32) ([]string, error) {
+func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionIDs []uint64) ([]string, error) {
 	if len(permissionIDs) == 0 {
 		return nil, nil
 	}
@@ -177,7 +177,7 @@ func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionID
 
 // ListMenuIDs 全路径快照反解回当前 sys_menus id（管理页勾选框回显）；
 // 路径已不存在的快照解析不出 id，防御性跳过。
-func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []uint64) ([]uint64, error) {
 	paths, err := r.ListMenuFullPaths(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -190,13 +190,13 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 	if err != nil {
 		return nil, err
 	}
-	pathToID := make(map[string]uint32, len(byID))
+	pathToID := make(map[string]uint64, len(byID))
 	for id, p := range byID {
 		pathToID[p] = id
 	}
 
-	ids := make([]uint32, 0, len(paths))
-	seen := make(map[uint32]struct{}, len(paths))
+	ids := make([]uint64, 0, len(paths))
+	seen := make(map[uint64]struct{}, len(paths))
 	for _, p := range paths {
 		if id, ok := pathToID[p]; ok {
 			if _, dup := seen[id]; dup {
@@ -213,8 +213,8 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 // 全路径快照；提交了已不存在的 id → 整体 400 带缺失明细。空列表 = 清空授权。
 func (r *PermissionMenuRepo) AssignMenus(
 	ctx context.Context,
-	permissionID uint32,
-	menuIDs []uint32,
+	permissionID uint64,
+	menuIDs []uint64,
 ) error {
 	fullPaths, missing, err := r.resolveFullPaths(ctx, menuIDs)
 	if err != nil {
@@ -237,7 +237,7 @@ func (r *PermissionMenuRepo) AssignMenus(
 func (r *PermissionMenuRepo) AssignMenusWithTx(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	return r.assignFullPathsWithClient(ctx, tx, permissionID, fullPaths)
@@ -246,7 +246,7 @@ func (r *PermissionMenuRepo) AssignMenusWithTx(
 func (r *PermissionMenuRepo) assignFullPathsWithClient(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	if len(fullPaths) == 0 {
@@ -277,7 +277,7 @@ ON CONFLICT (permission_id, full_path) DO UPDATE SET updated_at = EXCLUDED.updat
 func (r *PermissionMenuRepo) cleanNotExistMenusWithClient(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	db := tx.Where("permission_id = ?", permissionID)
@@ -312,7 +312,7 @@ func (r *PermissionMenuRepo) DeleteByFullPaths(ctx context.Context, tx *gormDB.D
 
 // TruncateExcept 清空绑定表但保留指定权限的绑定（由调用方按 code 前缀解析）；
 // 为空 = 全清。
-func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint32) error {
+func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint64) error {
 	db := r.client.DB.WithContext(ctx)
 	if len(keepPermissionIDs) > 0 {
 		db = db.Where("permission_id NOT IN ?", keepPermissionIDs)
@@ -327,7 +327,7 @@ func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionI
 }
 
 // Delete 删除权限关联的菜单
-func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) error {
+func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint64) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id = ?", permissionID) },
 	}); err != nil {
@@ -337,7 +337,7 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 	return nil
 }
 
-func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {

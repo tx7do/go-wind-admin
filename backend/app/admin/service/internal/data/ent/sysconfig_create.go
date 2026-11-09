@@ -65,13 +65,13 @@ func (_c *SysConfigCreate) SetNillableDeletedAt(v *time.Time) *SysConfigCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *SysConfigCreate) SetCreatedBy(v uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetCreatedBy(v uint64) *SysConfigCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *SysConfigCreate) SetNillableCreatedBy(v *uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetNillableCreatedBy(v *uint64) *SysConfigCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *SysConfigCreate) SetNillableCreatedBy(v *uint32) *SysConfigCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *SysConfigCreate) SetUpdatedBy(v uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetUpdatedBy(v uint64) *SysConfigCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *SysConfigCreate) SetNillableUpdatedBy(v *uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetNillableUpdatedBy(v *uint64) *SysConfigCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *SysConfigCreate) SetNillableUpdatedBy(v *uint32) *SysConfigCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *SysConfigCreate) SetDeletedBy(v uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetDeletedBy(v uint64) *SysConfigCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *SysConfigCreate) SetNillableDeletedBy(v *uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetNillableDeletedBy(v *uint64) *SysConfigCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -177,7 +177,7 @@ func (_c *SysConfigCreate) SetNillableIsBuiltIn(v *bool) *SysConfigCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *SysConfigCreate) SetID(v uint32) *SysConfigCreate {
+func (_c *SysConfigCreate) SetID(v uint64) *SysConfigCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -255,7 +255,7 @@ func (_c *SysConfigCreate) sqlSave(ctx context.Context) (*SysConfig, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -265,7 +265,7 @@ func (_c *SysConfigCreate) sqlSave(ctx context.Context) (*SysConfig, error) {
 func (_c *SysConfigCreate) createSpec() (*SysConfig, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SysConfig{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(sysconfig.Table, sqlgraph.NewFieldSpec(sysconfig.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(sysconfig.Table, sqlgraph.NewFieldSpec(sysconfig.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -285,15 +285,15 @@ func (_c *SysConfigCreate) createSpec() (*SysConfig, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(sysconfig.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(sysconfig.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(sysconfig.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(sysconfig.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(sysconfig.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(sysconfig.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -405,7 +405,7 @@ func (u *SysConfigUpsert) ClearDeletedAt() *SysConfigUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SysConfigUpsert) SetCreatedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) SetCreatedBy(v uint64) *SysConfigUpsert {
 	u.Set(sysconfig.FieldCreatedBy, v)
 	return u
 }
@@ -417,7 +417,7 @@ func (u *SysConfigUpsert) UpdateCreatedBy() *SysConfigUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SysConfigUpsert) AddCreatedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) AddCreatedBy(v uint64) *SysConfigUpsert {
 	u.Add(sysconfig.FieldCreatedBy, v)
 	return u
 }
@@ -429,7 +429,7 @@ func (u *SysConfigUpsert) ClearCreatedBy() *SysConfigUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SysConfigUpsert) SetUpdatedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) SetUpdatedBy(v uint64) *SysConfigUpsert {
 	u.Set(sysconfig.FieldUpdatedBy, v)
 	return u
 }
@@ -441,7 +441,7 @@ func (u *SysConfigUpsert) UpdateUpdatedBy() *SysConfigUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SysConfigUpsert) AddUpdatedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) AddUpdatedBy(v uint64) *SysConfigUpsert {
 	u.Add(sysconfig.FieldUpdatedBy, v)
 	return u
 }
@@ -453,7 +453,7 @@ func (u *SysConfigUpsert) ClearUpdatedBy() *SysConfigUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SysConfigUpsert) SetDeletedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) SetDeletedBy(v uint64) *SysConfigUpsert {
 	u.Set(sysconfig.FieldDeletedBy, v)
 	return u
 }
@@ -465,7 +465,7 @@ func (u *SysConfigUpsert) UpdateDeletedBy() *SysConfigUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SysConfigUpsert) AddDeletedBy(v uint32) *SysConfigUpsert {
+func (u *SysConfigUpsert) AddDeletedBy(v uint64) *SysConfigUpsert {
 	u.Add(sysconfig.FieldDeletedBy, v)
 	return u
 }
@@ -660,14 +660,14 @@ func (u *SysConfigUpsertOne) ClearDeletedAt() *SysConfigUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SysConfigUpsertOne) SetCreatedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) SetCreatedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SysConfigUpsertOne) AddCreatedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) AddCreatedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -688,14 +688,14 @@ func (u *SysConfigUpsertOne) ClearCreatedBy() *SysConfigUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SysConfigUpsertOne) SetUpdatedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) SetUpdatedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SysConfigUpsertOne) AddUpdatedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) AddUpdatedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -716,14 +716,14 @@ func (u *SysConfigUpsertOne) ClearUpdatedBy() *SysConfigUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SysConfigUpsertOne) SetDeletedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) SetDeletedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SysConfigUpsertOne) AddDeletedBy(v uint32) *SysConfigUpsertOne {
+func (u *SysConfigUpsertOne) AddDeletedBy(v uint64) *SysConfigUpsertOne {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -864,7 +864,7 @@ func (u *SysConfigUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *SysConfigUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *SysConfigUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -873,7 +873,7 @@ func (u *SysConfigUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *SysConfigUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *SysConfigUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -930,7 +930,7 @@ func (_c *SysConfigCreateBulk) Save(ctx context.Context) ([]*SysConfig, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1108,14 +1108,14 @@ func (u *SysConfigUpsertBulk) ClearDeletedAt() *SysConfigUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SysConfigUpsertBulk) SetCreatedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) SetCreatedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SysConfigUpsertBulk) AddCreatedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) AddCreatedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1136,14 +1136,14 @@ func (u *SysConfigUpsertBulk) ClearCreatedBy() *SysConfigUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SysConfigUpsertBulk) SetUpdatedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) SetUpdatedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SysConfigUpsertBulk) AddUpdatedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) AddUpdatedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1164,14 +1164,14 @@ func (u *SysConfigUpsertBulk) ClearUpdatedBy() *SysConfigUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SysConfigUpsertBulk) SetDeletedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) SetDeletedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SysConfigUpsertBulk) AddDeletedBy(v uint32) *SysConfigUpsertBulk {
+func (u *SysConfigUpsertBulk) AddDeletedBy(v uint64) *SysConfigUpsertBulk {
 	return u.Update(func(s *SysConfigUpsert) {
 		s.AddDeletedBy(v)
 	})

@@ -73,13 +73,13 @@ func openScopeTestClient(t *testing.T) *ent.Client {
 	return client
 }
 
-func fmtPair(unit, creator uint32) string {
+func fmtPair(unit, creator uint64) string {
 	return "u" + strconv.FormatUint(uint64(unit), 10) +
 		":c" + strconv.FormatUint(uint64(creator), 10)
 }
 
 // seedPosition 在指定租户视角下种一行岗位（unit/creator 为行属性）。
-func seedPosition(client *ent.Client, ctx context.Context, unit, creator uint32, code string) {
+func seedPosition(client *ent.Client, ctx context.Context, unit, creator uint64, code string) {
 	client.Position.Create().
 		SetName("pos-" + code).
 		SetCode(code).

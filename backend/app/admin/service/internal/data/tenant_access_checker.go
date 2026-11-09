@@ -42,7 +42,7 @@ func NewTenantAccessCheckerImpl(
 
 // CheckTenantAccess 实现 auth.TenantAccessChecker。
 // tenantId 由中间件保证 > 0。
-func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantId uint32, path string, method string) error {
+func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantId uint64, path string, method string) error {
 	sysCtx := viewer.WithSystemContext(ctx)
 
 	// 1. 查租户状态与到期时间（WithPlan(WithQuotas) 预载套餐及其配额边：
@@ -61,7 +61,7 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 	}
 
 	// 2. 到期只读判定（READONLY 策略 + 已到期）
-	planId := uint32(0)
+	planId := uint64(0)
 	var planExpiryPolicy plan.ExpiryPolicy
 	if t.Edges.Plan != nil {
 		planId = t.Edges.Plan.ID
@@ -139,7 +139,7 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 }
 
 // isModuleAllowed 查询套餐白名单是否包含指定模块。
-func (c *TenantAccessCheckerImpl) isModuleAllowed(ctx context.Context, planId uint32, module identityV1.Module) (bool, error) {
+func (c *TenantAccessCheckerImpl) isModuleAllowed(ctx context.Context, planId uint64, module identityV1.Module) (bool, error) {
 	entModule := mapProtoModuleToEnt(module)
 	if entModule == "" {
 		return false, nil

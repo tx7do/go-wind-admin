@@ -6,12 +6,12 @@ import (
 
 // LoginPolicy 对应表 sys_login_policies
 type LoginPolicy struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 	mixin.TimeAt
-	mixin.OperatorID
-	mixin.TenantID
+	mixin.OperatorID64
+	mixin.TenantID64
 
-	TargetID *uint32 `gorm:"column:target_id;type:int unsigned;comment:目标用户ID"`
+	TargetID *uint64 `gorm:"column:target_id;type:int unsigned;comment:目标用户ID"`
 	Value    *string `gorm:"column:value;type:varchar(255);comment:限制值（如IP地址、MAC地址或地区代码）"`
 	Reason   *string `gorm:"column:reason;type:varchar(255);comment:限制原因"`
 

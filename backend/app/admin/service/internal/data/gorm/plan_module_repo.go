@@ -71,7 +71,7 @@ func (r *PlanModuleRepo) List(ctx context.Context, req *paginationV1.PagingReque
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: List not implemented — ent .WithPlan/HasPlanWith/.Edges edge predicate has no go-crud/gorm primitive; see data/plan_module_repo.go")
 }
 
-func (r *PlanModuleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PlanModuleRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -114,7 +114,7 @@ func (r *PlanModuleRepo) Update(ctx context.Context, req *identityV1.UpdatePlanM
 	return identityV1.ErrorInternalServerError("gorm scaffold: Update not implemented — ent tx edge write has no go-crud/gorm primitive; see data/plan_module_repo.go")
 }
 
-func (r *PlanModuleRepo) Delete(ctx context.Context, id uint32) error {
+func (r *PlanModuleRepo) Delete(ctx context.Context, id uint64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
@@ -131,6 +131,6 @@ func (r *PlanModuleRepo) Delete(ctx context.Context, id uint32) error {
 
 // ListModulesByPlanId 返回指定套餐允许的模块集合。
 // 用于菜单树过滤和请求拦截的白名单判定。
-func (r *PlanModuleRepo) ListModulesByPlanId(ctx context.Context, planId uint32) (map[identityV1.Module]bool, error) {
+func (r *PlanModuleRepo) ListModulesByPlanId(ctx context.Context, planId uint64) (map[identityV1.Module]bool, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListModulesByPlanId not implemented — ent HasPlanWith edge predicate has no go-crud/gorm primitive; see data/plan_module_repo.go")
 }

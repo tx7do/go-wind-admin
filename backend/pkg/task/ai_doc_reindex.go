@@ -9,5 +9,5 @@ const AiDocReindexTaskType = "ai_doc_reindex"
 // AiDocReindexTaskData 重索引任务载荷。
 // BaseID=0 表示对全部知识库重建；>0 只重建指定库。
 type AiDocReindexTaskData struct {
-	BaseID uint32 `json:"baseId"`
+	BaseID uint64 `json:"baseId"`
 }

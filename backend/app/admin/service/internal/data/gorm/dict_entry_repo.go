@@ -66,7 +66,7 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	return nil, dictV1.ErrorInternalServerError("gorm scaffold: List not implemented — ent .WithDictType/HasDictTypeWith/.Edges edge predicate has no go-crud/gorm primitive; see data/dict_entry_repo.go")
 }
 
-func (r *DictEntryRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *DictEntryRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -111,7 +111,7 @@ func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryR
 	return dictV1.ErrorInternalServerError("gorm scaffold: Update not implemented — ent tx/.Edges/ReplaceByEntryID edge write has no go-crud/gorm primitive; see data/dict_entry_repo.go")
 }
 
-func (r *DictEntryRepo) Delete(ctx context.Context, id uint32) error {
+func (r *DictEntryRepo) Delete(ctx context.Context, id uint64) error {
 	if id == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
@@ -126,7 +126,7 @@ func (r *DictEntryRepo) Delete(ctx context.Context, id uint32) error {
 	return nil
 }
 
-func (r *DictEntryRepo) BatchDelete(ctx context.Context, ids []uint32) error {
+func (r *DictEntryRepo) BatchDelete(ctx context.Context, ids []uint64) error {
 	if len(ids) == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}

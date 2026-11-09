@@ -40,7 +40,7 @@ func (_d *LanguageDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *LanguageDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(language.Table, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(language.Table, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

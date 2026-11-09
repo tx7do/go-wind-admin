@@ -129,7 +129,7 @@ message NotificationChannel {
     SSL = 2;       // SSL/TLS（通常 465 端口）
   }
 
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "渠道ID" }
   ]; // 渠道ID
@@ -261,8 +261,8 @@ message NotificationChannel {
     (gnostic.openapi.v3.property) = { description: "发件人显示名（仅 EMAIL 渠道）" }
   ]; // 发件人显示名
 
-  optional uint32 created_by = 100 [json_name = "createdBy"];
-  optional uint32 updated_by = 101 [json_name = "updatedBy"];
+  optional uint64 created_by = 100 [json_name = "createdBy"];
+  optional uint64 updated_by = 101 [json_name = "updatedBy"];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
@@ -276,7 +276,7 @@ message ListNotificationChannelResponse {
 
 // 查询通知渠道详情 - 请求
 message GetNotificationChannelRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 }
 
 // 创建通知渠道 - 请求
@@ -303,7 +303,7 @@ message CreateNotificationChannelRequest {
 
 // 更新通知渠道 - 请求
 message UpdateNotificationChannelRequest {
-  uint32 id = 1;
+  uint64 id = 1;
   NotificationChannel data = 2;
   google.protobuf.FieldMask update_mask = 3 [json_name = "updateMask"];
   // 明文密码；留空表示不修改已存密码
@@ -328,12 +328,12 @@ message UpdateNotificationChannelRequest {
 
 // 删除通知渠道 - 请求
 message DeleteNotificationChannelRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 }
 
 // 发送测试邮件 - 请求
 message SendTestEmailRequest {
-  uint32 id = 1 [
+  uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "渠道ID" }
   ]; // 渠道ID
@@ -346,7 +346,7 @@ message SendTestEmailRequest {
 
 // 发送测试消息 - 请求（按渠道类型分派：EMAIL 走邮件，SMS 发一条测试验证码；WEBHOOK 不支持）
 message SendTestRequest {
-  uint32 id = 1 [
+  uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "渠道ID" }
   ]; // 渠道ID

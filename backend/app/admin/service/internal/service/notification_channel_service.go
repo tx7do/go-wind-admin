@@ -169,7 +169,7 @@ func (s *NotificationChannelService) SendTest(ctx context.Context, req *notifica
 }
 
 // sendTest 两代测试入口的共同实现：查类型 → 分派 → SendDirect 显式点名渠道。
-func (s *NotificationChannelService) sendTest(ctx context.Context, id uint32, recipient string) (*emptypb.Empty, error) {
+func (s *NotificationChannelService) sendTest(ctx context.Context, id uint64, recipient string) (*emptypb.Empty, error) {
 	if id == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
 	}
@@ -242,7 +242,7 @@ func (s *NotificationChannelService) sendTest(ctx context.Context, id uint32, re
 	return &emptypb.Empty{}, nil
 }
 
-func itoa(v uint32) string {
+func itoa(v uint64) string {
 	return strconv.FormatUint(uint64(v), 10)
 }
 

@@ -31,9 +31,9 @@ type OnlineSession struct {
 	Current *bool `protobuf:"varint,10,opt,name=current,proto3,oneof" json:"current,omitempty"` // 是否为当前会话
 	// 会话令牌对 ID（JWT jti，唯一标识一次令牌签发）
 	Jti           *string                `protobuf:"bytes,1,opt,name=jti,proto3,oneof" json:"jti,omitempty"`
-	UserId        *uint32                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 用户ID
+	UserId        *uint64                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 用户ID
 	Username      *string                `protobuf:"bytes,3,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                                  // 用户名
-	TenantId      *uint32                `protobuf:"varint,4,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                 // 租户ID
+	TenantId      *uint64                `protobuf:"varint,4,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                 // 租户ID
 	ClientType    *v1.ClientType         `protobuf:"varint,5,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType,oneof" json:"client_type,omitempty"` // 客户端类型
 	IpAddress     *string                `protobuf:"bytes,6,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                               // 登录IP
 	UserAgent     *string                `protobuf:"bytes,7,opt,name=user_agent,json=userAgent,proto3,oneof" json:"user_agent,omitempty"`                                               // 浏览器User-Agent
@@ -87,7 +87,7 @@ func (x *OnlineSession) GetJti() string {
 	return ""
 }
 
-func (x *OnlineSession) GetUserId() uint32 {
+func (x *OnlineSession) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -101,7 +101,7 @@ func (x *OnlineSession) GetUsername() string {
 	return ""
 }
 
-func (x *OnlineSession) GetTenantId() uint32 {
+func (x *OnlineSession) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -264,7 +264,7 @@ func (x *ListOnlineSessionResponse) GetTotal() uint64 {
 type ForceLogoutSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ClientType    *v1.ClientType         `protobuf:"varint,1,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType,oneof" json:"client_type,omitempty"` // 客户端类型
-	UserId        *uint32                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 目标用户ID
+	UserId        *uint64                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 目标用户ID
 	Jti           *string                `protobuf:"bytes,3,opt,name=jti,proto3,oneof" json:"jti,omitempty"`                                                                            // 会话令牌对ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -307,7 +307,7 @@ func (x *ForceLogoutSessionRequest) GetClientType() v1.ClientType {
 	return v1.ClientType(0)
 }
 
-func (x *ForceLogoutSessionRequest) GetUserId() uint32 {
+func (x *ForceLogoutSessionRequest) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -494,9 +494,9 @@ const file_online_session_service_v1_online_session_proto_rawDesc = "" +
 	"\acurrent\x18\n" +
 	" \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否为当前会话H\x00R\acurrent\x88\x01\x01\x12.\n" +
 	"\x03jti\x18\x01 \x01(\tB\x17\xbaG\x14\x92\x02\x11会话令牌对IDH\x01R\x03jti\x88\x01\x01\x12,\n" +
-	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x02R\x06userId\x88\x01\x01\x120\n" +
+	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDH\x02R\x06userId\x88\x01\x01\x120\n" +
 	"\busername\x18\x03 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x03R\busername\x88\x01\x01\x12@\n" +
-	"\ttenant_id\x18\x04 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18租户ID，0代表平台H\x04R\btenantId\x88\x01\x01\x12b\n" +
+	"\ttenant_id\x18\x04 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18租户ID，0代表平台H\x04R\btenantId\x88\x01\x01\x12b\n" +
 	"\vclient_type\x18\x05 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型H\x05R\n" +
 	"clientType\x88\x01\x01\x122\n" +
 	"\n" +
@@ -534,7 +534,7 @@ const file_online_session_service_v1_online_session_proto_rawDesc = "" +
 	"\x19ForceLogoutSessionRequest\x12b\n" +
 	"\vclient_type\x18\x01 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型H\x00R\n" +
 	"clientType\x88\x01\x01\x122\n" +
-	"\auser_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e目标用户IDH\x01R\x06userId\x88\x01\x01\x12.\n" +
+	"\auser_id\x18\x02 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e目标用户IDH\x01R\x06userId\x88\x01\x01\x12.\n" +
 	"\x03jti\x18\x03 \x01(\tB\x17\xbaG\x14\x92\x02\x11会话令牌对IDH\x02R\x03jti\x88\x01\x01B\x0e\n" +
 	"\f_client_typeB\n" +
 	"\n" +

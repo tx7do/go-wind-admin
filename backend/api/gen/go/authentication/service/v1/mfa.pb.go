@@ -987,7 +987,7 @@ type DisableMFARequest struct {
 	Reason   *string                      `protobuf:"bytes,20,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
 	// 管理端重置：指定目标用户（不传=操作当前登录用户）。
 	// 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
-	UserId        *uint32 `protobuf:"varint,21,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	UserId        *uint64 `protobuf:"varint,21,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1086,7 +1086,7 @@ func (x *DisableMFARequest) GetReason() string {
 	return ""
 }
 
-func (x *DisableMFARequest) GetUserId() uint32 {
+func (x *DisableMFARequest) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -1902,7 +1902,7 @@ const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\x03sms\x18\f \x01(\v2*.authentication.service.v1.SMSVerificationH\x00R\x03sms\x12J\n" +
 	"\bwebauthn\x18\r \x01(\v2,.authentication.service.v1.WebAuthnAssertionH\x00R\bwebauthn\x12\x1b\n" +
 	"\x06reason\x18\x14 \x01(\tH\x03R\x06reason\x88\x01\x01\x12\x1c\n" +
-	"\auser_id\x18\x15 \x01(\rH\x04R\x06userId\x88\x01\x01B\n" +
+	"\auser_id\x18\x15 \x01(\x04H\x04R\x06userId\x88\x01\x01B\n" +
 	"\n" +
 	"\bverifierB\x10\n" +
 	"\x0e_credential_idB\t\n" +

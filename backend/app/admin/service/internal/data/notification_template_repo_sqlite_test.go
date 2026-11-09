@@ -63,7 +63,7 @@ func TestNotificationTemplateRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.Remark)
 	require.Equal(t, " SendDirect 按 code 引用", *row.Remark)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint32(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入：mixin 列没有 DB 默认值")
 	require.Nil(t, row.UpdatedAt, "新建行不该有 updated_at")
 
@@ -238,7 +238,7 @@ func TestNotificationTemplateRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "原标题", *row.Name, "掩码外的 name 应保持原值")
 	require.Equal(t, "orig-remark", *row.Remark, "掩码外的 remark 应保持原值")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint32(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// 保持自己的 code 不变：同一 code 不触发查重，更新应放行

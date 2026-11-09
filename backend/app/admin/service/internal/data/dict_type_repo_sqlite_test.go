@@ -229,7 +229,7 @@ func TestDictTypeRepoSqlite_Delete(t *testing.T) {
 	rows, err = repo.entClient.Client().DictType.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	require.NoError(t, repo.BatchDelete(ctx, []uint32{rows[0].ID, rows[1].ID}), "BatchDelete 应成功")
+	require.NoError(t, repo.BatchDelete(ctx, []uint64{rows[0].ID, rows[1].ID}), "BatchDelete 应成功")
 	cnt, err = repo.entClient.Client().DictType.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, cnt, "BatchDelete 后表内行数应为 0")

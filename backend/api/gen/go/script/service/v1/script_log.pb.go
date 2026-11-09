@@ -28,8 +28,8 @@ const (
 // 脚本执行日志
 type ScriptLog struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                     // 日志ID
-	ScriptId      *uint32                `protobuf:"varint,2,opt,name=script_id,json=scriptId,proto3,oneof" json:"script_id,omitempty"`         // 脚本ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                     // 日志ID
+	ScriptId      *uint64                `protobuf:"varint,2,opt,name=script_id,json=scriptId,proto3,oneof" json:"script_id,omitempty"`         // 脚本ID
 	ScriptName    *string                `protobuf:"bytes,3,opt,name=script_name,json=scriptName,proto3,oneof" json:"script_name,omitempty"`    // 脚本名称
 	Language      *string                `protobuf:"bytes,4,opt,name=language,proto3,oneof" json:"language,omitempty"`                          // 脚本语言
 	TriggerType   *string                `protobuf:"bytes,5,opt,name=trigger_type,json=triggerType,proto3,oneof" json:"trigger_type,omitempty"` // 触发方式
@@ -73,14 +73,14 @@ func (*ScriptLog) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ScriptLog) GetId() uint32 {
+func (x *ScriptLog) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *ScriptLog) GetScriptId() uint32 {
+func (x *ScriptLog) GetScriptId() uint64 {
 	if x != nil && x.ScriptId != nil {
 		return *x.ScriptId
 	}
@@ -343,8 +343,8 @@ const file_script_service_v1_script_log_proto_rawDesc = "" +
 	"\n" +
 	"\"script/service/v1/script_log.proto\x12\x11script.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xe7\x06\n" +
 	"\tScriptLog\x12#\n" +
-	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x12G\n" +
-	"\tscript_id\x18\x02 \x01(\rB%\xbaG\"\x92\x02\x1f脚本ID，试运行草稿为 0H\x01R\bscriptId\x88\x01\x01\x128\n" +
+	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x12G\n" +
+	"\tscript_id\x18\x02 \x01(\x04B%\xbaG\"\x92\x02\x1f脚本ID，试运行草稿为 0H\x01R\bscriptId\x88\x01\x01\x128\n" +
 	"\vscript_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f脚本名称H\x02R\n" +
 	"scriptName\x88\x01\x01\x123\n" +
 	"\blanguage\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f脚本语言H\x03R\blanguage\x88\x01\x01\x12R\n" +

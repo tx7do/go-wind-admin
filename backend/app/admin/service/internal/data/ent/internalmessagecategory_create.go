@@ -65,13 +65,13 @@ func (_c *InternalMessageCategoryCreate) SetNillableDeletedAt(v *time.Time) *Int
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *InternalMessageCategoryCreate) SetCreatedBy(v uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetCreatedBy(v uint64) *InternalMessageCategoryCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableCreatedBy(v *uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetNillableCreatedBy(v *uint64) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *InternalMessageCategoryCreate) SetNillableCreatedBy(v *uint32) *Intern
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *InternalMessageCategoryCreate) SetUpdatedBy(v uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetUpdatedBy(v uint64) *InternalMessageCategoryCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableUpdatedBy(v *uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetNillableUpdatedBy(v *uint64) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *InternalMessageCategoryCreate) SetNillableUpdatedBy(v *uint32) *Intern
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *InternalMessageCategoryCreate) SetDeletedBy(v uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetDeletedBy(v uint64) *InternalMessageCategoryCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableDeletedBy(v *uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetNillableDeletedBy(v *uint64) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -149,13 +149,13 @@ func (_c *InternalMessageCategoryCreate) SetNillableRemark(v *string) *InternalM
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *InternalMessageCategoryCreate) SetTenantID(v uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetTenantID(v uint64) *InternalMessageCategoryCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableTenantID(v *uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetNillableTenantID(v *uint64) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -205,7 +205,7 @@ func (_c *InternalMessageCategoryCreate) SetNillableIconURL(v *string) *Internal
 }
 
 // SetID sets the "id" field.
-func (_c *InternalMessageCategoryCreate) SetID(v uint32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetID(v uint64) *InternalMessageCategoryCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -295,7 +295,7 @@ func (_c *InternalMessageCategoryCreate) sqlSave(ctx context.Context) (*Internal
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -305,7 +305,7 @@ func (_c *InternalMessageCategoryCreate) sqlSave(ctx context.Context) (*Internal
 func (_c *InternalMessageCategoryCreate) createSpec() (*InternalMessageCategory, *sqlgraph.CreateSpec) {
 	var (
 		_node = &InternalMessageCategory{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(internalmessagecategory.Table, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(internalmessagecategory.Table, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -325,15 +325,15 @@ func (_c *InternalMessageCategoryCreate) createSpec() (*InternalMessageCategory,
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -349,7 +349,7 @@ func (_c *InternalMessageCategoryCreate) createSpec() (*InternalMessageCategory,
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(internalmessagecategory.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(internalmessagecategory.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -453,7 +453,7 @@ func (u *InternalMessageCategoryUpsert) ClearDeletedAt() *InternalMessageCategor
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *InternalMessageCategoryUpsert) SetCreatedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) SetCreatedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Set(internalmessagecategory.FieldCreatedBy, v)
 	return u
 }
@@ -465,7 +465,7 @@ func (u *InternalMessageCategoryUpsert) UpdateCreatedBy() *InternalMessageCatego
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *InternalMessageCategoryUpsert) AddCreatedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) AddCreatedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Add(internalmessagecategory.FieldCreatedBy, v)
 	return u
 }
@@ -477,7 +477,7 @@ func (u *InternalMessageCategoryUpsert) ClearCreatedBy() *InternalMessageCategor
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *InternalMessageCategoryUpsert) SetUpdatedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) SetUpdatedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Set(internalmessagecategory.FieldUpdatedBy, v)
 	return u
 }
@@ -489,7 +489,7 @@ func (u *InternalMessageCategoryUpsert) UpdateUpdatedBy() *InternalMessageCatego
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *InternalMessageCategoryUpsert) AddUpdatedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) AddUpdatedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Add(internalmessagecategory.FieldUpdatedBy, v)
 	return u
 }
@@ -501,7 +501,7 @@ func (u *InternalMessageCategoryUpsert) ClearUpdatedBy() *InternalMessageCategor
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *InternalMessageCategoryUpsert) SetDeletedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) SetDeletedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Set(internalmessagecategory.FieldDeletedBy, v)
 	return u
 }
@@ -513,7 +513,7 @@ func (u *InternalMessageCategoryUpsert) UpdateDeletedBy() *InternalMessageCatego
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *InternalMessageCategoryUpsert) AddDeletedBy(v uint32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) AddDeletedBy(v uint64) *InternalMessageCategoryUpsert {
 	u.Add(internalmessagecategory.FieldDeletedBy, v)
 	return u
 }
@@ -735,14 +735,14 @@ func (u *InternalMessageCategoryUpsertOne) ClearDeletedAt() *InternalMessageCate
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *InternalMessageCategoryUpsertOne) SetCreatedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) SetCreatedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *InternalMessageCategoryUpsertOne) AddCreatedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) AddCreatedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -763,14 +763,14 @@ func (u *InternalMessageCategoryUpsertOne) ClearCreatedBy() *InternalMessageCate
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *InternalMessageCategoryUpsertOne) SetUpdatedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) SetUpdatedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *InternalMessageCategoryUpsertOne) AddUpdatedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) AddUpdatedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -791,14 +791,14 @@ func (u *InternalMessageCategoryUpsertOne) ClearUpdatedBy() *InternalMessageCate
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *InternalMessageCategoryUpsertOne) SetDeletedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) SetDeletedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *InternalMessageCategoryUpsertOne) AddDeletedBy(v uint32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) AddDeletedBy(v uint64) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -967,7 +967,7 @@ func (u *InternalMessageCategoryUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *InternalMessageCategoryUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *InternalMessageCategoryUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -976,7 +976,7 @@ func (u *InternalMessageCategoryUpsertOne) ID(ctx context.Context) (id uint32, e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *InternalMessageCategoryUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *InternalMessageCategoryUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1033,7 +1033,7 @@ func (_c *InternalMessageCategoryCreateBulk) Save(ctx context.Context) ([]*Inter
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1214,14 +1214,14 @@ func (u *InternalMessageCategoryUpsertBulk) ClearDeletedAt() *InternalMessageCat
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *InternalMessageCategoryUpsertBulk) SetCreatedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) SetCreatedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *InternalMessageCategoryUpsertBulk) AddCreatedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) AddCreatedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1242,14 +1242,14 @@ func (u *InternalMessageCategoryUpsertBulk) ClearCreatedBy() *InternalMessageCat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *InternalMessageCategoryUpsertBulk) SetUpdatedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) SetUpdatedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *InternalMessageCategoryUpsertBulk) AddUpdatedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) AddUpdatedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1270,14 +1270,14 @@ func (u *InternalMessageCategoryUpsertBulk) ClearUpdatedBy() *InternalMessageCat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *InternalMessageCategoryUpsertBulk) SetDeletedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) SetDeletedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *InternalMessageCategoryUpsertBulk) AddDeletedBy(v uint32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) AddDeletedBy(v uint64) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddDeletedBy(v)
 	})

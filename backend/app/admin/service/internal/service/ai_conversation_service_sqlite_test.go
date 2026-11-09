@@ -41,7 +41,7 @@ func newAiConversationServiceForTest(t *testing.T, entClient *entCrud.EntClient[
 }
 
 // aiConvOperator 构造指定用户的操作者上下文。
-func aiConvOperator(ctx context.Context, userID uint32) context.Context {
+func aiConvOperator(ctx context.Context, userID uint64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: userID})
 }
 
@@ -61,7 +61,7 @@ func TestAiConversationService_ListOwnOnly(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), resp.GetTotal(), "甲只能看到自己的两条会话")
 	for _, item := range resp.GetItems() {
-		require.Equal(t, uint32(33), item.GetUserId(), "列表里的会话必须全归属当前用户")
+		require.Equal(t, uint64(33), item.GetUserId(), "列表里的会话必须全归属当前用户")
 	}
 
 	resp, err = svc.List(aiConvOperator(ctx, 44), &paginationV1.PagingRequest{})
@@ -88,7 +88,7 @@ func TestAiConversationService_GetOwnership(t *testing.T) {
 	})
 	require.NoError(t, err, "自己的会话应可回读")
 	require.Equal(t, own, dto.GetId())
-	require.Equal(t, uint32(33), dto.GetUserId())
+	require.Equal(t, uint64(33), dto.GetUserId())
 
 	_, err = svc.Get(aiConvOperator(ctx, 33), &aiV1.GetAiConversationRequest{
 		QueryBy: &aiV1.GetAiConversationRequest_Id{Id: others},
@@ -145,20 +145,20 @@ func TestAiConversationService_UpdateStampAndOwnership(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "更新后的标题", *row.Title, "掩码内的标题应更新")
 	require.NotNil(t, row.UpdatedBy, "updated_by 应被服务层强制盖章")
-	require.Equal(t, uint32(33), *row.UpdatedBy)
+	require.Equal(t, uint64(33), *row.UpdatedBy)
 	require.NotNil(t, row.UpdatedAt, "updated_at 应随更新刷新")
 
 	// nil 掩码更新：updated_by 必须以操作者为准，请求体冒充无效
 	_, err = svc.Update(aiConvOperator(ctx, 33), &aiV1.UpdateAiConversationRequest{
 		Id:   own,
-		Data: &aiV1.AiConversation{Title: trans.Ptr("无掩码更新标题"), UpdatedBy: trans.Ptr(uint32(999))},
+		Data: &aiV1.AiConversation{Title: trans.Ptr("无掩码更新标题"), UpdatedBy: trans.Ptr(uint64(999))},
 	})
 	require.NoError(t, err)
 	row, err = entClient.Client().AiConversation.Query().
 		Where(aiconversation.IDEQ(own)).Only(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "无掩码更新标题", *row.Title)
-	require.Equal(t, uint32(33), *row.UpdatedBy, "updated_by 必须以操作者为准，不可被请求体冒充")
+	require.Equal(t, uint64(33), *row.UpdatedBy, "updated_by 必须以操作者为准，不可被请求体冒充")
 
 	// 无身份
 	_, err = svc.Update(ctx, &aiV1.UpdateAiConversationRequest{Id: own, Data: &aiV1.AiConversation{}})
@@ -180,7 +180,7 @@ func TestAiConversationService_DeleteCascadeMessages(t *testing.T) {
 			SetNillableConversationID(trans.Ptr(own)).
 			SetNillableRole(trans.Ptr(aimessage.RoleUSER)).
 			SetNillableContent(trans.Ptr(content)).
-			SetNillableUserID(trans.Ptr(uint32(33))).
+			SetNillableUserID(trans.Ptr(uint64(33))).
 			Save(ctx)
 		require.NoError(t, err, "种子消息应直插成功")
 	}

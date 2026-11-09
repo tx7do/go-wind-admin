@@ -17,7 +17,7 @@ type UserCredential struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,9 +25,9 @@ type UserCredential struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 租户ID
-	TenantID *uint32 `json:"tenant_id,omitempty"`
+	TenantID *uint64 `json:"tenant_id,omitempty"`
 	// 关联主表的用户ID
-	UserID *uint32 `json:"user_id,omitempty"`
+	UserID *uint64 `json:"user_id,omitempty"`
 	// 认证方式类型
 	IdentityType *usercredential.IdentityType `json:"identity_type,omitempty"`
 	// 身份唯一标识符
@@ -94,7 +94,7 @@ func (_m *UserCredential) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case usercredential.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -120,15 +120,15 @@ func (_m *UserCredential) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint32)
-				*_m.TenantID = uint32(value.Int64)
+				_m.TenantID = new(uint64)
+				*_m.TenantID = uint64(value.Int64)
 			}
 		case usercredential.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint32)
-				*_m.UserID = uint32(value.Int64)
+				_m.UserID = new(uint64)
+				*_m.UserID = uint64(value.Int64)
 			}
 		case usercredential.FieldIdentityType:
 			if value, ok := values[i].(*sql.NullString); !ok {

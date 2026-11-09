@@ -8,7 +8,7 @@ import (
 
 // User 对应表 sys_users
 type User struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Username    *string    `gorm:"column:username;type:varchar(255);comment:用户名;uniqueIndex:idx_sys_user_username"`
 	Nickname    *string    `gorm:"column:nickname;type:varchar(255);comment:昵称"`
@@ -25,10 +25,10 @@ type User struct {
 	LastLoginIP *string    `gorm:"column:last_login_ip;type:varchar(45);comment:最后一次登录的IP"`
 	LockedUntil *time.Time `gorm:"column:locked_until;type:datetime;comment:锁定截止时间"`
 
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.TimeAt
 	mixin.Remark
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

@@ -13,7 +13,7 @@ import (
 // 复现 TestRun 沙箱链路：NewEngine → SetAICompleter → Execute 引用 ai 模块的脚本。
 type stubCompleter struct{}
 
-func (stubCompleter) ChatForScript(_ context.Context, _ uint32, _, content string) (string, error) {
+func (stubCompleter) ChatForScript(_ context.Context, _ uint64, _, content string) (string, error) {
 	return "echo:" + content, nil
 }
 

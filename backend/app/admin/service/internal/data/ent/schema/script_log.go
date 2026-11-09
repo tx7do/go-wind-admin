@@ -31,7 +31,7 @@ func (ScriptLog) Annotations() []schema.Annotation {
 // Fields of the ScriptLog.
 func (ScriptLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("script_id").
+		field.Uint64("script_id").
 			Comment("脚本ID（试运行草稿为 0）").
 			Default(0).
 			Optional().
@@ -85,7 +85,7 @@ func (ScriptLog) Fields() []ent.Field {
 // Mixin of the ScriptLog.
 func (ScriptLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 	}
 }

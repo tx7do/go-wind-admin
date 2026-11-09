@@ -7,8 +7,8 @@ import (
 
 // Menu 对应表 sys_menus
 type Menu struct {
-	mixin.AutoIncrementID
-	mixin.Tree[Menu]
+	mixin.AutoIncrementID64
+	mixin.Tree64[Menu]
 
 	Type      *string        `gorm:"column:type;type:varchar(32);default:MENU;comment:菜单类型 CATALOG: 目录 MENU: 菜单 BUTTON: 按钮 EMBEDDED: 内嵌 LINK: 外链"`
 	Path      *string        `gorm:"column:path;type:varchar(512);comment:树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。"`
@@ -20,7 +20,7 @@ type Menu struct {
 	Module    *string        `gorm:"column:module;type:varchar(128);comment:所属业务功能模块（用于套餐白名单过滤）"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
 	mixin.SwitchStatus
 }

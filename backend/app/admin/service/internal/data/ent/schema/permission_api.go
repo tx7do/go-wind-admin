@@ -29,7 +29,7 @@ func (PermissionApi) Annotations() []schema.Annotation {
 // Fields of the PermissionApi.
 func (PermissionApi) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("permission_id").
+		field.Uint64("permission_id").
 			Comment("权限ID（关联sys_permissions.id）").
 			Nillable(),
 
@@ -52,9 +52,9 @@ func (PermissionApi) Fields() []ent.Field {
 // Mixin of the PermissionApi.
 func (PermissionApi) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 	}
 }
 

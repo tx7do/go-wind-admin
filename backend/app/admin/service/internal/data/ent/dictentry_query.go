@@ -135,8 +135,8 @@ func (_q *DictEntryQuery) FirstX(ctx context.Context) *DictEntry {
 
 // FirstID returns the first DictEntry ID from the query.
 // Returns a *NotFoundError when no DictEntry ID was found.
-func (_q *DictEntryQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *DictEntryQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -148,7 +148,7 @@ func (_q *DictEntryQuery) FirstID(ctx context.Context) (id uint32, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *DictEntryQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *DictEntryQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -186,8 +186,8 @@ func (_q *DictEntryQuery) OnlyX(ctx context.Context) *DictEntry {
 // OnlyID is like Only, but returns the only DictEntry ID in the query.
 // Returns a *NotSingularError when more than one DictEntry ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *DictEntryQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *DictEntryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -203,7 +203,7 @@ func (_q *DictEntryQuery) OnlyID(ctx context.Context) (id uint32, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *DictEntryQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *DictEntryQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -231,7 +231,7 @@ func (_q *DictEntryQuery) AllX(ctx context.Context) []*DictEntry {
 }
 
 // IDs executes the query and returns a list of DictEntry IDs.
-func (_q *DictEntryQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *DictEntryQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -243,7 +243,7 @@ func (_q *DictEntryQuery) IDs(ctx context.Context) (ids []uint32, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *DictEntryQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *DictEntryQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -468,8 +468,8 @@ func (_q *DictEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Di
 }
 
 func (_q *DictEntryQuery) loadDictType(ctx context.Context, query *DictTypeQuery, nodes []*DictEntry, init func(*DictEntry), assign func(*DictEntry, *DictType)) error {
-	ids := make([]uint32, 0, len(nodes))
-	nodeids := make(map[uint32][]*DictEntry)
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*DictEntry)
 	for i := range nodes {
 		if nodes[i].type_id == nil {
 			continue
@@ -501,7 +501,7 @@ func (_q *DictEntryQuery) loadDictType(ctx context.Context, query *DictTypeQuery
 }
 func (_q *DictEntryQuery) loadI18ns(ctx context.Context, query *DictEntryI18nQuery, nodes []*DictEntry, init func(*DictEntry), assign func(*DictEntry, *DictEntryI18n)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint32]*DictEntry)
+	nodeids := make(map[uint64]*DictEntry)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -544,7 +544,7 @@ func (_q *DictEntryQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *DictEntryQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(dictentry.Table, dictentry.Columns, sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(dictentry.Table, dictentry.Columns, sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

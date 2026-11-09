@@ -96,7 +96,7 @@ func TestPermissionGroupRepoSqlite_CreateTreePath(t *testing.T) {
 	rows, err := entClient.Client().PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	byID := map[uint32]*ent.PermissionGroup{}
+	byID := map[uint64]*ent.PermissionGroup{}
 	for _, row := range rows {
 		byID[row.ID] = row
 	}
@@ -295,7 +295,7 @@ func TestPermissionGroupRepoSqlite_ListByIDs(t *testing.T) {
 	require.NoError(t, err)
 
 	// 命中：只返回集合内的行
-	items, err := repo.ListByIDs(ctx, []uint32{groupA.GetId()})
+	items, err := repo.ListByIDs(ctx, []uint64{groupA.GetId()})
 	require.NoError(t, err)
 	require.Len(t, items, 1, "按 ID 集合应只返回集合内的行")
 	require.Equal(t, groupA.GetId(), items[0].GetId())
@@ -310,7 +310,7 @@ func TestPermissionGroupRepoSqlite_ListByIDs(t *testing.T) {
 	require.Empty(t, empty, "空 ID 集合应返回空")
 
 	// 含不存在的 ID：只返回存在的行
-	partial, err := repo.ListByIDs(ctx, []uint32{groupB.GetId(), 987654})
+	partial, err := repo.ListByIDs(ctx, []uint64{groupB.GetId(), 987654})
 	require.NoError(t, err)
 	require.Len(t, partial, 1, "含不存在 ID 的集合应只返回存在的行")
 	require.Equal(t, groupB.GetId(), partial[0].GetId())
@@ -328,7 +328,7 @@ func TestPermissionGroupRepoSqlite_ExplicitZeroParentAsRoot(t *testing.T) {
 	dto, err := repo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
 		Data: &permissionV1.PermissionGroup{
 			Name:     trans.Ptr("零父根分组"),
-			ParentId: trans.Ptr(uint32(0)),
+			ParentId: trans.Ptr(uint64(0)),
 		},
 	})
 	require.NoError(t, err, "显式 parent_id=0 的创建应按挂根处理而非 FK 违约")
@@ -367,7 +367,7 @@ func TestPermissionGroupRepoSqlite_UpdateExplicitZeroParentMovesToRoot(t *testin
 
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionGroupRequest{
 		Id:   child.GetId(),
-		Data: &permissionV1.PermissionGroup{ParentId: trans.Ptr(uint32(0))},
+		Data: &permissionV1.PermissionGroup{ParentId: trans.Ptr(uint64(0))},
 	}), "显式 parent_id=0 的更新应把分组移到根级")
 
 	childRow, err = entClient.Client().PermissionGroup.Get(ctx, child.GetId())

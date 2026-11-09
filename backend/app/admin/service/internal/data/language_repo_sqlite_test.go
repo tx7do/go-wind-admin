@@ -111,7 +111,7 @@ func TestLanguageRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &dictV1.GetLanguageRequest{
@@ -144,7 +144,7 @@ func TestLanguageRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	// 注意：LanguageRepo.Update 的 mutate 回调对 language_name/native_name 使用
 	// 非 nillable Set + NotEmpty 校验，掩码清掉任一字段都会以空串触发校验失败，
@@ -182,7 +182,7 @@ func TestLanguageRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint32(rows[0].ID)
+	createdID := uint64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &dictV1.DeleteLanguageRequest{
 		QueryBy: &dictV1.DeleteLanguageRequest_Id{Id: createdID},

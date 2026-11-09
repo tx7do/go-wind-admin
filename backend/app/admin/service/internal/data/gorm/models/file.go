@@ -4,7 +4,7 @@ import "github.com/tx7do/go-crud/gorm/mixin"
 
 // File 对应表 files
 type File struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Provider      *string `gorm:"column:provider;type:varchar(32);comment:OSS供应商"`
 	BucketName    *string `gorm:"column:bucket_name;type:varchar(255);comment:存储桶名称"`
@@ -19,9 +19,9 @@ type File struct {
 	ContentHash   *string `gorm:"column:content_hash;type:varchar(255);comment:文件内容哈希"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

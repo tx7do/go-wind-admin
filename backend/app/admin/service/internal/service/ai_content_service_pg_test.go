@@ -67,7 +67,7 @@ func openContentEntClient(t *testing.T) *entCrud.EntClient[*ent.Client] {
 // ── mock 嵌入服务 ─────────────────────────────────────────────────
 
 // contentTestUserID 测试操作者（用量流水归属断言与清理键）。
-const contentTestUserID = uint32(81)
+const contentTestUserID = uint64(81)
 
 // signatureOf 文本签名（字节和取模）。mock 向量为确定性正交编码：
 // vec[sig(text)] = 1、其余 0（L2 范数 1）——同签名余弦相似度 1，
@@ -178,14 +178,14 @@ func TestAiContentServiceMenuSearchLoop(t *testing.T) {
 	// ── 全回路①：重建索引 ──────────────────────────────────────
 	cnt, err := svc.BuildMenuSearchIndex(opCtx)
 	require.NoError(t, err)
-	require.Equal(t, uint32(2), cnt, "两条可索引菜单应全部入库")
+	require.Equal(t, uint64(2), cnt, "两条可索引菜单应全部入库")
 
 	// 索引表断言：恰好两行、item_id 为真实菜单 id、title/route 对位、向量定维。
 	rows, err := db.QueryContext(context.Background(),
 		"SELECT item_id, title, route, vector_dims(embedding) FROM sys_ai_search_index WHERE item_type = 'menu'")
 	require.NoError(t, err)
 	type idxRow struct {
-		itemID uint32
+		itemID uint64
 		title  string
 		dim    int
 	}
@@ -200,7 +200,7 @@ func TestAiContentServiceMenuSearchLoop(t *testing.T) {
 	_ = rows.Close()
 	require.Len(t, got, 2)
 	want := map[string]struct {
-		id    uint32
+		id    uint64
 		title string
 	}{
 		"/test/a": {menuA.ID, titleA},

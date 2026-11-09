@@ -40,11 +40,11 @@ func (InternalMessage) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("sender_id").
+		field.Uint64("sender_id").
 			Comment("发送者用户ID").
 			Nillable(),
 
-		field.Uint32("category_id").
+		field.Uint64("category_id").
 			Comment("分类ID").
 			Optional().
 			Nillable(),
@@ -79,10 +79,10 @@ func (InternalMessage) Fields() []ent.Field {
 // Mixin of the InternalMessage.
 func (InternalMessage) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

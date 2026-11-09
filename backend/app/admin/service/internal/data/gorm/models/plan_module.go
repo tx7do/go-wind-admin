@@ -6,12 +6,12 @@ import (
 
 // PlanModule 对应表 sys_plan_modules
 type PlanModule struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Module *string `gorm:"column:module;type:varchar(128);comment:模块"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 }
 
 // TableName 指定表名

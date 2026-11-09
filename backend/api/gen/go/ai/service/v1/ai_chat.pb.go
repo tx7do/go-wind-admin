@@ -25,10 +25,10 @@ const (
 // 发起对话 - 请求
 type ChatRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ConversationId  *uint32                `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`      // 会话ID，0=新建
-	ProviderId      *uint32                `protobuf:"varint,2,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`                  // 提供商ID，0=默认
+	ConversationId  *uint64                `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`      // 会话ID，0=新建
+	ProviderId      *uint64                `protobuf:"varint,2,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`                  // 提供商ID，0=默认
 	Content         *string                `protobuf:"bytes,3,opt,name=content,proto3,oneof" json:"content,omitempty"`                                           // 用户输入内容
-	KnowledgeBaseId *uint32                `protobuf:"varint,4,opt,name=knowledge_base_id,json=knowledgeBaseId,proto3,oneof" json:"knowledge_base_id,omitempty"` // 知识库ID，0=不检索
+	KnowledgeBaseId *uint64                `protobuf:"varint,4,opt,name=knowledge_base_id,json=knowledgeBaseId,proto3,oneof" json:"knowledge_base_id,omitempty"` // 知识库ID，0=不检索
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -63,14 +63,14 @@ func (*ChatRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_chat_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ChatRequest) GetConversationId() uint32 {
+func (x *ChatRequest) GetConversationId() uint64 {
 	if x != nil && x.ConversationId != nil {
 		return *x.ConversationId
 	}
 	return 0
 }
 
-func (x *ChatRequest) GetProviderId() uint32 {
+func (x *ChatRequest) GetProviderId() uint64 {
 	if x != nil && x.ProviderId != nil {
 		return *x.ProviderId
 	}
@@ -84,7 +84,7 @@ func (x *ChatRequest) GetContent() string {
 	return ""
 }
 
-func (x *ChatRequest) GetKnowledgeBaseId() uint32 {
+func (x *ChatRequest) GetKnowledgeBaseId() uint64 {
 	if x != nil && x.KnowledgeBaseId != nil {
 		return *x.KnowledgeBaseId
 	}
@@ -151,7 +151,7 @@ func (x *ChatResponse) GetMessage() *AiMessage {
 // 仅在服务层用于构造事件载荷，不挂 HTTP 路由。
 type ChatChunkEvent struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	ConversationId uint32                 `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 所属会话
+	ConversationId uint64                 `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 所属会话
 	Seq            uint32                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`                                             // 片段序号（会话内单调递增，从 0 开始）
 	Delta          string                 `protobuf:"bytes,3,opt,name=delta,proto3" json:"delta,omitempty"`                                          // 增量文本片段
 	unknownFields  protoimpl.UnknownFields
@@ -188,7 +188,7 @@ func (*ChatChunkEvent) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_chat_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ChatChunkEvent) GetConversationId() uint32 {
+func (x *ChatChunkEvent) GetConversationId() uint64 {
 	if x != nil {
 		return x.ConversationId
 	}
@@ -216,7 +216,7 @@ func (x *ChatChunkEvent) GetDelta() string {
 // "模型正在调工具"；工具轮不进消息落库（落库的 assistant 消息只有最终答案）。
 type ChatToolEvent struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	ConversationId uint32                 `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 所属会话
+	ConversationId uint64                 `protobuf:"varint,1,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 所属会话
 	Name           string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                            // 工具名（如 get_current_time）
 	Arguments      string                 `protobuf:"bytes,3,opt,name=arguments,proto3" json:"arguments,omitempty"`                                  // 模型给出的请求参数 JSON 串
 	Result         string                 `protobuf:"bytes,4,opt,name=result,proto3" json:"result,omitempty"`                                        // 执行结果文本；执行失败为 "tool error: ..." 文本
@@ -254,7 +254,7 @@ func (*ChatToolEvent) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_chat_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ChatToolEvent) GetConversationId() uint32 {
+func (x *ChatToolEvent) GetConversationId() uint64 {
 	if x != nil {
 		return x.ConversationId
 	}
@@ -288,11 +288,11 @@ const file_ai_service_v1_ai_chat_proto_rawDesc = "" +
 	"\n" +
 	"\x1bai/service/v1/ai_chat.proto\x12\rai.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a#ai/service/v1/ai_conversation.proto\x1a\x1eai/service/v1/ai_message.proto\"\xc9\x03\n" +
 	"\vChatRequest\x12S\n" +
-	"\x0fconversation_id\x18\x01 \x01(\rB%\xbaG\"\x92\x02\x1f会话ID；0 表示新建会话H\x00R\x0econversationId\x88\x01\x01\x12W\n" +
-	"\vprovider_id\x18\x02 \x01(\rB1\xbaG.\x92\x02+提供商ID；0 表示使用默认提供商H\x01R\n" +
+	"\x0fconversation_id\x18\x01 \x01(\x04B%\xbaG\"\x92\x02\x1f会话ID；0 表示新建会话H\x00R\x0econversationId\x88\x01\x01\x12W\n" +
+	"\vprovider_id\x18\x02 \x01(\x04B1\xbaG.\x92\x02+提供商ID；0 表示使用默认提供商H\x01R\n" +
 	"providerId\x88\x01\x01\x127\n" +
 	"\acontent\x18\x03 \x01(\tB\x18\xbaG\x15\x92\x02\x12用户输入内容H\x02R\acontent\x88\x01\x01\x12\x8c\x01\n" +
-	"\x11knowledge_base_id\x18\x04 \x01(\rB[\xbaGX\x92\x02U知识库ID；>0 时先检索该库并将相关片段注入 system 上下文（RAG）H\x03R\x0fknowledgeBaseId\x88\x01\x01B\x12\n" +
+	"\x11knowledge_base_id\x18\x04 \x01(\x04B[\xbaGX\x92\x02U知识库ID；>0 时先检索该库并将相关片段注入 system 上下文（RAG）H\x03R\x0fknowledgeBaseId\x88\x01\x01B\x12\n" +
 	"\x10_conversation_idB\x0e\n" +
 	"\f_provider_idB\n" +
 	"\n" +
@@ -302,11 +302,11 @@ const file_ai_service_v1_ai_chat_proto_rawDesc = "" +
 	"\fconversation\x18\x01 \x01(\v2\x1d.ai.service.v1.AiConversationR\fconversation\x122\n" +
 	"\amessage\x18\x02 \x01(\v2\x18.ai.service.v1.AiMessageR\amessage\"a\n" +
 	"\x0eChatChunkEvent\x12'\n" +
-	"\x0fconversation_id\x18\x01 \x01(\rR\x0econversationId\x12\x10\n" +
+	"\x0fconversation_id\x18\x01 \x01(\x04R\x0econversationId\x12\x10\n" +
 	"\x03seq\x18\x02 \x01(\rR\x03seq\x12\x14\n" +
 	"\x05delta\x18\x03 \x01(\tR\x05delta\"\x82\x01\n" +
 	"\rChatToolEvent\x12'\n" +
-	"\x0fconversation_id\x18\x01 \x01(\rR\x0econversationId\x12\x12\n" +
+	"\x0fconversation_id\x18\x01 \x01(\x04R\x0econversationId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n" +
 	"\targuments\x18\x03 \x01(\tR\targuments\x12\x16\n" +
 	"\x06result\x18\x04 \x01(\tR\x06result2R\n" +

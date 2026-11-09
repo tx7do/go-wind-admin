@@ -74,16 +74,16 @@ func (c *MenuPermissionConverter) ConvertCode(path, title string, typ permission
 // 4. 若出现自引用或循环，函数会将该节点视为只使用自身 path。
 func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*permissionV1.Menu) {
 	// 建立 id -> menu 映射
-	m := make(map[uint32]*permissionV1.Menu, len(menus))
+	m := make(map[uint64]*permissionV1.Menu, len(menus))
 	for _, mi := range menus {
 		m[mi.GetId()] = mi
 	}
 
 	// 记忆计算结果：id -> fullPath
-	memo := make(map[uint32]string, len(menus))
+	memo := make(map[uint64]string, len(menus))
 
-	var compute func(id uint32, seen map[uint32]bool) string
-	compute = func(id uint32, seen map[uint32]bool) string {
+	var compute func(id uint64, seen map[uint64]bool) string
+	compute = func(id uint64, seen map[uint64]bool) string {
 		// 已计算
 		if v, ok := memo[id]; ok {
 			return v
@@ -132,7 +132,7 @@ func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*permissionV1.Menu) {
 	// 为每个菜单计算并写回 Path 字段
 	for _, menu := range menus {
 		id := menu.GetId()
-		fullPath := compute(id, map[uint32]bool{})
+		fullPath := compute(id, map[uint64]bool{})
 		//log.Infof("Menu ID %d full path: %s", id, fullPath)
 		// 写回为指针字符串
 		menu.Path = trans.Ptr(fullPath)

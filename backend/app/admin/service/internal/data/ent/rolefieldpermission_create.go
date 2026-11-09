@@ -65,13 +65,13 @@ func (_c *RoleFieldPermissionCreate) SetNillableDeletedAt(v *time.Time) *RoleFie
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *RoleFieldPermissionCreate) SetCreatedBy(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetCreatedBy(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *RoleFieldPermissionCreate) SetNillableCreatedBy(v *uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetNillableCreatedBy(v *uint64) *RoleFieldPermissionCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *RoleFieldPermissionCreate) SetNillableCreatedBy(v *uint32) *RoleFieldP
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *RoleFieldPermissionCreate) SetUpdatedBy(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetUpdatedBy(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *RoleFieldPermissionCreate) SetNillableUpdatedBy(v *uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetNillableUpdatedBy(v *uint64) *RoleFieldPermissionCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *RoleFieldPermissionCreate) SetNillableUpdatedBy(v *uint32) *RoleFieldP
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *RoleFieldPermissionCreate) SetDeletedBy(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetDeletedBy(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *RoleFieldPermissionCreate) SetNillableDeletedBy(v *uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetNillableDeletedBy(v *uint64) *RoleFieldPermissionCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *RoleFieldPermissionCreate) SetNillableDeletedBy(v *uint32) *RoleFieldP
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *RoleFieldPermissionCreate) SetTenantID(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetTenantID(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *RoleFieldPermissionCreate) SetNillableTenantID(v *uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetNillableTenantID(v *uint64) *RoleFieldPermissionCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,7 +121,7 @@ func (_c *RoleFieldPermissionCreate) SetNillableTenantID(v *uint32) *RoleFieldPe
 }
 
 // SetRoleID sets the "role_id" field.
-func (_c *RoleFieldPermissionCreate) SetRoleID(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetRoleID(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetRoleID(v)
 	return _c
 }
@@ -139,7 +139,7 @@ func (_c *RoleFieldPermissionCreate) SetFieldName(v string) *RoleFieldPermission
 }
 
 // SetID sets the "id" field.
-func (_c *RoleFieldPermissionCreate) SetID(v uint32) *RoleFieldPermissionCreate {
+func (_c *RoleFieldPermissionCreate) SetID(v uint64) *RoleFieldPermissionCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -230,7 +230,7 @@ func (_c *RoleFieldPermissionCreate) sqlSave(ctx context.Context) (*RoleFieldPer
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -240,7 +240,7 @@ func (_c *RoleFieldPermissionCreate) sqlSave(ctx context.Context) (*RoleFieldPer
 func (_c *RoleFieldPermissionCreate) createSpec() (*RoleFieldPermission, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RoleFieldPermission{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(rolefieldpermission.Table, sqlgraph.NewFieldSpec(rolefieldpermission.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(rolefieldpermission.Table, sqlgraph.NewFieldSpec(rolefieldpermission.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -260,23 +260,23 @@ func (_c *RoleFieldPermissionCreate) createSpec() (*RoleFieldPermission, *sqlgra
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(rolefieldpermission.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(rolefieldpermission.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(rolefieldpermission.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(rolefieldpermission.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(rolefieldpermission.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(rolefieldpermission.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(rolefieldpermission.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(rolefieldpermission.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.RoleID(); ok {
-		_spec.SetField(rolefieldpermission.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(rolefieldpermission.FieldRoleID, field.TypeUint64, value)
 		_node.RoleID = &value
 	}
 	if value, ok := _c.mutation.Resource(); ok {
@@ -376,7 +376,7 @@ func (u *RoleFieldPermissionUpsert) ClearDeletedAt() *RoleFieldPermissionUpsert 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleFieldPermissionUpsert) SetCreatedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) SetCreatedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Set(rolefieldpermission.FieldCreatedBy, v)
 	return u
 }
@@ -388,7 +388,7 @@ func (u *RoleFieldPermissionUpsert) UpdateCreatedBy() *RoleFieldPermissionUpsert
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleFieldPermissionUpsert) AddCreatedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) AddCreatedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Add(rolefieldpermission.FieldCreatedBy, v)
 	return u
 }
@@ -400,7 +400,7 @@ func (u *RoleFieldPermissionUpsert) ClearCreatedBy() *RoleFieldPermissionUpsert 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleFieldPermissionUpsert) SetUpdatedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) SetUpdatedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Set(rolefieldpermission.FieldUpdatedBy, v)
 	return u
 }
@@ -412,7 +412,7 @@ func (u *RoleFieldPermissionUpsert) UpdateUpdatedBy() *RoleFieldPermissionUpsert
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleFieldPermissionUpsert) AddUpdatedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) AddUpdatedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Add(rolefieldpermission.FieldUpdatedBy, v)
 	return u
 }
@@ -424,7 +424,7 @@ func (u *RoleFieldPermissionUpsert) ClearUpdatedBy() *RoleFieldPermissionUpsert 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleFieldPermissionUpsert) SetDeletedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) SetDeletedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Set(rolefieldpermission.FieldDeletedBy, v)
 	return u
 }
@@ -436,7 +436,7 @@ func (u *RoleFieldPermissionUpsert) UpdateDeletedBy() *RoleFieldPermissionUpsert
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleFieldPermissionUpsert) AddDeletedBy(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) AddDeletedBy(v uint64) *RoleFieldPermissionUpsert {
 	u.Add(rolefieldpermission.FieldDeletedBy, v)
 	return u
 }
@@ -448,7 +448,7 @@ func (u *RoleFieldPermissionUpsert) ClearDeletedBy() *RoleFieldPermissionUpsert 
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleFieldPermissionUpsert) SetRoleID(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) SetRoleID(v uint64) *RoleFieldPermissionUpsert {
 	u.Set(rolefieldpermission.FieldRoleID, v)
 	return u
 }
@@ -460,7 +460,7 @@ func (u *RoleFieldPermissionUpsert) UpdateRoleID() *RoleFieldPermissionUpsert {
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleFieldPermissionUpsert) AddRoleID(v uint32) *RoleFieldPermissionUpsert {
+func (u *RoleFieldPermissionUpsert) AddRoleID(v uint64) *RoleFieldPermissionUpsert {
 	u.Add(rolefieldpermission.FieldRoleID, v)
 	return u
 }
@@ -586,14 +586,14 @@ func (u *RoleFieldPermissionUpsertOne) ClearDeletedAt() *RoleFieldPermissionUpse
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleFieldPermissionUpsertOne) SetCreatedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) SetCreatedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleFieldPermissionUpsertOne) AddCreatedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) AddCreatedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -614,14 +614,14 @@ func (u *RoleFieldPermissionUpsertOne) ClearCreatedBy() *RoleFieldPermissionUpse
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleFieldPermissionUpsertOne) SetUpdatedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) SetUpdatedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleFieldPermissionUpsertOne) AddUpdatedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) AddUpdatedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -642,14 +642,14 @@ func (u *RoleFieldPermissionUpsertOne) ClearUpdatedBy() *RoleFieldPermissionUpse
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleFieldPermissionUpsertOne) SetDeletedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) SetDeletedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleFieldPermissionUpsertOne) AddDeletedBy(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) AddDeletedBy(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -670,14 +670,14 @@ func (u *RoleFieldPermissionUpsertOne) ClearDeletedBy() *RoleFieldPermissionUpse
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleFieldPermissionUpsertOne) SetRoleID(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) SetRoleID(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleFieldPermissionUpsertOne) AddRoleID(v uint32) *RoleFieldPermissionUpsertOne {
+func (u *RoleFieldPermissionUpsertOne) AddRoleID(v uint64) *RoleFieldPermissionUpsertOne {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddRoleID(v)
 	})
@@ -734,7 +734,7 @@ func (u *RoleFieldPermissionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RoleFieldPermissionUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *RoleFieldPermissionUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -743,7 +743,7 @@ func (u *RoleFieldPermissionUpsertOne) ID(ctx context.Context) (id uint32, err e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RoleFieldPermissionUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *RoleFieldPermissionUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -800,7 +800,7 @@ func (_c *RoleFieldPermissionCreateBulk) Save(ctx context.Context) ([]*RoleField
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -981,14 +981,14 @@ func (u *RoleFieldPermissionUpsertBulk) ClearDeletedAt() *RoleFieldPermissionUps
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *RoleFieldPermissionUpsertBulk) SetCreatedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) SetCreatedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *RoleFieldPermissionUpsertBulk) AddCreatedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) AddCreatedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1009,14 +1009,14 @@ func (u *RoleFieldPermissionUpsertBulk) ClearCreatedBy() *RoleFieldPermissionUps
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *RoleFieldPermissionUpsertBulk) SetUpdatedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) SetUpdatedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *RoleFieldPermissionUpsertBulk) AddUpdatedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) AddUpdatedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1037,14 +1037,14 @@ func (u *RoleFieldPermissionUpsertBulk) ClearUpdatedBy() *RoleFieldPermissionUps
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *RoleFieldPermissionUpsertBulk) SetDeletedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) SetDeletedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *RoleFieldPermissionUpsertBulk) AddDeletedBy(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) AddDeletedBy(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1065,14 +1065,14 @@ func (u *RoleFieldPermissionUpsertBulk) ClearDeletedBy() *RoleFieldPermissionUps
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *RoleFieldPermissionUpsertBulk) SetRoleID(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) SetRoleID(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *RoleFieldPermissionUpsertBulk) AddRoleID(v uint32) *RoleFieldPermissionUpsertBulk {
+func (u *RoleFieldPermissionUpsertBulk) AddRoleID(v uint64) *RoleFieldPermissionUpsertBulk {
 	return u.Update(func(s *RoleFieldPermissionUpsert) {
 		s.AddRoleID(v)
 	})

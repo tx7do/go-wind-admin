@@ -70,14 +70,14 @@ func (_u *RoleUpdate) ClearDeletedAt() *RoleUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RoleUpdate) SetCreatedBy(v uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetCreatedBy(v uint64) *RoleUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableCreatedBy(v *uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetNillableCreatedBy(v *uint64) *RoleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *RoleUpdate) SetNillableCreatedBy(v *uint32) *RoleUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *RoleUpdate) AddCreatedBy(v int32) *RoleUpdate {
+func (_u *RoleUpdate) AddCreatedBy(v int64) *RoleUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *RoleUpdate) ClearCreatedBy() *RoleUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RoleUpdate) SetUpdatedBy(v uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetUpdatedBy(v uint64) *RoleUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableUpdatedBy(v *uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetNillableUpdatedBy(v *uint64) *RoleUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *RoleUpdate) SetNillableUpdatedBy(v *uint32) *RoleUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *RoleUpdate) AddUpdatedBy(v int32) *RoleUpdate {
+func (_u *RoleUpdate) AddUpdatedBy(v int64) *RoleUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *RoleUpdate) ClearUpdatedBy() *RoleUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RoleUpdate) SetDeletedBy(v uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetDeletedBy(v uint64) *RoleUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableDeletedBy(v *uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetNillableDeletedBy(v *uint64) *RoleUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *RoleUpdate) SetNillableDeletedBy(v *uint32) *RoleUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *RoleUpdate) AddDeletedBy(v int32) *RoleUpdate {
+func (_u *RoleUpdate) AddDeletedBy(v int64) *RoleUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -314,14 +314,14 @@ func (_u *RoleUpdate) SetNillableDataScope(v *role.DataScope) *RoleUpdate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *RoleUpdate) SetParentID(v uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetParentID(v uint64) *RoleUpdate {
 	_u.mutation.ResetParentID()
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableParentID(v *uint32) *RoleUpdate {
+func (_u *RoleUpdate) SetNillableParentID(v *uint64) *RoleUpdate {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -329,7 +329,7 @@ func (_u *RoleUpdate) SetNillableParentID(v *uint32) *RoleUpdate {
 }
 
 // AddParentID adds value to the "parent_id" field.
-func (_u *RoleUpdate) AddParentID(v int32) *RoleUpdate {
+func (_u *RoleUpdate) AddParentID(v int64) *RoleUpdate {
 	_u.mutation.AddParentID(v)
 	return _u
 }
@@ -412,7 +412,7 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -436,31 +436,31 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(role.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(role.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(role.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(role.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(role.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(role.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(role.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(role.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(role.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(role.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(role.FieldRemark, field.TypeString, value)
@@ -484,7 +484,7 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(role.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(role.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(role.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
@@ -511,13 +511,13 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ParentID(); ok {
-		_spec.SetField(role.FieldParentID, field.TypeUint32, value)
+		_spec.SetField(role.FieldParentID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedParentID(); ok {
-		_spec.AddField(role.FieldParentID, field.TypeUint32, value)
+		_spec.AddField(role.FieldParentID, field.TypeUint64, value)
 	}
 	if _u.mutation.ParentIDCleared() {
-		_spec.ClearField(role.FieldParentID, field.TypeUint32)
+		_spec.ClearField(role.FieldParentID, field.TypeUint64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -582,14 +582,14 @@ func (_u *RoleUpdateOne) ClearDeletedAt() *RoleUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RoleUpdateOne) SetCreatedBy(v uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetCreatedBy(v uint64) *RoleUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableCreatedBy(v *uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetNillableCreatedBy(v *uint64) *RoleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -597,7 +597,7 @@ func (_u *RoleUpdateOne) SetNillableCreatedBy(v *uint32) *RoleUpdateOne {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *RoleUpdateOne) AddCreatedBy(v int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) AddCreatedBy(v int64) *RoleUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -609,14 +609,14 @@ func (_u *RoleUpdateOne) ClearCreatedBy() *RoleUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RoleUpdateOne) SetUpdatedBy(v uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetUpdatedBy(v uint64) *RoleUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableUpdatedBy(v *uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetNillableUpdatedBy(v *uint64) *RoleUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -624,7 +624,7 @@ func (_u *RoleUpdateOne) SetNillableUpdatedBy(v *uint32) *RoleUpdateOne {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *RoleUpdateOne) AddUpdatedBy(v int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) AddUpdatedBy(v int64) *RoleUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -636,14 +636,14 @@ func (_u *RoleUpdateOne) ClearUpdatedBy() *RoleUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RoleUpdateOne) SetDeletedBy(v uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetDeletedBy(v uint64) *RoleUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableDeletedBy(v *uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetNillableDeletedBy(v *uint64) *RoleUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -651,7 +651,7 @@ func (_u *RoleUpdateOne) SetNillableDeletedBy(v *uint32) *RoleUpdateOne {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *RoleUpdateOne) AddDeletedBy(v int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) AddDeletedBy(v int64) *RoleUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -826,14 +826,14 @@ func (_u *RoleUpdateOne) SetNillableDataScope(v *role.DataScope) *RoleUpdateOne 
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *RoleUpdateOne) SetParentID(v uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetParentID(v uint64) *RoleUpdateOne {
 	_u.mutation.ResetParentID()
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableParentID(v *uint32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetNillableParentID(v *uint64) *RoleUpdateOne {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -841,7 +841,7 @@ func (_u *RoleUpdateOne) SetNillableParentID(v *uint32) *RoleUpdateOne {
 }
 
 // AddParentID adds value to the "parent_id" field.
-func (_u *RoleUpdateOne) AddParentID(v int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) AddParentID(v int64) *RoleUpdateOne {
 	_u.mutation.AddParentID(v)
 	return _u
 }
@@ -937,7 +937,7 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Role.id" for update`)}
@@ -978,31 +978,31 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 		_spec.ClearField(role.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(role.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(role.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(role.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(role.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(role.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(role.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(role.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(role.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(role.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(role.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(role.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(role.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(role.FieldRemark, field.TypeString, value)
@@ -1026,7 +1026,7 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 		_spec.ClearField(role.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(role.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(role.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
@@ -1053,13 +1053,13 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ParentID(); ok {
-		_spec.SetField(role.FieldParentID, field.TypeUint32, value)
+		_spec.SetField(role.FieldParentID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedParentID(); ok {
-		_spec.AddField(role.FieldParentID, field.TypeUint32, value)
+		_spec.AddField(role.FieldParentID, field.TypeUint64, value)
 	}
 	if _u.mutation.ParentIDCleared() {
-		_spec.ClearField(role.FieldParentID, field.TypeUint32)
+		_spec.ClearField(role.FieldParentID, field.TypeUint64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

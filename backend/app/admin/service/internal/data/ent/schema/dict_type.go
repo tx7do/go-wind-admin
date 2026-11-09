@@ -49,12 +49,12 @@ func (DictType) Fields() []ent.Field {
 // Mixin of the DictType.
 func (DictType) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.IsEnabled{},
 		mixin.SortOrder{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

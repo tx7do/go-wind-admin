@@ -403,7 +403,7 @@ func (a *Authenticator) CreateUserToken(
 func (a *Authenticator) AddTokenLineage(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
-	userId uint32,
+	userId uint64,
 	newJti string,
 	prevJti string,
 ) error {
@@ -445,7 +445,7 @@ func (a *Authenticator) CreateMachineToken(
 }
 
 // RevokeUserToken 撤销用户令牌
-func (a *Authenticator) RevokeUserToken(ctx context.Context, clientType authenticationV1.ClientType, userId uint32) error {
+func (a *Authenticator) RevokeUserToken(ctx context.Context, clientType authenticationV1.ClientType, userId uint64) error {
 	if a.userTokenCache == nil {
 		a.log.Error(ctx, "userTokenCache is nil")
 		return authenticationV1.ErrorServiceUnavailable("token cache unavailable")
@@ -467,7 +467,7 @@ func (a *Authenticator) RevokeUserToken(ctx context.Context, clientType authenti
 	return nil
 }
 
-func (a *Authenticator) RevokeTokenByJti(ctx context.Context, clientType *authenticationV1.ClientType, userId uint32, jti string) error {
+func (a *Authenticator) RevokeTokenByJti(ctx context.Context, clientType *authenticationV1.ClientType, userId uint64, jti string) error {
 	if clientType != nil {
 		if _, err := a.getAuthenticator(*clientType); err != nil {
 			return err
@@ -491,7 +491,7 @@ func (a *Authenticator) VerifyRefreshToken(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
 	refreshToken string,
-) (userId uint32, jti string, grace bool, err error) {
+) (userId uint64, jti string, grace bool, err error) {
 	if a.userTokenCache == nil {
 		a.log.Error(ctx, "userTokenCache is nil")
 		return 0, "", false, authenticationV1.ErrorServiceUnavailable("token cache unavailable")
@@ -544,7 +544,7 @@ func (a *Authenticator) VerifyRefreshToken(
 func (a *Authenticator) GetAccessTokens(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
-	userId uint32,
+	userId uint64,
 ) []string {
 	return a.userTokenCache.GetAccessTokens(ctx, clientType, userId)
 }
@@ -637,7 +637,7 @@ func (a *Authenticator) UnblockToken(
 func (a *Authenticator) SaveSessionMeta(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
-	userId uint32,
+	userId uint64,
 	jti string,
 	meta *SessionMeta,
 	expires time.Duration,
@@ -649,7 +649,7 @@ func (a *Authenticator) SaveSessionMeta(
 func (a *Authenticator) GetSessionMeta(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
-	userId uint32,
+	userId uint64,
 	jti string,
 ) (*SessionMeta, error) {
 	return a.userTokenCache.GetSessionMeta(ctx, clientType, userId, jti)
@@ -662,7 +662,7 @@ func (a *Authenticator) ListSessionEntries(ctx context.Context) ([]SessionEntry,
 
 // RevokeUserTokenAllClientTypes 吊销用户全部客户端类型的所有令牌与会话记录。
 // 用于改密 / 重置密码后的强制下线：被改密用户的所有已签发令牌立即失效。
-func (a *Authenticator) RevokeUserTokenAllClientTypes(ctx context.Context, userId uint32) error {
+func (a *Authenticator) RevokeUserTokenAllClientTypes(ctx context.Context, userId uint64) error {
 	// 显式枚举合法客户端类型（与 RevokeTokenByJti 的 nil 分支同形）。
 	// 此前遍历 ClientType_value 名字表：后续枚举若新增无效/未实现类型会被
 	// 静默带进吊销循环；叠加 map 迭代序随机与遇错早退，会得到「实际吊销了

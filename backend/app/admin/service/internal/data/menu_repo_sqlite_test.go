@@ -66,9 +66,9 @@ func TestMenuRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 		"/sqlite/menu/enum/b": {permissionV1.Menu_OFF, permissionV1.Menu_LINK, identityV1.Module_TASK},
 		"/sqlite/menu/enum/c": {permissionV1.Menu_ON, permissionV1.Menu_MENU, identityV1.Module_MODULE_UNSPECIFIED},
 	}
-	idByPath := map[string]uint32{}
+	idByPath := map[string]uint64{}
 	for _, row := range rows {
-		idByPath[*row.Path] = uint32(row.ID)
+		idByPath[*row.Path] = uint64(row.ID)
 	}
 	require.Len(t, idByPath, 3, "三行应有互异的路径")
 
@@ -94,7 +94,7 @@ func TestMenuRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(3), listed.Total, "无过滤时应统计全部 3 行")
 	require.Len(t, listed.Items, 3, "无过滤时应返回 3 行")
-	viewByID := map[uint32]*permissionV1.Menu{}
+	viewByID := map[uint64]*permissionV1.Menu{}
 	for _, item := range listed.Items {
 		viewByID[item.GetId()] = item
 	}

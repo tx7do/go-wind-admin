@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.AiAgentRevision {
+func ID(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.AiAgentRevision {
+func IDEQ(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.AiAgentRevision {
+func IDNEQ(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.AiAgentRevision {
+func IDIn(ids ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.AiAgentRevision {
+func IDNotIn(ids ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.AiAgentRevision {
+func IDGT(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.AiAgentRevision {
+func IDGTE(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.AiAgentRevision {
+func IDLT(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.AiAgentRevision {
+func IDLTE(id uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,27 +71,27 @@ func DeletedAt(v time.Time) predicate.AiAgentRevision {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.AiAgentRevision {
+func CreatedBy(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.AiAgentRevision {
+func UpdatedBy(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.AiAgentRevision {
+func DeletedBy(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.AiAgentRevision {
+func TenantID(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldTenantID, v))
 }
 
 // AppID applies equality check predicate on the "app_id" field. It's identical to AppIDEQ.
-func AppID(v uint32) predicate.AiAgentRevision {
+func AppID(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldAppID, v))
 }
 
@@ -251,42 +251,42 @@ func DeletedAtNotNil() predicate.AiAgentRevision {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.AiAgentRevision {
+func CreatedByEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.AiAgentRevision {
+func CreatedByNEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.AiAgentRevision {
+func CreatedByIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.AiAgentRevision {
+func CreatedByNotIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.AiAgentRevision {
+func CreatedByGT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.AiAgentRevision {
+func CreatedByGTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.AiAgentRevision {
+func CreatedByLT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.AiAgentRevision {
+func CreatedByLTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -301,42 +301,42 @@ func CreatedByNotNil() predicate.AiAgentRevision {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.AiAgentRevision {
+func UpdatedByEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.AiAgentRevision {
+func UpdatedByNEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.AiAgentRevision {
+func UpdatedByIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.AiAgentRevision {
+func UpdatedByNotIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.AiAgentRevision {
+func UpdatedByGT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.AiAgentRevision {
+func UpdatedByGTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.AiAgentRevision {
+func UpdatedByLT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.AiAgentRevision {
+func UpdatedByLTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -351,42 +351,42 @@ func UpdatedByNotNil() predicate.AiAgentRevision {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.AiAgentRevision {
+func DeletedByEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.AiAgentRevision {
+func DeletedByNEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.AiAgentRevision {
+func DeletedByIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.AiAgentRevision {
+func DeletedByNotIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.AiAgentRevision {
+func DeletedByGT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.AiAgentRevision {
+func DeletedByGTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.AiAgentRevision {
+func DeletedByLT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.AiAgentRevision {
+func DeletedByLTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -401,42 +401,42 @@ func DeletedByNotNil() predicate.AiAgentRevision {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.AiAgentRevision {
+func TenantIDEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.AiAgentRevision {
+func TenantIDNEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.AiAgentRevision {
+func TenantIDIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.AiAgentRevision {
+func TenantIDNotIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.AiAgentRevision {
+func TenantIDGT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.AiAgentRevision {
+func TenantIDGTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.AiAgentRevision {
+func TenantIDLT(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.AiAgentRevision {
+func TenantIDLTE(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -451,22 +451,22 @@ func TenantIDNotNil() predicate.AiAgentRevision {
 }
 
 // AppIDEQ applies the EQ predicate on the "app_id" field.
-func AppIDEQ(v uint32) predicate.AiAgentRevision {
+func AppIDEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldEQ(FieldAppID, v))
 }
 
 // AppIDNEQ applies the NEQ predicate on the "app_id" field.
-func AppIDNEQ(v uint32) predicate.AiAgentRevision {
+func AppIDNEQ(v uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNEQ(FieldAppID, v))
 }
 
 // AppIDIn applies the In predicate on the "app_id" field.
-func AppIDIn(vs ...uint32) predicate.AiAgentRevision {
+func AppIDIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldIn(FieldAppID, vs...))
 }
 
 // AppIDNotIn applies the NotIn predicate on the "app_id" field.
-func AppIDNotIn(vs ...uint32) predicate.AiAgentRevision {
+func AppIDNotIn(vs ...uint64) predicate.AiAgentRevision {
 	return predicate.AiAgentRevision(sql.FieldNotIn(FieldAppID, vs...))
 }
 

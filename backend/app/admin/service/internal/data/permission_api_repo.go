@@ -45,7 +45,7 @@ func NewPermissionApiRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*
 // resolveEndpoints 把前端提交的 api 引用（id 列表）一次性解析成端点身份快照。
 // 解析不到的 id 说明引用已过期（并发同步删除等）：随 missing 返回，由调用方
 // 整体失败而非静默丢弃（不吞错铁律——静默丢绑定 = 授权悄悄缩水）。
-func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint32) (endpoints []Endpoint, missing []uint32, err error) {
+func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint64) (endpoints []Endpoint, missing []uint64, err error) {
 	if len(apiIDs) == 0 {
 		return nil, nil, nil
 	}
@@ -58,7 +58,7 @@ func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint3
 		return nil, nil, permissionV1.ErrorInternalServerError("query apis failed")
 	}
 
-	byID := make(map[uint32]Endpoint, len(apis))
+	byID := make(map[uint64]Endpoint, len(apis))
 	for _, a := range apis {
 		if a == nil || a.Path == nil || a.Method == nil || *a.Path == "" || *a.Method == "" {
 			// 缺身份的行不是合法端点（脏数据），按缺失处理
@@ -85,7 +85,7 @@ func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint3
 }
 
 // ListEndpoints 列出权限关联的端点快照（绑定表即真相，不回查 sys_apis）。
-func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []uint32) ([]Endpoint, error) {
+func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []uint64) ([]Endpoint, error) {
 	if len(permissionIDs) == 0 {
 		return nil, nil
 	}
@@ -118,7 +118,7 @@ func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []u
 // ListApiIDs 列出权限关联的 API 资源 ID 列表：端点快照反解回当前 sys_apis 的 id，
 // 供管理页勾选框回显。端点已被同步删除的快照解析不出 id，防御性跳过
 // （正常情况下端点删除会级联清绑定，此处只为并发窗口兜底）。
-func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint64) ([]uint64, error) {
 	endpoints, err := r.ListEndpoints(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -140,7 +140,7 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		return nil, permissionV1.ErrorInternalServerError("resolve api ids by endpoints failed")
 	}
 
-	byEndpoint := make(map[string]uint32, len(apis))
+	byEndpoint := make(map[string]uint64, len(apis))
 	for _, a := range apis {
 		if a == nil || a.Path == nil || a.Method == nil {
 			continue
@@ -149,8 +149,8 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		byEndpoint[(Endpoint{Path: *a.Path, Method: *a.Method}).key()] = a.ID
 	}
 
-	ids := make([]uint32, 0, len(endpoints))
-	idSeen := make(map[uint32]struct{}, len(endpoints))
+	ids := make([]uint64, 0, len(endpoints))
+	idSeen := make(map[uint64]struct{}, len(endpoints))
 	for _, e := range endpoints {
 		id, ok := byEndpoint[e.key()]
 		if !ok {
@@ -172,8 +172,8 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 // 空列表 = 清空该权限的全部接口授权。
 func (r *PermissionApiRepo) AssignApis(
 	ctx context.Context,
-	permissionID uint32,
-	apiIDs []uint32,
+	permissionID uint64,
+	apiIDs []uint64,
 ) (err error) {
 	endpoints, missing, err := r.resolveEndpoints(ctx, apiIDs)
 	if err != nil {
@@ -215,7 +215,7 @@ func (r *PermissionApiRepo) AssignApis(
 func (r *PermissionApiRepo) AssignApisWithTx(
 	ctx context.Context,
 	tx *ent.Tx,
-	permissionID uint32,
+	permissionID uint64,
 	endpoints []Endpoint,
 ) error {
 	return r.assignEndpointsWithTx(ctx, tx, permissionID, endpoints)
@@ -224,7 +224,7 @@ func (r *PermissionApiRepo) AssignApisWithTx(
 func (r *PermissionApiRepo) assignEndpointsWithTx(
 	ctx context.Context,
 	tx *ent.Tx,
-	permissionID uint32,
+	permissionID uint64,
 	endpoints []Endpoint,
 ) error {
 	if len(endpoints) == 0 {
@@ -261,7 +261,7 @@ func (r *PermissionApiRepo) assignEndpointsWithTx(
 func (r *PermissionApiRepo) cleanNotExistApisWithClient(
 	ctx context.Context,
 	client *ent.Client,
-	permissionID uint32,
+	permissionID uint64,
 	endpoints []Endpoint,
 ) error {
 	builder := client.PermissionApi.Delete().Where(permissionapi.PermissionIDEQ(permissionID))
@@ -306,7 +306,7 @@ func (r *PermissionApiRepo) DeleteByEndpoints(ctx context.Context, client *ent.C
 // TruncateExcept 清空绑定表但保留指定权限的绑定。keepPermissionIDs 由调用方按
 // 系统权限 code 前缀解析（不再依赖"种子权限=1/2/3"的硬编码 id 假设）；为空 =
 // 全清（权限表整体重建场景）。
-func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint32) error {
+func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint64) error {
 	builder := r.entClient.Client().PermissionApi.Delete()
 	if len(keepPermissionIDs) > 0 {
 		builder = builder.Where(permissionapi.PermissionIDNotIn(keepPermissionIDs...))
@@ -321,7 +321,7 @@ func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionID
 }
 
 // Delete 删除权限关联的API资源
-func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) error {
+func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint64) error {
 	if _, err := r.entClient.Client().PermissionApi.Delete().
 		Where(
 			permissionapi.PermissionIDEQ(permissionID),
@@ -333,13 +333,13 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) err
 	return nil
 }
 
-func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
 	return r.DeleteByPermissionIDsOnClient(ctx, r.entClient.Client(), permissionIDs)
 }
 
 // DeleteByPermissionIDsOnClient DeleteByPermissionIDs 的 client 形参变体：
 // 权限行删除+级联清理同事务执行时传事务 client。
-func (r *PermissionApiRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
+func (r *PermissionApiRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}

@@ -38,17 +38,17 @@ func (AiMessage) Fields() []ent.Field {
 		field.Uint32("completion_tokens").Comment("输出 token 数").Optional().Nillable(),
 		field.Uint32("duration_ms").Comment("生成耗时（毫秒）").Optional().Nillable(),
 		field.Text("error_message").Comment("生成失败原因").Optional().Nillable(),
-		field.Uint32("user_id").Comment("归属用户ID").Optional().Nillable(),
-		field.Uint32("conversation_id").Comment("所属会话ID（edge 外键）").Optional().Nillable(),
+		field.Uint64("user_id").Comment("归属用户ID").Optional().Nillable(),
+		field.Uint64("conversation_id").Comment("所属会话ID（edge 外键）").Optional().Nillable(),
 	}
 }
 
 func (AiMessage) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

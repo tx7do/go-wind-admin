@@ -38,10 +38,10 @@ import (
 // 只覆写 aggregateDataScopes 用到的 ListOrgUnitIDsByUserID（返回预置自身单元集）。
 type dataScopeUserRepoStub struct {
 	data.UserRepo
-	ownUnits []uint32
+	ownUnits []uint64
 }
 
-func (s *dataScopeUserRepoStub) ListOrgUnitIDsByUserID(_ context.Context, _ uint32) ([]uint32, error) {
+func (s *dataScopeUserRepoStub) ListOrgUnitIDsByUserID(_ context.Context, _ uint64) ([]uint64, error) {
 	return s.ownUnits, nil
 }
 
@@ -49,7 +49,7 @@ func (s *dataScopeUserRepoStub) ListOrgUnitIDsByUserID(_ context.Context, _ uint
 // aggregateDataScopes 相关字段：log 用 NopLogger helper；roleRepo/orgUnitRepo
 // 走 testkit；userRepo 用本地桩；roleOrgUnitRepo 无 testkit 导出，按生产构造器 +
 // NopLogger 的 bootstrap 上下文构造（与生产构造器逐字段一致，唯一差异是日志）。
-func newDataScopeAuthServiceForTest(t *testing.T, ownUnits []uint32) (*AuthenticationService, *ent.Client) {
+func newDataScopeAuthServiceForTest(t *testing.T, ownUnits []uint64) (*AuthenticationService, *ent.Client) {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
 	bootstrapCtx := bootstrap.NewContextWithParam(context.Background(), nil, nil, bLogger.NopLogger())
@@ -64,11 +64,11 @@ func newDataScopeAuthServiceForTest(t *testing.T, ownUnits []uint32) (*Authentic
 }
 
 // seedScopedRole 落一条带数据范围的角色并返回其 ID（按唯一 code 反查）。
-func seedScopedRole(t *testing.T, client *ent.Client, ctx context.Context, svc *AuthenticationService, code string, scope identityV1.DataScope) uint32 {
+func seedScopedRole(t *testing.T, client *ent.Client, ctx context.Context, svc *AuthenticationService, code string, scope identityV1.DataScope) uint64 {
 	t.Helper()
 	require.NoError(t, svc.roleRepo.Create(ctx, &permissionV1.CreateRoleRequest{
 		Data: &permissionV1.Role{
-			TenantId:  trans.Ptr(uint32(42)),
+			TenantId:  trans.Ptr(uint64(42)),
 			Name:      trans.Ptr("数据范围测试角色 " + code),
 			Code:      trans.Ptr(code),
 			Status:    permissionV1.Role_ON.Enum(),
@@ -82,7 +82,7 @@ func seedScopedRole(t *testing.T, client *ent.Client, ctx context.Context, svc *
 }
 
 // seedOrgUnit 落一条组织单元（指定租户；parent>0 时挂父节点）并返回其 ID。
-func seedOrgUnit(t *testing.T, client *ent.Client, ctx context.Context, svc *AuthenticationService, tenantID uint32, name, code string, parent uint32) uint32 {
+func seedOrgUnit(t *testing.T, client *ent.Client, ctx context.Context, svc *AuthenticationService, tenantID uint64, name, code string, parent uint64) uint64 {
 	t.Helper()
 	req := &identityV1.CreateOrgUnitRequest{
 		Data: &identityV1.OrgUnit{
@@ -125,7 +125,7 @@ func TestAggregateDataScopes_AnyRoleAllShortCircuits(t *testing.T) {
 	selfID := seedScopedRole(t, client, ctx, svc, "DS_SELF_ROLE", identityV1.DataScope_SELF)
 	payload := &authenticationV1.UserTokenPayload{}
 
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{allID, selfID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{allID, selfID}, payload)
 
 	require.Equal(t, []identityV1.DataScope{identityV1.DataScope_ALL}, payload.GetDataScopes(),
 		"任一角色 ALL 应整体 [ALL]")
@@ -140,7 +140,7 @@ func TestAggregateDataScopes_SelfOnlyMirror(t *testing.T) {
 	selfID := seedScopedRole(t, client, ctx, svc, "DS_SELF_ONLY_ROLE", identityV1.DataScope_SELF)
 	payload := &authenticationV1.UserTokenPayload{}
 
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{selfID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{selfID}, payload)
 
 	require.Equal(t, []identityV1.DataScope{identityV1.DataScope_SELF}, payload.GetDataScopes(),
 		"仅 SELF 角色应为 [SELF]")
@@ -154,7 +154,7 @@ func TestAggregateDataScopes_Degenerate(t *testing.T) {
 	svc, _ := newDataScopeAuthServiceForTest(t, nil)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	for _, roleIDs := range [][]uint32{nil, {777777}} {
+	for _, roleIDs := range [][]uint64{nil, {777777}} {
 		payload := &authenticationV1.UserTokenPayload{}
 		svc.aggregateDataScopes(ctx, 42, 9, roleIDs, payload)
 		require.Equal(t, []identityV1.DataScope{identityV1.DataScope_DATA_SCOPE_UNSPECIFIED},
@@ -169,15 +169,15 @@ func TestAggregateDataScopes_Degenerate(t *testing.T) {
 // TestAggregateDataScopes_UnitOnlyTenantFiltered UNIT_ONLY：
 // 自身单元集（含跨租户单元）经租户过滤后仅剩本租户单元。
 func TestAggregateDataScopes_UnitOnlyTenantFiltered(t *testing.T) {
-	svc, client := newDataScopeAuthServiceForTest(t, []uint32{1, 2}) // 占位，稍后以真实 ID 重设
+	svc, client := newDataScopeAuthServiceForTest(t, []uint64{1, 2}) // 占位，稍后以真实 ID 重设
 	ctx := enttest.NewSystemContext(context.Background())
 	inTenant := seedOrgUnit(t, client, ctx, svc, 42, "数据范围本租户单元", "DS_ORG_INTENANT", 0)
 	outTenant := seedOrgUnit(t, client, ctx, svc, 999, "数据范围他租户单元", "DS_ORG_OUTTENANT", 0)
-	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint32{inTenant, outTenant}
+	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint64{inTenant, outTenant}
 
 	unitRoleID := seedScopedRole(t, client, ctx, svc, "DS_UNIT_ONLY_ROLE", identityV1.DataScope_UNIT_ONLY)
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{unitRoleID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{unitRoleID}, payload)
 
 	require.Equal(t, []identityV1.DataScope{identityV1.DataScope_UNIT_ONLY}, payload.GetDataScopes(),
 		"UNIT_ONLY 角色应得 [UNIT_ONLY]")
@@ -195,11 +195,11 @@ func TestAggregateDataScopes_UnitAndChildDescendants(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 	root := seedOrgUnit(t, client, ctx, svc, 42, "数据范围根单元", "DS_ORG_ROOT", 0)
 	child := seedOrgUnit(t, client, ctx, svc, 42, "数据范围子单元", "DS_ORG_CHILD", root)
-	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint32{root}
+	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint64{root}
 
 	unitRoleID := seedScopedRole(t, client, ctx, svc, "DS_UNIT_CHILD_ROLE", identityV1.DataScope_UNIT_AND_CHILD)
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{unitRoleID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{unitRoleID}, payload)
 
 	require.Equal(t, []identityV1.DataScope{identityV1.DataScope_UNIT_AND_CHILD}, payload.GetDataScopes(),
 		"UNIT_AND_CHILD 角色应得 [UNIT_AND_CHILD]")
@@ -233,7 +233,7 @@ func TestAggregateDataScopes_SelectedUnitsSecondFilter(t *testing.T) {
 	require.NoError(t, err)
 
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{selRoleID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{selRoleID}, payload)
 
 	require.Equal(t, []identityV1.DataScope{identityV1.DataScope_SELECTED_UNITS}, payload.GetDataScopes(),
 		"SELECTED_UNITS 角色应得 [SELECTED_UNITS]")
@@ -249,12 +249,12 @@ func TestAggregateDataScopes_SelfPlusUnitUnion(t *testing.T) {
 	svc, client := newDataScopeAuthServiceForTest(t, nil)
 	ctx := enttest.NewSystemContext(context.Background())
 	inTenant := seedOrgUnit(t, client, ctx, svc, 42, "并集测试本租户单元", "DS_ORG_UNION_INTENANT", 0)
-	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint32{inTenant}
+	svc.userRepo.(*dataScopeUserRepoStub).ownUnits = []uint64{inTenant}
 
 	selfID := seedScopedRole(t, client, ctx, svc, "DS_UNION_SELF_ROLE", identityV1.DataScope_SELF)
 	unitID := seedScopedRole(t, client, ctx, svc, "DS_UNION_UNIT_ROLE", identityV1.DataScope_UNIT_ONLY)
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateDataScopes(ctx, 42, 9, []uint32{selfID, unitID}, payload)
+	svc.aggregateDataScopes(ctx, 42, 9, []uint64{selfID, unitID}, payload)
 
 	require.ElementsMatch(t,
 		[]identityV1.DataScope{identityV1.DataScope_SELF, identityV1.DataScope_UNIT_ONLY},

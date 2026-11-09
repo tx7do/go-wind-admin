@@ -25,33 +25,33 @@ service PolicyEvaluationLogService {
 
 // 策略评估日志
 message PolicyEvaluationLog {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "策略评估日志ID"}
   ]; // 策略评估日志ID
 
-  optional uint32 tenant_id = 2 [
+  optional uint64 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
 
-  optional uint32 user_id = 3 [
+  optional uint64 user_id = 3 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "操作者用户ID"}
   ]; // 操作者用户ID
 
-  optional uint32 membership_id = 4 [
+  optional uint64 membership_id = 4 [
     json_name = "membershipId",
     (gnostic.openapi.v3.property) = {description: "成员身份ID"}
   ]; // 成员身份ID
 
 
-  optional uint32 permission_id = 10 [
+  optional uint64 permission_id = 10 [
     json_name = "permissionId",
     (gnostic.openapi.v3.property) = {description: "权限点ID"}
   ]; // 权限点ID
 
-  optional uint32 policy_id = 11 [
+  optional uint64 policy_id = 11 [
     json_name = "policyId",
     (gnostic.openapi.v3.property) = {description: "策略ID（可能无策略）"}
   ]; // 策略ID（可能无策略）
@@ -130,7 +130,7 @@ message ListPolicyEvaluationLogResponse {
 // 查询策略评估日志详情 - 请求
 message GetPolicyEvaluationLogRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID

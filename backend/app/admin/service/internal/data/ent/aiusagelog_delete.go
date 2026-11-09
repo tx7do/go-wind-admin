@@ -40,7 +40,7 @@ func (_d *AiUsageLogDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *AiUsageLogDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(aiusagelog.Table, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(aiusagelog.Table, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

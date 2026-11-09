@@ -36,7 +36,7 @@ func (BiDashboardRevision) Annotations() []schema.Annotation {
 // Fields of the BiDashboardRevision.
 func (BiDashboardRevision) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("dashboard_id").
+		field.Uint64("dashboard_id").
 			Comment("所属仪表盘 ID").
 			Optional().
 			Nillable(),
@@ -73,10 +73,10 @@ func (BiDashboardRevision) Fields() []ent.Field {
 // Mixin of the BiDashboardRevision.
 func (BiDashboardRevision) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

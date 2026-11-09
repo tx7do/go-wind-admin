@@ -63,9 +63,9 @@ type agentGraph struct {
 
 // agentUsage 单节点/单次运行的 token 用量。
 type agentUsage struct {
-	Prompt     uint32 `json:"prompt"`
-	Completion uint32 `json:"completion"`
-	Total      uint32 `json:"total"`
+	Prompt     uint64 `json:"prompt"`
+	Completion uint64 `json:"completion"`
+	Total      uint64 `json:"total"`
 }
 
 func (u *agentUsage) add(other agentUsage) {
@@ -384,7 +384,7 @@ type agentEngineDeps struct {
 	// loadSubflowGraph 加载子图（subflow 节点引用的目标应用图）：
 	// 返回目标应用名与解析后的图；目标不存在/停用返回错误。
 	// 真实现 = appRepo.GetEntityByID + parseAgentGraph；测试注桩。
-	loadSubflowGraph func(ctx context.Context, appID uint32) (appName string, graph *agentGraph, err error)
+	loadSubflowGraph func(ctx context.Context, appID uint64) (appName string, graph *agentGraph, err error)
 	// onStep 节点执行阶段回调（node_start / node_end），SSE 流式观感用；nil = 不推。
 	// 推帧失败（订阅端慢）不影响执行——回调实现方自己保证尽力而为语义。
 	onStep func(phase, nodeID, summary, status string)
@@ -724,7 +724,7 @@ func agentDataString(data map[string]any, key string) string {
 	return v
 }
 
-func agentDataUint32(data map[string]any, key string) uint32 {
+func agentDataUint32(data map[string]any, key string) uint64 {
 	if data == nil {
 		return 0
 	}
@@ -733,10 +733,10 @@ func agentDataUint32(data map[string]any, key string) uint32 {
 		if v <= 0 {
 			return 0
 		}
-		return uint32(v)
+		return uint64(v)
 	case string:
-		n, _ := strconv.ParseUint(v, 10, 32)
-		return uint32(n)
+		n, _ := strconv.ParseUint(v, 10, 64)
+		return n
 	default:
 		return 0
 	}

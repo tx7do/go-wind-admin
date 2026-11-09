@@ -46,7 +46,7 @@ type AiContentService struct {
 	usageRepo    *data.AiUsageLogRepo
 	menuRepo     *data.MenuRepo
 	roleRepo     interface {
-		GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint32) ([]string, error)
+		GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint64) ([]string, error)
 	}
 	userRepo interface {
 		Get(ctx context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error)
@@ -178,7 +178,7 @@ var buildSearchIndexSQL = fmt.Sprintf(
 // menuIndexDoc 待索引菜单：真实菜单 id + 标题 + 路由。
 // item_id 落库为菜单 id（历史版本误存过数组下标，该列此前无消费方故无影响）。
 type menuIndexDoc struct {
-	menuId uint32
+	menuId uint64
 	title  string
 	route  string
 }
@@ -223,7 +223,7 @@ func placeEmbeddingBatch(batchStart int, data []openai.Embedding, vectors []stri
 // BuildMenuSearchIndex 向量化全部菜单标题并原子替换索引表里的菜单行。
 // 顺序：先离线算完全部 embedding（不持事务调外部 API），再单事务 DELETE+分批
 // 多行 INSERT——任一环节失败即回滚，旧索引原样保留，不会留下半空索引。
-func (s *AiContentService) BuildMenuSearchIndex(ctx context.Context) (uint32, error) {
+func (s *AiContentService) BuildMenuSearchIndex(ctx context.Context) (uint64, error) {
 	db := s.entClient.DB()
 	if _, err := db.ExecContext(ctx, buildSearchIndexSQL); err != nil {
 		return 0, fmt.Errorf("create search index table: %w", err)
@@ -342,7 +342,7 @@ func (s *AiContentService) BuildMenuSearchIndex(ctx context.Context) (uint32, er
 		return 0, fmt.Errorf("commit search index: %w", cErr)
 	}
 	committed = true
-	return uint32(len(docs)), nil
+	return uint64(len(docs)), nil
 }
 
 // SemanticSearch 语义搜索：向量化查询 → pgvector 余弦检索菜单索引。
@@ -462,7 +462,7 @@ func (s *AiContentService) SemanticSearch(ctx context.Context, req *aiV1.Semanti
 // 平台管理员返回 nil（调用方不过滤）；普通用户经 角色ID → 权限 → 菜单 链路解析。
 // userRepo.Get 拿用户角色集；解析失败返回错误（fail-closed：AI 搜索不应泄露
 // 越权菜单，解析不出来宁可不返回结果）。
-func (s *AiContentService) visibleMenuIDs(ctx context.Context, operator *authenticationV1.UserTokenPayload) ([]uint32, error) {
+func (s *AiContentService) visibleMenuIDs(ctx context.Context, operator *authenticationV1.UserTokenPayload) ([]uint64, error) {
 	if operator.GetTenantId() == 0 {
 		return nil, nil // 平台管理员：不过滤
 	}
@@ -473,7 +473,7 @@ func (s *AiContentService) visibleMenuIDs(ctx context.Context, operator *authent
 		return nil, err
 	}
 	if user == nil || len(user.GetRoleIds()) == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 	// 菜单授权绑定存全路径快照：先取路径，再反解回当前菜单 id
 	paths, err := s.roleRepo.GetRolesPermissionMenuFullPaths(ctx, user.GetRoleIds())
@@ -489,7 +489,7 @@ func (s *AiContentService) RebuildSearchIndex(ctx context.Context, _ *emptypb.Em
 	if err != nil {
 		return nil, adminV1.ErrorInternalServerError("rebuild search index failed: %v", err)
 	}
-	return &aiV1.RebuildSearchIndexResponse{IndexedCount: count}, nil
+	return &aiV1.RebuildSearchIndexResponse{IndexedCount: uint32(count)}, nil
 }
 
 // paginationV1PagingNoLimit 构造不分页的 PagingRequest。

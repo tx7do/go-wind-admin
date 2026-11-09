@@ -66,13 +66,13 @@ func (_c *AiConversationCreate) SetNillableDeletedAt(v *time.Time) *AiConversati
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AiConversationCreate) SetCreatedBy(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetCreatedBy(v uint64) *AiConversationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableCreatedBy(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableCreatedBy(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *AiConversationCreate) SetNillableCreatedBy(v *uint32) *AiConversationC
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AiConversationCreate) SetUpdatedBy(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetUpdatedBy(v uint64) *AiConversationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableUpdatedBy(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableUpdatedBy(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *AiConversationCreate) SetNillableUpdatedBy(v *uint32) *AiConversationC
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AiConversationCreate) SetDeletedBy(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetDeletedBy(v uint64) *AiConversationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableDeletedBy(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableDeletedBy(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *AiConversationCreate) SetNillableDeletedBy(v *uint32) *AiConversationC
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiConversationCreate) SetTenantID(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetTenantID(v uint64) *AiConversationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableTenantID(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableTenantID(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -136,13 +136,13 @@ func (_c *AiConversationCreate) SetNillableTitle(v *string) *AiConversationCreat
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_c *AiConversationCreate) SetProviderID(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetProviderID(v uint64) *AiConversationCreate {
 	_c.mutation.SetProviderID(v)
 	return _c
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableProviderID(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableProviderID(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetProviderID(*v)
 	}
@@ -150,13 +150,13 @@ func (_c *AiConversationCreate) SetNillableProviderID(v *uint32) *AiConversation
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *AiConversationCreate) SetUserID(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetUserID(v uint64) *AiConversationCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *AiConversationCreate) SetNillableUserID(v *uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetNillableUserID(v *uint64) *AiConversationCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -178,20 +178,20 @@ func (_c *AiConversationCreate) SetNillableLastMessageAt(v *time.Time) *AiConver
 }
 
 // SetID sets the "id" field.
-func (_c *AiConversationCreate) SetID(v uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) SetID(v uint64) *AiConversationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // AddMessageIDs adds the "messages" edge to the AiMessage entity by IDs.
-func (_c *AiConversationCreate) AddMessageIDs(ids ...uint32) *AiConversationCreate {
+func (_c *AiConversationCreate) AddMessageIDs(ids ...uint64) *AiConversationCreate {
 	_c.mutation.AddMessageIDs(ids...)
 	return _c
 }
 
 // AddMessages adds the "messages" edges to the AiMessage entity.
 func (_c *AiConversationCreate) AddMessages(v ...*AiMessage) *AiConversationCreate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -265,7 +265,7 @@ func (_c *AiConversationCreate) sqlSave(ctx context.Context) (*AiConversation, e
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -275,7 +275,7 @@ func (_c *AiConversationCreate) sqlSave(ctx context.Context) (*AiConversation, e
 func (_c *AiConversationCreate) createSpec() (*AiConversation, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiConversation{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aiconversation.Table, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(aiconversation.Table, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -295,19 +295,19 @@ func (_c *AiConversationCreate) createSpec() (*AiConversation, *sqlgraph.CreateS
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aiconversation.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Title(); ok {
@@ -315,11 +315,11 @@ func (_c *AiConversationCreate) createSpec() (*AiConversation, *sqlgraph.CreateS
 		_node.Title = &value
 	}
 	if value, ok := _c.mutation.ProviderID(); ok {
-		_spec.SetField(aiconversation.FieldProviderID, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldProviderID, field.TypeUint64, value)
 		_node.ProviderID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(aiconversation.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(aiconversation.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.LastMessageAt(); ok {
@@ -334,7 +334,7 @@ func (_c *AiConversationCreate) createSpec() (*AiConversation, *sqlgraph.CreateS
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -431,7 +431,7 @@ func (u *AiConversationUpsert) ClearDeletedAt() *AiConversationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiConversationUpsert) SetCreatedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) SetCreatedBy(v uint64) *AiConversationUpsert {
 	u.Set(aiconversation.FieldCreatedBy, v)
 	return u
 }
@@ -443,7 +443,7 @@ func (u *AiConversationUpsert) UpdateCreatedBy() *AiConversationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiConversationUpsert) AddCreatedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) AddCreatedBy(v uint64) *AiConversationUpsert {
 	u.Add(aiconversation.FieldCreatedBy, v)
 	return u
 }
@@ -455,7 +455,7 @@ func (u *AiConversationUpsert) ClearCreatedBy() *AiConversationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiConversationUpsert) SetUpdatedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) SetUpdatedBy(v uint64) *AiConversationUpsert {
 	u.Set(aiconversation.FieldUpdatedBy, v)
 	return u
 }
@@ -467,7 +467,7 @@ func (u *AiConversationUpsert) UpdateUpdatedBy() *AiConversationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiConversationUpsert) AddUpdatedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) AddUpdatedBy(v uint64) *AiConversationUpsert {
 	u.Add(aiconversation.FieldUpdatedBy, v)
 	return u
 }
@@ -479,7 +479,7 @@ func (u *AiConversationUpsert) ClearUpdatedBy() *AiConversationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiConversationUpsert) SetDeletedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) SetDeletedBy(v uint64) *AiConversationUpsert {
 	u.Set(aiconversation.FieldDeletedBy, v)
 	return u
 }
@@ -491,7 +491,7 @@ func (u *AiConversationUpsert) UpdateDeletedBy() *AiConversationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiConversationUpsert) AddDeletedBy(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) AddDeletedBy(v uint64) *AiConversationUpsert {
 	u.Add(aiconversation.FieldDeletedBy, v)
 	return u
 }
@@ -521,7 +521,7 @@ func (u *AiConversationUpsert) ClearTitle() *AiConversationUpsert {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiConversationUpsert) SetProviderID(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) SetProviderID(v uint64) *AiConversationUpsert {
 	u.Set(aiconversation.FieldProviderID, v)
 	return u
 }
@@ -533,7 +533,7 @@ func (u *AiConversationUpsert) UpdateProviderID() *AiConversationUpsert {
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiConversationUpsert) AddProviderID(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) AddProviderID(v uint64) *AiConversationUpsert {
 	u.Add(aiconversation.FieldProviderID, v)
 	return u
 }
@@ -545,7 +545,7 @@ func (u *AiConversationUpsert) ClearProviderID() *AiConversationUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiConversationUpsert) SetUserID(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) SetUserID(v uint64) *AiConversationUpsert {
 	u.Set(aiconversation.FieldUserID, v)
 	return u
 }
@@ -557,7 +557,7 @@ func (u *AiConversationUpsert) UpdateUserID() *AiConversationUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiConversationUpsert) AddUserID(v uint32) *AiConversationUpsert {
+func (u *AiConversationUpsert) AddUserID(v uint64) *AiConversationUpsert {
 	u.Add(aiconversation.FieldUserID, v)
 	return u
 }
@@ -683,14 +683,14 @@ func (u *AiConversationUpsertOne) ClearDeletedAt() *AiConversationUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiConversationUpsertOne) SetCreatedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) SetCreatedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiConversationUpsertOne) AddCreatedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) AddCreatedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -711,14 +711,14 @@ func (u *AiConversationUpsertOne) ClearCreatedBy() *AiConversationUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiConversationUpsertOne) SetUpdatedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) SetUpdatedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiConversationUpsertOne) AddUpdatedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) AddUpdatedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -739,14 +739,14 @@ func (u *AiConversationUpsertOne) ClearUpdatedBy() *AiConversationUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiConversationUpsertOne) SetDeletedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) SetDeletedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiConversationUpsertOne) AddDeletedBy(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) AddDeletedBy(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -788,14 +788,14 @@ func (u *AiConversationUpsertOne) ClearTitle() *AiConversationUpsertOne {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiConversationUpsertOne) SetProviderID(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) SetProviderID(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiConversationUpsertOne) AddProviderID(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) AddProviderID(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddProviderID(v)
 	})
@@ -816,14 +816,14 @@ func (u *AiConversationUpsertOne) ClearProviderID() *AiConversationUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiConversationUpsertOne) SetUserID(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) SetUserID(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiConversationUpsertOne) AddUserID(v uint32) *AiConversationUpsertOne {
+func (u *AiConversationUpsertOne) AddUserID(v uint64) *AiConversationUpsertOne {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddUserID(v)
 	})
@@ -880,7 +880,7 @@ func (u *AiConversationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiConversationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *AiConversationUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -889,7 +889,7 @@ func (u *AiConversationUpsertOne) ID(ctx context.Context) (id uint32, err error)
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiConversationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *AiConversationUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -946,7 +946,7 @@ func (_c *AiConversationCreateBulk) Save(ctx context.Context) ([]*AiConversation
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1127,14 +1127,14 @@ func (u *AiConversationUpsertBulk) ClearDeletedAt() *AiConversationUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiConversationUpsertBulk) SetCreatedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) SetCreatedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiConversationUpsertBulk) AddCreatedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) AddCreatedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1155,14 +1155,14 @@ func (u *AiConversationUpsertBulk) ClearCreatedBy() *AiConversationUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiConversationUpsertBulk) SetUpdatedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) SetUpdatedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiConversationUpsertBulk) AddUpdatedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) AddUpdatedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1183,14 +1183,14 @@ func (u *AiConversationUpsertBulk) ClearUpdatedBy() *AiConversationUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiConversationUpsertBulk) SetDeletedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) SetDeletedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiConversationUpsertBulk) AddDeletedBy(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) AddDeletedBy(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1232,14 +1232,14 @@ func (u *AiConversationUpsertBulk) ClearTitle() *AiConversationUpsertBulk {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiConversationUpsertBulk) SetProviderID(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) SetProviderID(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiConversationUpsertBulk) AddProviderID(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) AddProviderID(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddProviderID(v)
 	})
@@ -1260,14 +1260,14 @@ func (u *AiConversationUpsertBulk) ClearProviderID() *AiConversationUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiConversationUpsertBulk) SetUserID(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) SetUserID(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiConversationUpsertBulk) AddUserID(v uint32) *AiConversationUpsertBulk {
+func (u *AiConversationUpsertBulk) AddUserID(v uint64) *AiConversationUpsertBulk {
 	return u.Update(func(s *AiConversationUpsert) {
 		s.AddUserID(v)
 	})

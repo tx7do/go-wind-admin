@@ -40,7 +40,7 @@ func (_d *AiAgentRunDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *AiAgentRunDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(aiagentrun.Table, sqlgraph.NewFieldSpec(aiagentrun.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(aiagentrun.Table, sqlgraph.NewFieldSpec(aiagentrun.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

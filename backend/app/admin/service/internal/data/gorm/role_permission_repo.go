@@ -66,7 +66,7 @@ func (r *RolePermissionRepo) init() {
 // CleanPermissions 清理角色的所有权限
 func (r *RolePermissionRepo) CleanPermissions(
 	ctx context.Context,
-	roleID uint32,
+	roleID uint64,
 ) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("role_id = ?", roleID) },
@@ -107,8 +107,8 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, data *permissionV1.Role
 // ReplacePermissions 整体替换角色的权限：先清空该角色现有权限，再插入新的权限集合。
 // 与 AssignPermissions（仅 upsert，不删除）不同，此方法用于更新场景，确保取消勾选的权限被正确移除。
 func (r *RolePermissionRepo) ReplacePermissions(ctx context.Context,
-	tenantID, operatorID uint32,
-	roleID uint32, permissionIDs []uint32,
+	tenantID, operatorID uint64,
+	roleID uint64, permissionIDs []uint64,
 ) error {
 	if err := r.CleanPermissions(ctx, roleID); err != nil {
 		return err
@@ -123,8 +123,8 @@ func (r *RolePermissionRepo) ReplacePermissions(ctx context.Context,
 
 // AssignPermissions 给角色分配权限
 func (r *RolePermissionRepo) AssignPermissions(ctx context.Context,
-	tenantID, operatorID uint32,
-	roleID uint32, permissionIDs []uint32,
+	tenantID, operatorID uint64,
+	roleID uint64, permissionIDs []uint64,
 ) error {
 	if len(permissionIDs) == 0 {
 		return nil
@@ -153,8 +153,8 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context,
 }
 
 // ListPermissionIDs 列出角色的权限ID列表
-func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
-	var ids []uint32
+func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint64) ([]uint64, error) {
+	var ids []uint64
 	if err := r.client.DB.WithContext(ctx).
 		Model(&models.RolePermission{}).
 		Where("role_id = ?", roleID).
@@ -166,8 +166,8 @@ func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint3
 }
 
 // ListPermissionIDsByRoleIDs 根据角色ID列表获取权限ID列表
-func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
-	var ids []uint32
+func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []uint64) ([]uint64, error) {
+	var ids []uint64
 	if err := r.client.DB.WithContext(ctx).
 		Model(&models.RolePermission{}).
 		Where("role_id IN ?", roleIDs).
@@ -179,7 +179,7 @@ func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, rol
 }
 
 // RemovePermissions 移除角色的部分权限
-func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, roleID uint32, permissionIDs []uint32) error {
+func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, roleID uint64, permissionIDs []uint64) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB {
 			return db.Where("role_id = ?", roleID).
@@ -196,7 +196,7 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 // DeleteByPermissionIDs 按 permission_id 集合清理角色授权绑定：权限行被删除
 // （管理页单删 / 权限同步 MERGE 的删除段）时级联调用，消灭悬空的角色授权。
 // 与 data 栈同名方法语义一致。
-func (r *RolePermissionRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+func (r *RolePermissionRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
@@ -209,7 +209,7 @@ func (r *RolePermissionRepo) DeleteByPermissionIDs(ctx context.Context, permissi
 	return nil
 }
 
-func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID uint32) ([]*permissionV1.RolePermission, error) {
+func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID uint64) ([]*permissionV1.RolePermission, error) {
 	var entities []*models.RolePermission
 	if err := r.client.DB.WithContext(ctx).
 		Model(&models.RolePermission{}).

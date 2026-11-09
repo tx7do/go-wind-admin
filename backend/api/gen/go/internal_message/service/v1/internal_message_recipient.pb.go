@@ -87,19 +87,19 @@ func (InternalMessageRecipient_Status) EnumDescriptor() ([]byte, []int) {
 // 站内信消息用户接收信息
 type InternalMessageRecipient struct {
 	state           protoimpl.MessageState           `protogen:"open.v1"`
-	Id              *uint32                          `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                          // 记录ID
-	MessageId       *uint32                          `protobuf:"varint,2,opt,name=message_id,json=messageId,proto3,oneof" json:"message_id,omitempty"`                                           // 站内信内容ID
-	RecipientUserId *uint32                          `protobuf:"varint,3,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"`                       // 接收者用户ID
+	Id              *uint64                          `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                          // 记录ID
+	MessageId       *uint64                          `protobuf:"varint,2,opt,name=message_id,json=messageId,proto3,oneof" json:"message_id,omitempty"`                                           // 站内信内容ID
+	RecipientUserId *uint64                          `protobuf:"varint,3,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"`                       // 接收者用户ID
 	Status          *InternalMessageRecipient_Status `protobuf:"varint,4,opt,name=status,proto3,enum=internal_message.service.v1.InternalMessageRecipient_Status,oneof" json:"status,omitempty"` // 消息状态
 	ReceivedAt      *timestamppb.Timestamp           `protobuf:"bytes,5,opt,name=received_at,json=receivedAt,proto3,oneof" json:"received_at,omitempty"`                                         // 消息到达用户收件箱的时间
 	ReadAt          *timestamppb.Timestamp           `protobuf:"bytes,6,opt,name=read_at,json=readAt,proto3,oneof" json:"read_at,omitempty"`                                                     // 用户阅读消息的时间
 	Title           *string                          `protobuf:"bytes,10,opt,name=title,proto3,oneof" json:"title,omitempty"`                                                                    // 消息标题
 	Content         *string                          `protobuf:"bytes,11,opt,name=content,proto3,oneof" json:"content,omitempty"`                                                                // 消息内容
-	TenantId        *uint32                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                             // 租户ID，0代表系统全局角色
+	TenantId        *uint64                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                             // 租户ID，0代表系统全局角色
 	TenantName      *string                          `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                        // 租户名称
-	CreatedBy       *uint32                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                         // 创建者ID
-	UpdatedBy       *uint32                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                         // 更新者ID
-	DeletedBy       *uint32                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                         // 删除者用户ID
+	CreatedBy       *uint64                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                         // 创建者ID
+	UpdatedBy       *uint64                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                         // 更新者ID
+	DeletedBy       *uint64                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                         // 删除者用户ID
 	CreatedAt       *timestamppb.Timestamp           `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                          // 创建时间
 	UpdatedAt       *timestamppb.Timestamp           `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                          // 更新时间
 	DeletedAt       *timestamppb.Timestamp           `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                          // 删除时间
@@ -137,21 +137,21 @@ func (*InternalMessageRecipient) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *InternalMessageRecipient) GetId() uint32 {
+func (x *InternalMessageRecipient) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *InternalMessageRecipient) GetMessageId() uint32 {
+func (x *InternalMessageRecipient) GetMessageId() uint64 {
 	if x != nil && x.MessageId != nil {
 		return *x.MessageId
 	}
 	return 0
 }
 
-func (x *InternalMessageRecipient) GetRecipientUserId() uint32 {
+func (x *InternalMessageRecipient) GetRecipientUserId() uint64 {
 	if x != nil && x.RecipientUserId != nil {
 		return *x.RecipientUserId
 	}
@@ -193,7 +193,7 @@ func (x *InternalMessageRecipient) GetContent() string {
 	return ""
 }
 
-func (x *InternalMessageRecipient) GetTenantId() uint32 {
+func (x *InternalMessageRecipient) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -207,21 +207,21 @@ func (x *InternalMessageRecipient) GetTenantName() string {
 	return ""
 }
 
-func (x *InternalMessageRecipient) GetCreatedBy() uint32 {
+func (x *InternalMessageRecipient) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *InternalMessageRecipient) GetUpdatedBy() uint32 {
+func (x *InternalMessageRecipient) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *InternalMessageRecipient) GetDeletedBy() uint32 {
+func (x *InternalMessageRecipient) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -403,7 +403,7 @@ func (x *GetInternalMessageRecipientRequest) GetQueryBy() isGetInternalMessageRe
 	return nil
 }
 
-func (x *GetInternalMessageRecipientRequest) GetId() uint32 {
+func (x *GetInternalMessageRecipientRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetInternalMessageRecipientRequest_Id); ok {
 			return x.Id
@@ -424,7 +424,7 @@ type isGetInternalMessageRecipientRequest_QueryBy interface {
 }
 
 type GetInternalMessageRecipientRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetInternalMessageRecipientRequest_Id) isGetInternalMessageRecipientRequest_QueryBy() {}
@@ -477,7 +477,7 @@ func (x *CreateInternalMessageRecipientRequest) GetData() *InternalMessageRecipi
 // 更新站内信消息收件箱 - 请求
 type UpdateInternalMessageRecipientRequest struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
-	Id            uint32                    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *InternalMessageRecipient `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask    `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                     `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -515,7 +515,7 @@ func (*UpdateInternalMessageRecipientRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *UpdateInternalMessageRecipientRequest) GetId() uint32 {
+func (x *UpdateInternalMessageRecipientRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -591,7 +591,7 @@ func (x *DeleteInternalMessageRecipientRequest) GetQueryBy() isDeleteInternalMes
 	return nil
 }
 
-func (x *DeleteInternalMessageRecipientRequest) GetId() uint32 {
+func (x *DeleteInternalMessageRecipientRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteInternalMessageRecipientRequest_Id); ok {
 			return x.Id
@@ -605,7 +605,7 @@ type isDeleteInternalMessageRecipientRequest_QueryBy interface {
 }
 
 type DeleteInternalMessageRecipientRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteInternalMessageRecipientRequest_Id) isDeleteInternalMessageRecipientRequest_QueryBy() {}
@@ -613,7 +613,7 @@ func (*DeleteInternalMessageRecipientRequest_Id) isDeleteInternalMessageRecipien
 // 根据IDs批量获取站内信消息收件箱列表 - 请求
 type GetInternalMessageRecipientsByIdsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ids           []uint32               `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	Ids           []uint64               `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -648,7 +648,7 @@ func (*GetInternalMessageRecipientsByIdsRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *GetInternalMessageRecipientsByIdsRequest) GetIds() []uint32 {
+func (x *GetInternalMessageRecipientsByIdsRequest) GetIds() []uint64 {
 	if x != nil {
 		return x.Ids
 	}
@@ -657,9 +657,9 @@ func (x *GetInternalMessageRecipientsByIdsRequest) GetIds() []uint32 {
 
 type DeleteNotificationFromInboxRequest struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	UserId uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	UserId uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
 	// 收件箱记录ID列表；为空表示清空该用户收件箱（与 MarkNotificationAsRead 空 ids 语义一致）。
-	RecipientIds  []uint32 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
+	RecipientIds  []uint64 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -694,14 +694,14 @@ func (*DeleteNotificationFromInboxRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *DeleteNotificationFromInboxRequest) GetUserId() uint32 {
+func (x *DeleteNotificationFromInboxRequest) GetUserId() uint64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *DeleteNotificationFromInboxRequest) GetRecipientIds() []uint32 {
+func (x *DeleteNotificationFromInboxRequest) GetRecipientIds() []uint64 {
 	if x != nil {
 		return x.RecipientIds
 	}
@@ -710,10 +710,10 @@ func (x *DeleteNotificationFromInboxRequest) GetRecipientIds() []uint32 {
 
 type MarkNotificationAsReadRequest struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	UserId uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	UserId uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
 	// 收件箱记录ID列表；为空表示标记该用户全部未读通知（服务端按用户维度兜底，
 	// 前端"全部已读"入口只加载了当前页数据，无法枚举全部ID）。
-	RecipientIds  []uint32 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
+	RecipientIds  []uint64 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -748,14 +748,14 @@ func (*MarkNotificationAsReadRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *MarkNotificationAsReadRequest) GetUserId() uint32 {
+func (x *MarkNotificationAsReadRequest) GetUserId() uint64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *MarkNotificationAsReadRequest) GetRecipientIds() []uint32 {
+func (x *MarkNotificationAsReadRequest) GetRecipientIds() []uint64 {
 	if x != nil {
 		return x.RecipientIds
 	}
@@ -764,8 +764,8 @@ func (x *MarkNotificationAsReadRequest) GetRecipientIds() []uint32 {
 
 type MarkNotificationsStatusRequest struct {
 	state         protoimpl.MessageState          `protogen:"open.v1"`
-	UserId        uint32                          `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                                           // 用户ID
-	RecipientIds  []uint32                        `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"`                                                  // 收件箱记录ID列表
+	UserId        uint64                          `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                                           // 用户ID
+	RecipientIds  []uint64                        `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"`                                                  // 收件箱记录ID列表
 	NewStatus     InternalMessageRecipient_Status `protobuf:"varint,3,opt,name=new_status,json=newStatus,proto3,enum=internal_message.service.v1.InternalMessageRecipient_Status" json:"new_status,omitempty"` // 新的消息状态
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -801,14 +801,14 @@ func (*MarkNotificationsStatusRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_recipient_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *MarkNotificationsStatusRequest) GetUserId() uint32 {
+func (x *MarkNotificationsStatusRequest) GetUserId() uint64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *MarkNotificationsStatusRequest) GetRecipientIds() []uint32 {
+func (x *MarkNotificationsStatusRequest) GetRecipientIds() []uint64 {
 	if x != nil {
 		return x.RecipientIds
 	}
@@ -872,10 +872,10 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\n" +
 	"<internal_message/service/v1/internal_message_recipient.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xbb\v\n" +
 	"\x18InternalMessageRecipient\x12#\n" +
-	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12;\n" +
+	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12;\n" +
 	"\n" +
-	"message_id\x18\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11站内信内容IDH\x01R\tmessageId\x88\x01\x01\x12H\n" +
-	"\x11recipient_user_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11接收者用户IDH\x02R\x0frecipientUserId\x88\x01\x01\x12m\n" +
+	"message_id\x18\x02 \x01(\x04B\x17\xbaG\x14\x92\x02\x11站内信内容IDH\x01R\tmessageId\x88\x01\x01\x12H\n" +
+	"\x11recipient_user_id\x18\x03 \x01(\x04B\x17\xbaG\x14\x92\x02\x11接收者用户IDH\x02R\x0frecipientUserId\x88\x01\x01\x12m\n" +
 	"\x06status\x18\x04 \x01(\x0e2<.internal_message.service.v1.InternalMessageRecipient.StatusB\x12\xbaG\x0f\x92\x02\f消息状态H\x03R\x06status\x88\x01\x01\x12l\n" +
 	"\vreceived_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB*\xbaG'\x92\x02$消息到达用户收件箱的时间H\x04R\n" +
 	"receivedAt\x88\x01\x01\x12[\n" +
@@ -883,16 +883,16 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\x05title\x18\n" +
 	" \x01(\tB\x12\xbaG\x0f\x92\x02\f消息标题H\x06R\x05title\x88\x01\x01\x121\n" +
 	"\acontent\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f消息内容H\aR\acontent\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\bR\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18( \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\bR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\tR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
 	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -931,7 +931,7 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\x05items\x18\x01 \x03(\v25.internal_message.service.v1.InternalMessageRecipientR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xd5\x01\n" +
 	"\"GetInternalMessageRecipientRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -941,28 +941,28 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"%CreateInternalMessageRecipientRequest\x12I\n" +
 	"\x04data\x18\x01 \x01(\v25.internal_message.service.v1.InternalMessageRecipientR\x04data\"\xc0\x03\n" +
 	"%UpdateInternalMessageRecipientRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12I\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12I\n" +
 	"\x04data\x18\x02 \x01(\v25.internal_message.service.v1.InternalMessageRecipientR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"Q\n" +
 	"%DeleteInternalMessageRecipientRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"<\n" +
 	"(GetInternalMessageRecipientsByIdsRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\rR\x03ids\"\xaf\x01\n" +
+	"\x03ids\x18\x01 \x03(\x04R\x03ids\"\xaf\x01\n" +
 	"\"DeleteNotificationFromInboxRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12`\n" +
-	"\rrecipient_ids\x18\x02 \x03(\rB;\xbaG8\x92\x025收件箱记录ID列表，为空表示清空收件箱R\frecipientIds\"\xa7\x01\n" +
+	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12`\n" +
+	"\rrecipient_ids\x18\x02 \x03(\x04B;\xbaG8\x92\x025收件箱记录ID列表，为空表示清空收件箱R\frecipientIds\"\xa7\x01\n" +
 	"\x1dMarkNotificationAsReadRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
-	"\rrecipient_ids\x18\x02 \x03(\rB8\xbaG5\x92\x022收件箱记录ID列表，为空表示全部未读R\frecipientIds\"\x84\x02\n" +
+	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\rrecipient_ids\x18\x02 \x03(\x04B8\xbaG5\x92\x022收件箱记录ID列表，为空表示全部未读R\frecipientIds\"\x84\x02\n" +
 	"\x1eMarkNotificationsStatusRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12B\n" +
-	"\rrecipient_ids\x18\x02 \x03(\rB\x1d\xbaG\x1a\x92\x02\x17收件箱记录ID列表R\frecipientIds\x12u\n" +
+	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12B\n" +
+	"\rrecipient_ids\x18\x02 \x03(\x04B\x1d\xbaG\x1a\x92\x02\x17收件箱记录ID列表R\frecipientIds\x12u\n" +
 	"\n" +
 	"new_status\x18\x03 \x01(\x0e2<.internal_message.service.v1.InternalMessageRecipient.StatusB\x18\xbaG\x15\x92\x02\x12新的消息状态R\tnewStatus\"=\n" +
 	"%CountInternalMessageRecipientResponse\x12\x14\n" +

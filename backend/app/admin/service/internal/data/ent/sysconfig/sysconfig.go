@@ -69,7 +69,7 @@ var (
 	// DefaultIsBuiltIn holds the default value on creation for the "is_built_in" field.
 	DefaultIsBuiltIn bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // ValueType defines the type for the "value_type" enum field.

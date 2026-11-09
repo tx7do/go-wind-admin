@@ -40,7 +40,7 @@ func (_d *PermissionMenuDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *PermissionMenuDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(permissionmenu.Table, sqlgraph.NewFieldSpec(permissionmenu.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(permissionmenu.Table, sqlgraph.NewFieldSpec(permissionmenu.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

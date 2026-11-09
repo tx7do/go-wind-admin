@@ -120,7 +120,7 @@ func TestNotificationServiceSqlite_AsyncDispatchHandlerSettlesLedger(t *testing.
 	require.NoError(t, err)
 	require.Equal(t, notificationV1.DeliveryStatus_SENT, got.GetStatus())
 	require.Equal(t, uint32(1), got.GetAttempts())
-	require.Equal(t, uint32(42), got.GetChannelId(), "回执的渠道 ID 由 handler 补进台账")
+	require.Equal(t, uint64(42), got.GetChannelId(), "回执的渠道 ID 由 handler 补进台账")
 	require.NotNil(t, got.GetSentAt())
 
 	// asynq 重投 / 归档后手工重跑：载荷一模一样，但台账已定案。
@@ -154,7 +154,7 @@ func TestNotificationServiceSqlite_AsyncDispatchKeepsRetryBudget(t *testing.T) {
 		// 第一次的回执把 channel_id 落进台账，之后每次重试都照着它显式钉住同一条配置：
 		// 同一次投递中途换 SMTP 账号，"到底是哪条在抖"就再也问不出来了。
 		// （渠道自选本身按 ID 升序取第一个启用的，本来也是确定性的，这里钉住的是同一个答案。）
-		wantPinned := uint32(0)
+		wantPinned := uint64(0)
 		if attempt > 1 {
 			wantPinned = 42
 		}
@@ -240,7 +240,7 @@ func TestNotificationServiceSqlite_SyncEventsNeverEnqueue(t *testing.T) {
 
 	_, err := e.svc.SendDirect(e.ctx, &notificationV1.SendDirectNotificationRequest{
 		EventType: notificationV1.EventType_CHANNEL_TEST_EMAIL,
-		ChannelId: trans.Ptr(uint32(7)),
+		ChannelId: trans.Ptr(uint64(7)),
 		Target:    "ops@example.com",
 		Title:     "t",
 		Content:   "c",
@@ -252,8 +252,8 @@ func TestNotificationServiceSqlite_SyncEventsNeverEnqueue(t *testing.T) {
 		Target:          "1024",
 		Title:           "t",
 		Content:         "c",
-		RecipientUserId: trans.Ptr(uint32(1024)),
-		RelatedId:       trans.Ptr(uint32(55)),
+		RecipientUserId: trans.Ptr(uint64(1024)),
+		RelatedId:       trans.Ptr(uint64(55)),
 	})
 	require.NoError(t, err)
 

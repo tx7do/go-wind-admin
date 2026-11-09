@@ -38,7 +38,7 @@ import (
 type internalMessageServiceUserRepoStub struct {
 	data.UserRepo
 
-	tenantByUserID map[uint32]uint32
+	tenantByUserID map[uint64]uint64
 }
 
 func (s *internalMessageServiceUserRepoStub) Get(_ context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
@@ -89,7 +89,7 @@ func TestInternalMessageServiceSqlite_ListMessageEnrichment(t *testing.T) {
 	// 分类仓储 Create 只返回 error，分类 ID 从列表反查（按唯一 code 定位）。
 	catList, err := svc.internalMessageCategoryRepo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var categoryID uint32
+	var categoryID uint64
 	var catFound bool
 	for _, cat := range catList.GetItems() {
 		if cat.GetCode() == "IMCAT_SVC_A" {
@@ -160,7 +160,7 @@ func TestInternalMessageServiceSqlite_GetMessageEnrichment(t *testing.T) {
 	// 分类仓储 Create 只返回 error，分类 ID 从列表反查（按唯一 code 定位）。
 	catList, err := svc.internalMessageCategoryRepo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var categoryID uint32
+	var categoryID uint64
 	var catFound bool
 	for _, cat := range catList.GetItems() {
 		if cat.GetCode() == "IMCAT_SVC_B" {
@@ -251,7 +251,7 @@ type broadcastUserRepoStub struct {
 	data.UserRepo
 
 	seenTenantIDs []uint64
-	usersByTenant map[uint32][]*identityV1.User
+	usersByTenant map[uint64][]*identityV1.User
 }
 
 func (r *broadcastUserRepoStub) List(ctx context.Context, _ *paginationV1.PagingRequest) (*identityV1.ListUserResponse, error) {
@@ -269,7 +269,7 @@ func (r *broadcastUserRepoStub) List(ctx context.Context, _ *paginationV1.Paging
 		return &identityV1.ListUserResponse{Items: all, Total: uint64(len(all))}, nil
 	}
 
-	users := r.usersByTenant[uint32(tid)]
+	users := r.usersByTenant[uint64(tid)]
 	return &identityV1.ListUserResponse{Items: users, Total: uint64(len(users))}, nil
 }
 
@@ -282,7 +282,7 @@ func (r *broadcastUserRepoStub) List(ctx context.Context, _ *paginationV1.Paging
 func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) {
 	svc := newInternalMessageServiceForTest(t)
 
-	mkUsers := func(tenantID uint32, ids ...uint32) []*identityV1.User {
+	mkUsers := func(tenantID uint64, ids ...uint64) []*identityV1.User {
 		users := make([]*identityV1.User, 0, len(ids))
 		for _, id := range ids {
 			users = append(users, &identityV1.User{Id: trans.Ptr(id), TenantId: trans.Ptr(tenantID)})
@@ -290,7 +290,7 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 		return users
 	}
 	stub := &broadcastUserRepoStub{
-		usersByTenant: map[uint32][]*identityV1.User{
+		usersByTenant: map[uint64][]*identityV1.User{
 			7: mkUsers(7, 701, 702, 703),
 			9: mkUsers(9, 901),
 			0: mkUsers(0, 1),
@@ -303,12 +303,12 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 	// 父消息由平台上下文显式落到租户 7（与真实链路里"租户管理员发送 → 强制覆盖为本租户"同值）。
 	msg, err := svc.internalMessageRepo.Create(sysCtx, &internalMessageV1.CreateInternalMessageRequest{
 		Data: &internalMessageV1.InternalMessage{
-			TenantId:  trans.Ptr(uint32(7)),
+			TenantId:  trans.Ptr(uint64(7)),
 			Title:     trans.Ptr("租户公告"),
 			Content:   trans.Ptr("正文"),
 			Status:    internalMessageV1.InternalMessage_PUBLISHED.Enum(),
 			Type:      internalMessageV1.InternalMessage_NOTIFICATION.Enum(),
-			CreatedBy: trans.Ptr(uint32(1)),
+			CreatedBy: trans.Ptr(uint64(1)),
 		},
 	})
 	require.NoError(t, err)
@@ -323,11 +323,11 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 
 	// 逐个收件人各读一次：每人恰好一行。少钉归属谓词会一次返回三行（=同租户翻别人收件箱），
 	// 收件行没跟着收件人的租户打标则一行都读不到（=改动前的静默丢投递）。
-	for _, uid := range []uint32{701, 702, 703} {
+	for _, uid := range []uint64{701, 702, 703} {
 		inbox, err := svc.internalMessageRecipientRepo.List(inboxCtx(uid, 7), &paginationV1.PagingRequest{})
 		require.NoError(t, err)
 		require.Len(t, inbox.GetItems(), 1, "租户 7 的收件人 %d 应读到且只读到自己那一行", uid)
-		require.Equal(t, uint32(7), inbox.GetItems()[0].GetTenantId(), "收件行必须落在收件人自己的租户上")
+		require.Equal(t, uint64(7), inbox.GetItems()[0].GetTenantId(), "收件行必须落在收件人自己的租户上")
 	}
 
 	other, err := svc.internalMessageRecipientRepo.List(inboxCtx(901, 9), &paginationV1.PagingRequest{})
@@ -336,7 +336,7 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 }
 
 // inboxCtx 构造"某个租户用户正在读自己的收件箱"的 ctx。
-func inboxCtx(uid, tid uint32) context.Context {
+func inboxCtx(uid, tid uint64) context.Context {
 	return viewer.WithContext(context.Background(), viewer.NewUserContext(uint64(uid), uint64(tid), 0, "", nil))
 }
 
@@ -352,10 +352,10 @@ func inboxCtx(uid, tid uint32) context.Context {
 func TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser(t *testing.T) {
 	svc := newInternalMessageServiceForTest(t)
 	svc.userRepo = &broadcastUserRepoStub{
-		usersByTenant: map[uint32][]*identityV1.User{
-			7: {{Id: trans.Ptr(uint32(701)), TenantId: trans.Ptr(uint32(7))}},
-			9: {{Id: trans.Ptr(uint32(901)), TenantId: trans.Ptr(uint32(9))}},
-			0: {{Id: trans.Ptr(uint32(1)), TenantId: trans.Ptr(uint32(0))}},
+		usersByTenant: map[uint64][]*identityV1.User{
+			7: {{Id: trans.Ptr(uint64(701)), TenantId: trans.Ptr(uint64(7))}},
+			9: {{Id: trans.Ptr(uint64(901)), TenantId: trans.Ptr(uint64(9))}},
+			0: {{Id: trans.Ptr(uint64(1)), TenantId: trans.Ptr(uint64(0))}},
 		},
 	}
 
@@ -367,7 +367,7 @@ func TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser(t 
 				Content:   trans.Ptr("全平台可见"),
 				Status:    internalMessageV1.InternalMessage_PUBLISHED.Enum(),
 				Type:      internalMessageV1.InternalMessage_NOTIFICATION.Enum(),
-				CreatedBy: trans.Ptr(uint32(1)),
+				CreatedBy: trans.Ptr(uint64(1)),
 			},
 		})
 	require.NoError(t, err)
@@ -383,7 +383,7 @@ func TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser(t 
 		internalMessageRecipientRepo: svc.internalMessageRecipientRepo,
 	}
 
-	for _, c := range []struct{ uid, tid uint32 }{{701, 7}, {901, 9}} {
+	for _, c := range []struct{ uid, tid uint64 }{{701, 7}, {901, 9}} {
 		inbox, err := recipientSvc.ListUserInbox(inboxCtx(c.uid, c.tid), &paginationV1.PagingRequest{})
 		require.NoError(t, err)
 		require.Len(t, inbox.GetItems(), 1, "收件人 %d（租户 %d）应读到且只读到自己的公告行", c.uid, c.tid)
@@ -403,6 +403,6 @@ func TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser(t 
 		}
 	}
 	require.NotNil(t, own, "平台用户也在全员广播的受众里")
-	require.Equal(t, uint32(0), own.GetTenantId(), "平台用户的收件行属于租户 0（平台）")
+	require.Equal(t, uint64(0), own.GetTenantId(), "平台用户的收件行属于租户 0（平台）")
 	require.Equal(t, "平台公告", own.GetTitle())
 }

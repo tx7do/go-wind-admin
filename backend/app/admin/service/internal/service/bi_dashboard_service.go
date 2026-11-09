@@ -208,7 +208,7 @@ func (s *BiDashboardService) ListRevisions(ctx context.Context, req *biV1.ListBi
 	}
 	return &biV1.ListBiDashboardRevisionsResponse{
 		Items: items,
-		Total: total,
+		Total: uint32(total),
 	}, nil
 }
 

@@ -53,13 +53,13 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId:  trans.Ptr(uint32(7)),
-			TargetId:  trans.Ptr(uint32(42)),
+			TenantId:  trans.Ptr(uint64(7)),
+			TargetId:  trans.Ptr(uint64(42)),
 			Type:      authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:    authenticationV1.LoginPolicy_IP.Enum(),
 			Value:     trans.Ptr("10.0.0.0/8"),
 			Reason:    trans.Ptr("初始原因"),
-			CreatedBy: trans.Ptr(uint32(1001)),
+			CreatedBy: trans.Ptr(uint64(1001)),
 		},
 	}))
 
@@ -68,9 +68,9 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 	require.Len(t, rows, 1, "SQLite 中应有 1 条登录策略记录")
 	row := rows[0]
 	require.NotNil(t, row.TenantID)
-	require.Equal(t, uint32(7), *row.TenantID, "tenant_id 应按载荷落库")
+	require.Equal(t, uint64(7), *row.TenantID, "tenant_id 应按载荷落库")
 	require.NotNil(t, row.TargetID)
-	require.Equal(t, uint32(42), *row.TargetID, "target_id 应按载荷落库")
+	require.Equal(t, uint64(42), *row.TargetID, "target_id 应按载荷落库")
 	require.NotNil(t, row.Type)
 	require.Equal(t, entLoginPolicy.TypeBlacklist, *row.Type, "proto BLACKLIST 应经 converter 映射为 ent TypeBlacklist")
 	require.NotNil(t, row.Method)
@@ -80,7 +80,7 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 	require.NotNil(t, row.Reason)
 	require.Equal(t, "初始原因", *row.Reason, "reason 应按载荷落库")
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint32(1001), *row.CreatedBy, "created_by 应按载荷落库")
+	require.Equal(t, uint64(1001), *row.CreatedBy, "created_by 应按载荷落库")
 	require.NotNil(t, row.CreatedAt)
 	createdID := row.ID
 
@@ -90,7 +90,7 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 	})
 	require.NoError(t, err, "按存在 ID 查询应命中")
 	require.Equal(t, createdID, dto.GetId(), "DTO 应带回正确 ID")
-	require.Equal(t, uint32(42), dto.GetTargetId(), "DTO 应回读 target_id")
+	require.Equal(t, uint64(42), dto.GetTargetId(), "DTO 应回读 target_id")
 	require.Equal(t, authenticationV1.LoginPolicy_BLACKLIST, dto.GetType(), "ent TypeBlacklist 应回映射为 proto BLACKLIST")
 	require.Equal(t, authenticationV1.LoginPolicy_IP, dto.GetMethod(), "ent MethodIp 应回映射为 proto IP")
 	require.Equal(t, "10.0.0.0/8", dto.GetValue(), "DTO 应回读 value")
@@ -113,7 +113,7 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 	// UNSPECIFIED 枚举：ent 枚举校验器拒绝
 	require.Error(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_LOGIN_RESTRICTION_TYPE_UNSPECIFIED.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("172.16.0.1"),
@@ -121,7 +121,7 @@ func TestLoginPolicyRepoSqlite_CreateAndGet(t *testing.T) {
 	}), "UNSPECIFIED 类型应被 ent 枚举校验器拒绝")
 	require.Error(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_LOGIN_RESTRICTION_METHOD_UNSPECIFIED.Enum(),
 			Value:    trans.Ptr("172.16.0.1"),
@@ -143,15 +143,15 @@ func TestLoginPolicyRepoSqlite_ListForLoginTenantScope(t *testing.T) {
 	// 租户 7：一条全局（target/value/reason 均省略）+ 一条定向
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_TIME.Enum(),
 		},
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
-			TargetId: trans.Ptr(uint32(42)),
+			TenantId: trans.Ptr(uint64(7)),
+			TargetId: trans.Ptr(uint64(42)),
 			Type:     authenticationV1.LoginPolicy_WHITELIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_DEVICE.Enum(),
 			Value:    trans.Ptr("device-xyz"),
@@ -161,7 +161,7 @@ func TestLoginPolicyRepoSqlite_ListForLoginTenantScope(t *testing.T) {
 	// 租户 9：一条
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(9)),
+			TenantId: trans.Ptr(uint64(9)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("198.51.100.7"),
@@ -172,12 +172,12 @@ func TestLoginPolicyRepoSqlite_ListForLoginTenantScope(t *testing.T) {
 	policies, err := repo.ListForLogin(ctx, 7)
 	require.NoError(t, err)
 	require.Len(t, policies, 2, "租户 7 应只见到自己的 2 条策略")
-	byTarget := map[uint32]EffectivePolicy{}
+	byTarget := map[uint64]EffectivePolicy{}
 	for _, p := range policies {
 		byTarget[p.TargetID] = p
 	}
-	require.Contains(t, byTarget, uint32(42), "应存在定向策略")
-	require.Contains(t, byTarget, uint32(0), "应存在全局策略（target_id 回读为零值）")
+	require.Contains(t, byTarget, uint64(42), "应存在定向策略")
+	require.Contains(t, byTarget, uint64(0), "应存在全局策略（target_id 回读为零值）")
 	directed := byTarget[42]
 	require.Equal(t, "WHITELIST", directed.Type, "type 应回读字符串值")
 	require.Equal(t, "DEVICE", directed.Method, "method 应回读字符串值")
@@ -210,7 +210,7 @@ func TestLoginPolicyRepoSqlite_List(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.0.0.0/8"),
@@ -218,7 +218,7 @@ func TestLoginPolicyRepoSqlite_List(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(9)),
+			TenantId: trans.Ptr(uint64(9)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("192.168.5.5"),
@@ -261,7 +261,7 @@ func TestLoginPolicyRepoSqlite_CountAndIsExist(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.1.1.1"),
@@ -269,7 +269,7 @@ func TestLoginPolicyRepoSqlite_CountAndIsExist(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(9)),
+			TenantId: trans.Ptr(uint64(9)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.9.9.9"),
@@ -314,7 +314,7 @@ func TestLoginPolicyRepoSqlite_Update(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.0.0.1"),
@@ -335,7 +335,7 @@ func TestLoginPolicyRepoSqlite_Update(t *testing.T) {
 			Reason:   trans.Ptr("掩码外原因"),
 			Type:     authenticationV1.LoginPolicy_WHITELIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_DEVICE.Enum(),
-			TargetId: trans.Ptr(uint32(66)),
+			TargetId: trans.Ptr(uint64(66)),
 		},
 	}))
 	row, err := entClient.Client().LoginPolicy.Get(ctx, rowID)
@@ -390,11 +390,11 @@ func TestLoginPolicyRepoSqlite_Update(t *testing.T) {
 		Id:           888888,
 		AllowMissing: trans.Ptr(true),
 		Data: &authenticationV1.LoginPolicy{
-			TenantId:  trans.Ptr(uint32(9)),
+			TenantId:  trans.Ptr(uint64(9)),
 			Type:      authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:    authenticationV1.LoginPolicy_MAC.Enum(),
 			Value:     trans.Ptr("aa:bb:cc:dd:ee:ff"),
-			UpdatedBy: trans.Ptr(uint32(55)),
+			UpdatedBy: trans.Ptr(uint64(55)),
 		},
 	}), "AllowMissing=true 且行不存在时应转为创建")
 	rows, err = entClient.Client().LoginPolicy.Query().All(ctx)
@@ -410,9 +410,9 @@ func TestLoginPolicyRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "aa:bb:cc:dd:ee:ff", *created.Value, "补建行的 value 应按载荷落库")
 	require.Equal(t, entLoginPolicy.MethodMac, *created.Method, "补建行的 method 应按载荷映射落库")
 	require.NotNil(t, created.TenantID)
-	require.Equal(t, uint32(9), *created.TenantID, "补建行的 tenant_id 应按载荷落库")
+	require.Equal(t, uint64(9), *created.TenantID, "补建行的 tenant_id 应按载荷落库")
 	require.NotNil(t, created.CreatedBy)
-	require.Equal(t, uint32(55), *created.CreatedBy, "补建行的 created_by 应取自 updated_by 载荷")
+	require.Equal(t, uint64(55), *created.CreatedBy, "补建行的 created_by 应取自 updated_by 载荷")
 	require.Nil(t, created.UpdatedBy, "补建行的 updated_by 应保持空")
 
 	// 参数校验
@@ -433,7 +433,7 @@ func TestLoginPolicyRepoSqlite_Delete(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.0.0.2"),
@@ -441,7 +441,7 @@ func TestLoginPolicyRepoSqlite_Delete(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 			Type:     authenticationV1.LoginPolicy_BLACKLIST.Enum(),
 			Method:   authenticationV1.LoginPolicy_IP.Enum(),
 			Value:    trans.Ptr("10.0.0.3"),

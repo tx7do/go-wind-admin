@@ -279,7 +279,7 @@ func (s *AiChatService) Chat(ctx context.Context, req *aiV1.ChatRequest) (*aiV1.
 }
 
 // resolveProvider 解析本次对话使用的提供商。
-func (s *AiChatService) resolveProvider(ctx context.Context, providerId uint32) (*ent.AiProvider, error) {
+func (s *AiChatService) resolveProvider(ctx context.Context, providerId uint64) (*ent.AiProvider, error) {
 	if providerId > 0 {
 		entity, err := s.providerRepo.GetEntityByID(ctx, providerId)
 		if err != nil {
@@ -294,7 +294,7 @@ func (s *AiChatService) resolveProvider(ctx context.Context, providerId uint32) 
 }
 
 // resolveConversation 会话复用或新建（新建时标题取首条消息摘要）。
-func (s *AiChatService) resolveConversation(ctx context.Context, operator *authenticationV1.UserTokenPayload, conversationId uint32, provider *ent.AiProvider, content string) (*ent.AiConversation, error) {
+func (s *AiChatService) resolveConversation(ctx context.Context, operator *authenticationV1.UserTokenPayload, conversationId uint64, provider *ent.AiProvider, content string) (*ent.AiConversation, error) {
 	if conversationId > 0 {
 		entity, err := s.conversationRepo.GetEntityByID(ctx, conversationId)
 		if err != nil {
@@ -405,7 +405,7 @@ func modelTypeToProtoInt(mt *aiprovider.ModelType) int32 {
 }
 
 // publishChunk 尽力而为地推送一个增量片段（protojson 序列化，camelCase 键）。
-func (s *AiChatService) publishChunk(ctx context.Context, streamId string, conversationId, seq uint32, delta string) {
+func (s *AiChatService) publishChunk(ctx context.Context, streamId string, conversationId uint64, seq uint32, delta string) {
 	event := &aiV1.ChatChunkEvent{
 		ConversationId: conversationId,
 		Seq:            seq,
@@ -427,7 +427,7 @@ func (s *AiChatService) publishChunk(ctx context.Context, streamId string, conve
 
 // publishToolEvent 尽力而为地推送一帧工具调用可见化事件（protojson 序列化，camelCase 键）。
 // 与 publishChunk 同为丢帧可容忍：同步响应携带完整回复，工具帧只服务实时观感。
-func (s *AiChatService) publishToolEvent(ctx context.Context, streamId string, conversationId uint32, name, arguments, result string) {
+func (s *AiChatService) publishToolEvent(ctx context.Context, streamId string, conversationId uint64, name, arguments, result string) {
 	event := &aiV1.ChatToolEvent{
 		ConversationId: conversationId,
 		Name:           name,

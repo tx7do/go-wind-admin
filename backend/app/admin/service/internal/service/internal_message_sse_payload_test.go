@@ -54,9 +54,9 @@ func TestInternalMessageSsePayloadContract(t *testing.T) {
 	var payload map[string]any
 	require.NoError(t, json.Unmarshal(rec.event.Data, &payload))
 
-	assert.Equal(t, float64(11), payload["messageId"])
-	assert.Equal(t, float64(22), payload["recipientUserId"])
-	assert.Equal(t, float64(44), payload["tenantId"])
+	assert.Equal(t, "11", payload["messageId"])
+	assert.Equal(t, "22", payload["recipientUserId"])
+	assert.Equal(t, "44", payload["tenantId"])
 	assert.Equal(t, "标题", payload["title"])
 	assert.Equal(t, "正文", payload["content"])
 	// status 必须是枚举名：面板按 item.status === 'READ' 判断已读，拿到 varint 会永远为 false

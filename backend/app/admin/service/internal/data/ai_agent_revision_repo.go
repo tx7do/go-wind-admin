@@ -52,7 +52,7 @@ func (r *AiAgentRevisionRepo) Create(ctx context.Context, revision *aiV1.AiAgent
 }
 
 // List 按应用拉取快照分页（新快照在前）。
-func (r *AiAgentRevisionRepo) List(ctx context.Context, appID uint32, page *paginationV1.PagingRequest) ([]*aiV1.AiAgentRevision, uint32, error) {
+func (r *AiAgentRevisionRepo) List(ctx context.Context, appID uint64, page *paginationV1.PagingRequest) ([]*aiV1.AiAgentRevision, uint64, error) {
 	query := r.entClient.Client().AiAgentRevision.Query().
 		Where(aiagentrevision.AppIDEQ(appID))
 
@@ -89,11 +89,11 @@ func (r *AiAgentRevisionRepo) List(ctx context.Context, appID uint32, page *pagi
 	for _, row := range rows {
 		items = append(items, aiAgentRevisionEntityToDTO(row))
 	}
-	return items, uint32(total), nil
+	return items, uint64(total), nil
 }
 
 // Get 取单个快照（恢复时校验归属）。
-func (r *AiAgentRevisionRepo) Get(ctx context.Context, id uint32) (*aiV1.AiAgentRevision, error) {
+func (r *AiAgentRevisionRepo) Get(ctx context.Context, id uint64) (*aiV1.AiAgentRevision, error) {
 	row, err := r.entClient.Client().AiAgentRevision.Get(ctx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {

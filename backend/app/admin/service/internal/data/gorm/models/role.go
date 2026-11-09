@@ -6,7 +6,7 @@ import (
 
 // Role 对应表 sys_roles
 type Role struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Name        *string `gorm:"column:name;type:varchar(255);comment:角色名称"`
 	Code        *string `gorm:"column:code;type:varchar(128);comment:角色标识"`
@@ -14,11 +14,11 @@ type Role struct {
 	Type        *string `gorm:"column:type;type:varchar(128);comment:类型"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
 	mixin.Description
 	mixin.SortOrder
-	mixin.TenantID
+	mixin.TenantID64
 	mixin.SwitchStatus
 }
 

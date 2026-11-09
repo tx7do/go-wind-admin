@@ -129,7 +129,7 @@ func (r *FileRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	}, nil
 }
 
-func (r *FileRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *FileRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().File.Query().
 		Where(file.IDEQ(id)).
 		Exist(ctx)

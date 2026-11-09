@@ -128,7 +128,7 @@ func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 }
 
 // IsExist 判断角色是否存在
-func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *RoleRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().Role.Query().
 		Where(role.IDEQ(id)).
 		Exist(ctx)
@@ -155,7 +155,7 @@ func (r *RoleRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		return &permissionV1.ListRoleResponse{Total: 0, Items: nil}, nil
 	}
 
-	roleIDs := make([]uint32, 0, len(ret.Items))
+	roleIDs := make([]uint64, 0, len(ret.Items))
 	for _, item := range ret.Items {
 		roleIDs = append(roleIDs, item.GetId())
 	}
@@ -240,7 +240,7 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 }
 
 // ListRolesByRoleIds 通过角色ID列表获取角色列表
-func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*permissionV1.Role, error) {
+func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint64) ([]*permissionV1.Role, error) {
 	if len(ids) == 0 {
 		return []*permissionV1.Role{}, nil
 	}
@@ -267,7 +267,7 @@ func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*per
 }
 
 // ListRoleCodesByRoleIds 通过角色ID列表获取角色编码列表
-func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]string, error) {
+func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint64) ([]string, error) {
 	if len(ids) == 0 {
 		return []string{}, nil
 	}
@@ -291,9 +291,9 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 }
 
 // ListRoleIDsByRoleCodes 通过角色编码列表获取角色ID列表
-func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) ([]uint32, error) {
+func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) ([]uint64, error) {
 	if len(codes) == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 
 	// role.code 仅在 (tenant_id, code) 维度唯一，平台上下文(tid=0)下按 code 列表查询
@@ -311,7 +311,7 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 		return nil, permissionV1.ErrorInternalServerError("query role ids failed")
 	}
 
-	ids := make([]uint32, 0, len(entities))
+	ids := make([]uint64, 0, len(entities))
 	for _, entity := range entities {
 		ids = append(ids, entity.ID)
 	}
@@ -390,7 +390,7 @@ func (r *RoleRepo) GetTemplateRole(ctx context.Context, templateCode string) (*p
 }
 
 // CreateTenantRoleFromTemplate 从模版创建租户角色
-func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx, tenantID, operatorID uint32) (dto *permissionV1.Role, err error) {
+func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx, tenantID, operatorID uint64) (dto *permissionV1.Role, err error) {
 	// 通过专门的 GetTemplateRole 查询模板角色（tenant_id=0 的受保护模板），
 	// 它自带 TenantIDIsNil/TenantIDEQ(0) 过滤，避免通用 Get(Code) 在平台上下文下
 	// 跨租户匹配多行或误中非模板角色。
@@ -631,7 +631,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 	// permissions / org_units 恰被黑名单移出了 mask——关联载荷必须先行快照，
 	// 否则 Replace 拿到空集，编辑角色会静默清空全部关联（照 user_repo 的
 	// roleIds/orgUnitIds 快照模式）。
-	var wantPermissions, wantOrgUnits []uint32
+	var wantPermissions, wantOrgUnits []uint64
 	if updatePermissions {
 		wantPermissions = slices.Clone(req.Data.GetPermissions())
 	}
@@ -804,12 +804,12 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 }
 
 // ListPermissionIDsByRoleIDs 通过角色ID列表获取权限ID列表
-func (r *RoleRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+func (r *RoleRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []uint64) ([]uint64, error) {
 	return r.rolePermissionRepo.ListPermissionIDsByRoleIDs(ctx, roleIDs)
 }
 
 // ListPermissionIDsByRoleCodes 通过角色编码列表获取权限ID列表
-func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, roleCodes []string) ([]uint32, error) {
+func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, roleCodes []string) ([]uint64, error) {
 	roleIDs, err := r.ListRoleIDsByRoleCodes(ctx, roleCodes)
 	if err != nil {
 		return nil, err
@@ -820,16 +820,16 @@ func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, roleCodes [
 
 // assignPermissionsToRole 分配权限给角色
 func (r *RoleRepo) assignPermissionsToRole(ctx context.Context, tx *ent.Tx,
-	tenantID, operatorID uint32,
-	roleID uint32,
-	permissionIDs []uint32,
+	tenantID, operatorID uint64,
+	roleID uint64,
+	permissionIDs []uint64,
 ) error {
 	return r.rolePermissionRepo.AssignPermissions(ctx, tx, tenantID, operatorID, roleID, permissionIDs)
 }
 
 // GetRolePermissionApiEndpoints 获取角色关联的权限端点快照列表（(path, method)）。
 // 绑定存端点快照后，策略装载不再需要 sys_apis 回查——绑定即策略。
-func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uint32) ([]Endpoint, error) {
+func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uint64) ([]Endpoint, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
 	if err != nil {
 		return nil, err
@@ -845,7 +845,7 @@ func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uin
 
 // GetRolePermissionMenuFullPaths 获取角色关联的权限菜单全路径快照列表。
 // 绑定存全路径快照后，导航链路反解回菜单 id 由调用方完成（菜单重建同路径即命中）。
-func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID uint32) ([]string, error) {
+func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID uint64) ([]string, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
 	if err != nil {
 		return nil, err
@@ -860,7 +860,7 @@ func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID ui
 }
 
 // GetRolesPermissionMenuFullPaths 获取多个角色关联的权限菜单全路径快照列表
-func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint32) ([]string, error) {
+func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint64) ([]string, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDsByRoleIDs(ctx, roleIDs)
 	if err != nil {
 		return nil, err
@@ -875,7 +875,7 @@ func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs 
 }
 
 // CanAssignRole 判断角色是否可以被分配（非保护且启用状态）
-func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint32) (bool, error) {
+func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint64) (bool, error) {
 	aRole, err := r.Get(ctx, &permissionV1.GetRoleRequest{QueryBy: &permissionV1.GetRoleRequest_Id{Id: roleID}})
 	if err != nil {
 		return false, err

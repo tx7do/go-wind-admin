@@ -65,13 +65,13 @@ func (_c *MembershipCreate) SetNillableDeletedAt(v *time.Time) *MembershipCreate
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *MembershipCreate) SetCreatedBy(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetCreatedBy(v uint64) *MembershipCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableCreatedBy(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableCreatedBy(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *MembershipCreate) SetNillableCreatedBy(v *uint32) *MembershipCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *MembershipCreate) SetUpdatedBy(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetUpdatedBy(v uint64) *MembershipCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableUpdatedBy(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableUpdatedBy(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *MembershipCreate) SetNillableUpdatedBy(v *uint32) *MembershipCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *MembershipCreate) SetDeletedBy(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetDeletedBy(v uint64) *MembershipCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableDeletedBy(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableDeletedBy(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *MembershipCreate) SetNillableDeletedBy(v *uint32) *MembershipCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *MembershipCreate) SetTenantID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetTenantID(v uint64) *MembershipCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableTenantID(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableTenantID(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -135,19 +135,19 @@ func (_c *MembershipCreate) SetNillableRemark(v *string) *MembershipCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *MembershipCreate) SetUserID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetUserID(v uint64) *MembershipCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_c *MembershipCreate) SetOrgUnitID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetOrgUnitID(v uint64) *MembershipCreate {
 	_c.mutation.SetOrgUnitID(v)
 	return _c
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableOrgUnitID(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableOrgUnitID(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetOrgUnitID(*v)
 	}
@@ -155,13 +155,13 @@ func (_c *MembershipCreate) SetNillableOrgUnitID(v *uint32) *MembershipCreate {
 }
 
 // SetPositionID sets the "position_id" field.
-func (_c *MembershipCreate) SetPositionID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetPositionID(v uint64) *MembershipCreate {
 	_c.mutation.SetPositionID(v)
 	return _c
 }
 
 // SetNillablePositionID sets the "position_id" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillablePositionID(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillablePositionID(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetPositionID(*v)
 	}
@@ -169,13 +169,13 @@ func (_c *MembershipCreate) SetNillablePositionID(v *uint32) *MembershipCreate {
 }
 
 // SetRoleID sets the "role_id" field.
-func (_c *MembershipCreate) SetRoleID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetRoleID(v uint64) *MembershipCreate {
 	_c.mutation.SetRoleID(v)
 	return _c
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableRoleID(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableRoleID(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetRoleID(*v)
 	}
@@ -239,13 +239,13 @@ func (_c *MembershipCreate) SetNillableAssignedAt(v *time.Time) *MembershipCreat
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_c *MembershipCreate) SetAssignedBy(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetAssignedBy(v uint64) *MembershipCreate {
 	_c.mutation.SetAssignedBy(v)
 	return _c
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_c *MembershipCreate) SetNillableAssignedBy(v *uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetNillableAssignedBy(v *uint64) *MembershipCreate {
 	if v != nil {
 		_c.SetAssignedBy(*v)
 	}
@@ -281,7 +281,7 @@ func (_c *MembershipCreate) SetNillableStatus(v *membership.Status) *MembershipC
 }
 
 // SetID sets the "id" field.
-func (_c *MembershipCreate) SetID(v uint32) *MembershipCreate {
+func (_c *MembershipCreate) SetID(v uint64) *MembershipCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -372,7 +372,7 @@ func (_c *MembershipCreate) sqlSave(ctx context.Context) (*Membership, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -382,7 +382,7 @@ func (_c *MembershipCreate) sqlSave(ctx context.Context) (*Membership, error) {
 func (_c *MembershipCreate) createSpec() (*Membership, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Membership{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(membership.Table, sqlgraph.NewFieldSpec(membership.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(membership.Table, sqlgraph.NewFieldSpec(membership.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -402,19 +402,19 @@ func (_c *MembershipCreate) createSpec() (*Membership, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(membership.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(membership.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(membership.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(membership.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(membership.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(membership.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(membership.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(membership.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -422,19 +422,19 @@ func (_c *MembershipCreate) createSpec() (*Membership, *sqlgraph.CreateSpec) {
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(membership.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(membership.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.OrgUnitID(); ok {
-		_spec.SetField(membership.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.SetField(membership.FieldOrgUnitID, field.TypeUint64, value)
 		_node.OrgUnitID = &value
 	}
 	if value, ok := _c.mutation.PositionID(); ok {
-		_spec.SetField(membership.FieldPositionID, field.TypeUint32, value)
+		_spec.SetField(membership.FieldPositionID, field.TypeUint64, value)
 		_node.PositionID = &value
 	}
 	if value, ok := _c.mutation.RoleID(); ok {
-		_spec.SetField(membership.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(membership.FieldRoleID, field.TypeUint64, value)
 		_node.RoleID = &value
 	}
 	if value, ok := _c.mutation.IsPrimary(); ok {
@@ -454,7 +454,7 @@ func (_c *MembershipCreate) createSpec() (*Membership, *sqlgraph.CreateSpec) {
 		_node.AssignedAt = &value
 	}
 	if value, ok := _c.mutation.AssignedBy(); ok {
-		_spec.SetField(membership.FieldAssignedBy, field.TypeUint32, value)
+		_spec.SetField(membership.FieldAssignedBy, field.TypeUint64, value)
 		_node.AssignedBy = &value
 	}
 	if value, ok := _c.mutation.JoinedAt(); ok {
@@ -554,7 +554,7 @@ func (u *MembershipUpsert) ClearDeletedAt() *MembershipUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MembershipUpsert) SetCreatedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetCreatedBy(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldCreatedBy, v)
 	return u
 }
@@ -566,7 +566,7 @@ func (u *MembershipUpsert) UpdateCreatedBy() *MembershipUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MembershipUpsert) AddCreatedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddCreatedBy(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldCreatedBy, v)
 	return u
 }
@@ -578,7 +578,7 @@ func (u *MembershipUpsert) ClearCreatedBy() *MembershipUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MembershipUpsert) SetUpdatedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetUpdatedBy(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldUpdatedBy, v)
 	return u
 }
@@ -590,7 +590,7 @@ func (u *MembershipUpsert) UpdateUpdatedBy() *MembershipUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MembershipUpsert) AddUpdatedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddUpdatedBy(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldUpdatedBy, v)
 	return u
 }
@@ -602,7 +602,7 @@ func (u *MembershipUpsert) ClearUpdatedBy() *MembershipUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MembershipUpsert) SetDeletedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetDeletedBy(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldDeletedBy, v)
 	return u
 }
@@ -614,7 +614,7 @@ func (u *MembershipUpsert) UpdateDeletedBy() *MembershipUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MembershipUpsert) AddDeletedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddDeletedBy(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldDeletedBy, v)
 	return u
 }
@@ -644,7 +644,7 @@ func (u *MembershipUpsert) ClearRemark() *MembershipUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *MembershipUpsert) SetUserID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetUserID(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldUserID, v)
 	return u
 }
@@ -656,13 +656,13 @@ func (u *MembershipUpsert) UpdateUserID() *MembershipUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *MembershipUpsert) AddUserID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddUserID(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldUserID, v)
 	return u
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *MembershipUpsert) SetOrgUnitID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetOrgUnitID(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldOrgUnitID, v)
 	return u
 }
@@ -674,7 +674,7 @@ func (u *MembershipUpsert) UpdateOrgUnitID() *MembershipUpsert {
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *MembershipUpsert) AddOrgUnitID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddOrgUnitID(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldOrgUnitID, v)
 	return u
 }
@@ -686,7 +686,7 @@ func (u *MembershipUpsert) ClearOrgUnitID() *MembershipUpsert {
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *MembershipUpsert) SetPositionID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetPositionID(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldPositionID, v)
 	return u
 }
@@ -698,7 +698,7 @@ func (u *MembershipUpsert) UpdatePositionID() *MembershipUpsert {
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *MembershipUpsert) AddPositionID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddPositionID(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldPositionID, v)
 	return u
 }
@@ -710,7 +710,7 @@ func (u *MembershipUpsert) ClearPositionID() *MembershipUpsert {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *MembershipUpsert) SetRoleID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetRoleID(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldRoleID, v)
 	return u
 }
@@ -722,7 +722,7 @@ func (u *MembershipUpsert) UpdateRoleID() *MembershipUpsert {
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *MembershipUpsert) AddRoleID(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddRoleID(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldRoleID, v)
 	return u
 }
@@ -800,7 +800,7 @@ func (u *MembershipUpsert) ClearAssignedAt() *MembershipUpsert {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *MembershipUpsert) SetAssignedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) SetAssignedBy(v uint64) *MembershipUpsert {
 	u.Set(membership.FieldAssignedBy, v)
 	return u
 }
@@ -812,7 +812,7 @@ func (u *MembershipUpsert) UpdateAssignedBy() *MembershipUpsert {
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *MembershipUpsert) AddAssignedBy(v uint32) *MembershipUpsert {
+func (u *MembershipUpsert) AddAssignedBy(v uint64) *MembershipUpsert {
 	u.Add(membership.FieldAssignedBy, v)
 	return u
 }
@@ -956,14 +956,14 @@ func (u *MembershipUpsertOne) ClearDeletedAt() *MembershipUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MembershipUpsertOne) SetCreatedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetCreatedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MembershipUpsertOne) AddCreatedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddCreatedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -984,14 +984,14 @@ func (u *MembershipUpsertOne) ClearCreatedBy() *MembershipUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MembershipUpsertOne) SetUpdatedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetUpdatedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MembershipUpsertOne) AddUpdatedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddUpdatedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1012,14 +1012,14 @@ func (u *MembershipUpsertOne) ClearUpdatedBy() *MembershipUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MembershipUpsertOne) SetDeletedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetDeletedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MembershipUpsertOne) AddDeletedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddDeletedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1061,14 +1061,14 @@ func (u *MembershipUpsertOne) ClearRemark() *MembershipUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *MembershipUpsertOne) SetUserID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetUserID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *MembershipUpsertOne) AddUserID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddUserID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddUserID(v)
 	})
@@ -1082,14 +1082,14 @@ func (u *MembershipUpsertOne) UpdateUserID() *MembershipUpsertOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *MembershipUpsertOne) SetOrgUnitID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetOrgUnitID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *MembershipUpsertOne) AddOrgUnitID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddOrgUnitID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1110,14 +1110,14 @@ func (u *MembershipUpsertOne) ClearOrgUnitID() *MembershipUpsertOne {
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *MembershipUpsertOne) SetPositionID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetPositionID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetPositionID(v)
 	})
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *MembershipUpsertOne) AddPositionID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddPositionID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddPositionID(v)
 	})
@@ -1138,14 +1138,14 @@ func (u *MembershipUpsertOne) ClearPositionID() *MembershipUpsertOne {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *MembershipUpsertOne) SetRoleID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetRoleID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *MembershipUpsertOne) AddRoleID(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddRoleID(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddRoleID(v)
 	})
@@ -1243,14 +1243,14 @@ func (u *MembershipUpsertOne) ClearAssignedAt() *MembershipUpsertOne {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *MembershipUpsertOne) SetAssignedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) SetAssignedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *MembershipUpsertOne) AddAssignedBy(v uint32) *MembershipUpsertOne {
+func (u *MembershipUpsertOne) AddAssignedBy(v uint64) *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddAssignedBy(v)
 	})
@@ -1328,7 +1328,7 @@ func (u *MembershipUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *MembershipUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *MembershipUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1337,7 +1337,7 @@ func (u *MembershipUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *MembershipUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *MembershipUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1394,7 +1394,7 @@ func (_c *MembershipCreateBulk) Save(ctx context.Context) ([]*Membership, error)
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1575,14 +1575,14 @@ func (u *MembershipUpsertBulk) ClearDeletedAt() *MembershipUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MembershipUpsertBulk) SetCreatedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetCreatedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MembershipUpsertBulk) AddCreatedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddCreatedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1603,14 +1603,14 @@ func (u *MembershipUpsertBulk) ClearCreatedBy() *MembershipUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MembershipUpsertBulk) SetUpdatedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetUpdatedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MembershipUpsertBulk) AddUpdatedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddUpdatedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1631,14 +1631,14 @@ func (u *MembershipUpsertBulk) ClearUpdatedBy() *MembershipUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MembershipUpsertBulk) SetDeletedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetDeletedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MembershipUpsertBulk) AddDeletedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddDeletedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1680,14 +1680,14 @@ func (u *MembershipUpsertBulk) ClearRemark() *MembershipUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *MembershipUpsertBulk) SetUserID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetUserID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *MembershipUpsertBulk) AddUserID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddUserID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddUserID(v)
 	})
@@ -1701,14 +1701,14 @@ func (u *MembershipUpsertBulk) UpdateUserID() *MembershipUpsertBulk {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *MembershipUpsertBulk) SetOrgUnitID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetOrgUnitID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *MembershipUpsertBulk) AddOrgUnitID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddOrgUnitID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1729,14 +1729,14 @@ func (u *MembershipUpsertBulk) ClearOrgUnitID() *MembershipUpsertBulk {
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *MembershipUpsertBulk) SetPositionID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetPositionID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetPositionID(v)
 	})
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *MembershipUpsertBulk) AddPositionID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddPositionID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddPositionID(v)
 	})
@@ -1757,14 +1757,14 @@ func (u *MembershipUpsertBulk) ClearPositionID() *MembershipUpsertBulk {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *MembershipUpsertBulk) SetRoleID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetRoleID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetRoleID(v)
 	})
 }
 
 // AddRoleID adds v to the "role_id" field.
-func (u *MembershipUpsertBulk) AddRoleID(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddRoleID(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddRoleID(v)
 	})
@@ -1862,14 +1862,14 @@ func (u *MembershipUpsertBulk) ClearAssignedAt() *MembershipUpsertBulk {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *MembershipUpsertBulk) SetAssignedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) SetAssignedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *MembershipUpsertBulk) AddAssignedBy(v uint32) *MembershipUpsertBulk {
+func (u *MembershipUpsertBulk) AddAssignedBy(v uint64) *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.AddAssignedBy(v)
 	})

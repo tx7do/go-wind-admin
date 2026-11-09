@@ -15,7 +15,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
-func menuNode(id, parent uint32, path string) *permissionV1.Menu {
+func menuNode(id, parent uint64, path string) *permissionV1.Menu {
 	return &permissionV1.Menu{
 		Id:       trans.Ptr(id),
 		ParentId: trans.Ptr(parent),

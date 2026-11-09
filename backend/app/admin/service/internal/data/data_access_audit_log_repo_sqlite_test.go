@@ -277,8 +277,8 @@ func TestDataAccessAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint32{firstID, secondID},
-		[]uint32{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []uint64{firstID, secondID},
+		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestDataAccessAuditLogRepoSqlite_Get 验证 Get 按主键的命中与未命中。

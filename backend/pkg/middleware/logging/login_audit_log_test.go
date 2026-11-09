@@ -89,8 +89,8 @@ func TestLoginAuditLogHandleLoginOpWithToken(t *testing.T) {
 	// 用户名来源优先级：请求体优先于令牌。
 	assert.Equal(t, "bob", rec.GetUsername(), "Username ← 请求体（优先于令牌 sub）")
 	// 令牌身份映射。
-	assert.Equal(t, uint32(42), rec.GetUserId())
-	assert.Equal(t, uint32(7), rec.GetTenantId())
+	assert.Equal(t, uint64(42), rec.GetUserId())
+	assert.Equal(t, uint64(7), rec.GetTenantId())
 
 	// IP 与地理（私网归一）。
 	assert.Equal(t, "127.0.0.1", rec.GetIpAddress())
@@ -177,7 +177,7 @@ func TestLoginAuditLogHandleLogoutAction(t *testing.T) {
 	require.Len(t, env.capture.login, 1)
 	rec := env.capture.login[0]
 	assert.Equal(t, auditV1.LoginAuditLog_LOGOUT, rec.GetActionType())
-	assert.Equal(t, uint32(0), rec.GetUserId())
+	assert.Equal(t, uint64(0), rec.GetUserId())
 	assert.Empty(t, rec.GetUsername())
 }
 
@@ -216,8 +216,8 @@ func TestLoginAuditLogHandleTokenUsernameFallback(t *testing.T) {
 	require.Len(t, env.capture.login, 1)
 	rec := env.capture.login[0]
 	assert.Equal(t, "alice", rec.GetUsername(), "请求体无用户名时回退令牌 sub")
-	assert.Equal(t, uint32(42), rec.GetUserId())
-	assert.Equal(t, uint32(7), rec.GetTenantId())
+	assert.Equal(t, uint64(42), rec.GetUserId())
+	assert.Equal(t, uint64(7), rec.GetTenantId())
 }
 
 // TestLoginAuditLogHandleNonLoginOperation 验证非登录类 operation 不进登录审计。
@@ -331,7 +331,7 @@ func TestLoginAuditLogHashAndSignatureEdges(t *testing.T) {
 // mkScoreLog 构造评分输入：设备信息按 clientId 生成（nil 表示缺省设备）。
 func mkScoreLog(
 	status auditV1.LoginAuditLog_Status,
-	uid uint32,
+	uid uint64,
 	username string,
 	di *auditV1.DeviceInfo,
 	ip string,
@@ -398,7 +398,7 @@ func TestLevelFromScore(t *testing.T) {
 // 失败原因与风险分（因素推导读记录上的既有字段，不重算评分）。
 func mkFactorLog(
 	status auditV1.LoginAuditLog_Status,
-	uid uint32,
+	uid uint64,
 	username, clientId, ip, mfa, failure, session, requestID string,
 	score uint32,
 ) *auditV1.LoginAuditLog {
@@ -476,7 +476,7 @@ func TestComputeRiskFactors(t *testing.T) {
 			[]string{"HIGH_RISK_SCORE", "INTERNAL_IP"}},
 		{"未知用户因素", func() *auditV1.LoginAuditLog {
 			return clean(func(la *auditV1.LoginAuditLog) {
-				la.UserId = trans.Ptr(uint32(0))
+				la.UserId = trans.Ptr(uint64(0))
 				la.Username = trans.Ptr("bob")
 				la.IpAddress = trans.Ptr("8.8.8.8")
 				la.RiskScore = trans.Ptr(uint32(30))

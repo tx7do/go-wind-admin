@@ -207,7 +207,7 @@ func TestApiRepoSqlite_Get(t *testing.T) {
 	require.Error(t, err, "空方法应返回 BadRequest")
 
 	// GetApiByIDs 命中/空集合
-	byIDs, err := repo.GetApiByIDs(ctx, []uint32{createdID})
+	byIDs, err := repo.GetApiByIDs(ctx, []uint64{createdID})
 	require.NoError(t, err)
 	require.Len(t, byIDs, 1, "按存在的 ID 集合应返回 1 行")
 	// 读视图（GetApiByIDs 路径）：同上，列默认 status/scope 如实回显。

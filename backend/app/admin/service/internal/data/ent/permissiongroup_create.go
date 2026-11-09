@@ -65,13 +65,13 @@ func (_c *PermissionGroupCreate) SetNillableDeletedAt(v *time.Time) *PermissionG
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *PermissionGroupCreate) SetCreatedBy(v uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetCreatedBy(v uint64) *PermissionGroupCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *PermissionGroupCreate) SetNillableCreatedBy(v *uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetNillableCreatedBy(v *uint64) *PermissionGroupCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *PermissionGroupCreate) SetNillableCreatedBy(v *uint32) *PermissionGrou
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *PermissionGroupCreate) SetUpdatedBy(v uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetUpdatedBy(v uint64) *PermissionGroupCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *PermissionGroupCreate) SetNillableUpdatedBy(v *uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetNillableUpdatedBy(v *uint64) *PermissionGroupCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *PermissionGroupCreate) SetNillableUpdatedBy(v *uint32) *PermissionGrou
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *PermissionGroupCreate) SetDeletedBy(v uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetDeletedBy(v uint64) *PermissionGroupCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *PermissionGroupCreate) SetNillableDeletedBy(v *uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetNillableDeletedBy(v *uint64) *PermissionGroupCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -149,13 +149,13 @@ func (_c *PermissionGroupCreate) SetNillableSortOrder(v *uint32) *PermissionGrou
 }
 
 // SetParentID sets the "parent_id" field.
-func (_c *PermissionGroupCreate) SetParentID(v uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetParentID(v uint64) *PermissionGroupCreate {
 	_c.mutation.SetParentID(v)
 	return _c
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *PermissionGroupCreate) SetNillableParentID(v *uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetNillableParentID(v *uint64) *PermissionGroupCreate {
 	if v != nil {
 		_c.SetParentID(*v)
 	}
@@ -197,7 +197,7 @@ func (_c *PermissionGroupCreate) SetNillableModule(v *string) *PermissionGroupCr
 }
 
 // SetID sets the "id" field.
-func (_c *PermissionGroupCreate) SetID(v uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) SetID(v uint64) *PermissionGroupCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -208,14 +208,14 @@ func (_c *PermissionGroupCreate) SetParent(v *PermissionGroup) *PermissionGroupC
 }
 
 // AddChildIDs adds the "children" edge to the PermissionGroup entity by IDs.
-func (_c *PermissionGroupCreate) AddChildIDs(ids ...uint32) *PermissionGroupCreate {
+func (_c *PermissionGroupCreate) AddChildIDs(ids ...uint64) *PermissionGroupCreate {
 	_c.mutation.AddChildIDs(ids...)
 	return _c
 }
 
 // AddChildren adds the "children" edges to the PermissionGroup entity.
 func (_c *PermissionGroupCreate) AddChildren(v ...*PermissionGroup) *PermissionGroupCreate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -311,7 +311,7 @@ func (_c *PermissionGroupCreate) sqlSave(ctx context.Context) (*PermissionGroup,
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -321,7 +321,7 @@ func (_c *PermissionGroupCreate) sqlSave(ctx context.Context) (*PermissionGroup,
 func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PermissionGroup{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(permissiongroup.Table, sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(permissiongroup.Table, sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -341,15 +341,15 @@ func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.Creat
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(permissiongroup.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(permissiongroup.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(permissiongroup.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(permissiongroup.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(permissiongroup.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(permissiongroup.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Description(); ok {
@@ -384,7 +384,7 @@ func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.Creat
 			Columns: []string{permissiongroup.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -401,7 +401,7 @@ func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.Creat
 			Columns: []string{permissiongroup.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(permissiongroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -498,7 +498,7 @@ func (u *PermissionGroupUpsert) ClearDeletedAt() *PermissionGroupUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionGroupUpsert) SetCreatedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) SetCreatedBy(v uint64) *PermissionGroupUpsert {
 	u.Set(permissiongroup.FieldCreatedBy, v)
 	return u
 }
@@ -510,7 +510,7 @@ func (u *PermissionGroupUpsert) UpdateCreatedBy() *PermissionGroupUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionGroupUpsert) AddCreatedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) AddCreatedBy(v uint64) *PermissionGroupUpsert {
 	u.Add(permissiongroup.FieldCreatedBy, v)
 	return u
 }
@@ -522,7 +522,7 @@ func (u *PermissionGroupUpsert) ClearCreatedBy() *PermissionGroupUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionGroupUpsert) SetUpdatedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) SetUpdatedBy(v uint64) *PermissionGroupUpsert {
 	u.Set(permissiongroup.FieldUpdatedBy, v)
 	return u
 }
@@ -534,7 +534,7 @@ func (u *PermissionGroupUpsert) UpdateUpdatedBy() *PermissionGroupUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionGroupUpsert) AddUpdatedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) AddUpdatedBy(v uint64) *PermissionGroupUpsert {
 	u.Add(permissiongroup.FieldUpdatedBy, v)
 	return u
 }
@@ -546,7 +546,7 @@ func (u *PermissionGroupUpsert) ClearUpdatedBy() *PermissionGroupUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionGroupUpsert) SetDeletedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) SetDeletedBy(v uint64) *PermissionGroupUpsert {
 	u.Set(permissiongroup.FieldDeletedBy, v)
 	return u
 }
@@ -558,7 +558,7 @@ func (u *PermissionGroupUpsert) UpdateDeletedBy() *PermissionGroupUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionGroupUpsert) AddDeletedBy(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) AddDeletedBy(v uint64) *PermissionGroupUpsert {
 	u.Add(permissiongroup.FieldDeletedBy, v)
 	return u
 }
@@ -624,7 +624,7 @@ func (u *PermissionGroupUpsert) ClearSortOrder() *PermissionGroupUpsert {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *PermissionGroupUpsert) SetParentID(v uint32) *PermissionGroupUpsert {
+func (u *PermissionGroupUpsert) SetParentID(v uint64) *PermissionGroupUpsert {
 	u.Set(permissiongroup.FieldParentID, v)
 	return u
 }
@@ -783,14 +783,14 @@ func (u *PermissionGroupUpsertOne) ClearDeletedAt() *PermissionGroupUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionGroupUpsertOne) SetCreatedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) SetCreatedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionGroupUpsertOne) AddCreatedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) AddCreatedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -811,14 +811,14 @@ func (u *PermissionGroupUpsertOne) ClearCreatedBy() *PermissionGroupUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionGroupUpsertOne) SetUpdatedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) SetUpdatedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionGroupUpsertOne) AddUpdatedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) AddUpdatedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -839,14 +839,14 @@ func (u *PermissionGroupUpsertOne) ClearUpdatedBy() *PermissionGroupUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionGroupUpsertOne) SetDeletedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) SetDeletedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionGroupUpsertOne) AddDeletedBy(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) AddDeletedBy(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -930,7 +930,7 @@ func (u *PermissionGroupUpsertOne) ClearSortOrder() *PermissionGroupUpsertOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *PermissionGroupUpsertOne) SetParentID(v uint32) *PermissionGroupUpsertOne {
+func (u *PermissionGroupUpsertOne) SetParentID(v uint64) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetParentID(v)
 	})
@@ -1022,7 +1022,7 @@ func (u *PermissionGroupUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PermissionGroupUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *PermissionGroupUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1031,7 +1031,7 @@ func (u *PermissionGroupUpsertOne) ID(ctx context.Context) (id uint32, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PermissionGroupUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *PermissionGroupUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1088,7 +1088,7 @@ func (_c *PermissionGroupCreateBulk) Save(ctx context.Context) ([]*PermissionGro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1266,14 +1266,14 @@ func (u *PermissionGroupUpsertBulk) ClearDeletedAt() *PermissionGroupUpsertBulk 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionGroupUpsertBulk) SetCreatedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) SetCreatedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionGroupUpsertBulk) AddCreatedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) AddCreatedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1294,14 +1294,14 @@ func (u *PermissionGroupUpsertBulk) ClearCreatedBy() *PermissionGroupUpsertBulk 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionGroupUpsertBulk) SetUpdatedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) SetUpdatedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionGroupUpsertBulk) AddUpdatedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) AddUpdatedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1322,14 +1322,14 @@ func (u *PermissionGroupUpsertBulk) ClearUpdatedBy() *PermissionGroupUpsertBulk 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionGroupUpsertBulk) SetDeletedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) SetDeletedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionGroupUpsertBulk) AddDeletedBy(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) AddDeletedBy(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1413,7 +1413,7 @@ func (u *PermissionGroupUpsertBulk) ClearSortOrder() *PermissionGroupUpsertBulk 
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *PermissionGroupUpsertBulk) SetParentID(v uint32) *PermissionGroupUpsertBulk {
+func (u *PermissionGroupUpsertBulk) SetParentID(v uint64) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.SetParentID(v)
 	})

@@ -6,9 +6,9 @@ import (
 
 // PermissionAuditLog 对应表 sys_permission_audit_logs
 type PermissionAuditLog struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	OperatorId *uint32 `gorm:"column:operator_id;type:int unsigned;index;comment:操作者用户ID"`
+	OperatorId *uint64 `gorm:"column:operator_id;type:int unsigned;index;comment:操作者用户ID"`
 	TargetType *string `gorm:"column:target_type;type:varchar(255);comment:目标类型"`
 	TargetId   *string `gorm:"column:target_id;type:varchar(255);comment:目标ID"`
 	Action     *string `gorm:"column:action;type:varchar(128);comment:动作"`
@@ -21,7 +21,7 @@ type PermissionAuditLog struct {
 	Signature  []byte  `gorm:"column:signature;type:longblob;comment:日志数字签名"`
 
 	mixin.CreatedAt
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

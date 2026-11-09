@@ -28,19 +28,19 @@ func (PolicyEvaluationLog) Annotations() []schema.Annotation {
 
 func (PolicyEvaluationLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Uint64("user_id").
 			Comment("用户ID").
 			Nillable(),
 
-		field.Uint32("membership_id").
+		field.Uint64("membership_id").
 			Comment("成员身份ID").
 			Nillable(),
 
-		field.Uint32("permission_id").
+		field.Uint64("permission_id").
 			Comment("权限点ID").
 			Nillable(),
 
-		field.Uint32("policy_id").
+		field.Uint64("policy_id").
 			Comment("策略ID（可能无策略）").
 			Optional().
 			Nillable(),
@@ -99,9 +99,9 @@ func (PolicyEvaluationLog) Fields() []ent.Field {
 
 func (PolicyEvaluationLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.CreatedAt{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

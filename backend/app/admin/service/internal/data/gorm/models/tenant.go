@@ -8,14 +8,14 @@ import (
 
 // Tenant 对应表 sys_tenants，租户表
 type Tenant struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Name             *string    `gorm:"column:name;type:varchar(255);comment:租户名称;uniqueIndex:idx_sys_tenant_name"`
 	Code             *string    `gorm:"column:code;type:varchar(255);comment:租户编号;uniqueIndex:idx_sys_tenant_code"`
 	LogoURL          *string    `gorm:"column:logo_url;type:varchar(255);comment:租户logo地址"`
 	Domain           *string    `gorm:"column:domain;type:varchar(255);comment:租户域名"`
 	Industry         *string    `gorm:"column:industry;type:varchar(255);comment:所属行业"`
-	AdminUserID      *uint32    `gorm:"column:admin_user_id;type:int unsigned;comment:管理员用户ID;index:idx_sys_tenant_admin_user_id"`
+	AdminUserID      *uint64    `gorm:"column:admin_user_id;type:int unsigned;comment:管理员用户ID;index:idx_sys_tenant_admin_user_id"`
 	Status           *string    `gorm:"column:status;type:varchar(128);comment:租户状态;index:idx_sys_tenant_status_audit_status,priority:1"`
 	Type             *string    `gorm:"column:type;type:varchar(128);comment:租户类型"`
 	AuditStatus      *string    `gorm:"column:audit_status;type:varchar(128);comment:审核状态;index:idx_sys_tenant_status_audit_status,priority:2"`
@@ -25,7 +25,7 @@ type Tenant struct {
 	ExpiredAt        *time.Time `gorm:"column:expired_at;type:datetime;comment:租户有效期;index:idx_sys_tenant_expired_at"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
 }
 

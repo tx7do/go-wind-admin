@@ -55,7 +55,7 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 
 	// marker 经 RecipientUserId 落库并读回，用于在 List/Get 结果中定位各行。
 	type enumCase struct {
-		marker    uint32
+		marker    uint64
 		status    *internalMessageV1.InternalMessageRecipient_Status // nil=未指定 → 落 NULL
 		wantNil   bool                                               // 未指定行：ent/DTO 侧 status 堆 nil
 		wantProto internalMessageV1.InternalMessageRecipient_Status  // 显式行：读回期望
@@ -73,7 +73,7 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 		{internalMessageV1.InternalMessageRecipient_DELETED, entInternalMessageRecipient.StatusDeleted},
 	} {
 		cases = append(cases, enumCase{
-			marker:    9000 + uint32(s.proto),
+			marker:    9000 + uint64(s.proto),
 			status:    s.proto.Enum(),
 			wantNil:   false,
 			wantProto: s.proto,
@@ -105,11 +105,11 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 	rows, err := repo.entClient.Client().InternalMessageRecipient.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(cases), "应有 %d 行", len(cases))
-	rowsByMarker := map[uint32]*ent.InternalMessageRecipient{}
+	rowsByMarker := map[uint64]*ent.InternalMessageRecipient{}
 	for _, row := range rows {
 		rowsByMarker[*row.RecipientUserID] = row
 	}
-	ids := make(map[uint32]uint32, len(cases)) // marker → 行主键
+	ids := make(map[uint64]uint64, len(cases)) // marker → 行主键
 	for _, c := range cases {
 		row, ok := rowsByMarker[c.marker]
 		require.True(t, ok, "行 %d 应存在", c.marker)
@@ -126,7 +126,7 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 	listed, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Len(t, listed.Items, len(cases), "List 应返回全部 %d 行", len(cases))
-	itemsByMarker := map[uint32]*internalMessageV1.InternalMessageRecipient{}
+	itemsByMarker := map[uint64]*internalMessageV1.InternalMessageRecipient{}
 	for _, item := range listed.Items {
 		itemsByMarker[item.GetRecipientUserId()] = item
 	}
@@ -173,7 +173,7 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 	sysCtx := enttest.NewSystemContext(context.Background())
 	tenantCtx := crudViewer.WithContext(context.Background(), crudViewer.NewUserContext(1, 5, 0, "", nil))
 
-	newRecipient := func(messageID, recipientUserID uint32, tenantID *uint32) *internalMessageV1.InternalMessageRecipient {
+	newRecipient := func(messageID, recipientUserID uint64, tenantID *uint64) *internalMessageV1.InternalMessageRecipient {
 		return &internalMessageV1.InternalMessageRecipient{
 			TenantId:        tenantID,
 			MessageId:       trans.Ptr(messageID),
@@ -182,14 +182,14 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 		}
 	}
 
-	listAs := func(t *testing.T, uid uint32) map[uint32]bool {
+	listAs := func(t *testing.T, uid uint64) map[uint64]bool {
 		t.Helper()
 		// 收件箱读取被服务端钉成"viewer 自己的收件行"（见 repo.List 的归属谓词），
 		// 所以这里必须按要读的那个人构造 viewer，而不是只给租户。
 		ctx := crudViewer.WithContext(context.Background(), crudViewer.NewUserContext(uint64(uid), 5, 0, "", nil))
 		inbox, err := repo.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		seen := make(map[uint32]bool, len(inbox.GetItems()))
+		seen := make(map[uint64]bool, len(inbox.GetItems()))
 		for _, item := range inbox.GetItems() {
 			seen[item.GetRecipientUserId()] = true
 		}
@@ -199,23 +199,23 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 	t.Run("平台上下文留空落0且租户读者读不到", func(t *testing.T) {
 		created, err := repo.Create(sysCtx, newRecipient(101, 201, nil))
 		require.NoError(t, err)
-		require.Equal(t, uint32(0), created.GetTenantId(), "SystemContext 下未显式传租户 → 落 DefaultTenantID=0")
+		require.Equal(t, uint64(0), created.GetTenantId(), "SystemContext 下未显式传租户 → 落 DefaultTenantID=0")
 		require.False(t, listAs(t, 201)[201], "tenant_id=0 的收件行对租户 5 不可见（这就是广播丢投递的机理）")
 	})
 
 	t.Run("平台上下文显式传租户被尊重", func(t *testing.T) {
-		created, err := repo.Create(sysCtx, newRecipient(102, 202, trans.Ptr(uint32(5))))
+		created, err := repo.Create(sysCtx, newRecipient(102, 202, trans.Ptr(uint64(5))))
 		require.NoError(t, err)
-		require.Equal(t, uint32(5), created.GetTenantId(), "平台/系统上下文应尊重显式设置（广播修复依赖此行为）")
+		require.Equal(t, uint64(5), created.GetTenantId(), "平台/系统上下文应尊重显式设置（广播修复依赖此行为）")
 		require.True(t, listAs(t, 202)[202], "带正确租户的收件行必须对租户 5 的收件箱可见")
 		require.False(t, listAs(t, 999)[202],
 			"同租户、换一个收件人就读不到：归属谓词由服务端给出，不依赖调用方传 recipient_user_id")
 	})
 
 	t.Run("租户上下文强制覆盖为本租户", func(t *testing.T) {
-		created, err := repo.Create(tenantCtx, newRecipient(103, 203, trans.Ptr(uint32(9))))
+		created, err := repo.Create(tenantCtx, newRecipient(103, 203, trans.Ptr(uint64(9))))
 		require.NoError(t, err)
-		require.Equal(t, uint32(5), created.GetTenantId(),
+		require.Equal(t, uint64(5), created.GetTenantId(),
 			"非平台上下文传他租户会被强制覆盖为当前租户——定向路径显式传值只是冗余，不是防线")
 	})
 }
@@ -236,18 +236,18 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 // 平台/系统上下文豁免同读侧：代客操作要按指定用户执行。
 func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 	// 每个子测试起一个干净库：断言读的是"另一个人的行有没有被动过"，共享库会互相污染。
-	newEnv := func(t *testing.T) (*InternalMessageRecipientRepo, uint32, uint32) {
+	newEnv := func(t *testing.T) (*InternalMessageRecipientRepo, uint64, uint64) {
 		t.Helper()
 
 		repo := newInternalMessageRecipientRepoSqlite(t)
 		sysCtx := enttest.NewSystemContext(context.Background())
 
-		var ownID, otherID uint32
-		for _, uid := range []uint32{201, 202} {
+		var ownID, otherID uint64
+		for _, uid := range []uint64{201, 202} {
 			// 显式带 tenant_id=5：同租户两个用户才是本洞的前提（跨租户早有 TenantMutationGuard）。
 			created, err := repo.Create(sysCtx, &internalMessageV1.InternalMessageRecipient{
-				TenantId:        trans.Ptr(uint32(5)),
-				MessageId:       trans.Ptr(uint32(101)),
+				TenantId:        trans.Ptr(uint64(5)),
+				MessageId:       trans.Ptr(uint64(101)),
 				RecipientUserId: trans.Ptr(uid),
 				Status:          internalMessageV1.InternalMessageRecipient_RECEIVED.Enum(),
 			})
@@ -263,7 +263,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 	}
 
 	// statusOf 直读 ent 行，绕开三个被测写口自己。
-	statusOf := func(t *testing.T, repo *InternalMessageRecipientRepo, recipientRowID uint32) (entInternalMessageRecipient.Status, bool) {
+	statusOf := func(t *testing.T, repo *InternalMessageRecipientRepo, recipientRowID uint64) (entInternalMessageRecipient.Status, bool) {
 		t.Helper()
 
 		sysCtx := enttest.NewSystemContext(context.Background())
@@ -278,7 +278,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 		return *row.Status, true
 	}
 
-	asUser := func(uid uint32) context.Context {
+	asUser := func(uid uint64) context.Context {
 		return crudViewer.WithContext(context.Background(), crudViewer.NewUserContext(uint64(uid), 5, 0, "", nil))
 	}
 
@@ -286,7 +286,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 		repo, ownID, otherID := newEnv(t)
 
 		require.NoError(t, repo.MarkNotificationAsRead(asUser(201), &internalMessageV1.MarkNotificationAsReadRequest{
-			UserId: 202, RecipientIds: []uint32{otherID},
+			UserId: 202, RecipientIds: []uint64{otherID},
 		}))
 		status, ok := statusOf(t, repo, otherID)
 		require.True(t, ok, "别人的收件行不许被删，只许状态不变")
@@ -313,7 +313,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 		repo, _, otherID := newEnv(t)
 
 		require.NoError(t, repo.MarkNotificationsStatus(asUser(201), &internalMessageV1.MarkNotificationsStatusRequest{
-			UserId: 202, RecipientIds: []uint32{otherID},
+			UserId: 202, RecipientIds: []uint64{otherID},
 			NewStatus: internalMessageV1.InternalMessageRecipient_READ,
 		}))
 		other, ok := statusOf(t, repo, otherID)
@@ -325,7 +325,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 		repo, _, otherID := newEnv(t)
 
 		require.NoError(t, repo.DeleteNotificationFromInbox(asUser(201), &internalMessageV1.DeleteNotificationFromInboxRequest{
-			UserId: 202, RecipientIds: []uint32{otherID},
+			UserId: 202, RecipientIds: []uint64{otherID},
 		}))
 		_, ok := statusOf(t, repo, otherID)
 		require.True(t, ok, "带 id 的跨用户删除是空操作，行必须还在")
@@ -347,7 +347,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 		repo, ownID, otherID := newEnv(t)
 
 		require.NoError(t, repo.MarkNotificationAsRead(asUser(201), &internalMessageV1.MarkNotificationAsReadRequest{
-			UserId: 201, RecipientIds: []uint32{ownID},
+			UserId: 201, RecipientIds: []uint64{ownID},
 		}))
 		own, _ := statusOf(t, repo, ownID)
 		require.Equal(t, entInternalMessageRecipient.StatusRead, own, "合法调用方（传自己的 id）不受影响")
@@ -360,7 +360,7 @@ func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
 
 		require.NoError(t, repo.MarkNotificationAsRead(
 			crudViewer.WithContext(context.Background(), crudViewer.NewUserContext(1, 0, 0, "", nil)),
-			&internalMessageV1.MarkNotificationAsReadRequest{UserId: 202, RecipientIds: []uint32{otherID}},
+			&internalMessageV1.MarkNotificationAsReadRequest{UserId: 202, RecipientIds: []uint64{otherID}},
 		))
 		other, _ := statusOf(t, repo, otherID)
 		require.Equal(t, entInternalMessageRecipient.StatusRead, other,

@@ -65,13 +65,13 @@ func (_c *PermissionPolicyCreate) SetNillableDeletedAt(v *time.Time) *Permission
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *PermissionPolicyCreate) SetCreatedBy(v uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetCreatedBy(v uint64) *PermissionPolicyCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *PermissionPolicyCreate) SetNillableCreatedBy(v *uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetNillableCreatedBy(v *uint64) *PermissionPolicyCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *PermissionPolicyCreate) SetNillableCreatedBy(v *uint32) *PermissionPol
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *PermissionPolicyCreate) SetUpdatedBy(v uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetUpdatedBy(v uint64) *PermissionPolicyCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *PermissionPolicyCreate) SetNillableUpdatedBy(v *uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetNillableUpdatedBy(v *uint64) *PermissionPolicyCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *PermissionPolicyCreate) SetNillableUpdatedBy(v *uint32) *PermissionPol
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *PermissionPolicyCreate) SetDeletedBy(v uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetDeletedBy(v uint64) *PermissionPolicyCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *PermissionPolicyCreate) SetNillableDeletedBy(v *uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetNillableDeletedBy(v *uint64) *PermissionPolicyCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -121,7 +121,7 @@ func (_c *PermissionPolicyCreate) SetNillableStatus(v *permissionpolicy.Status) 
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_c *PermissionPolicyCreate) SetPermissionID(v uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetPermissionID(v uint64) *PermissionPolicyCreate {
 	_c.mutation.SetPermissionID(v)
 	return _c
 }
@@ -197,7 +197,7 @@ func (_c *PermissionPolicyCreate) SetNillableCacheTTL(v *uint32) *PermissionPoli
 }
 
 // SetID sets the "id" field.
-func (_c *PermissionPolicyCreate) SetID(v uint32) *PermissionPolicyCreate {
+func (_c *PermissionPolicyCreate) SetID(v uint64) *PermissionPolicyCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -310,7 +310,7 @@ func (_c *PermissionPolicyCreate) sqlSave(ctx context.Context) (*PermissionPolic
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -320,7 +320,7 @@ func (_c *PermissionPolicyCreate) sqlSave(ctx context.Context) (*PermissionPolic
 func (_c *PermissionPolicyCreate) createSpec() (*PermissionPolicy, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PermissionPolicy{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(permissionpolicy.Table, sqlgraph.NewFieldSpec(permissionpolicy.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(permissionpolicy.Table, sqlgraph.NewFieldSpec(permissionpolicy.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -340,15 +340,15 @@ func (_c *PermissionPolicyCreate) createSpec() (*PermissionPolicy, *sqlgraph.Cre
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(permissionpolicy.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(permissionpolicy.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(permissionpolicy.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(permissionpolicy.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(permissionpolicy.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(permissionpolicy.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -356,7 +356,7 @@ func (_c *PermissionPolicyCreate) createSpec() (*PermissionPolicy, *sqlgraph.Cre
 		_node.Status = &value
 	}
 	if value, ok := _c.mutation.PermissionID(); ok {
-		_spec.SetField(permissionpolicy.FieldPermissionID, field.TypeUint32, value)
+		_spec.SetField(permissionpolicy.FieldPermissionID, field.TypeUint64, value)
 		_node.PermissionID = &value
 	}
 	if value, ok := _c.mutation.PolicyEngine(); ok {
@@ -468,7 +468,7 @@ func (u *PermissionPolicyUpsert) ClearDeletedAt() *PermissionPolicyUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionPolicyUpsert) SetCreatedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) SetCreatedBy(v uint64) *PermissionPolicyUpsert {
 	u.Set(permissionpolicy.FieldCreatedBy, v)
 	return u
 }
@@ -480,7 +480,7 @@ func (u *PermissionPolicyUpsert) UpdateCreatedBy() *PermissionPolicyUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionPolicyUpsert) AddCreatedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) AddCreatedBy(v uint64) *PermissionPolicyUpsert {
 	u.Add(permissionpolicy.FieldCreatedBy, v)
 	return u
 }
@@ -492,7 +492,7 @@ func (u *PermissionPolicyUpsert) ClearCreatedBy() *PermissionPolicyUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionPolicyUpsert) SetUpdatedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) SetUpdatedBy(v uint64) *PermissionPolicyUpsert {
 	u.Set(permissionpolicy.FieldUpdatedBy, v)
 	return u
 }
@@ -504,7 +504,7 @@ func (u *PermissionPolicyUpsert) UpdateUpdatedBy() *PermissionPolicyUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionPolicyUpsert) AddUpdatedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) AddUpdatedBy(v uint64) *PermissionPolicyUpsert {
 	u.Add(permissionpolicy.FieldUpdatedBy, v)
 	return u
 }
@@ -516,7 +516,7 @@ func (u *PermissionPolicyUpsert) ClearUpdatedBy() *PermissionPolicyUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionPolicyUpsert) SetDeletedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) SetDeletedBy(v uint64) *PermissionPolicyUpsert {
 	u.Set(permissionpolicy.FieldDeletedBy, v)
 	return u
 }
@@ -528,7 +528,7 @@ func (u *PermissionPolicyUpsert) UpdateDeletedBy() *PermissionPolicyUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionPolicyUpsert) AddDeletedBy(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) AddDeletedBy(v uint64) *PermissionPolicyUpsert {
 	u.Add(permissionpolicy.FieldDeletedBy, v)
 	return u
 }
@@ -552,7 +552,7 @@ func (u *PermissionPolicyUpsert) UpdateStatus() *PermissionPolicyUpsert {
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PermissionPolicyUpsert) SetPermissionID(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) SetPermissionID(v uint64) *PermissionPolicyUpsert {
 	u.Set(permissionpolicy.FieldPermissionID, v)
 	return u
 }
@@ -564,7 +564,7 @@ func (u *PermissionPolicyUpsert) UpdatePermissionID() *PermissionPolicyUpsert {
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PermissionPolicyUpsert) AddPermissionID(v uint32) *PermissionPolicyUpsert {
+func (u *PermissionPolicyUpsert) AddPermissionID(v uint64) *PermissionPolicyUpsert {
 	u.Add(permissionpolicy.FieldPermissionID, v)
 	return u
 }
@@ -747,14 +747,14 @@ func (u *PermissionPolicyUpsertOne) ClearDeletedAt() *PermissionPolicyUpsertOne 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionPolicyUpsertOne) SetCreatedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) SetCreatedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionPolicyUpsertOne) AddCreatedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) AddCreatedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -775,14 +775,14 @@ func (u *PermissionPolicyUpsertOne) ClearCreatedBy() *PermissionPolicyUpsertOne 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionPolicyUpsertOne) SetUpdatedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) SetUpdatedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionPolicyUpsertOne) AddUpdatedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) AddUpdatedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -803,14 +803,14 @@ func (u *PermissionPolicyUpsertOne) ClearUpdatedBy() *PermissionPolicyUpsertOne 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionPolicyUpsertOne) SetDeletedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) SetDeletedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionPolicyUpsertOne) AddDeletedBy(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) AddDeletedBy(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -845,14 +845,14 @@ func (u *PermissionPolicyUpsertOne) UpdateStatus() *PermissionPolicyUpsertOne {
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PermissionPolicyUpsertOne) SetPermissionID(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) SetPermissionID(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetPermissionID(v)
 	})
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PermissionPolicyUpsertOne) AddPermissionID(v uint32) *PermissionPolicyUpsertOne {
+func (u *PermissionPolicyUpsertOne) AddPermissionID(v uint64) *PermissionPolicyUpsertOne {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddPermissionID(v)
 	})
@@ -979,7 +979,7 @@ func (u *PermissionPolicyUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PermissionPolicyUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *PermissionPolicyUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -988,7 +988,7 @@ func (u *PermissionPolicyUpsertOne) ID(ctx context.Context) (id uint32, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PermissionPolicyUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *PermissionPolicyUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1045,7 +1045,7 @@ func (_c *PermissionPolicyCreateBulk) Save(ctx context.Context) ([]*PermissionPo
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1223,14 +1223,14 @@ func (u *PermissionPolicyUpsertBulk) ClearDeletedAt() *PermissionPolicyUpsertBul
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PermissionPolicyUpsertBulk) SetCreatedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) SetCreatedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PermissionPolicyUpsertBulk) AddCreatedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) AddCreatedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1251,14 +1251,14 @@ func (u *PermissionPolicyUpsertBulk) ClearCreatedBy() *PermissionPolicyUpsertBul
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PermissionPolicyUpsertBulk) SetUpdatedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) SetUpdatedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PermissionPolicyUpsertBulk) AddUpdatedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) AddUpdatedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1279,14 +1279,14 @@ func (u *PermissionPolicyUpsertBulk) ClearUpdatedBy() *PermissionPolicyUpsertBul
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PermissionPolicyUpsertBulk) SetDeletedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) SetDeletedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PermissionPolicyUpsertBulk) AddDeletedBy(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) AddDeletedBy(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1321,14 +1321,14 @@ func (u *PermissionPolicyUpsertBulk) UpdateStatus() *PermissionPolicyUpsertBulk 
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PermissionPolicyUpsertBulk) SetPermissionID(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) SetPermissionID(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.SetPermissionID(v)
 	})
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PermissionPolicyUpsertBulk) AddPermissionID(v uint32) *PermissionPolicyUpsertBulk {
+func (u *PermissionPolicyUpsertBulk) AddPermissionID(v uint64) *PermissionPolicyUpsertBulk {
 	return u.Update(func(s *PermissionPolicyUpsert) {
 		s.AddPermissionID(v)
 	})

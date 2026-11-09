@@ -102,7 +102,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID uint64
 	// IdentifierValidator is a validator for the "identifier" field. It is called by the builders before save.
 	IdentifierValidator func(string) error
 	// CredentialValidator is a validator for the "credential" field. It is called by the builders before save.
@@ -114,7 +114,7 @@ var (
 	// ResetTokenHashValidator is a validator for the "reset_token_hash" field. It is called by the builders before save.
 	ResetTokenHashValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // IdentityType defines the type for the "identity_type" enum field.

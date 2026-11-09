@@ -34,7 +34,7 @@ func NewMembershipPositionRepo(ctx *bootstrap.Context, entClient *entCrud.EntCli
 }
 
 // CleanRelationsByMembershipID 删除会员在某租户下的所有职位关联
-func (r *MembershipPositionRepo) CleanRelationsByMembershipID(ctx context.Context, tx *ent.Tx, membershipID uint32) error {
+func (r *MembershipPositionRepo) CleanRelationsByMembershipID(ctx context.Context, tx *ent.Tx, membershipID uint64) error {
 	if membershipID == 0 {
 		return nil
 	}
@@ -51,7 +51,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipID(ctx context.Contex
 }
 
 // CleanRelationsByMembershipIDs 删除多个会员的所有职位关联
-func (r *MembershipPositionRepo) CleanRelationsByMembershipIDs(ctx context.Context, tx *ent.Tx, membershipIDs []uint32) error {
+func (r *MembershipPositionRepo) CleanRelationsByMembershipIDs(ctx context.Context, tx *ent.Tx, membershipIDs []uint64) error {
 	if len(membershipIDs) == 0 {
 		return nil
 	}
@@ -68,7 +68,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipIDs(ctx context.Conte
 }
 
 // CleanRelationsByPositionID 删除岗位的所有会员关联
-func (r *MembershipPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *ent.Tx, positionID uint32) error {
+func (r *MembershipPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *ent.Tx, positionID uint64) error {
 	if positionID == 0 {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionID(ctx context.Context,
 }
 
 // CleanRelationsByPositionIDs 删除多个岗位的所有会员关联
-func (r *MembershipPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *ent.Tx, positionIDs []uint32) error {
+func (r *MembershipPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *ent.Tx, positionIDs []uint64) error {
 	if len(positionIDs) == 0 {
 		return nil
 	}
@@ -102,7 +102,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionIDs(ctx context.Context
 }
 
 // RemovePositionsFromMembership 从用户移除岗位
-func (r *MembershipPositionRepo) RemovePositionsFromMembership(ctx context.Context, membershipID uint32, positionIDs []uint32) error {
+func (r *MembershipPositionRepo) RemovePositionsFromMembership(ctx context.Context, membershipID uint64, positionIDs []uint64) error {
 	if membershipID == 0 || len(positionIDs) == 0 {
 		return nil
 	}
@@ -126,7 +126,7 @@ func (r *MembershipPositionRepo) RemovePositionsFromMembership(ctx context.Conte
 func (r *MembershipPositionRepo) AssignMembershipPositions(
 	ctx context.Context,
 	tx *ent.Tx,
-	membershipID uint32,
+	membershipID uint64,
 	datas []*identityV1.MembershipPosition,
 ) error {
 	if len(datas) == 0 || membershipID == 0 {
@@ -173,9 +173,9 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 }
 
 // ListPositionIDs 获取用户的岗位ID列表
-func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
 	if membershipID == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 
 	q := r.entClient.Client().MembershipPosition.Query().
@@ -200,17 +200,17 @@ func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membership
 		r.log.Errorf(ctx, "query position ids by membership id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position ids by membership id failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }
 
 // ListMembershipIDs 获取岗位关联的会员ID列表
-func (r *MembershipPositionRepo) ListMembershipIDs(ctx context.Context, positionID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipPositionRepo) ListMembershipIDs(ctx context.Context, positionID uint64, excludeExpired bool) ([]uint64, error) {
 	if positionID == 0 {
-		return []uint32{}, nil
+		return []uint64{}, nil
 	}
 
 	q := r.entClient.Client().MembershipPosition.Query().
@@ -235,15 +235,15 @@ func (r *MembershipPositionRepo) ListMembershipIDs(ctx context.Context, position
 		r.log.Errorf(ctx, "query membership ids by position id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by position id failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }
 
 // ListMembershipIDsByPositionIDs 获取多个岗位关联的会员ID列表
-func (r *MembershipPositionRepo) ListMembershipIDsByPositionIDs(ctx context.Context, positionIDs []uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipPositionRepo) ListMembershipIDsByPositionIDs(ctx context.Context, positionIDs []uint64, excludeExpired bool) ([]uint64, error) {
 	if len(positionIDs) == 0 {
 		return nil, nil
 	}
@@ -270,9 +270,9 @@ func (r *MembershipPositionRepo) ListMembershipIDsByPositionIDs(ctx context.Cont
 		r.log.Errorf(ctx, "query membership ids by position ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by position ids failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]uint64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = uint64(v)
 	}
 	return ids, nil
 }

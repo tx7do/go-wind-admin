@@ -52,7 +52,7 @@ func TestDictTypeServiceSqlite_CreateAndGet(t *testing.T) {
 	require.Equal(t, "svc-dt-create-code", *rows[0].TypeCode, "type_code 应按请求落库")
 	require.Equal(t, "服务层字典类型-创建", *rows[0].TypeName, "type_name 应按请求落库")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint32(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	got, err := svc.Get(ctx, &dictV1.GetDictTypeRequest{
 		QueryBy: &dictV1.GetDictTypeRequest_Id{Id: rows[0].ID},
@@ -160,7 +160,7 @@ func TestDictTypeServiceSqlite_Delete(t *testing.T) {
 	rows, err := entClient.Client().DictType.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	ids := []uint32{rows[0].ID, rows[1].ID}
+	ids := []uint64{rows[0].ID, rows[1].ID}
 
 	_, err = svc.Delete(ctx, &dictV1.DeleteDictTypeRequest{Ids: ids})
 	require.NoError(t, err, "批量删除应成功")

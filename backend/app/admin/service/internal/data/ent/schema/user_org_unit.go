@@ -30,17 +30,17 @@ func (UserOrgUnit) Annotations() []schema.Annotation {
 func (UserOrgUnit) Fields() []ent.Field {
 	return []ent.Field{
 		// 关联到 user（必填）
-		field.Uint32("user_id").
+		field.Uint64("user_id").
 			Comment("用户ID").
 			Nillable(),
 
 		// 关联到组织单元（必填）
-		field.Uint32("org_unit_id").
+		field.Uint64("org_unit_id").
 			Comment("组织单元 ID").
 			Nillable(),
 
 		// 可选：在该组织内的岗位/角色引用（冗余）
-		field.Uint32("position_id").
+		field.Uint64("position_id").
 			Optional().
 			Nillable().
 			Comment("岗位 ID（可选，冗余）"),
@@ -60,7 +60,7 @@ func (UserOrgUnit) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			Comment("分配时间（UTC）"),
-		field.Uint32("assigned_by").
+		field.Uint64("assigned_by").
 			Optional().
 			Nillable().
 			Comment("分配者用户 ID"),
@@ -88,10 +88,10 @@ func (UserOrgUnit) Fields() []ent.Field {
 
 func (UserOrgUnit) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 		mixin.Remark{},
 	}
 }

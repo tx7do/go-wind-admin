@@ -7,9 +7,9 @@ import (
 
 // LoginAuditLog 对应表 sys_login_audit_logs
 type LoginAuditLog struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	UserId        *uint32         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
+	UserId        *uint64         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
 	Username      *string         `gorm:"column:username;type:varchar(255);comment:操作者账号名"`
 	IpAddress     *string         `gorm:"column:ip_address;type:varchar(255);comment:IP地址"`
 	GeoLocation   *datatypes.JSON `gorm:"column:geo_location;type:json;comment:地理位置(来自IP库)"`
@@ -29,7 +29,7 @@ type LoginAuditLog struct {
 	Signature     []byte          `gorm:"column:signature;type:longblob;comment:日志数字签名"`
 
 	mixin.CreatedAt
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

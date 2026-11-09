@@ -13,7 +13,7 @@ import (
 )
 
 // newRecWithUser 构造带操作者归属的日志记录，供快照测试。
-func newRecWithUser(uid, tenant uint32) *permissionV1.PolicyEvaluationLog {
+func newRecWithUser(uid, tenant uint64) *permissionV1.PolicyEvaluationLog {
 	return &permissionV1.PolicyEvaluationLog{
 		UserId:   trans.Ptr(uid),
 		TenantId: trans.Ptr(tenant),

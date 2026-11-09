@@ -284,7 +284,7 @@ func (s *ApiService) GetWalkRouteData(_ context.Context, _ *emptypb.Empty) (*per
 	resp := &permissionV1.ListApiResponse{
 		Items: []*permissionV1.Api{},
 	}
-	var count uint32 = 0
+	var count uint64 = 0
 	if err := s.routeWalker.WalkRoute(func(info http.RouteInfo) error {
 		//log.Infof("Path[%s] Method[%s]", info.Path, info.Method)
 		count++

@@ -38,7 +38,7 @@ func newAiUsageLogServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent
 }
 
 // aiUsageOperator 构造指定用户/租户的操作者上下文。
-func aiUsageOperator(ctx context.Context, userID uint32, tenantID uint32) context.Context {
+func aiUsageOperator(ctx context.Context, userID uint64, tenantID uint64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
 		UserId:   userID,
 		TenantId: trans.Ptr(tenantID),
@@ -47,7 +47,7 @@ func aiUsageOperator(ctx context.Context, userID uint32, tenantID uint32) contex
 
 // aiUsageSeedRow 直插一条指定租户/总量/时间的用量行（服务侧 Create 只写 now，
 // 钉"上月老账不进本月"必须直插历史时间）。
-func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint32, totalTokens uint32, createdAt time.Time) {
+func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint64, totalTokens uint32, createdAt time.Time) {
 	t.Helper()
 	_, err := entClient.Client().AiUsageLog.Create().
 		SetTenantID(tenantID).
@@ -59,7 +59,7 @@ func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx
 }
 
 // aiUsageSeedTenantWithQuota 建租户并挂配了 AI_TOKENS 上限的套餐，返回租户 ID。
-func aiUsageSeedTenantWithQuota(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string, aiTokenLimit uint64) uint32 {
+func aiUsageSeedTenantWithQuota(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string, aiTokenLimit uint64) uint64 {
 	t.Helper()
 	plan, err := entClient.Client().Plan.Create().SetNillableName(trans.Ptr(name + "套餐")).Save(ctx)
 	require.NoError(t, err)

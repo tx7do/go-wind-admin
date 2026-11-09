@@ -52,9 +52,9 @@ func (PlanQuota) Fields() []ent.Field {
 // Mixin of the PlanQuota.
 func (PlanQuota) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 	}
 }
 

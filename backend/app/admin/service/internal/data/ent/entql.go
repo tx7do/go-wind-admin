@@ -86,7 +86,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   accesskey.Table,
 			Columns: accesskey.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: accesskey.FieldID,
 			},
 		},
@@ -95,11 +95,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			accesskey.FieldCreatedAt:  {Type: field.TypeTime, Column: accesskey.FieldCreatedAt},
 			accesskey.FieldUpdatedAt:  {Type: field.TypeTime, Column: accesskey.FieldUpdatedAt},
 			accesskey.FieldDeletedAt:  {Type: field.TypeTime, Column: accesskey.FieldDeletedAt},
-			accesskey.FieldCreatedBy:  {Type: field.TypeUint32, Column: accesskey.FieldCreatedBy},
-			accesskey.FieldUpdatedBy:  {Type: field.TypeUint32, Column: accesskey.FieldUpdatedBy},
-			accesskey.FieldDeletedBy:  {Type: field.TypeUint32, Column: accesskey.FieldDeletedBy},
+			accesskey.FieldCreatedBy:  {Type: field.TypeUint64, Column: accesskey.FieldCreatedBy},
+			accesskey.FieldUpdatedBy:  {Type: field.TypeUint64, Column: accesskey.FieldUpdatedBy},
+			accesskey.FieldDeletedBy:  {Type: field.TypeUint64, Column: accesskey.FieldDeletedBy},
 			accesskey.FieldStatus:     {Type: field.TypeEnum, Column: accesskey.FieldStatus},
-			accesskey.FieldTenantID:   {Type: field.TypeUint32, Column: accesskey.FieldTenantID},
+			accesskey.FieldTenantID:   {Type: field.TypeUint64, Column: accesskey.FieldTenantID},
 			accesskey.FieldName:       {Type: field.TypeString, Column: accesskey.FieldName},
 			accesskey.FieldAccessKey:  {Type: field.TypeString, Column: accesskey.FieldAccessKey},
 			accesskey.FieldSecretHash: {Type: field.TypeString, Column: accesskey.FieldSecretHash},
@@ -112,7 +112,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiagentapp.Table,
 			Columns: aiagentapp.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiagentapp.FieldID,
 			},
 		},
@@ -121,10 +121,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiagentapp.FieldCreatedAt:   {Type: field.TypeTime, Column: aiagentapp.FieldCreatedAt},
 			aiagentapp.FieldUpdatedAt:   {Type: field.TypeTime, Column: aiagentapp.FieldUpdatedAt},
 			aiagentapp.FieldDeletedAt:   {Type: field.TypeTime, Column: aiagentapp.FieldDeletedAt},
-			aiagentapp.FieldCreatedBy:   {Type: field.TypeUint32, Column: aiagentapp.FieldCreatedBy},
-			aiagentapp.FieldUpdatedBy:   {Type: field.TypeUint32, Column: aiagentapp.FieldUpdatedBy},
-			aiagentapp.FieldDeletedBy:   {Type: field.TypeUint32, Column: aiagentapp.FieldDeletedBy},
-			aiagentapp.FieldTenantID:    {Type: field.TypeUint32, Column: aiagentapp.FieldTenantID},
+			aiagentapp.FieldCreatedBy:   {Type: field.TypeUint64, Column: aiagentapp.FieldCreatedBy},
+			aiagentapp.FieldUpdatedBy:   {Type: field.TypeUint64, Column: aiagentapp.FieldUpdatedBy},
+			aiagentapp.FieldDeletedBy:   {Type: field.TypeUint64, Column: aiagentapp.FieldDeletedBy},
+			aiagentapp.FieldTenantID:    {Type: field.TypeUint64, Column: aiagentapp.FieldTenantID},
 			aiagentapp.FieldName:        {Type: field.TypeString, Column: aiagentapp.FieldName},
 			aiagentapp.FieldDescription: {Type: field.TypeString, Column: aiagentapp.FieldDescription},
 			aiagentapp.FieldGraph:       {Type: field.TypeString, Column: aiagentapp.FieldGraph},
@@ -136,7 +136,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiagentrevision.Table,
 			Columns: aiagentrevision.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiagentrevision.FieldID,
 			},
 		},
@@ -145,11 +145,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiagentrevision.FieldCreatedAt: {Type: field.TypeTime, Column: aiagentrevision.FieldCreatedAt},
 			aiagentrevision.FieldUpdatedAt: {Type: field.TypeTime, Column: aiagentrevision.FieldUpdatedAt},
 			aiagentrevision.FieldDeletedAt: {Type: field.TypeTime, Column: aiagentrevision.FieldDeletedAt},
-			aiagentrevision.FieldCreatedBy: {Type: field.TypeUint32, Column: aiagentrevision.FieldCreatedBy},
-			aiagentrevision.FieldUpdatedBy: {Type: field.TypeUint32, Column: aiagentrevision.FieldUpdatedBy},
-			aiagentrevision.FieldDeletedBy: {Type: field.TypeUint32, Column: aiagentrevision.FieldDeletedBy},
-			aiagentrevision.FieldTenantID:  {Type: field.TypeUint32, Column: aiagentrevision.FieldTenantID},
-			aiagentrevision.FieldAppID:     {Type: field.TypeUint32, Column: aiagentrevision.FieldAppID},
+			aiagentrevision.FieldCreatedBy: {Type: field.TypeUint64, Column: aiagentrevision.FieldCreatedBy},
+			aiagentrevision.FieldUpdatedBy: {Type: field.TypeUint64, Column: aiagentrevision.FieldUpdatedBy},
+			aiagentrevision.FieldDeletedBy: {Type: field.TypeUint64, Column: aiagentrevision.FieldDeletedBy},
+			aiagentrevision.FieldTenantID:  {Type: field.TypeUint64, Column: aiagentrevision.FieldTenantID},
+			aiagentrevision.FieldAppID:     {Type: field.TypeUint64, Column: aiagentrevision.FieldAppID},
 			aiagentrevision.FieldGraph:     {Type: field.TypeString, Column: aiagentrevision.FieldGraph},
 			aiagentrevision.FieldSource:    {Type: field.TypeEnum, Column: aiagentrevision.FieldSource},
 		},
@@ -159,7 +159,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiagentrun.Table,
 			Columns: aiagentrun.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiagentrun.FieldID,
 			},
 		},
@@ -168,11 +168,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiagentrun.FieldCreatedAt:        {Type: field.TypeTime, Column: aiagentrun.FieldCreatedAt},
 			aiagentrun.FieldUpdatedAt:        {Type: field.TypeTime, Column: aiagentrun.FieldUpdatedAt},
 			aiagentrun.FieldDeletedAt:        {Type: field.TypeTime, Column: aiagentrun.FieldDeletedAt},
-			aiagentrun.FieldCreatedBy:        {Type: field.TypeUint32, Column: aiagentrun.FieldCreatedBy},
-			aiagentrun.FieldUpdatedBy:        {Type: field.TypeUint32, Column: aiagentrun.FieldUpdatedBy},
-			aiagentrun.FieldDeletedBy:        {Type: field.TypeUint32, Column: aiagentrun.FieldDeletedBy},
-			aiagentrun.FieldTenantID:         {Type: field.TypeUint32, Column: aiagentrun.FieldTenantID},
-			aiagentrun.FieldAppID:            {Type: field.TypeUint32, Column: aiagentrun.FieldAppID},
+			aiagentrun.FieldCreatedBy:        {Type: field.TypeUint64, Column: aiagentrun.FieldCreatedBy},
+			aiagentrun.FieldUpdatedBy:        {Type: field.TypeUint64, Column: aiagentrun.FieldUpdatedBy},
+			aiagentrun.FieldDeletedBy:        {Type: field.TypeUint64, Column: aiagentrun.FieldDeletedBy},
+			aiagentrun.FieldTenantID:         {Type: field.TypeUint64, Column: aiagentrun.FieldTenantID},
+			aiagentrun.FieldAppID:            {Type: field.TypeUint64, Column: aiagentrun.FieldAppID},
 			aiagentrun.FieldStatus:           {Type: field.TypeEnum, Column: aiagentrun.FieldStatus},
 			aiagentrun.FieldInput:            {Type: field.TypeString, Column: aiagentrun.FieldInput},
 			aiagentrun.FieldOutput:           {Type: field.TypeString, Column: aiagentrun.FieldOutput},
@@ -189,15 +189,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aichunk.Table,
 			Columns: aichunk.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aichunk.FieldID,
 			},
 		},
 		Type: "AiChunk",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			aichunk.FieldCreatedAt:  {Type: field.TypeTime, Column: aichunk.FieldCreatedAt},
-			aichunk.FieldTenantID:   {Type: field.TypeUint32, Column: aichunk.FieldTenantID},
-			aichunk.FieldDocID:      {Type: field.TypeUint32, Column: aichunk.FieldDocID},
+			aichunk.FieldTenantID:   {Type: field.TypeUint64, Column: aichunk.FieldTenantID},
+			aichunk.FieldDocID:      {Type: field.TypeUint64, Column: aichunk.FieldDocID},
 			aichunk.FieldContent:    {Type: field.TypeString, Column: aichunk.FieldContent},
 			aichunk.FieldChunkIndex: {Type: field.TypeUint32, Column: aichunk.FieldChunkIndex},
 		},
@@ -207,7 +207,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiconversation.Table,
 			Columns: aiconversation.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiconversation.FieldID,
 			},
 		},
@@ -216,13 +216,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiconversation.FieldCreatedAt:     {Type: field.TypeTime, Column: aiconversation.FieldCreatedAt},
 			aiconversation.FieldUpdatedAt:     {Type: field.TypeTime, Column: aiconversation.FieldUpdatedAt},
 			aiconversation.FieldDeletedAt:     {Type: field.TypeTime, Column: aiconversation.FieldDeletedAt},
-			aiconversation.FieldCreatedBy:     {Type: field.TypeUint32, Column: aiconversation.FieldCreatedBy},
-			aiconversation.FieldUpdatedBy:     {Type: field.TypeUint32, Column: aiconversation.FieldUpdatedBy},
-			aiconversation.FieldDeletedBy:     {Type: field.TypeUint32, Column: aiconversation.FieldDeletedBy},
-			aiconversation.FieldTenantID:      {Type: field.TypeUint32, Column: aiconversation.FieldTenantID},
+			aiconversation.FieldCreatedBy:     {Type: field.TypeUint64, Column: aiconversation.FieldCreatedBy},
+			aiconversation.FieldUpdatedBy:     {Type: field.TypeUint64, Column: aiconversation.FieldUpdatedBy},
+			aiconversation.FieldDeletedBy:     {Type: field.TypeUint64, Column: aiconversation.FieldDeletedBy},
+			aiconversation.FieldTenantID:      {Type: field.TypeUint64, Column: aiconversation.FieldTenantID},
 			aiconversation.FieldTitle:         {Type: field.TypeString, Column: aiconversation.FieldTitle},
-			aiconversation.FieldProviderID:    {Type: field.TypeUint32, Column: aiconversation.FieldProviderID},
-			aiconversation.FieldUserID:        {Type: field.TypeUint32, Column: aiconversation.FieldUserID},
+			aiconversation.FieldProviderID:    {Type: field.TypeUint64, Column: aiconversation.FieldProviderID},
+			aiconversation.FieldUserID:        {Type: field.TypeUint64, Column: aiconversation.FieldUserID},
 			aiconversation.FieldLastMessageAt: {Type: field.TypeTime, Column: aiconversation.FieldLastMessageAt},
 		},
 	}
@@ -231,7 +231,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aidoc.Table,
 			Columns: aidoc.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aidoc.FieldID,
 			},
 		},
@@ -240,16 +240,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aidoc.FieldCreatedAt:    {Type: field.TypeTime, Column: aidoc.FieldCreatedAt},
 			aidoc.FieldUpdatedAt:    {Type: field.TypeTime, Column: aidoc.FieldUpdatedAt},
 			aidoc.FieldDeletedAt:    {Type: field.TypeTime, Column: aidoc.FieldDeletedAt},
-			aidoc.FieldCreatedBy:    {Type: field.TypeUint32, Column: aidoc.FieldCreatedBy},
-			aidoc.FieldUpdatedBy:    {Type: field.TypeUint32, Column: aidoc.FieldUpdatedBy},
-			aidoc.FieldDeletedBy:    {Type: field.TypeUint32, Column: aidoc.FieldDeletedBy},
-			aidoc.FieldTenantID:     {Type: field.TypeUint32, Column: aidoc.FieldTenantID},
-			aidoc.FieldBaseID:       {Type: field.TypeUint32, Column: aidoc.FieldBaseID},
+			aidoc.FieldCreatedBy:    {Type: field.TypeUint64, Column: aidoc.FieldCreatedBy},
+			aidoc.FieldUpdatedBy:    {Type: field.TypeUint64, Column: aidoc.FieldUpdatedBy},
+			aidoc.FieldDeletedBy:    {Type: field.TypeUint64, Column: aidoc.FieldDeletedBy},
+			aidoc.FieldTenantID:     {Type: field.TypeUint64, Column: aidoc.FieldTenantID},
+			aidoc.FieldBaseID:       {Type: field.TypeUint64, Column: aidoc.FieldBaseID},
 			aidoc.FieldName:         {Type: field.TypeString, Column: aidoc.FieldName},
 			aidoc.FieldChunkCount:   {Type: field.TypeUint32, Column: aidoc.FieldChunkCount},
 			aidoc.FieldStatus:       {Type: field.TypeString, Column: aidoc.FieldStatus},
 			aidoc.FieldErrorMessage: {Type: field.TypeString, Column: aidoc.FieldErrorMessage},
-			aidoc.FieldUserID:       {Type: field.TypeUint32, Column: aidoc.FieldUserID},
+			aidoc.FieldUserID:       {Type: field.TypeUint64, Column: aidoc.FieldUserID},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -257,7 +257,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiknowledgebase.Table,
 			Columns: aiknowledgebase.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiknowledgebase.FieldID,
 			},
 		},
@@ -266,15 +266,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiknowledgebase.FieldCreatedAt:      {Type: field.TypeTime, Column: aiknowledgebase.FieldCreatedAt},
 			aiknowledgebase.FieldUpdatedAt:      {Type: field.TypeTime, Column: aiknowledgebase.FieldUpdatedAt},
 			aiknowledgebase.FieldDeletedAt:      {Type: field.TypeTime, Column: aiknowledgebase.FieldDeletedAt},
-			aiknowledgebase.FieldCreatedBy:      {Type: field.TypeUint32, Column: aiknowledgebase.FieldCreatedBy},
-			aiknowledgebase.FieldUpdatedBy:      {Type: field.TypeUint32, Column: aiknowledgebase.FieldUpdatedBy},
-			aiknowledgebase.FieldDeletedBy:      {Type: field.TypeUint32, Column: aiknowledgebase.FieldDeletedBy},
-			aiknowledgebase.FieldTenantID:       {Type: field.TypeUint32, Column: aiknowledgebase.FieldTenantID},
+			aiknowledgebase.FieldCreatedBy:      {Type: field.TypeUint64, Column: aiknowledgebase.FieldCreatedBy},
+			aiknowledgebase.FieldUpdatedBy:      {Type: field.TypeUint64, Column: aiknowledgebase.FieldUpdatedBy},
+			aiknowledgebase.FieldDeletedBy:      {Type: field.TypeUint64, Column: aiknowledgebase.FieldDeletedBy},
+			aiknowledgebase.FieldTenantID:       {Type: field.TypeUint64, Column: aiknowledgebase.FieldTenantID},
 			aiknowledgebase.FieldName:           {Type: field.TypeString, Column: aiknowledgebase.FieldName},
 			aiknowledgebase.FieldDescription:    {Type: field.TypeString, Column: aiknowledgebase.FieldDescription},
-			aiknowledgebase.FieldProviderID:     {Type: field.TypeUint32, Column: aiknowledgebase.FieldProviderID},
+			aiknowledgebase.FieldProviderID:     {Type: field.TypeUint64, Column: aiknowledgebase.FieldProviderID},
 			aiknowledgebase.FieldEmbeddingModel: {Type: field.TypeString, Column: aiknowledgebase.FieldEmbeddingModel},
-			aiknowledgebase.FieldUserID:         {Type: field.TypeUint32, Column: aiknowledgebase.FieldUserID},
+			aiknowledgebase.FieldUserID:         {Type: field.TypeUint64, Column: aiknowledgebase.FieldUserID},
 		},
 	}
 	graph.Nodes[8] = &sqlgraph.Node{
@@ -282,7 +282,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aimessage.Table,
 			Columns: aimessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aimessage.FieldID,
 			},
 		},
@@ -291,10 +291,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aimessage.FieldCreatedAt:        {Type: field.TypeTime, Column: aimessage.FieldCreatedAt},
 			aimessage.FieldUpdatedAt:        {Type: field.TypeTime, Column: aimessage.FieldUpdatedAt},
 			aimessage.FieldDeletedAt:        {Type: field.TypeTime, Column: aimessage.FieldDeletedAt},
-			aimessage.FieldCreatedBy:        {Type: field.TypeUint32, Column: aimessage.FieldCreatedBy},
-			aimessage.FieldUpdatedBy:        {Type: field.TypeUint32, Column: aimessage.FieldUpdatedBy},
-			aimessage.FieldDeletedBy:        {Type: field.TypeUint32, Column: aimessage.FieldDeletedBy},
-			aimessage.FieldTenantID:         {Type: field.TypeUint32, Column: aimessage.FieldTenantID},
+			aimessage.FieldCreatedBy:        {Type: field.TypeUint64, Column: aimessage.FieldCreatedBy},
+			aimessage.FieldUpdatedBy:        {Type: field.TypeUint64, Column: aimessage.FieldUpdatedBy},
+			aimessage.FieldDeletedBy:        {Type: field.TypeUint64, Column: aimessage.FieldDeletedBy},
+			aimessage.FieldTenantID:         {Type: field.TypeUint64, Column: aimessage.FieldTenantID},
 			aimessage.FieldRole:             {Type: field.TypeEnum, Column: aimessage.FieldRole},
 			aimessage.FieldContent:          {Type: field.TypeString, Column: aimessage.FieldContent},
 			aimessage.FieldModelName:        {Type: field.TypeString, Column: aimessage.FieldModelName},
@@ -302,8 +302,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aimessage.FieldCompletionTokens: {Type: field.TypeUint32, Column: aimessage.FieldCompletionTokens},
 			aimessage.FieldDurationMs:       {Type: field.TypeUint32, Column: aimessage.FieldDurationMs},
 			aimessage.FieldErrorMessage:     {Type: field.TypeString, Column: aimessage.FieldErrorMessage},
-			aimessage.FieldUserID:           {Type: field.TypeUint32, Column: aimessage.FieldUserID},
-			aimessage.FieldConversationID:   {Type: field.TypeUint32, Column: aimessage.FieldConversationID},
+			aimessage.FieldUserID:           {Type: field.TypeUint64, Column: aimessage.FieldUserID},
+			aimessage.FieldConversationID:   {Type: field.TypeUint64, Column: aimessage.FieldConversationID},
 		},
 	}
 	graph.Nodes[9] = &sqlgraph.Node{
@@ -311,7 +311,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiprovider.Table,
 			Columns: aiprovider.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiprovider.FieldID,
 			},
 		},
@@ -320,9 +320,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			aiprovider.FieldCreatedAt:      {Type: field.TypeTime, Column: aiprovider.FieldCreatedAt},
 			aiprovider.FieldUpdatedAt:      {Type: field.TypeTime, Column: aiprovider.FieldUpdatedAt},
 			aiprovider.FieldDeletedAt:      {Type: field.TypeTime, Column: aiprovider.FieldDeletedAt},
-			aiprovider.FieldCreatedBy:      {Type: field.TypeUint32, Column: aiprovider.FieldCreatedBy},
-			aiprovider.FieldUpdatedBy:      {Type: field.TypeUint32, Column: aiprovider.FieldUpdatedBy},
-			aiprovider.FieldDeletedBy:      {Type: field.TypeUint32, Column: aiprovider.FieldDeletedBy},
+			aiprovider.FieldCreatedBy:      {Type: field.TypeUint64, Column: aiprovider.FieldCreatedBy},
+			aiprovider.FieldUpdatedBy:      {Type: field.TypeUint64, Column: aiprovider.FieldUpdatedBy},
+			aiprovider.FieldDeletedBy:      {Type: field.TypeUint64, Column: aiprovider.FieldDeletedBy},
 			aiprovider.FieldIsEnabled:      {Type: field.TypeBool, Column: aiprovider.FieldIsEnabled},
 			aiprovider.FieldName:           {Type: field.TypeString, Column: aiprovider.FieldName},
 			aiprovider.FieldModelType:      {Type: field.TypeEnum, Column: aiprovider.FieldModelType},
@@ -344,17 +344,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   aiusagelog.Table,
 			Columns: aiusagelog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: aiusagelog.FieldID,
 			},
 		},
 		Type: "AiUsageLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			aiusagelog.FieldCreatedAt:        {Type: field.TypeTime, Column: aiusagelog.FieldCreatedAt},
-			aiusagelog.FieldTenantID:         {Type: field.TypeUint32, Column: aiusagelog.FieldTenantID},
-			aiusagelog.FieldProviderID:       {Type: field.TypeUint32, Column: aiusagelog.FieldProviderID},
-			aiusagelog.FieldConversationID:   {Type: field.TypeUint32, Column: aiusagelog.FieldConversationID},
-			aiusagelog.FieldUserID:           {Type: field.TypeUint32, Column: aiusagelog.FieldUserID},
+			aiusagelog.FieldTenantID:         {Type: field.TypeUint64, Column: aiusagelog.FieldTenantID},
+			aiusagelog.FieldProviderID:       {Type: field.TypeUint64, Column: aiusagelog.FieldProviderID},
+			aiusagelog.FieldConversationID:   {Type: field.TypeUint64, Column: aiusagelog.FieldConversationID},
+			aiusagelog.FieldUserID:           {Type: field.TypeUint64, Column: aiusagelog.FieldUserID},
 			aiusagelog.FieldModelName:        {Type: field.TypeString, Column: aiusagelog.FieldModelName},
 			aiusagelog.FieldPromptTokens:     {Type: field.TypeUint32, Column: aiusagelog.FieldPromptTokens},
 			aiusagelog.FieldCompletionTokens: {Type: field.TypeUint32, Column: aiusagelog.FieldCompletionTokens},
@@ -367,7 +367,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: api.FieldID,
 			},
 		},
@@ -376,9 +376,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			api.FieldCreatedAt:         {Type: field.TypeTime, Column: api.FieldCreatedAt},
 			api.FieldUpdatedAt:         {Type: field.TypeTime, Column: api.FieldUpdatedAt},
 			api.FieldDeletedAt:         {Type: field.TypeTime, Column: api.FieldDeletedAt},
-			api.FieldCreatedBy:         {Type: field.TypeUint32, Column: api.FieldCreatedBy},
-			api.FieldUpdatedBy:         {Type: field.TypeUint32, Column: api.FieldUpdatedBy},
-			api.FieldDeletedBy:         {Type: field.TypeUint32, Column: api.FieldDeletedBy},
+			api.FieldCreatedBy:         {Type: field.TypeUint64, Column: api.FieldCreatedBy},
+			api.FieldUpdatedBy:         {Type: field.TypeUint64, Column: api.FieldUpdatedBy},
+			api.FieldDeletedBy:         {Type: field.TypeUint64, Column: api.FieldDeletedBy},
 			api.FieldStatus:            {Type: field.TypeEnum, Column: api.FieldStatus},
 			api.FieldDescription:       {Type: field.TypeString, Column: api.FieldDescription},
 			api.FieldModule:            {Type: field.TypeString, Column: api.FieldModule},
@@ -395,15 +395,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   apiauditlog.Table,
 			Columns: apiauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: apiauditlog.FieldID,
 			},
 		},
 		Type: "ApiAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			apiauditlog.FieldCreatedAt:      {Type: field.TypeTime, Column: apiauditlog.FieldCreatedAt},
-			apiauditlog.FieldTenantID:       {Type: field.TypeUint32, Column: apiauditlog.FieldTenantID},
-			apiauditlog.FieldUserID:         {Type: field.TypeUint32, Column: apiauditlog.FieldUserID},
+			apiauditlog.FieldTenantID:       {Type: field.TypeUint64, Column: apiauditlog.FieldTenantID},
+			apiauditlog.FieldUserID:         {Type: field.TypeUint64, Column: apiauditlog.FieldUserID},
 			apiauditlog.FieldUsername:       {Type: field.TypeString, Column: apiauditlog.FieldUsername},
 			apiauditlog.FieldIPAddress:      {Type: field.TypeString, Column: apiauditlog.FieldIPAddress},
 			apiauditlog.FieldGeoLocation:    {Type: field.TypeJSON, Column: apiauditlog.FieldGeoLocation},
@@ -435,7 +435,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   bidashboard.Table,
 			Columns: bidashboard.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: bidashboard.FieldID,
 			},
 		},
@@ -444,12 +444,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			bidashboard.FieldCreatedAt:  {Type: field.TypeTime, Column: bidashboard.FieldCreatedAt},
 			bidashboard.FieldUpdatedAt:  {Type: field.TypeTime, Column: bidashboard.FieldUpdatedAt},
 			bidashboard.FieldDeletedAt:  {Type: field.TypeTime, Column: bidashboard.FieldDeletedAt},
-			bidashboard.FieldCreatedBy:  {Type: field.TypeUint32, Column: bidashboard.FieldCreatedBy},
-			bidashboard.FieldUpdatedBy:  {Type: field.TypeUint32, Column: bidashboard.FieldUpdatedBy},
-			bidashboard.FieldDeletedBy:  {Type: field.TypeUint32, Column: bidashboard.FieldDeletedBy},
+			bidashboard.FieldCreatedBy:  {Type: field.TypeUint64, Column: bidashboard.FieldCreatedBy},
+			bidashboard.FieldUpdatedBy:  {Type: field.TypeUint64, Column: bidashboard.FieldUpdatedBy},
+			bidashboard.FieldDeletedBy:  {Type: field.TypeUint64, Column: bidashboard.FieldDeletedBy},
 			bidashboard.FieldIsEnabled:  {Type: field.TypeBool, Column: bidashboard.FieldIsEnabled},
 			bidashboard.FieldSortOrder:  {Type: field.TypeUint32, Column: bidashboard.FieldSortOrder},
-			bidashboard.FieldTenantID:   {Type: field.TypeUint32, Column: bidashboard.FieldTenantID},
+			bidashboard.FieldTenantID:   {Type: field.TypeUint64, Column: bidashboard.FieldTenantID},
 			bidashboard.FieldName:       {Type: field.TypeString, Column: bidashboard.FieldName},
 			bidashboard.FieldCode:       {Type: field.TypeString, Column: bidashboard.FieldCode},
 			bidashboard.FieldKind:       {Type: field.TypeEnum, Column: bidashboard.FieldKind},
@@ -468,7 +468,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   bidashboardrevision.Table,
 			Columns: bidashboardrevision.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: bidashboardrevision.FieldID,
 			},
 		},
@@ -477,11 +477,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			bidashboardrevision.FieldCreatedAt:   {Type: field.TypeTime, Column: bidashboardrevision.FieldCreatedAt},
 			bidashboardrevision.FieldUpdatedAt:   {Type: field.TypeTime, Column: bidashboardrevision.FieldUpdatedAt},
 			bidashboardrevision.FieldDeletedAt:   {Type: field.TypeTime, Column: bidashboardrevision.FieldDeletedAt},
-			bidashboardrevision.FieldCreatedBy:   {Type: field.TypeUint32, Column: bidashboardrevision.FieldCreatedBy},
-			bidashboardrevision.FieldUpdatedBy:   {Type: field.TypeUint32, Column: bidashboardrevision.FieldUpdatedBy},
-			bidashboardrevision.FieldDeletedBy:   {Type: field.TypeUint32, Column: bidashboardrevision.FieldDeletedBy},
-			bidashboardrevision.FieldTenantID:    {Type: field.TypeUint32, Column: bidashboardrevision.FieldTenantID},
-			bidashboardrevision.FieldDashboardID: {Type: field.TypeUint32, Column: bidashboardrevision.FieldDashboardID},
+			bidashboardrevision.FieldCreatedBy:   {Type: field.TypeUint64, Column: bidashboardrevision.FieldCreatedBy},
+			bidashboardrevision.FieldUpdatedBy:   {Type: field.TypeUint64, Column: bidashboardrevision.FieldUpdatedBy},
+			bidashboardrevision.FieldDeletedBy:   {Type: field.TypeUint64, Column: bidashboardrevision.FieldDeletedBy},
+			bidashboardrevision.FieldTenantID:    {Type: field.TypeUint64, Column: bidashboardrevision.FieldTenantID},
+			bidashboardrevision.FieldDashboardID: {Type: field.TypeUint64, Column: bidashboardrevision.FieldDashboardID},
 			bidashboardrevision.FieldVersion:     {Type: field.TypeUint32, Column: bidashboardrevision.FieldVersion},
 			bidashboardrevision.FieldName:        {Type: field.TypeString, Column: bidashboardrevision.FieldName},
 			bidashboardrevision.FieldPayload:     {Type: field.TypeString, Column: bidashboardrevision.FieldPayload},
@@ -493,15 +493,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   dataaccessauditlog.Table,
 			Columns: dataaccessauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: dataaccessauditlog.FieldID,
 			},
 		},
 		Type: "DataAccessAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			dataaccessauditlog.FieldCreatedAt:       {Type: field.TypeTime, Column: dataaccessauditlog.FieldCreatedAt},
-			dataaccessauditlog.FieldTenantID:        {Type: field.TypeUint32, Column: dataaccessauditlog.FieldTenantID},
-			dataaccessauditlog.FieldUserID:          {Type: field.TypeUint32, Column: dataaccessauditlog.FieldUserID},
+			dataaccessauditlog.FieldTenantID:        {Type: field.TypeUint64, Column: dataaccessauditlog.FieldTenantID},
+			dataaccessauditlog.FieldUserID:          {Type: field.TypeUint64, Column: dataaccessauditlog.FieldUserID},
 			dataaccessauditlog.FieldUsername:        {Type: field.TypeString, Column: dataaccessauditlog.FieldUsername},
 			dataaccessauditlog.FieldIPAddress:       {Type: field.TypeString, Column: dataaccessauditlog.FieldIPAddress},
 			dataaccessauditlog.FieldGeoLocation:     {Type: field.TypeJSON, Column: dataaccessauditlog.FieldGeoLocation},
@@ -532,7 +532,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   dictentry.Table,
 			Columns: dictentry.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: dictentry.FieldID,
 			},
 		},
@@ -541,12 +541,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dictentry.FieldCreatedAt:    {Type: field.TypeTime, Column: dictentry.FieldCreatedAt},
 			dictentry.FieldUpdatedAt:    {Type: field.TypeTime, Column: dictentry.FieldUpdatedAt},
 			dictentry.FieldDeletedAt:    {Type: field.TypeTime, Column: dictentry.FieldDeletedAt},
-			dictentry.FieldCreatedBy:    {Type: field.TypeUint32, Column: dictentry.FieldCreatedBy},
-			dictentry.FieldUpdatedBy:    {Type: field.TypeUint32, Column: dictentry.FieldUpdatedBy},
-			dictentry.FieldDeletedBy:    {Type: field.TypeUint32, Column: dictentry.FieldDeletedBy},
+			dictentry.FieldCreatedBy:    {Type: field.TypeUint64, Column: dictentry.FieldCreatedBy},
+			dictentry.FieldUpdatedBy:    {Type: field.TypeUint64, Column: dictentry.FieldUpdatedBy},
+			dictentry.FieldDeletedBy:    {Type: field.TypeUint64, Column: dictentry.FieldDeletedBy},
 			dictentry.FieldSortOrder:    {Type: field.TypeUint32, Column: dictentry.FieldSortOrder},
 			dictentry.FieldIsEnabled:    {Type: field.TypeBool, Column: dictentry.FieldIsEnabled},
-			dictentry.FieldTenantID:     {Type: field.TypeUint32, Column: dictentry.FieldTenantID},
+			dictentry.FieldTenantID:     {Type: field.TypeUint64, Column: dictentry.FieldTenantID},
 			dictentry.FieldEntryValue:   {Type: field.TypeString, Column: dictentry.FieldEntryValue},
 			dictentry.FieldNumericValue: {Type: field.TypeInt32, Column: dictentry.FieldNumericValue},
 		},
@@ -556,7 +556,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   dictentryi18n.Table,
 			Columns: dictentryi18n.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: dictentryi18n.FieldID,
 			},
 		},
@@ -565,12 +565,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dictentryi18n.FieldCreatedAt:    {Type: field.TypeTime, Column: dictentryi18n.FieldCreatedAt},
 			dictentryi18n.FieldUpdatedAt:    {Type: field.TypeTime, Column: dictentryi18n.FieldUpdatedAt},
 			dictentryi18n.FieldDeletedAt:    {Type: field.TypeTime, Column: dictentryi18n.FieldDeletedAt},
-			dictentryi18n.FieldCreatedBy:    {Type: field.TypeUint32, Column: dictentryi18n.FieldCreatedBy},
-			dictentryi18n.FieldUpdatedBy:    {Type: field.TypeUint32, Column: dictentryi18n.FieldUpdatedBy},
-			dictentryi18n.FieldDeletedBy:    {Type: field.TypeUint32, Column: dictentryi18n.FieldDeletedBy},
+			dictentryi18n.FieldCreatedBy:    {Type: field.TypeUint64, Column: dictentryi18n.FieldCreatedBy},
+			dictentryi18n.FieldUpdatedBy:    {Type: field.TypeUint64, Column: dictentryi18n.FieldUpdatedBy},
+			dictentryi18n.FieldDeletedBy:    {Type: field.TypeUint64, Column: dictentryi18n.FieldDeletedBy},
 			dictentryi18n.FieldDescription:  {Type: field.TypeString, Column: dictentryi18n.FieldDescription},
 			dictentryi18n.FieldSortOrder:    {Type: field.TypeUint32, Column: dictentryi18n.FieldSortOrder},
-			dictentryi18n.FieldTenantID:     {Type: field.TypeUint32, Column: dictentryi18n.FieldTenantID},
+			dictentryi18n.FieldTenantID:     {Type: field.TypeUint64, Column: dictentryi18n.FieldTenantID},
 			dictentryi18n.FieldLanguageCode: {Type: field.TypeString, Column: dictentryi18n.FieldLanguageCode},
 			dictentryi18n.FieldEntryLabel:   {Type: field.TypeString, Column: dictentryi18n.FieldEntryLabel},
 		},
@@ -580,7 +580,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   dicttype.Table,
 			Columns: dicttype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: dicttype.FieldID,
 			},
 		},
@@ -589,12 +589,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dicttype.FieldCreatedAt: {Type: field.TypeTime, Column: dicttype.FieldCreatedAt},
 			dicttype.FieldUpdatedAt: {Type: field.TypeTime, Column: dicttype.FieldUpdatedAt},
 			dicttype.FieldDeletedAt: {Type: field.TypeTime, Column: dicttype.FieldDeletedAt},
-			dicttype.FieldCreatedBy: {Type: field.TypeUint32, Column: dicttype.FieldCreatedBy},
-			dicttype.FieldUpdatedBy: {Type: field.TypeUint32, Column: dicttype.FieldUpdatedBy},
-			dicttype.FieldDeletedBy: {Type: field.TypeUint32, Column: dicttype.FieldDeletedBy},
+			dicttype.FieldCreatedBy: {Type: field.TypeUint64, Column: dicttype.FieldCreatedBy},
+			dicttype.FieldUpdatedBy: {Type: field.TypeUint64, Column: dicttype.FieldUpdatedBy},
+			dicttype.FieldDeletedBy: {Type: field.TypeUint64, Column: dicttype.FieldDeletedBy},
 			dicttype.FieldIsEnabled: {Type: field.TypeBool, Column: dicttype.FieldIsEnabled},
 			dicttype.FieldSortOrder: {Type: field.TypeUint32, Column: dicttype.FieldSortOrder},
-			dicttype.FieldTenantID:  {Type: field.TypeUint32, Column: dicttype.FieldTenantID},
+			dicttype.FieldTenantID:  {Type: field.TypeUint64, Column: dicttype.FieldTenantID},
 			dicttype.FieldTypeCode:  {Type: field.TypeString, Column: dicttype.FieldTypeCode},
 			dicttype.FieldTypeName:  {Type: field.TypeString, Column: dicttype.FieldTypeName},
 		},
@@ -604,7 +604,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   file.Table,
 			Columns: file.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: file.FieldID,
 			},
 		},
@@ -613,11 +613,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			file.FieldCreatedAt:     {Type: field.TypeTime, Column: file.FieldCreatedAt},
 			file.FieldUpdatedAt:     {Type: field.TypeTime, Column: file.FieldUpdatedAt},
 			file.FieldDeletedAt:     {Type: field.TypeTime, Column: file.FieldDeletedAt},
-			file.FieldCreatedBy:     {Type: field.TypeUint32, Column: file.FieldCreatedBy},
-			file.FieldUpdatedBy:     {Type: field.TypeUint32, Column: file.FieldUpdatedBy},
-			file.FieldDeletedBy:     {Type: field.TypeUint32, Column: file.FieldDeletedBy},
+			file.FieldCreatedBy:     {Type: field.TypeUint64, Column: file.FieldCreatedBy},
+			file.FieldUpdatedBy:     {Type: field.TypeUint64, Column: file.FieldUpdatedBy},
+			file.FieldDeletedBy:     {Type: field.TypeUint64, Column: file.FieldDeletedBy},
 			file.FieldRemark:        {Type: field.TypeString, Column: file.FieldRemark},
-			file.FieldTenantID:      {Type: field.TypeUint32, Column: file.FieldTenantID},
+			file.FieldTenantID:      {Type: field.TypeUint64, Column: file.FieldTenantID},
 			file.FieldProvider:      {Type: field.TypeEnum, Column: file.FieldProvider},
 			file.FieldBucketName:    {Type: field.TypeString, Column: file.FieldBucketName},
 			file.FieldFileDirectory: {Type: field.TypeString, Column: file.FieldFileDirectory},
@@ -636,7 +636,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   internalmessage.Table,
 			Columns: internalmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: internalmessage.FieldID,
 			},
 		},
@@ -645,14 +645,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessage.FieldCreatedAt:  {Type: field.TypeTime, Column: internalmessage.FieldCreatedAt},
 			internalmessage.FieldUpdatedAt:  {Type: field.TypeTime, Column: internalmessage.FieldUpdatedAt},
 			internalmessage.FieldDeletedAt:  {Type: field.TypeTime, Column: internalmessage.FieldDeletedAt},
-			internalmessage.FieldCreatedBy:  {Type: field.TypeUint32, Column: internalmessage.FieldCreatedBy},
-			internalmessage.FieldUpdatedBy:  {Type: field.TypeUint32, Column: internalmessage.FieldUpdatedBy},
-			internalmessage.FieldDeletedBy:  {Type: field.TypeUint32, Column: internalmessage.FieldDeletedBy},
-			internalmessage.FieldTenantID:   {Type: field.TypeUint32, Column: internalmessage.FieldTenantID},
+			internalmessage.FieldCreatedBy:  {Type: field.TypeUint64, Column: internalmessage.FieldCreatedBy},
+			internalmessage.FieldUpdatedBy:  {Type: field.TypeUint64, Column: internalmessage.FieldUpdatedBy},
+			internalmessage.FieldDeletedBy:  {Type: field.TypeUint64, Column: internalmessage.FieldDeletedBy},
+			internalmessage.FieldTenantID:   {Type: field.TypeUint64, Column: internalmessage.FieldTenantID},
 			internalmessage.FieldTitle:      {Type: field.TypeString, Column: internalmessage.FieldTitle},
 			internalmessage.FieldContent:    {Type: field.TypeString, Column: internalmessage.FieldContent},
-			internalmessage.FieldSenderID:   {Type: field.TypeUint32, Column: internalmessage.FieldSenderID},
-			internalmessage.FieldCategoryID: {Type: field.TypeUint32, Column: internalmessage.FieldCategoryID},
+			internalmessage.FieldSenderID:   {Type: field.TypeUint64, Column: internalmessage.FieldSenderID},
+			internalmessage.FieldCategoryID: {Type: field.TypeUint64, Column: internalmessage.FieldCategoryID},
 			internalmessage.FieldStatus:     {Type: field.TypeEnum, Column: internalmessage.FieldStatus},
 			internalmessage.FieldType:       {Type: field.TypeEnum, Column: internalmessage.FieldType},
 		},
@@ -662,7 +662,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   internalmessagecategory.Table,
 			Columns: internalmessagecategory.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: internalmessagecategory.FieldID,
 			},
 		},
@@ -671,13 +671,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagecategory.FieldCreatedAt: {Type: field.TypeTime, Column: internalmessagecategory.FieldCreatedAt},
 			internalmessagecategory.FieldUpdatedAt: {Type: field.TypeTime, Column: internalmessagecategory.FieldUpdatedAt},
 			internalmessagecategory.FieldDeletedAt: {Type: field.TypeTime, Column: internalmessagecategory.FieldDeletedAt},
-			internalmessagecategory.FieldCreatedBy: {Type: field.TypeUint32, Column: internalmessagecategory.FieldCreatedBy},
-			internalmessagecategory.FieldUpdatedBy: {Type: field.TypeUint32, Column: internalmessagecategory.FieldUpdatedBy},
-			internalmessagecategory.FieldDeletedBy: {Type: field.TypeUint32, Column: internalmessagecategory.FieldDeletedBy},
+			internalmessagecategory.FieldCreatedBy: {Type: field.TypeUint64, Column: internalmessagecategory.FieldCreatedBy},
+			internalmessagecategory.FieldUpdatedBy: {Type: field.TypeUint64, Column: internalmessagecategory.FieldUpdatedBy},
+			internalmessagecategory.FieldDeletedBy: {Type: field.TypeUint64, Column: internalmessagecategory.FieldDeletedBy},
 			internalmessagecategory.FieldIsEnabled: {Type: field.TypeBool, Column: internalmessagecategory.FieldIsEnabled},
 			internalmessagecategory.FieldSortOrder: {Type: field.TypeUint32, Column: internalmessagecategory.FieldSortOrder},
 			internalmessagecategory.FieldRemark:    {Type: field.TypeString, Column: internalmessagecategory.FieldRemark},
-			internalmessagecategory.FieldTenantID:  {Type: field.TypeUint32, Column: internalmessagecategory.FieldTenantID},
+			internalmessagecategory.FieldTenantID:  {Type: field.TypeUint64, Column: internalmessagecategory.FieldTenantID},
 			internalmessagecategory.FieldName:      {Type: field.TypeString, Column: internalmessagecategory.FieldName},
 			internalmessagecategory.FieldCode:      {Type: field.TypeString, Column: internalmessagecategory.FieldCode},
 			internalmessagecategory.FieldIconURL:   {Type: field.TypeString, Column: internalmessagecategory.FieldIconURL},
@@ -688,7 +688,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   internalmessagerecipient.Table,
 			Columns: internalmessagerecipient.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: internalmessagerecipient.FieldID,
 			},
 		},
@@ -697,9 +697,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagerecipient.FieldCreatedAt:       {Type: field.TypeTime, Column: internalmessagerecipient.FieldCreatedAt},
 			internalmessagerecipient.FieldUpdatedAt:       {Type: field.TypeTime, Column: internalmessagerecipient.FieldUpdatedAt},
 			internalmessagerecipient.FieldDeletedAt:       {Type: field.TypeTime, Column: internalmessagerecipient.FieldDeletedAt},
-			internalmessagerecipient.FieldTenantID:        {Type: field.TypeUint32, Column: internalmessagerecipient.FieldTenantID},
-			internalmessagerecipient.FieldMessageID:       {Type: field.TypeUint32, Column: internalmessagerecipient.FieldMessageID},
-			internalmessagerecipient.FieldRecipientUserID: {Type: field.TypeUint32, Column: internalmessagerecipient.FieldRecipientUserID},
+			internalmessagerecipient.FieldTenantID:        {Type: field.TypeUint64, Column: internalmessagerecipient.FieldTenantID},
+			internalmessagerecipient.FieldMessageID:       {Type: field.TypeUint64, Column: internalmessagerecipient.FieldMessageID},
+			internalmessagerecipient.FieldRecipientUserID: {Type: field.TypeUint64, Column: internalmessagerecipient.FieldRecipientUserID},
 			internalmessagerecipient.FieldStatus:          {Type: field.TypeEnum, Column: internalmessagerecipient.FieldStatus},
 			internalmessagerecipient.FieldReceivedAt:      {Type: field.TypeTime, Column: internalmessagerecipient.FieldReceivedAt},
 			internalmessagerecipient.FieldReadAt:          {Type: field.TypeTime, Column: internalmessagerecipient.FieldReadAt},
@@ -710,7 +710,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   language.Table,
 			Columns: language.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: language.FieldID,
 			},
 		},
@@ -719,9 +719,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			language.FieldCreatedAt:    {Type: field.TypeTime, Column: language.FieldCreatedAt},
 			language.FieldUpdatedAt:    {Type: field.TypeTime, Column: language.FieldUpdatedAt},
 			language.FieldDeletedAt:    {Type: field.TypeTime, Column: language.FieldDeletedAt},
-			language.FieldCreatedBy:    {Type: field.TypeUint32, Column: language.FieldCreatedBy},
-			language.FieldUpdatedBy:    {Type: field.TypeUint32, Column: language.FieldUpdatedBy},
-			language.FieldDeletedBy:    {Type: field.TypeUint32, Column: language.FieldDeletedBy},
+			language.FieldCreatedBy:    {Type: field.TypeUint64, Column: language.FieldCreatedBy},
+			language.FieldUpdatedBy:    {Type: field.TypeUint64, Column: language.FieldUpdatedBy},
+			language.FieldDeletedBy:    {Type: field.TypeUint64, Column: language.FieldDeletedBy},
 			language.FieldSortOrder:    {Type: field.TypeUint32, Column: language.FieldSortOrder},
 			language.FieldIsEnabled:    {Type: field.TypeBool, Column: language.FieldIsEnabled},
 			language.FieldLanguageCode: {Type: field.TypeString, Column: language.FieldLanguageCode},
@@ -735,15 +735,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   loginauditlog.Table,
 			Columns: loginauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: loginauditlog.FieldID,
 			},
 		},
 		Type: "LoginAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			loginauditlog.FieldCreatedAt:     {Type: field.TypeTime, Column: loginauditlog.FieldCreatedAt},
-			loginauditlog.FieldTenantID:      {Type: field.TypeUint32, Column: loginauditlog.FieldTenantID},
-			loginauditlog.FieldUserID:        {Type: field.TypeUint32, Column: loginauditlog.FieldUserID},
+			loginauditlog.FieldTenantID:      {Type: field.TypeUint64, Column: loginauditlog.FieldTenantID},
+			loginauditlog.FieldUserID:        {Type: field.TypeUint64, Column: loginauditlog.FieldUserID},
 			loginauditlog.FieldUsername:      {Type: field.TypeString, Column: loginauditlog.FieldUsername},
 			loginauditlog.FieldIPAddress:     {Type: field.TypeString, Column: loginauditlog.FieldIPAddress},
 			loginauditlog.FieldGeoLocation:   {Type: field.TypeJSON, Column: loginauditlog.FieldGeoLocation},
@@ -768,7 +768,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   loginpolicy.Table,
 			Columns: loginpolicy.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: loginpolicy.FieldID,
 			},
 		},
@@ -777,11 +777,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			loginpolicy.FieldCreatedAt: {Type: field.TypeTime, Column: loginpolicy.FieldCreatedAt},
 			loginpolicy.FieldUpdatedAt: {Type: field.TypeTime, Column: loginpolicy.FieldUpdatedAt},
 			loginpolicy.FieldDeletedAt: {Type: field.TypeTime, Column: loginpolicy.FieldDeletedAt},
-			loginpolicy.FieldCreatedBy: {Type: field.TypeUint32, Column: loginpolicy.FieldCreatedBy},
-			loginpolicy.FieldUpdatedBy: {Type: field.TypeUint32, Column: loginpolicy.FieldUpdatedBy},
-			loginpolicy.FieldDeletedBy: {Type: field.TypeUint32, Column: loginpolicy.FieldDeletedBy},
-			loginpolicy.FieldTenantID:  {Type: field.TypeUint32, Column: loginpolicy.FieldTenantID},
-			loginpolicy.FieldTargetID:  {Type: field.TypeUint32, Column: loginpolicy.FieldTargetID},
+			loginpolicy.FieldCreatedBy: {Type: field.TypeUint64, Column: loginpolicy.FieldCreatedBy},
+			loginpolicy.FieldUpdatedBy: {Type: field.TypeUint64, Column: loginpolicy.FieldUpdatedBy},
+			loginpolicy.FieldDeletedBy: {Type: field.TypeUint64, Column: loginpolicy.FieldDeletedBy},
+			loginpolicy.FieldTenantID:  {Type: field.TypeUint64, Column: loginpolicy.FieldTenantID},
+			loginpolicy.FieldTargetID:  {Type: field.TypeUint64, Column: loginpolicy.FieldTargetID},
 			loginpolicy.FieldValue:     {Type: field.TypeString, Column: loginpolicy.FieldValue},
 			loginpolicy.FieldReason:    {Type: field.TypeString, Column: loginpolicy.FieldReason},
 			loginpolicy.FieldType:      {Type: field.TypeEnum, Column: loginpolicy.FieldType},
@@ -793,7 +793,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   membership.Table,
 			Columns: membership.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: membership.FieldID,
 			},
 		},
@@ -802,20 +802,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membership.FieldCreatedAt:  {Type: field.TypeTime, Column: membership.FieldCreatedAt},
 			membership.FieldUpdatedAt:  {Type: field.TypeTime, Column: membership.FieldUpdatedAt},
 			membership.FieldDeletedAt:  {Type: field.TypeTime, Column: membership.FieldDeletedAt},
-			membership.FieldCreatedBy:  {Type: field.TypeUint32, Column: membership.FieldCreatedBy},
-			membership.FieldUpdatedBy:  {Type: field.TypeUint32, Column: membership.FieldUpdatedBy},
-			membership.FieldDeletedBy:  {Type: field.TypeUint32, Column: membership.FieldDeletedBy},
-			membership.FieldTenantID:   {Type: field.TypeUint32, Column: membership.FieldTenantID},
+			membership.FieldCreatedBy:  {Type: field.TypeUint64, Column: membership.FieldCreatedBy},
+			membership.FieldUpdatedBy:  {Type: field.TypeUint64, Column: membership.FieldUpdatedBy},
+			membership.FieldDeletedBy:  {Type: field.TypeUint64, Column: membership.FieldDeletedBy},
+			membership.FieldTenantID:   {Type: field.TypeUint64, Column: membership.FieldTenantID},
 			membership.FieldRemark:     {Type: field.TypeString, Column: membership.FieldRemark},
-			membership.FieldUserID:     {Type: field.TypeUint32, Column: membership.FieldUserID},
-			membership.FieldOrgUnitID:  {Type: field.TypeUint32, Column: membership.FieldOrgUnitID},
-			membership.FieldPositionID: {Type: field.TypeUint32, Column: membership.FieldPositionID},
-			membership.FieldRoleID:     {Type: field.TypeUint32, Column: membership.FieldRoleID},
+			membership.FieldUserID:     {Type: field.TypeUint64, Column: membership.FieldUserID},
+			membership.FieldOrgUnitID:  {Type: field.TypeUint64, Column: membership.FieldOrgUnitID},
+			membership.FieldPositionID: {Type: field.TypeUint64, Column: membership.FieldPositionID},
+			membership.FieldRoleID:     {Type: field.TypeUint64, Column: membership.FieldRoleID},
 			membership.FieldIsPrimary:  {Type: field.TypeBool, Column: membership.FieldIsPrimary},
 			membership.FieldStartAt:    {Type: field.TypeTime, Column: membership.FieldStartAt},
 			membership.FieldEndAt:      {Type: field.TypeTime, Column: membership.FieldEndAt},
 			membership.FieldAssignedAt: {Type: field.TypeTime, Column: membership.FieldAssignedAt},
-			membership.FieldAssignedBy: {Type: field.TypeUint32, Column: membership.FieldAssignedBy},
+			membership.FieldAssignedBy: {Type: field.TypeUint64, Column: membership.FieldAssignedBy},
 			membership.FieldJoinedAt:   {Type: field.TypeTime, Column: membership.FieldJoinedAt},
 			membership.FieldStatus:     {Type: field.TypeEnum, Column: membership.FieldStatus},
 		},
@@ -825,7 +825,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   membershiporgunit.Table,
 			Columns: membershiporgunit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: membershiporgunit.FieldID,
 			},
 		},
@@ -834,19 +834,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershiporgunit.FieldCreatedAt:    {Type: field.TypeTime, Column: membershiporgunit.FieldCreatedAt},
 			membershiporgunit.FieldUpdatedAt:    {Type: field.TypeTime, Column: membershiporgunit.FieldUpdatedAt},
 			membershiporgunit.FieldDeletedAt:    {Type: field.TypeTime, Column: membershiporgunit.FieldDeletedAt},
-			membershiporgunit.FieldCreatedBy:    {Type: field.TypeUint32, Column: membershiporgunit.FieldCreatedBy},
-			membershiporgunit.FieldUpdatedBy:    {Type: field.TypeUint32, Column: membershiporgunit.FieldUpdatedBy},
-			membershiporgunit.FieldDeletedBy:    {Type: field.TypeUint32, Column: membershiporgunit.FieldDeletedBy},
-			membershiporgunit.FieldTenantID:     {Type: field.TypeUint32, Column: membershiporgunit.FieldTenantID},
+			membershiporgunit.FieldCreatedBy:    {Type: field.TypeUint64, Column: membershiporgunit.FieldCreatedBy},
+			membershiporgunit.FieldUpdatedBy:    {Type: field.TypeUint64, Column: membershiporgunit.FieldUpdatedBy},
+			membershiporgunit.FieldDeletedBy:    {Type: field.TypeUint64, Column: membershiporgunit.FieldDeletedBy},
+			membershiporgunit.FieldTenantID:     {Type: field.TypeUint64, Column: membershiporgunit.FieldTenantID},
 			membershiporgunit.FieldRemark:       {Type: field.TypeString, Column: membershiporgunit.FieldRemark},
-			membershiporgunit.FieldMembershipID: {Type: field.TypeUint32, Column: membershiporgunit.FieldMembershipID},
-			membershiporgunit.FieldOrgUnitID:    {Type: field.TypeUint32, Column: membershiporgunit.FieldOrgUnitID},
-			membershiporgunit.FieldPositionID:   {Type: field.TypeUint32, Column: membershiporgunit.FieldPositionID},
-			membershiporgunit.FieldRoleID:       {Type: field.TypeUint32, Column: membershiporgunit.FieldRoleID},
+			membershiporgunit.FieldMembershipID: {Type: field.TypeUint64, Column: membershiporgunit.FieldMembershipID},
+			membershiporgunit.FieldOrgUnitID:    {Type: field.TypeUint64, Column: membershiporgunit.FieldOrgUnitID},
+			membershiporgunit.FieldPositionID:   {Type: field.TypeUint64, Column: membershiporgunit.FieldPositionID},
+			membershiporgunit.FieldRoleID:       {Type: field.TypeUint64, Column: membershiporgunit.FieldRoleID},
 			membershiporgunit.FieldStartAt:      {Type: field.TypeTime, Column: membershiporgunit.FieldStartAt},
 			membershiporgunit.FieldEndAt:        {Type: field.TypeTime, Column: membershiporgunit.FieldEndAt},
 			membershiporgunit.FieldAssignedAt:   {Type: field.TypeTime, Column: membershiporgunit.FieldAssignedAt},
-			membershiporgunit.FieldAssignedBy:   {Type: field.TypeUint32, Column: membershiporgunit.FieldAssignedBy},
+			membershiporgunit.FieldAssignedBy:   {Type: field.TypeUint64, Column: membershiporgunit.FieldAssignedBy},
 			membershiporgunit.FieldIsPrimary:    {Type: field.TypeBool, Column: membershiporgunit.FieldIsPrimary},
 			membershiporgunit.FieldStatus:       {Type: field.TypeEnum, Column: membershiporgunit.FieldStatus},
 		},
@@ -856,7 +856,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   membershipposition.Table,
 			Columns: membershipposition.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: membershipposition.FieldID,
 			},
 		},
@@ -865,18 +865,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershipposition.FieldCreatedAt:    {Type: field.TypeTime, Column: membershipposition.FieldCreatedAt},
 			membershipposition.FieldUpdatedAt:    {Type: field.TypeTime, Column: membershipposition.FieldUpdatedAt},
 			membershipposition.FieldDeletedAt:    {Type: field.TypeTime, Column: membershipposition.FieldDeletedAt},
-			membershipposition.FieldCreatedBy:    {Type: field.TypeUint32, Column: membershipposition.FieldCreatedBy},
-			membershipposition.FieldUpdatedBy:    {Type: field.TypeUint32, Column: membershipposition.FieldUpdatedBy},
-			membershipposition.FieldDeletedBy:    {Type: field.TypeUint32, Column: membershipposition.FieldDeletedBy},
-			membershipposition.FieldTenantID:     {Type: field.TypeUint32, Column: membershipposition.FieldTenantID},
+			membershipposition.FieldCreatedBy:    {Type: field.TypeUint64, Column: membershipposition.FieldCreatedBy},
+			membershipposition.FieldUpdatedBy:    {Type: field.TypeUint64, Column: membershipposition.FieldUpdatedBy},
+			membershipposition.FieldDeletedBy:    {Type: field.TypeUint64, Column: membershipposition.FieldDeletedBy},
+			membershipposition.FieldTenantID:     {Type: field.TypeUint64, Column: membershipposition.FieldTenantID},
 			membershipposition.FieldRemark:       {Type: field.TypeString, Column: membershipposition.FieldRemark},
-			membershipposition.FieldMembershipID: {Type: field.TypeUint32, Column: membershipposition.FieldMembershipID},
-			membershipposition.FieldPositionID:   {Type: field.TypeUint32, Column: membershipposition.FieldPositionID},
+			membershipposition.FieldMembershipID: {Type: field.TypeUint64, Column: membershipposition.FieldMembershipID},
+			membershipposition.FieldPositionID:   {Type: field.TypeUint64, Column: membershipposition.FieldPositionID},
 			membershipposition.FieldIsPrimary:    {Type: field.TypeBool, Column: membershipposition.FieldIsPrimary},
 			membershipposition.FieldStartAt:      {Type: field.TypeTime, Column: membershipposition.FieldStartAt},
 			membershipposition.FieldEndAt:        {Type: field.TypeTime, Column: membershipposition.FieldEndAt},
 			membershipposition.FieldAssignedAt:   {Type: field.TypeTime, Column: membershipposition.FieldAssignedAt},
-			membershipposition.FieldAssignedBy:   {Type: field.TypeUint32, Column: membershipposition.FieldAssignedBy},
+			membershipposition.FieldAssignedBy:   {Type: field.TypeUint64, Column: membershipposition.FieldAssignedBy},
 			membershipposition.FieldStatus:       {Type: field.TypeEnum, Column: membershipposition.FieldStatus},
 		},
 	}
@@ -885,7 +885,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   membershiprole.Table,
 			Columns: membershiprole.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: membershiprole.FieldID,
 			},
 		},
@@ -894,16 +894,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershiprole.FieldCreatedAt:    {Type: field.TypeTime, Column: membershiprole.FieldCreatedAt},
 			membershiprole.FieldUpdatedAt:    {Type: field.TypeTime, Column: membershiprole.FieldUpdatedAt},
 			membershiprole.FieldDeletedAt:    {Type: field.TypeTime, Column: membershiprole.FieldDeletedAt},
-			membershiprole.FieldCreatedBy:    {Type: field.TypeUint32, Column: membershiprole.FieldCreatedBy},
-			membershiprole.FieldUpdatedBy:    {Type: field.TypeUint32, Column: membershiprole.FieldUpdatedBy},
-			membershiprole.FieldDeletedBy:    {Type: field.TypeUint32, Column: membershiprole.FieldDeletedBy},
-			membershiprole.FieldTenantID:     {Type: field.TypeUint32, Column: membershiprole.FieldTenantID},
-			membershiprole.FieldMembershipID: {Type: field.TypeUint32, Column: membershiprole.FieldMembershipID},
-			membershiprole.FieldRoleID:       {Type: field.TypeUint32, Column: membershiprole.FieldRoleID},
+			membershiprole.FieldCreatedBy:    {Type: field.TypeUint64, Column: membershiprole.FieldCreatedBy},
+			membershiprole.FieldUpdatedBy:    {Type: field.TypeUint64, Column: membershiprole.FieldUpdatedBy},
+			membershiprole.FieldDeletedBy:    {Type: field.TypeUint64, Column: membershiprole.FieldDeletedBy},
+			membershiprole.FieldTenantID:     {Type: field.TypeUint64, Column: membershiprole.FieldTenantID},
+			membershiprole.FieldMembershipID: {Type: field.TypeUint64, Column: membershiprole.FieldMembershipID},
+			membershiprole.FieldRoleID:       {Type: field.TypeUint64, Column: membershiprole.FieldRoleID},
 			membershiprole.FieldStartAt:      {Type: field.TypeTime, Column: membershiprole.FieldStartAt},
 			membershiprole.FieldEndAt:        {Type: field.TypeTime, Column: membershiprole.FieldEndAt},
 			membershiprole.FieldAssignedAt:   {Type: field.TypeTime, Column: membershiprole.FieldAssignedAt},
-			membershiprole.FieldAssignedBy:   {Type: field.TypeUint32, Column: membershiprole.FieldAssignedBy},
+			membershiprole.FieldAssignedBy:   {Type: field.TypeUint64, Column: membershiprole.FieldAssignedBy},
 			membershiprole.FieldIsPrimary:    {Type: field.TypeBool, Column: membershiprole.FieldIsPrimary},
 			membershiprole.FieldStatus:       {Type: field.TypeEnum, Column: membershiprole.FieldStatus},
 		},
@@ -913,7 +913,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   menu.Table,
 			Columns: menu.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: menu.FieldID,
 			},
 		},
@@ -922,10 +922,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			menu.FieldCreatedAt: {Type: field.TypeTime, Column: menu.FieldCreatedAt},
 			menu.FieldUpdatedAt: {Type: field.TypeTime, Column: menu.FieldUpdatedAt},
 			menu.FieldDeletedAt: {Type: field.TypeTime, Column: menu.FieldDeletedAt},
-			menu.FieldCreatedBy: {Type: field.TypeUint32, Column: menu.FieldCreatedBy},
-			menu.FieldUpdatedBy: {Type: field.TypeUint32, Column: menu.FieldUpdatedBy},
-			menu.FieldDeletedBy: {Type: field.TypeUint32, Column: menu.FieldDeletedBy},
-			menu.FieldParentID:  {Type: field.TypeUint32, Column: menu.FieldParentID},
+			menu.FieldCreatedBy: {Type: field.TypeUint64, Column: menu.FieldCreatedBy},
+			menu.FieldUpdatedBy: {Type: field.TypeUint64, Column: menu.FieldUpdatedBy},
+			menu.FieldDeletedBy: {Type: field.TypeUint64, Column: menu.FieldDeletedBy},
+			menu.FieldParentID:  {Type: field.TypeUint64, Column: menu.FieldParentID},
 			menu.FieldRemark:    {Type: field.TypeString, Column: menu.FieldRemark},
 			menu.FieldStatus:    {Type: field.TypeEnum, Column: menu.FieldStatus},
 			menu.FieldType:      {Type: field.TypeEnum, Column: menu.FieldType},
@@ -943,7 +943,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   monitoralertrule.Table,
 			Columns: monitoralertrule.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: monitoralertrule.FieldID,
 			},
 		},
@@ -952,9 +952,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			monitoralertrule.FieldCreatedAt:       {Type: field.TypeTime, Column: monitoralertrule.FieldCreatedAt},
 			monitoralertrule.FieldUpdatedAt:       {Type: field.TypeTime, Column: monitoralertrule.FieldUpdatedAt},
 			monitoralertrule.FieldDeletedAt:       {Type: field.TypeTime, Column: monitoralertrule.FieldDeletedAt},
-			monitoralertrule.FieldCreatedBy:       {Type: field.TypeUint32, Column: monitoralertrule.FieldCreatedBy},
-			monitoralertrule.FieldUpdatedBy:       {Type: field.TypeUint32, Column: monitoralertrule.FieldUpdatedBy},
-			monitoralertrule.FieldDeletedBy:       {Type: field.TypeUint32, Column: monitoralertrule.FieldDeletedBy},
+			monitoralertrule.FieldCreatedBy:       {Type: field.TypeUint64, Column: monitoralertrule.FieldCreatedBy},
+			monitoralertrule.FieldUpdatedBy:       {Type: field.TypeUint64, Column: monitoralertrule.FieldUpdatedBy},
+			monitoralertrule.FieldDeletedBy:       {Type: field.TypeUint64, Column: monitoralertrule.FieldDeletedBy},
 			monitoralertrule.FieldRemark:          {Type: field.TypeString, Column: monitoralertrule.FieldRemark},
 			monitoralertrule.FieldName:            {Type: field.TypeString, Column: monitoralertrule.FieldName},
 			monitoralertrule.FieldMetric:          {Type: field.TypeEnum, Column: monitoralertrule.FieldMetric},
@@ -974,7 +974,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notificationchannel.Table,
 			Columns: notificationchannel.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: notificationchannel.FieldID,
 			},
 		},
@@ -983,9 +983,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationchannel.FieldCreatedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldCreatedAt},
 			notificationchannel.FieldUpdatedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldUpdatedAt},
 			notificationchannel.FieldDeletedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldDeletedAt},
-			notificationchannel.FieldCreatedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldCreatedBy},
-			notificationchannel.FieldUpdatedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldUpdatedBy},
-			notificationchannel.FieldDeletedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldDeletedBy},
+			notificationchannel.FieldCreatedBy:              {Type: field.TypeUint64, Column: notificationchannel.FieldCreatedBy},
+			notificationchannel.FieldUpdatedBy:              {Type: field.TypeUint64, Column: notificationchannel.FieldUpdatedBy},
+			notificationchannel.FieldDeletedBy:              {Type: field.TypeUint64, Column: notificationchannel.FieldDeletedBy},
 			notificationchannel.FieldRemark:                 {Type: field.TypeString, Column: notificationchannel.FieldRemark},
 			notificationchannel.FieldStatus:                 {Type: field.TypeEnum, Column: notificationchannel.FieldStatus},
 			notificationchannel.FieldName:                   {Type: field.TypeString, Column: notificationchannel.FieldName},
@@ -1016,7 +1016,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notificationdelivery.Table,
 			Columns: notificationdelivery.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: notificationdelivery.FieldID,
 			},
 		},
@@ -1025,14 +1025,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationdelivery.FieldCreatedAt:       {Type: field.TypeTime, Column: notificationdelivery.FieldCreatedAt},
 			notificationdelivery.FieldUpdatedAt:       {Type: field.TypeTime, Column: notificationdelivery.FieldUpdatedAt},
 			notificationdelivery.FieldDeletedAt:       {Type: field.TypeTime, Column: notificationdelivery.FieldDeletedAt},
-			notificationdelivery.FieldCreatedBy:       {Type: field.TypeUint32, Column: notificationdelivery.FieldCreatedBy},
-			notificationdelivery.FieldUpdatedBy:       {Type: field.TypeUint32, Column: notificationdelivery.FieldUpdatedBy},
-			notificationdelivery.FieldDeletedBy:       {Type: field.TypeUint32, Column: notificationdelivery.FieldDeletedBy},
+			notificationdelivery.FieldCreatedBy:       {Type: field.TypeUint64, Column: notificationdelivery.FieldCreatedBy},
+			notificationdelivery.FieldUpdatedBy:       {Type: field.TypeUint64, Column: notificationdelivery.FieldUpdatedBy},
+			notificationdelivery.FieldDeletedBy:       {Type: field.TypeUint64, Column: notificationdelivery.FieldDeletedBy},
 			notificationdelivery.FieldEventType:       {Type: field.TypeEnum, Column: notificationdelivery.FieldEventType},
 			notificationdelivery.FieldChannel:         {Type: field.TypeEnum, Column: notificationdelivery.FieldChannel},
-			notificationdelivery.FieldChannelID:       {Type: field.TypeUint32, Column: notificationdelivery.FieldChannelID},
-			notificationdelivery.FieldRecipientUserID: {Type: field.TypeUint32, Column: notificationdelivery.FieldRecipientUserID},
-			notificationdelivery.FieldRelatedID:       {Type: field.TypeUint32, Column: notificationdelivery.FieldRelatedID},
+			notificationdelivery.FieldChannelID:       {Type: field.TypeUint64, Column: notificationdelivery.FieldChannelID},
+			notificationdelivery.FieldRecipientUserID: {Type: field.TypeUint64, Column: notificationdelivery.FieldRecipientUserID},
+			notificationdelivery.FieldRelatedID:       {Type: field.TypeUint64, Column: notificationdelivery.FieldRelatedID},
 			notificationdelivery.FieldTarget:          {Type: field.TypeString, Column: notificationdelivery.FieldTarget},
 			notificationdelivery.FieldStatus:          {Type: field.TypeEnum, Column: notificationdelivery.FieldStatus},
 			notificationdelivery.FieldLastError:       {Type: field.TypeString, Column: notificationdelivery.FieldLastError},
@@ -1047,7 +1047,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notificationpreference.Table,
 			Columns: notificationpreference.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: notificationpreference.FieldID,
 			},
 		},
@@ -1056,10 +1056,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationpreference.FieldCreatedAt:        {Type: field.TypeTime, Column: notificationpreference.FieldCreatedAt},
 			notificationpreference.FieldUpdatedAt:        {Type: field.TypeTime, Column: notificationpreference.FieldUpdatedAt},
 			notificationpreference.FieldDeletedAt:        {Type: field.TypeTime, Column: notificationpreference.FieldDeletedAt},
-			notificationpreference.FieldCreatedBy:        {Type: field.TypeUint32, Column: notificationpreference.FieldCreatedBy},
-			notificationpreference.FieldUpdatedBy:        {Type: field.TypeUint32, Column: notificationpreference.FieldUpdatedBy},
-			notificationpreference.FieldDeletedBy:        {Type: field.TypeUint32, Column: notificationpreference.FieldDeletedBy},
-			notificationpreference.FieldUserID:           {Type: field.TypeUint32, Column: notificationpreference.FieldUserID},
+			notificationpreference.FieldCreatedBy:        {Type: field.TypeUint64, Column: notificationpreference.FieldCreatedBy},
+			notificationpreference.FieldUpdatedBy:        {Type: field.TypeUint64, Column: notificationpreference.FieldUpdatedBy},
+			notificationpreference.FieldDeletedBy:        {Type: field.TypeUint64, Column: notificationpreference.FieldDeletedBy},
+			notificationpreference.FieldUserID:           {Type: field.TypeUint64, Column: notificationpreference.FieldUserID},
 			notificationpreference.FieldQuietEnabled:     {Type: field.TypeBool, Column: notificationpreference.FieldQuietEnabled},
 			notificationpreference.FieldQuietStartMinute: {Type: field.TypeInt32, Column: notificationpreference.FieldQuietStartMinute},
 			notificationpreference.FieldQuietEndMinute:   {Type: field.TypeInt32, Column: notificationpreference.FieldQuietEndMinute},
@@ -1071,7 +1071,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notificationrule.Table,
 			Columns: notificationrule.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: notificationrule.FieldID,
 			},
 		},
@@ -1080,9 +1080,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationrule.FieldCreatedAt: {Type: field.TypeTime, Column: notificationrule.FieldCreatedAt},
 			notificationrule.FieldUpdatedAt: {Type: field.TypeTime, Column: notificationrule.FieldUpdatedAt},
 			notificationrule.FieldDeletedAt: {Type: field.TypeTime, Column: notificationrule.FieldDeletedAt},
-			notificationrule.FieldCreatedBy: {Type: field.TypeUint32, Column: notificationrule.FieldCreatedBy},
-			notificationrule.FieldUpdatedBy: {Type: field.TypeUint32, Column: notificationrule.FieldUpdatedBy},
-			notificationrule.FieldDeletedBy: {Type: field.TypeUint32, Column: notificationrule.FieldDeletedBy},
+			notificationrule.FieldCreatedBy: {Type: field.TypeUint64, Column: notificationrule.FieldCreatedBy},
+			notificationrule.FieldUpdatedBy: {Type: field.TypeUint64, Column: notificationrule.FieldUpdatedBy},
+			notificationrule.FieldDeletedBy: {Type: field.TypeUint64, Column: notificationrule.FieldDeletedBy},
 			notificationrule.FieldIsEnabled: {Type: field.TypeBool, Column: notificationrule.FieldIsEnabled},
 			notificationrule.FieldRemark:    {Type: field.TypeString, Column: notificationrule.FieldRemark},
 			notificationrule.FieldEventType: {Type: field.TypeEnum, Column: notificationrule.FieldEventType},
@@ -1095,7 +1095,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notificationtemplate.Table,
 			Columns: notificationtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: notificationtemplate.FieldID,
 			},
 		},
@@ -1104,9 +1104,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationtemplate.FieldCreatedAt:       {Type: field.TypeTime, Column: notificationtemplate.FieldCreatedAt},
 			notificationtemplate.FieldUpdatedAt:       {Type: field.TypeTime, Column: notificationtemplate.FieldUpdatedAt},
 			notificationtemplate.FieldDeletedAt:       {Type: field.TypeTime, Column: notificationtemplate.FieldDeletedAt},
-			notificationtemplate.FieldCreatedBy:       {Type: field.TypeUint32, Column: notificationtemplate.FieldCreatedBy},
-			notificationtemplate.FieldUpdatedBy:       {Type: field.TypeUint32, Column: notificationtemplate.FieldUpdatedBy},
-			notificationtemplate.FieldDeletedBy:       {Type: field.TypeUint32, Column: notificationtemplate.FieldDeletedBy},
+			notificationtemplate.FieldCreatedBy:       {Type: field.TypeUint64, Column: notificationtemplate.FieldCreatedBy},
+			notificationtemplate.FieldUpdatedBy:       {Type: field.TypeUint64, Column: notificationtemplate.FieldUpdatedBy},
+			notificationtemplate.FieldDeletedBy:       {Type: field.TypeUint64, Column: notificationtemplate.FieldDeletedBy},
 			notificationtemplate.FieldIsEnabled:       {Type: field.TypeBool, Column: notificationtemplate.FieldIsEnabled},
 			notificationtemplate.FieldRemark:          {Type: field.TypeString, Column: notificationtemplate.FieldRemark},
 			notificationtemplate.FieldName:            {Type: field.TypeString, Column: notificationtemplate.FieldName},
@@ -1120,15 +1120,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   operationauditlog.Table,
 			Columns: operationauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: operationauditlog.FieldID,
 			},
 		},
 		Type: "OperationAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			operationauditlog.FieldCreatedAt:      {Type: field.TypeTime, Column: operationauditlog.FieldCreatedAt},
-			operationauditlog.FieldTenantID:       {Type: field.TypeUint32, Column: operationauditlog.FieldTenantID},
-			operationauditlog.FieldUserID:         {Type: field.TypeUint32, Column: operationauditlog.FieldUserID},
+			operationauditlog.FieldTenantID:       {Type: field.TypeUint64, Column: operationauditlog.FieldTenantID},
+			operationauditlog.FieldUserID:         {Type: field.TypeUint64, Column: operationauditlog.FieldUserID},
 			operationauditlog.FieldUsername:       {Type: field.TypeString, Column: operationauditlog.FieldUsername},
 			operationauditlog.FieldResourceType:   {Type: field.TypeString, Column: operationauditlog.FieldResourceType},
 			operationauditlog.FieldResourceID:     {Type: field.TypeString, Column: operationauditlog.FieldResourceID},
@@ -1152,7 +1152,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   orgunit.Table,
 			Columns: orgunit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: orgunit.FieldID,
 			},
 		},
@@ -1161,26 +1161,26 @@ var schemaGraph = func() *sqlgraph.Schema {
 			orgunit.FieldCreatedAt:          {Type: field.TypeTime, Column: orgunit.FieldCreatedAt},
 			orgunit.FieldUpdatedAt:          {Type: field.TypeTime, Column: orgunit.FieldUpdatedAt},
 			orgunit.FieldDeletedAt:          {Type: field.TypeTime, Column: orgunit.FieldDeletedAt},
-			orgunit.FieldCreatedBy:          {Type: field.TypeUint32, Column: orgunit.FieldCreatedBy},
-			orgunit.FieldUpdatedBy:          {Type: field.TypeUint32, Column: orgunit.FieldUpdatedBy},
-			orgunit.FieldDeletedBy:          {Type: field.TypeUint32, Column: orgunit.FieldDeletedBy},
+			orgunit.FieldCreatedBy:          {Type: field.TypeUint64, Column: orgunit.FieldCreatedBy},
+			orgunit.FieldUpdatedBy:          {Type: field.TypeUint64, Column: orgunit.FieldUpdatedBy},
+			orgunit.FieldDeletedBy:          {Type: field.TypeUint64, Column: orgunit.FieldDeletedBy},
 			orgunit.FieldStatus:             {Type: field.TypeEnum, Column: orgunit.FieldStatus},
 			orgunit.FieldSortOrder:          {Type: field.TypeUint32, Column: orgunit.FieldSortOrder},
-			orgunit.FieldTenantID:           {Type: field.TypeUint32, Column: orgunit.FieldTenantID},
+			orgunit.FieldTenantID:           {Type: field.TypeUint64, Column: orgunit.FieldTenantID},
 			orgunit.FieldRemark:             {Type: field.TypeString, Column: orgunit.FieldRemark},
 			orgunit.FieldDescription:        {Type: field.TypeString, Column: orgunit.FieldDescription},
-			orgunit.FieldParentID:           {Type: field.TypeUint32, Column: orgunit.FieldParentID},
+			orgunit.FieldParentID:           {Type: field.TypeUint64, Column: orgunit.FieldParentID},
 			orgunit.FieldPath:               {Type: field.TypeString, Column: orgunit.FieldPath},
 			orgunit.FieldName:               {Type: field.TypeString, Column: orgunit.FieldName},
 			orgunit.FieldCode:               {Type: field.TypeString, Column: orgunit.FieldCode},
-			orgunit.FieldLeaderID:           {Type: field.TypeUint32, Column: orgunit.FieldLeaderID},
+			orgunit.FieldLeaderID:           {Type: field.TypeUint64, Column: orgunit.FieldLeaderID},
 			orgunit.FieldType:               {Type: field.TypeEnum, Column: orgunit.FieldType},
 			orgunit.FieldBusinessScopes:     {Type: field.TypeJSON, Column: orgunit.FieldBusinessScopes},
 			orgunit.FieldExternalID:         {Type: field.TypeString, Column: orgunit.FieldExternalID},
 			orgunit.FieldIsLegalEntity:      {Type: field.TypeBool, Column: orgunit.FieldIsLegalEntity},
 			orgunit.FieldRegistrationNumber: {Type: field.TypeString, Column: orgunit.FieldRegistrationNumber},
 			orgunit.FieldTaxID:              {Type: field.TypeString, Column: orgunit.FieldTaxID},
-			orgunit.FieldLegalEntityOrgID:   {Type: field.TypeUint32, Column: orgunit.FieldLegalEntityOrgID},
+			orgunit.FieldLegalEntityOrgID:   {Type: field.TypeUint64, Column: orgunit.FieldLegalEntityOrgID},
 			orgunit.FieldAddress:            {Type: field.TypeString, Column: orgunit.FieldAddress},
 			orgunit.FieldPhone:              {Type: field.TypeString, Column: orgunit.FieldPhone},
 			orgunit.FieldEmail:              {Type: field.TypeString, Column: orgunit.FieldEmail},
@@ -1190,7 +1190,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			orgunit.FieldLongitude:          {Type: field.TypeFloat64, Column: orgunit.FieldLongitude},
 			orgunit.FieldStartAt:            {Type: field.TypeTime, Column: orgunit.FieldStartAt},
 			orgunit.FieldEndAt:              {Type: field.TypeTime, Column: orgunit.FieldEndAt},
-			orgunit.FieldContactUserID:      {Type: field.TypeUint32, Column: orgunit.FieldContactUserID},
+			orgunit.FieldContactUserID:      {Type: field.TypeUint64, Column: orgunit.FieldContactUserID},
 			orgunit.FieldPermissionTags:     {Type: field.TypeJSON, Column: orgunit.FieldPermissionTags},
 		},
 	}
@@ -1199,7 +1199,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permission.FieldID,
 			},
 		},
@@ -1208,14 +1208,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldCreatedAt:   {Type: field.TypeTime, Column: permission.FieldCreatedAt},
 			permission.FieldUpdatedAt:   {Type: field.TypeTime, Column: permission.FieldUpdatedAt},
 			permission.FieldDeletedAt:   {Type: field.TypeTime, Column: permission.FieldDeletedAt},
-			permission.FieldCreatedBy:   {Type: field.TypeUint32, Column: permission.FieldCreatedBy},
-			permission.FieldUpdatedBy:   {Type: field.TypeUint32, Column: permission.FieldUpdatedBy},
-			permission.FieldDeletedBy:   {Type: field.TypeUint32, Column: permission.FieldDeletedBy},
+			permission.FieldCreatedBy:   {Type: field.TypeUint64, Column: permission.FieldCreatedBy},
+			permission.FieldUpdatedBy:   {Type: field.TypeUint64, Column: permission.FieldUpdatedBy},
+			permission.FieldDeletedBy:   {Type: field.TypeUint64, Column: permission.FieldDeletedBy},
 			permission.FieldStatus:      {Type: field.TypeEnum, Column: permission.FieldStatus},
 			permission.FieldDescription: {Type: field.TypeString, Column: permission.FieldDescription},
 			permission.FieldName:        {Type: field.TypeString, Column: permission.FieldName},
 			permission.FieldCode:        {Type: field.TypeString, Column: permission.FieldCode},
-			permission.FieldGroupID:     {Type: field.TypeUint32, Column: permission.FieldGroupID},
+			permission.FieldGroupID:     {Type: field.TypeUint64, Column: permission.FieldGroupID},
 		},
 	}
 	graph.Nodes[40] = &sqlgraph.Node{
@@ -1223,7 +1223,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permissionapi.Table,
 			Columns: permissionapi.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permissionapi.FieldID,
 			},
 		},
@@ -1232,10 +1232,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionapi.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionapi.FieldCreatedAt},
 			permissionapi.FieldUpdatedAt:    {Type: field.TypeTime, Column: permissionapi.FieldUpdatedAt},
 			permissionapi.FieldDeletedAt:    {Type: field.TypeTime, Column: permissionapi.FieldDeletedAt},
-			permissionapi.FieldCreatedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldCreatedBy},
-			permissionapi.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldUpdatedBy},
-			permissionapi.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldDeletedBy},
-			permissionapi.FieldPermissionID: {Type: field.TypeUint32, Column: permissionapi.FieldPermissionID},
+			permissionapi.FieldCreatedBy:    {Type: field.TypeUint64, Column: permissionapi.FieldCreatedBy},
+			permissionapi.FieldUpdatedBy:    {Type: field.TypeUint64, Column: permissionapi.FieldUpdatedBy},
+			permissionapi.FieldDeletedBy:    {Type: field.TypeUint64, Column: permissionapi.FieldDeletedBy},
+			permissionapi.FieldPermissionID: {Type: field.TypeUint64, Column: permissionapi.FieldPermissionID},
 			permissionapi.FieldPath:         {Type: field.TypeString, Column: permissionapi.FieldPath},
 			permissionapi.FieldMethod:       {Type: field.TypeString, Column: permissionapi.FieldMethod},
 		},
@@ -1245,15 +1245,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permissionauditlog.Table,
 			Columns: permissionauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permissionauditlog.FieldID,
 			},
 		},
 		Type: "PermissionAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			permissionauditlog.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionauditlog.FieldCreatedAt},
-			permissionauditlog.FieldTenantID:     {Type: field.TypeUint32, Column: permissionauditlog.FieldTenantID},
-			permissionauditlog.FieldOperatorID:   {Type: field.TypeUint32, Column: permissionauditlog.FieldOperatorID},
+			permissionauditlog.FieldTenantID:     {Type: field.TypeUint64, Column: permissionauditlog.FieldTenantID},
+			permissionauditlog.FieldOperatorID:   {Type: field.TypeUint64, Column: permissionauditlog.FieldOperatorID},
 			permissionauditlog.FieldOperatorName: {Type: field.TypeString, Column: permissionauditlog.FieldOperatorName},
 			permissionauditlog.FieldTargetType:   {Type: field.TypeString, Column: permissionauditlog.FieldTargetType},
 			permissionauditlog.FieldTargetID:     {Type: field.TypeString, Column: permissionauditlog.FieldTargetID},
@@ -1273,7 +1273,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permissiongroup.Table,
 			Columns: permissiongroup.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permissiongroup.FieldID,
 			},
 		},
@@ -1282,13 +1282,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissiongroup.FieldCreatedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldCreatedAt},
 			permissiongroup.FieldUpdatedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldUpdatedAt},
 			permissiongroup.FieldDeletedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldDeletedAt},
-			permissiongroup.FieldCreatedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldCreatedBy},
-			permissiongroup.FieldUpdatedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldUpdatedBy},
-			permissiongroup.FieldDeletedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldDeletedBy},
+			permissiongroup.FieldCreatedBy:   {Type: field.TypeUint64, Column: permissiongroup.FieldCreatedBy},
+			permissiongroup.FieldUpdatedBy:   {Type: field.TypeUint64, Column: permissiongroup.FieldUpdatedBy},
+			permissiongroup.FieldDeletedBy:   {Type: field.TypeUint64, Column: permissiongroup.FieldDeletedBy},
 			permissiongroup.FieldDescription: {Type: field.TypeString, Column: permissiongroup.FieldDescription},
 			permissiongroup.FieldStatus:      {Type: field.TypeEnum, Column: permissiongroup.FieldStatus},
 			permissiongroup.FieldSortOrder:   {Type: field.TypeUint32, Column: permissiongroup.FieldSortOrder},
-			permissiongroup.FieldParentID:    {Type: field.TypeUint32, Column: permissiongroup.FieldParentID},
+			permissiongroup.FieldParentID:    {Type: field.TypeUint64, Column: permissiongroup.FieldParentID},
 			permissiongroup.FieldPath:        {Type: field.TypeString, Column: permissiongroup.FieldPath},
 			permissiongroup.FieldName:        {Type: field.TypeString, Column: permissiongroup.FieldName},
 			permissiongroup.FieldModule:      {Type: field.TypeString, Column: permissiongroup.FieldModule},
@@ -1299,7 +1299,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permissionmenu.Table,
 			Columns: permissionmenu.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permissionmenu.FieldID,
 			},
 		},
@@ -1308,10 +1308,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionmenu.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionmenu.FieldCreatedAt},
 			permissionmenu.FieldUpdatedAt:    {Type: field.TypeTime, Column: permissionmenu.FieldUpdatedAt},
 			permissionmenu.FieldDeletedAt:    {Type: field.TypeTime, Column: permissionmenu.FieldDeletedAt},
-			permissionmenu.FieldCreatedBy:    {Type: field.TypeUint32, Column: permissionmenu.FieldCreatedBy},
-			permissionmenu.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionmenu.FieldUpdatedBy},
-			permissionmenu.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionmenu.FieldDeletedBy},
-			permissionmenu.FieldPermissionID: {Type: field.TypeUint32, Column: permissionmenu.FieldPermissionID},
+			permissionmenu.FieldCreatedBy:    {Type: field.TypeUint64, Column: permissionmenu.FieldCreatedBy},
+			permissionmenu.FieldUpdatedBy:    {Type: field.TypeUint64, Column: permissionmenu.FieldUpdatedBy},
+			permissionmenu.FieldDeletedBy:    {Type: field.TypeUint64, Column: permissionmenu.FieldDeletedBy},
+			permissionmenu.FieldPermissionID: {Type: field.TypeUint64, Column: permissionmenu.FieldPermissionID},
 			permissionmenu.FieldFullPath:     {Type: field.TypeString, Column: permissionmenu.FieldFullPath},
 		},
 	}
@@ -1320,7 +1320,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permissionpolicy.Table,
 			Columns: permissionpolicy.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: permissionpolicy.FieldID,
 			},
 		},
@@ -1329,11 +1329,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionpolicy.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionpolicy.FieldCreatedAt},
 			permissionpolicy.FieldUpdatedAt:    {Type: field.TypeTime, Column: permissionpolicy.FieldUpdatedAt},
 			permissionpolicy.FieldDeletedAt:    {Type: field.TypeTime, Column: permissionpolicy.FieldDeletedAt},
-			permissionpolicy.FieldCreatedBy:    {Type: field.TypeUint32, Column: permissionpolicy.FieldCreatedBy},
-			permissionpolicy.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionpolicy.FieldUpdatedBy},
-			permissionpolicy.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionpolicy.FieldDeletedBy},
+			permissionpolicy.FieldCreatedBy:    {Type: field.TypeUint64, Column: permissionpolicy.FieldCreatedBy},
+			permissionpolicy.FieldUpdatedBy:    {Type: field.TypeUint64, Column: permissionpolicy.FieldUpdatedBy},
+			permissionpolicy.FieldDeletedBy:    {Type: field.TypeUint64, Column: permissionpolicy.FieldDeletedBy},
 			permissionpolicy.FieldStatus:       {Type: field.TypeEnum, Column: permissionpolicy.FieldStatus},
-			permissionpolicy.FieldPermissionID: {Type: field.TypeUint32, Column: permissionpolicy.FieldPermissionID},
+			permissionpolicy.FieldPermissionID: {Type: field.TypeUint64, Column: permissionpolicy.FieldPermissionID},
 			permissionpolicy.FieldPolicyEngine: {Type: field.TypeEnum, Column: permissionpolicy.FieldPolicyEngine},
 			permissionpolicy.FieldDefinition:   {Type: field.TypeString, Column: permissionpolicy.FieldDefinition},
 			permissionpolicy.FieldVersion:      {Type: field.TypeUint32, Column: permissionpolicy.FieldVersion},
@@ -1346,7 +1346,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   plan.Table,
 			Columns: plan.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: plan.FieldID,
 			},
 		},
@@ -1355,9 +1355,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldCreatedAt:         {Type: field.TypeTime, Column: plan.FieldCreatedAt},
 			plan.FieldUpdatedAt:         {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
 			plan.FieldDeletedAt:         {Type: field.TypeTime, Column: plan.FieldDeletedAt},
-			plan.FieldCreatedBy:         {Type: field.TypeUint32, Column: plan.FieldCreatedBy},
-			plan.FieldUpdatedBy:         {Type: field.TypeUint32, Column: plan.FieldUpdatedBy},
-			plan.FieldDeletedBy:         {Type: field.TypeUint32, Column: plan.FieldDeletedBy},
+			plan.FieldCreatedBy:         {Type: field.TypeUint64, Column: plan.FieldCreatedBy},
+			plan.FieldUpdatedBy:         {Type: field.TypeUint64, Column: plan.FieldUpdatedBy},
+			plan.FieldDeletedBy:         {Type: field.TypeUint64, Column: plan.FieldDeletedBy},
 			plan.FieldRemark:            {Type: field.TypeString, Column: plan.FieldRemark},
 			plan.FieldName:              {Type: field.TypeString, Column: plan.FieldName},
 			plan.FieldVersion:           {Type: field.TypeEnum, Column: plan.FieldVersion},
@@ -1371,7 +1371,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   planmodule.Table,
 			Columns: planmodule.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: planmodule.FieldID,
 			},
 		},
@@ -1380,9 +1380,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			planmodule.FieldCreatedAt: {Type: field.TypeTime, Column: planmodule.FieldCreatedAt},
 			planmodule.FieldUpdatedAt: {Type: field.TypeTime, Column: planmodule.FieldUpdatedAt},
 			planmodule.FieldDeletedAt: {Type: field.TypeTime, Column: planmodule.FieldDeletedAt},
-			planmodule.FieldCreatedBy: {Type: field.TypeUint32, Column: planmodule.FieldCreatedBy},
-			planmodule.FieldUpdatedBy: {Type: field.TypeUint32, Column: planmodule.FieldUpdatedBy},
-			planmodule.FieldDeletedBy: {Type: field.TypeUint32, Column: planmodule.FieldDeletedBy},
+			planmodule.FieldCreatedBy: {Type: field.TypeUint64, Column: planmodule.FieldCreatedBy},
+			planmodule.FieldUpdatedBy: {Type: field.TypeUint64, Column: planmodule.FieldUpdatedBy},
+			planmodule.FieldDeletedBy: {Type: field.TypeUint64, Column: planmodule.FieldDeletedBy},
 			planmodule.FieldModule:    {Type: field.TypeEnum, Column: planmodule.FieldModule},
 		},
 	}
@@ -1391,7 +1391,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   planquota.Table,
 			Columns: planquota.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: planquota.FieldID,
 			},
 		},
@@ -1400,9 +1400,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			planquota.FieldCreatedAt:  {Type: field.TypeTime, Column: planquota.FieldCreatedAt},
 			planquota.FieldUpdatedAt:  {Type: field.TypeTime, Column: planquota.FieldUpdatedAt},
 			planquota.FieldDeletedAt:  {Type: field.TypeTime, Column: planquota.FieldDeletedAt},
-			planquota.FieldCreatedBy:  {Type: field.TypeUint32, Column: planquota.FieldCreatedBy},
-			planquota.FieldUpdatedBy:  {Type: field.TypeUint32, Column: planquota.FieldUpdatedBy},
-			planquota.FieldDeletedBy:  {Type: field.TypeUint32, Column: planquota.FieldDeletedBy},
+			planquota.FieldCreatedBy:  {Type: field.TypeUint64, Column: planquota.FieldCreatedBy},
+			planquota.FieldUpdatedBy:  {Type: field.TypeUint64, Column: planquota.FieldUpdatedBy},
+			planquota.FieldDeletedBy:  {Type: field.TypeUint64, Column: planquota.FieldDeletedBy},
 			planquota.FieldQuotaType:  {Type: field.TypeEnum, Column: planquota.FieldQuotaType},
 			planquota.FieldQuotaValue: {Type: field.TypeUint64, Column: planquota.FieldQuotaValue},
 		},
@@ -1412,18 +1412,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   policyevaluationlog.Table,
 			Columns: policyevaluationlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: policyevaluationlog.FieldID,
 			},
 		},
 		Type: "PolicyEvaluationLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			policyevaluationlog.FieldCreatedAt:         {Type: field.TypeTime, Column: policyevaluationlog.FieldCreatedAt},
-			policyevaluationlog.FieldTenantID:          {Type: field.TypeUint32, Column: policyevaluationlog.FieldTenantID},
-			policyevaluationlog.FieldUserID:            {Type: field.TypeUint32, Column: policyevaluationlog.FieldUserID},
-			policyevaluationlog.FieldMembershipID:      {Type: field.TypeUint32, Column: policyevaluationlog.FieldMembershipID},
-			policyevaluationlog.FieldPermissionID:      {Type: field.TypeUint32, Column: policyevaluationlog.FieldPermissionID},
-			policyevaluationlog.FieldPolicyID:          {Type: field.TypeUint32, Column: policyevaluationlog.FieldPolicyID},
+			policyevaluationlog.FieldTenantID:          {Type: field.TypeUint64, Column: policyevaluationlog.FieldTenantID},
+			policyevaluationlog.FieldUserID:            {Type: field.TypeUint64, Column: policyevaluationlog.FieldUserID},
+			policyevaluationlog.FieldMembershipID:      {Type: field.TypeUint64, Column: policyevaluationlog.FieldMembershipID},
+			policyevaluationlog.FieldPermissionID:      {Type: field.TypeUint64, Column: policyevaluationlog.FieldPermissionID},
+			policyevaluationlog.FieldPolicyID:          {Type: field.TypeUint64, Column: policyevaluationlog.FieldPolicyID},
 			policyevaluationlog.FieldRequestPath:       {Type: field.TypeString, Column: policyevaluationlog.FieldRequestPath},
 			policyevaluationlog.FieldRequestMethod:     {Type: field.TypeString, Column: policyevaluationlog.FieldRequestMethod},
 			policyevaluationlog.FieldResult:            {Type: field.TypeBool, Column: policyevaluationlog.FieldResult},
@@ -1441,7 +1441,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   position.Table,
 			Columns: position.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: position.FieldID,
 			},
 		},
@@ -1450,17 +1450,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 			position.FieldCreatedAt:           {Type: field.TypeTime, Column: position.FieldCreatedAt},
 			position.FieldUpdatedAt:           {Type: field.TypeTime, Column: position.FieldUpdatedAt},
 			position.FieldDeletedAt:           {Type: field.TypeTime, Column: position.FieldDeletedAt},
-			position.FieldCreatedBy:           {Type: field.TypeUint32, Column: position.FieldCreatedBy},
-			position.FieldUpdatedBy:           {Type: field.TypeUint32, Column: position.FieldUpdatedBy},
-			position.FieldDeletedBy:           {Type: field.TypeUint32, Column: position.FieldDeletedBy},
+			position.FieldCreatedBy:           {Type: field.TypeUint64, Column: position.FieldCreatedBy},
+			position.FieldUpdatedBy:           {Type: field.TypeUint64, Column: position.FieldUpdatedBy},
+			position.FieldDeletedBy:           {Type: field.TypeUint64, Column: position.FieldDeletedBy},
 			position.FieldSortOrder:           {Type: field.TypeUint32, Column: position.FieldSortOrder},
 			position.FieldRemark:              {Type: field.TypeString, Column: position.FieldRemark},
-			position.FieldTenantID:            {Type: field.TypeUint32, Column: position.FieldTenantID},
+			position.FieldTenantID:            {Type: field.TypeUint64, Column: position.FieldTenantID},
 			position.FieldStatus:              {Type: field.TypeEnum, Column: position.FieldStatus},
 			position.FieldName:                {Type: field.TypeString, Column: position.FieldName},
 			position.FieldCode:                {Type: field.TypeString, Column: position.FieldCode},
-			position.FieldOrgUnitID:           {Type: field.TypeUint32, Column: position.FieldOrgUnitID},
-			position.FieldReportsToPositionID: {Type: field.TypeUint32, Column: position.FieldReportsToPositionID},
+			position.FieldOrgUnitID:           {Type: field.TypeUint64, Column: position.FieldOrgUnitID},
+			position.FieldReportsToPositionID: {Type: field.TypeUint64, Column: position.FieldReportsToPositionID},
 			position.FieldDescription:         {Type: field.TypeString, Column: position.FieldDescription},
 			position.FieldJobFamily:           {Type: field.TypeString, Column: position.FieldJobFamily},
 			position.FieldJobGrade:            {Type: field.TypeString, Column: position.FieldJobGrade},
@@ -1477,7 +1477,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   printtemplate.Table,
 			Columns: printtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: printtemplate.FieldID,
 			},
 		},
@@ -1486,12 +1486,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			printtemplate.FieldCreatedAt:   {Type: field.TypeTime, Column: printtemplate.FieldCreatedAt},
 			printtemplate.FieldUpdatedAt:   {Type: field.TypeTime, Column: printtemplate.FieldUpdatedAt},
 			printtemplate.FieldDeletedAt:   {Type: field.TypeTime, Column: printtemplate.FieldDeletedAt},
-			printtemplate.FieldCreatedBy:   {Type: field.TypeUint32, Column: printtemplate.FieldCreatedBy},
-			printtemplate.FieldUpdatedBy:   {Type: field.TypeUint32, Column: printtemplate.FieldUpdatedBy},
-			printtemplate.FieldDeletedBy:   {Type: field.TypeUint32, Column: printtemplate.FieldDeletedBy},
+			printtemplate.FieldCreatedBy:   {Type: field.TypeUint64, Column: printtemplate.FieldCreatedBy},
+			printtemplate.FieldUpdatedBy:   {Type: field.TypeUint64, Column: printtemplate.FieldUpdatedBy},
+			printtemplate.FieldDeletedBy:   {Type: field.TypeUint64, Column: printtemplate.FieldDeletedBy},
 			printtemplate.FieldIsEnabled:   {Type: field.TypeBool, Column: printtemplate.FieldIsEnabled},
 			printtemplate.FieldSortOrder:   {Type: field.TypeUint32, Column: printtemplate.FieldSortOrder},
-			printtemplate.FieldTenantID:    {Type: field.TypeUint32, Column: printtemplate.FieldTenantID},
+			printtemplate.FieldTenantID:    {Type: field.TypeUint64, Column: printtemplate.FieldTenantID},
 			printtemplate.FieldName:        {Type: field.TypeString, Column: printtemplate.FieldName},
 			printtemplate.FieldCode:        {Type: field.TypeString, Column: printtemplate.FieldCode},
 			printtemplate.FieldResourceKey: {Type: field.TypeString, Column: printtemplate.FieldResourceKey},
@@ -1506,7 +1506,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   role.Table,
 			Columns: role.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: role.FieldID,
 			},
 		},
@@ -1515,20 +1515,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldCreatedAt:   {Type: field.TypeTime, Column: role.FieldCreatedAt},
 			role.FieldUpdatedAt:   {Type: field.TypeTime, Column: role.FieldUpdatedAt},
 			role.FieldDeletedAt:   {Type: field.TypeTime, Column: role.FieldDeletedAt},
-			role.FieldCreatedBy:   {Type: field.TypeUint32, Column: role.FieldCreatedBy},
-			role.FieldUpdatedBy:   {Type: field.TypeUint32, Column: role.FieldUpdatedBy},
-			role.FieldDeletedBy:   {Type: field.TypeUint32, Column: role.FieldDeletedBy},
+			role.FieldCreatedBy:   {Type: field.TypeUint64, Column: role.FieldCreatedBy},
+			role.FieldUpdatedBy:   {Type: field.TypeUint64, Column: role.FieldUpdatedBy},
+			role.FieldDeletedBy:   {Type: field.TypeUint64, Column: role.FieldDeletedBy},
 			role.FieldRemark:      {Type: field.TypeString, Column: role.FieldRemark},
 			role.FieldDescription: {Type: field.TypeString, Column: role.FieldDescription},
 			role.FieldSortOrder:   {Type: field.TypeUint32, Column: role.FieldSortOrder},
-			role.FieldTenantID:    {Type: field.TypeUint32, Column: role.FieldTenantID},
+			role.FieldTenantID:    {Type: field.TypeUint64, Column: role.FieldTenantID},
 			role.FieldStatus:      {Type: field.TypeEnum, Column: role.FieldStatus},
 			role.FieldName:        {Type: field.TypeString, Column: role.FieldName},
 			role.FieldCode:        {Type: field.TypeString, Column: role.FieldCode},
 			role.FieldIsProtected: {Type: field.TypeBool, Column: role.FieldIsProtected},
 			role.FieldType:        {Type: field.TypeEnum, Column: role.FieldType},
 			role.FieldDataScope:   {Type: field.TypeEnum, Column: role.FieldDataScope},
-			role.FieldParentID:    {Type: field.TypeUint32, Column: role.FieldParentID},
+			role.FieldParentID:    {Type: field.TypeUint64, Column: role.FieldParentID},
 		},
 	}
 	graph.Nodes[52] = &sqlgraph.Node{
@@ -1536,7 +1536,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   rolefieldpermission.Table,
 			Columns: rolefieldpermission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: rolefieldpermission.FieldID,
 			},
 		},
@@ -1545,11 +1545,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolefieldpermission.FieldCreatedAt: {Type: field.TypeTime, Column: rolefieldpermission.FieldCreatedAt},
 			rolefieldpermission.FieldUpdatedAt: {Type: field.TypeTime, Column: rolefieldpermission.FieldUpdatedAt},
 			rolefieldpermission.FieldDeletedAt: {Type: field.TypeTime, Column: rolefieldpermission.FieldDeletedAt},
-			rolefieldpermission.FieldCreatedBy: {Type: field.TypeUint32, Column: rolefieldpermission.FieldCreatedBy},
-			rolefieldpermission.FieldUpdatedBy: {Type: field.TypeUint32, Column: rolefieldpermission.FieldUpdatedBy},
-			rolefieldpermission.FieldDeletedBy: {Type: field.TypeUint32, Column: rolefieldpermission.FieldDeletedBy},
-			rolefieldpermission.FieldTenantID:  {Type: field.TypeUint32, Column: rolefieldpermission.FieldTenantID},
-			rolefieldpermission.FieldRoleID:    {Type: field.TypeUint32, Column: rolefieldpermission.FieldRoleID},
+			rolefieldpermission.FieldCreatedBy: {Type: field.TypeUint64, Column: rolefieldpermission.FieldCreatedBy},
+			rolefieldpermission.FieldUpdatedBy: {Type: field.TypeUint64, Column: rolefieldpermission.FieldUpdatedBy},
+			rolefieldpermission.FieldDeletedBy: {Type: field.TypeUint64, Column: rolefieldpermission.FieldDeletedBy},
+			rolefieldpermission.FieldTenantID:  {Type: field.TypeUint64, Column: rolefieldpermission.FieldTenantID},
+			rolefieldpermission.FieldRoleID:    {Type: field.TypeUint64, Column: rolefieldpermission.FieldRoleID},
 			rolefieldpermission.FieldResource:  {Type: field.TypeString, Column: rolefieldpermission.FieldResource},
 			rolefieldpermission.FieldFieldName: {Type: field.TypeString, Column: rolefieldpermission.FieldFieldName},
 		},
@@ -1559,7 +1559,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   rolemetadata.Table,
 			Columns: rolemetadata.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: rolemetadata.FieldID,
 			},
 		},
@@ -1568,11 +1568,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolemetadata.FieldCreatedAt:         {Type: field.TypeTime, Column: rolemetadata.FieldCreatedAt},
 			rolemetadata.FieldUpdatedAt:         {Type: field.TypeTime, Column: rolemetadata.FieldUpdatedAt},
 			rolemetadata.FieldDeletedAt:         {Type: field.TypeTime, Column: rolemetadata.FieldDeletedAt},
-			rolemetadata.FieldCreatedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldCreatedBy},
-			rolemetadata.FieldUpdatedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldUpdatedBy},
-			rolemetadata.FieldDeletedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldDeletedBy},
-			rolemetadata.FieldTenantID:          {Type: field.TypeUint32, Column: rolemetadata.FieldTenantID},
-			rolemetadata.FieldRoleID:            {Type: field.TypeUint32, Column: rolemetadata.FieldRoleID},
+			rolemetadata.FieldCreatedBy:         {Type: field.TypeUint64, Column: rolemetadata.FieldCreatedBy},
+			rolemetadata.FieldUpdatedBy:         {Type: field.TypeUint64, Column: rolemetadata.FieldUpdatedBy},
+			rolemetadata.FieldDeletedBy:         {Type: field.TypeUint64, Column: rolemetadata.FieldDeletedBy},
+			rolemetadata.FieldTenantID:          {Type: field.TypeUint64, Column: rolemetadata.FieldTenantID},
+			rolemetadata.FieldRoleID:            {Type: field.TypeUint64, Column: rolemetadata.FieldRoleID},
 			rolemetadata.FieldIsTemplate:        {Type: field.TypeBool, Column: rolemetadata.FieldIsTemplate},
 			rolemetadata.FieldTemplateFor:       {Type: field.TypeString, Column: rolemetadata.FieldTemplateFor},
 			rolemetadata.FieldTemplateVersion:   {Type: field.TypeInt32, Column: rolemetadata.FieldTemplateVersion},
@@ -1588,7 +1588,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   roleorgunit.Table,
 			Columns: roleorgunit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: roleorgunit.FieldID,
 			},
 		},
@@ -1597,12 +1597,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			roleorgunit.FieldCreatedAt: {Type: field.TypeTime, Column: roleorgunit.FieldCreatedAt},
 			roleorgunit.FieldUpdatedAt: {Type: field.TypeTime, Column: roleorgunit.FieldUpdatedAt},
 			roleorgunit.FieldDeletedAt: {Type: field.TypeTime, Column: roleorgunit.FieldDeletedAt},
-			roleorgunit.FieldCreatedBy: {Type: field.TypeUint32, Column: roleorgunit.FieldCreatedBy},
-			roleorgunit.FieldUpdatedBy: {Type: field.TypeUint32, Column: roleorgunit.FieldUpdatedBy},
-			roleorgunit.FieldDeletedBy: {Type: field.TypeUint32, Column: roleorgunit.FieldDeletedBy},
-			roleorgunit.FieldTenantID:  {Type: field.TypeUint32, Column: roleorgunit.FieldTenantID},
-			roleorgunit.FieldRoleID:    {Type: field.TypeUint32, Column: roleorgunit.FieldRoleID},
-			roleorgunit.FieldOrgUnitID: {Type: field.TypeUint32, Column: roleorgunit.FieldOrgUnitID},
+			roleorgunit.FieldCreatedBy: {Type: field.TypeUint64, Column: roleorgunit.FieldCreatedBy},
+			roleorgunit.FieldUpdatedBy: {Type: field.TypeUint64, Column: roleorgunit.FieldUpdatedBy},
+			roleorgunit.FieldDeletedBy: {Type: field.TypeUint64, Column: roleorgunit.FieldDeletedBy},
+			roleorgunit.FieldTenantID:  {Type: field.TypeUint64, Column: roleorgunit.FieldTenantID},
+			roleorgunit.FieldRoleID:    {Type: field.TypeUint64, Column: roleorgunit.FieldRoleID},
+			roleorgunit.FieldOrgUnitID: {Type: field.TypeUint64, Column: roleorgunit.FieldOrgUnitID},
 		},
 	}
 	graph.Nodes[55] = &sqlgraph.Node{
@@ -1610,7 +1610,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   rolepermission.Table,
 			Columns: rolepermission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: rolepermission.FieldID,
 			},
 		},
@@ -1619,13 +1619,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolepermission.FieldCreatedAt:    {Type: field.TypeTime, Column: rolepermission.FieldCreatedAt},
 			rolepermission.FieldUpdatedAt:    {Type: field.TypeTime, Column: rolepermission.FieldUpdatedAt},
 			rolepermission.FieldDeletedAt:    {Type: field.TypeTime, Column: rolepermission.FieldDeletedAt},
-			rolepermission.FieldCreatedBy:    {Type: field.TypeUint32, Column: rolepermission.FieldCreatedBy},
-			rolepermission.FieldUpdatedBy:    {Type: field.TypeUint32, Column: rolepermission.FieldUpdatedBy},
-			rolepermission.FieldDeletedBy:    {Type: field.TypeUint32, Column: rolepermission.FieldDeletedBy},
-			rolepermission.FieldTenantID:     {Type: field.TypeUint32, Column: rolepermission.FieldTenantID},
+			rolepermission.FieldCreatedBy:    {Type: field.TypeUint64, Column: rolepermission.FieldCreatedBy},
+			rolepermission.FieldUpdatedBy:    {Type: field.TypeUint64, Column: rolepermission.FieldUpdatedBy},
+			rolepermission.FieldDeletedBy:    {Type: field.TypeUint64, Column: rolepermission.FieldDeletedBy},
+			rolepermission.FieldTenantID:     {Type: field.TypeUint64, Column: rolepermission.FieldTenantID},
 			rolepermission.FieldStatus:       {Type: field.TypeEnum, Column: rolepermission.FieldStatus},
-			rolepermission.FieldRoleID:       {Type: field.TypeUint32, Column: rolepermission.FieldRoleID},
-			rolepermission.FieldPermissionID: {Type: field.TypeUint32, Column: rolepermission.FieldPermissionID},
+			rolepermission.FieldRoleID:       {Type: field.TypeUint64, Column: rolepermission.FieldRoleID},
+			rolepermission.FieldPermissionID: {Type: field.TypeUint64, Column: rolepermission.FieldPermissionID},
 			rolepermission.FieldEffect:       {Type: field.TypeEnum, Column: rolepermission.FieldEffect},
 			rolepermission.FieldPriority:     {Type: field.TypeInt32, Column: rolepermission.FieldPriority},
 		},
@@ -1635,7 +1635,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   script.Table,
 			Columns: script.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: script.FieldID,
 			},
 		},
@@ -1644,9 +1644,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			script.FieldCreatedAt:   {Type: field.TypeTime, Column: script.FieldCreatedAt},
 			script.FieldUpdatedAt:   {Type: field.TypeTime, Column: script.FieldUpdatedAt},
 			script.FieldDeletedAt:   {Type: field.TypeTime, Column: script.FieldDeletedAt},
-			script.FieldCreatedBy:   {Type: field.TypeUint32, Column: script.FieldCreatedBy},
-			script.FieldUpdatedBy:   {Type: field.TypeUint32, Column: script.FieldUpdatedBy},
-			script.FieldDeletedBy:   {Type: field.TypeUint32, Column: script.FieldDeletedBy},
+			script.FieldCreatedBy:   {Type: field.TypeUint64, Column: script.FieldCreatedBy},
+			script.FieldUpdatedBy:   {Type: field.TypeUint64, Column: script.FieldUpdatedBy},
+			script.FieldDeletedBy:   {Type: field.TypeUint64, Column: script.FieldDeletedBy},
 			script.FieldIsEnabled:   {Type: field.TypeBool, Column: script.FieldIsEnabled},
 			script.FieldName:        {Type: field.TypeString, Column: script.FieldName},
 			script.FieldLanguage:    {Type: field.TypeEnum, Column: script.FieldLanguage},
@@ -1663,7 +1663,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   scriptlog.Table,
 			Columns: scriptlog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: scriptlog.FieldID,
 			},
 		},
@@ -1672,7 +1672,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			scriptlog.FieldCreatedAt:   {Type: field.TypeTime, Column: scriptlog.FieldCreatedAt},
 			scriptlog.FieldUpdatedAt:   {Type: field.TypeTime, Column: scriptlog.FieldUpdatedAt},
 			scriptlog.FieldDeletedAt:   {Type: field.TypeTime, Column: scriptlog.FieldDeletedAt},
-			scriptlog.FieldScriptID:    {Type: field.TypeUint32, Column: scriptlog.FieldScriptID},
+			scriptlog.FieldScriptID:    {Type: field.TypeUint64, Column: scriptlog.FieldScriptID},
 			scriptlog.FieldScriptName:  {Type: field.TypeString, Column: scriptlog.FieldScriptName},
 			scriptlog.FieldLanguage:    {Type: field.TypeString, Column: scriptlog.FieldLanguage},
 			scriptlog.FieldTriggerType: {Type: field.TypeString, Column: scriptlog.FieldTriggerType},
@@ -1688,7 +1688,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   sysconfig.Table,
 			Columns: sysconfig.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: sysconfig.FieldID,
 			},
 		},
@@ -1697,9 +1697,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sysconfig.FieldCreatedAt: {Type: field.TypeTime, Column: sysconfig.FieldCreatedAt},
 			sysconfig.FieldUpdatedAt: {Type: field.TypeTime, Column: sysconfig.FieldUpdatedAt},
 			sysconfig.FieldDeletedAt: {Type: field.TypeTime, Column: sysconfig.FieldDeletedAt},
-			sysconfig.FieldCreatedBy: {Type: field.TypeUint32, Column: sysconfig.FieldCreatedBy},
-			sysconfig.FieldUpdatedBy: {Type: field.TypeUint32, Column: sysconfig.FieldUpdatedBy},
-			sysconfig.FieldDeletedBy: {Type: field.TypeUint32, Column: sysconfig.FieldDeletedBy},
+			sysconfig.FieldCreatedBy: {Type: field.TypeUint64, Column: sysconfig.FieldCreatedBy},
+			sysconfig.FieldUpdatedBy: {Type: field.TypeUint64, Column: sysconfig.FieldUpdatedBy},
+			sysconfig.FieldDeletedBy: {Type: field.TypeUint64, Column: sysconfig.FieldDeletedBy},
 			sysconfig.FieldName:      {Type: field.TypeString, Column: sysconfig.FieldName},
 			sysconfig.FieldKey:       {Type: field.TypeString, Column: sysconfig.FieldKey},
 			sysconfig.FieldValue:     {Type: field.TypeString, Column: sysconfig.FieldValue},
@@ -1712,7 +1712,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   task.Table,
 			Columns: task.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: task.FieldID,
 			},
 		},
@@ -1721,11 +1721,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			task.FieldCreatedAt:   {Type: field.TypeTime, Column: task.FieldCreatedAt},
 			task.FieldUpdatedAt:   {Type: field.TypeTime, Column: task.FieldUpdatedAt},
 			task.FieldDeletedAt:   {Type: field.TypeTime, Column: task.FieldDeletedAt},
-			task.FieldCreatedBy:   {Type: field.TypeUint32, Column: task.FieldCreatedBy},
-			task.FieldUpdatedBy:   {Type: field.TypeUint32, Column: task.FieldUpdatedBy},
-			task.FieldDeletedBy:   {Type: field.TypeUint32, Column: task.FieldDeletedBy},
+			task.FieldCreatedBy:   {Type: field.TypeUint64, Column: task.FieldCreatedBy},
+			task.FieldUpdatedBy:   {Type: field.TypeUint64, Column: task.FieldUpdatedBy},
+			task.FieldDeletedBy:   {Type: field.TypeUint64, Column: task.FieldDeletedBy},
 			task.FieldRemark:      {Type: field.TypeString, Column: task.FieldRemark},
-			task.FieldTenantID:    {Type: field.TypeUint32, Column: task.FieldTenantID},
+			task.FieldTenantID:    {Type: field.TypeUint64, Column: task.FieldTenantID},
 			task.FieldType:        {Type: field.TypeEnum, Column: task.FieldType},
 			task.FieldTypeName:    {Type: field.TypeString, Column: task.FieldTypeName},
 			task.FieldTaskPayload: {Type: field.TypeString, Column: task.FieldTaskPayload},
@@ -1739,7 +1739,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   tenant.Table,
 			Columns: tenant.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: tenant.FieldID,
 			},
 		},
@@ -1748,16 +1748,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 			tenant.FieldCreatedAt:        {Type: field.TypeTime, Column: tenant.FieldCreatedAt},
 			tenant.FieldUpdatedAt:        {Type: field.TypeTime, Column: tenant.FieldUpdatedAt},
 			tenant.FieldDeletedAt:        {Type: field.TypeTime, Column: tenant.FieldDeletedAt},
-			tenant.FieldCreatedBy:        {Type: field.TypeUint32, Column: tenant.FieldCreatedBy},
-			tenant.FieldUpdatedBy:        {Type: field.TypeUint32, Column: tenant.FieldUpdatedBy},
-			tenant.FieldDeletedBy:        {Type: field.TypeUint32, Column: tenant.FieldDeletedBy},
+			tenant.FieldCreatedBy:        {Type: field.TypeUint64, Column: tenant.FieldCreatedBy},
+			tenant.FieldUpdatedBy:        {Type: field.TypeUint64, Column: tenant.FieldUpdatedBy},
+			tenant.FieldDeletedBy:        {Type: field.TypeUint64, Column: tenant.FieldDeletedBy},
 			tenant.FieldRemark:           {Type: field.TypeString, Column: tenant.FieldRemark},
 			tenant.FieldName:             {Type: field.TypeString, Column: tenant.FieldName},
 			tenant.FieldCode:             {Type: field.TypeString, Column: tenant.FieldCode},
 			tenant.FieldLogoURL:          {Type: field.TypeString, Column: tenant.FieldLogoURL},
 			tenant.FieldDomain:           {Type: field.TypeString, Column: tenant.FieldDomain},
 			tenant.FieldIndustry:         {Type: field.TypeString, Column: tenant.FieldIndustry},
-			tenant.FieldAdminUserID:      {Type: field.TypeUint32, Column: tenant.FieldAdminUserID},
+			tenant.FieldAdminUserID:      {Type: field.TypeUint64, Column: tenant.FieldAdminUserID},
 			tenant.FieldStatus:           {Type: field.TypeEnum, Column: tenant.FieldStatus},
 			tenant.FieldType:             {Type: field.TypeEnum, Column: tenant.FieldType},
 			tenant.FieldAuditStatus:      {Type: field.TypeEnum, Column: tenant.FieldAuditStatus},
@@ -1772,20 +1772,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: user.FieldID,
 			},
 		},
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			user.FieldCreatedBy:   {Type: field.TypeUint32, Column: user.FieldCreatedBy},
-			user.FieldUpdatedBy:   {Type: field.TypeUint32, Column: user.FieldUpdatedBy},
-			user.FieldDeletedBy:   {Type: field.TypeUint32, Column: user.FieldDeletedBy},
+			user.FieldCreatedBy:   {Type: field.TypeUint64, Column: user.FieldCreatedBy},
+			user.FieldUpdatedBy:   {Type: field.TypeUint64, Column: user.FieldUpdatedBy},
+			user.FieldDeletedBy:   {Type: field.TypeUint64, Column: user.FieldDeletedBy},
 			user.FieldCreatedAt:   {Type: field.TypeTime, Column: user.FieldCreatedAt},
 			user.FieldUpdatedAt:   {Type: field.TypeTime, Column: user.FieldUpdatedAt},
 			user.FieldDeletedAt:   {Type: field.TypeTime, Column: user.FieldDeletedAt},
 			user.FieldRemark:      {Type: field.TypeString, Column: user.FieldRemark},
-			user.FieldTenantID:    {Type: field.TypeUint32, Column: user.FieldTenantID},
+			user.FieldTenantID:    {Type: field.TypeUint64, Column: user.FieldTenantID},
 			user.FieldUsername:    {Type: field.TypeString, Column: user.FieldUsername},
 			user.FieldNickname:    {Type: field.TypeString, Column: user.FieldNickname},
 			user.FieldRealname:    {Type: field.TypeString, Column: user.FieldRealname},
@@ -1809,7 +1809,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   usercredential.Table,
 			Columns: usercredential.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: usercredential.FieldID,
 			},
 		},
@@ -1818,8 +1818,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			usercredential.FieldCreatedAt:              {Type: field.TypeTime, Column: usercredential.FieldCreatedAt},
 			usercredential.FieldUpdatedAt:              {Type: field.TypeTime, Column: usercredential.FieldUpdatedAt},
 			usercredential.FieldDeletedAt:              {Type: field.TypeTime, Column: usercredential.FieldDeletedAt},
-			usercredential.FieldTenantID:               {Type: field.TypeUint32, Column: usercredential.FieldTenantID},
-			usercredential.FieldUserID:                 {Type: field.TypeUint32, Column: usercredential.FieldUserID},
+			usercredential.FieldTenantID:               {Type: field.TypeUint64, Column: usercredential.FieldTenantID},
+			usercredential.FieldUserID:                 {Type: field.TypeUint64, Column: usercredential.FieldUserID},
 			usercredential.FieldIdentityType:           {Type: field.TypeEnum, Column: usercredential.FieldIdentityType},
 			usercredential.FieldIdentifier:             {Type: field.TypeString, Column: usercredential.FieldIdentifier},
 			usercredential.FieldCredentialType:         {Type: field.TypeEnum, Column: usercredential.FieldCredentialType},
@@ -1842,7 +1842,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   usermfafactor.Table,
 			Columns: usermfafactor.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: usermfafactor.FieldID,
 			},
 		},
@@ -1851,8 +1851,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			usermfafactor.FieldCreatedAt:   {Type: field.TypeTime, Column: usermfafactor.FieldCreatedAt},
 			usermfafactor.FieldUpdatedAt:   {Type: field.TypeTime, Column: usermfafactor.FieldUpdatedAt},
 			usermfafactor.FieldDeletedAt:   {Type: field.TypeTime, Column: usermfafactor.FieldDeletedAt},
-			usermfafactor.FieldTenantID:    {Type: field.TypeUint32, Column: usermfafactor.FieldTenantID},
-			usermfafactor.FieldUserID:      {Type: field.TypeUint32, Column: usermfafactor.FieldUserID},
+			usermfafactor.FieldTenantID:    {Type: field.TypeUint64, Column: usermfafactor.FieldTenantID},
+			usermfafactor.FieldUserID:      {Type: field.TypeUint64, Column: usermfafactor.FieldUserID},
 			usermfafactor.FieldMethod:      {Type: field.TypeEnum, Column: usermfafactor.FieldMethod},
 			usermfafactor.FieldSecretHash:  {Type: field.TypeString, Column: usermfafactor.FieldSecretHash},
 			usermfafactor.FieldDisplayName: {Type: field.TypeString, Column: usermfafactor.FieldDisplayName},
@@ -1865,7 +1865,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   userorgunit.Table,
 			Columns: userorgunit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: userorgunit.FieldID,
 			},
 		},
@@ -1874,18 +1874,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userorgunit.FieldCreatedAt:  {Type: field.TypeTime, Column: userorgunit.FieldCreatedAt},
 			userorgunit.FieldUpdatedAt:  {Type: field.TypeTime, Column: userorgunit.FieldUpdatedAt},
 			userorgunit.FieldDeletedAt:  {Type: field.TypeTime, Column: userorgunit.FieldDeletedAt},
-			userorgunit.FieldCreatedBy:  {Type: field.TypeUint32, Column: userorgunit.FieldCreatedBy},
-			userorgunit.FieldUpdatedBy:  {Type: field.TypeUint32, Column: userorgunit.FieldUpdatedBy},
-			userorgunit.FieldDeletedBy:  {Type: field.TypeUint32, Column: userorgunit.FieldDeletedBy},
-			userorgunit.FieldTenantID:   {Type: field.TypeUint32, Column: userorgunit.FieldTenantID},
+			userorgunit.FieldCreatedBy:  {Type: field.TypeUint64, Column: userorgunit.FieldCreatedBy},
+			userorgunit.FieldUpdatedBy:  {Type: field.TypeUint64, Column: userorgunit.FieldUpdatedBy},
+			userorgunit.FieldDeletedBy:  {Type: field.TypeUint64, Column: userorgunit.FieldDeletedBy},
+			userorgunit.FieldTenantID:   {Type: field.TypeUint64, Column: userorgunit.FieldTenantID},
 			userorgunit.FieldRemark:     {Type: field.TypeString, Column: userorgunit.FieldRemark},
-			userorgunit.FieldUserID:     {Type: field.TypeUint32, Column: userorgunit.FieldUserID},
-			userorgunit.FieldOrgUnitID:  {Type: field.TypeUint32, Column: userorgunit.FieldOrgUnitID},
-			userorgunit.FieldPositionID: {Type: field.TypeUint32, Column: userorgunit.FieldPositionID},
+			userorgunit.FieldUserID:     {Type: field.TypeUint64, Column: userorgunit.FieldUserID},
+			userorgunit.FieldOrgUnitID:  {Type: field.TypeUint64, Column: userorgunit.FieldOrgUnitID},
+			userorgunit.FieldPositionID: {Type: field.TypeUint64, Column: userorgunit.FieldPositionID},
 			userorgunit.FieldStartAt:    {Type: field.TypeTime, Column: userorgunit.FieldStartAt},
 			userorgunit.FieldEndAt:      {Type: field.TypeTime, Column: userorgunit.FieldEndAt},
 			userorgunit.FieldAssignedAt: {Type: field.TypeTime, Column: userorgunit.FieldAssignedAt},
-			userorgunit.FieldAssignedBy: {Type: field.TypeUint32, Column: userorgunit.FieldAssignedBy},
+			userorgunit.FieldAssignedBy: {Type: field.TypeUint64, Column: userorgunit.FieldAssignedBy},
 			userorgunit.FieldIsPrimary:  {Type: field.TypeBool, Column: userorgunit.FieldIsPrimary},
 			userorgunit.FieldStatus:     {Type: field.TypeEnum, Column: userorgunit.FieldStatus},
 		},
@@ -1895,7 +1895,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   userposition.Table,
 			Columns: userposition.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: userposition.FieldID,
 			},
 		},
@@ -1904,18 +1904,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userposition.FieldCreatedAt:  {Type: field.TypeTime, Column: userposition.FieldCreatedAt},
 			userposition.FieldUpdatedAt:  {Type: field.TypeTime, Column: userposition.FieldUpdatedAt},
 			userposition.FieldDeletedAt:  {Type: field.TypeTime, Column: userposition.FieldDeletedAt},
-			userposition.FieldCreatedBy:  {Type: field.TypeUint32, Column: userposition.FieldCreatedBy},
-			userposition.FieldUpdatedBy:  {Type: field.TypeUint32, Column: userposition.FieldUpdatedBy},
-			userposition.FieldDeletedBy:  {Type: field.TypeUint32, Column: userposition.FieldDeletedBy},
-			userposition.FieldTenantID:   {Type: field.TypeUint32, Column: userposition.FieldTenantID},
+			userposition.FieldCreatedBy:  {Type: field.TypeUint64, Column: userposition.FieldCreatedBy},
+			userposition.FieldUpdatedBy:  {Type: field.TypeUint64, Column: userposition.FieldUpdatedBy},
+			userposition.FieldDeletedBy:  {Type: field.TypeUint64, Column: userposition.FieldDeletedBy},
+			userposition.FieldTenantID:   {Type: field.TypeUint64, Column: userposition.FieldTenantID},
 			userposition.FieldRemark:     {Type: field.TypeString, Column: userposition.FieldRemark},
-			userposition.FieldUserID:     {Type: field.TypeUint32, Column: userposition.FieldUserID},
-			userposition.FieldPositionID: {Type: field.TypeUint32, Column: userposition.FieldPositionID},
+			userposition.FieldUserID:     {Type: field.TypeUint64, Column: userposition.FieldUserID},
+			userposition.FieldPositionID: {Type: field.TypeUint64, Column: userposition.FieldPositionID},
 			userposition.FieldIsPrimary:  {Type: field.TypeBool, Column: userposition.FieldIsPrimary},
 			userposition.FieldStartAt:    {Type: field.TypeTime, Column: userposition.FieldStartAt},
 			userposition.FieldEndAt:      {Type: field.TypeTime, Column: userposition.FieldEndAt},
 			userposition.FieldAssignedAt: {Type: field.TypeTime, Column: userposition.FieldAssignedAt},
-			userposition.FieldAssignedBy: {Type: field.TypeUint32, Column: userposition.FieldAssignedBy},
+			userposition.FieldAssignedBy: {Type: field.TypeUint64, Column: userposition.FieldAssignedBy},
 			userposition.FieldStatus:     {Type: field.TypeEnum, Column: userposition.FieldStatus},
 		},
 	}
@@ -1924,7 +1924,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   userrole.Table,
 			Columns: userrole.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeUint64,
 				Column: userrole.FieldID,
 			},
 		},
@@ -1933,16 +1933,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userrole.FieldCreatedAt:  {Type: field.TypeTime, Column: userrole.FieldCreatedAt},
 			userrole.FieldUpdatedAt:  {Type: field.TypeTime, Column: userrole.FieldUpdatedAt},
 			userrole.FieldDeletedAt:  {Type: field.TypeTime, Column: userrole.FieldDeletedAt},
-			userrole.FieldCreatedBy:  {Type: field.TypeUint32, Column: userrole.FieldCreatedBy},
-			userrole.FieldUpdatedBy:  {Type: field.TypeUint32, Column: userrole.FieldUpdatedBy},
-			userrole.FieldDeletedBy:  {Type: field.TypeUint32, Column: userrole.FieldDeletedBy},
-			userrole.FieldTenantID:   {Type: field.TypeUint32, Column: userrole.FieldTenantID},
-			userrole.FieldUserID:     {Type: field.TypeUint32, Column: userrole.FieldUserID},
-			userrole.FieldRoleID:     {Type: field.TypeUint32, Column: userrole.FieldRoleID},
+			userrole.FieldCreatedBy:  {Type: field.TypeUint64, Column: userrole.FieldCreatedBy},
+			userrole.FieldUpdatedBy:  {Type: field.TypeUint64, Column: userrole.FieldUpdatedBy},
+			userrole.FieldDeletedBy:  {Type: field.TypeUint64, Column: userrole.FieldDeletedBy},
+			userrole.FieldTenantID:   {Type: field.TypeUint64, Column: userrole.FieldTenantID},
+			userrole.FieldUserID:     {Type: field.TypeUint64, Column: userrole.FieldUserID},
+			userrole.FieldRoleID:     {Type: field.TypeUint64, Column: userrole.FieldRoleID},
 			userrole.FieldStartAt:    {Type: field.TypeTime, Column: userrole.FieldStartAt},
 			userrole.FieldEndAt:      {Type: field.TypeTime, Column: userrole.FieldEndAt},
 			userrole.FieldAssignedAt: {Type: field.TypeTime, Column: userrole.FieldAssignedAt},
-			userrole.FieldAssignedBy: {Type: field.TypeUint32, Column: userrole.FieldAssignedBy},
+			userrole.FieldAssignedBy: {Type: field.TypeUint64, Column: userrole.FieldAssignedBy},
 			userrole.FieldIsPrimary:  {Type: field.TypeBool, Column: userrole.FieldIsPrimary},
 			userrole.FieldStatus:     {Type: field.TypeEnum, Column: userrole.FieldStatus},
 		},
@@ -2303,8 +2303,8 @@ func (f *AccessKeyFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AccessKeyFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AccessKeyFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(accesskey.FieldID))
 }
 
@@ -2323,18 +2323,18 @@ func (f *AccessKeyFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(accesskey.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AccessKeyFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AccessKeyFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(accesskey.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AccessKeyFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AccessKeyFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(accesskey.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AccessKeyFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AccessKeyFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(accesskey.FieldDeletedBy))
 }
 
@@ -2343,8 +2343,8 @@ func (f *AccessKeyFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(accesskey.FieldStatus))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AccessKeyFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AccessKeyFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(accesskey.FieldTenantID))
 }
 
@@ -2408,8 +2408,8 @@ func (f *AiAgentAppFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiAgentAppFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiAgentAppFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentapp.FieldID))
 }
 
@@ -2428,23 +2428,23 @@ func (f *AiAgentAppFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiagentapp.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiAgentAppFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiAgentAppFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentapp.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiAgentAppFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiAgentAppFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentapp.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiAgentAppFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiAgentAppFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentapp.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiAgentAppFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiAgentAppFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentapp.FieldTenantID))
 }
 
@@ -2517,8 +2517,8 @@ func (f *AiAgentRevisionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiAgentRevisionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiAgentRevisionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldID))
 }
 
@@ -2537,28 +2537,28 @@ func (f *AiAgentRevisionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiagentrevision.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiAgentRevisionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiAgentRevisionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiAgentRevisionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiAgentRevisionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiAgentRevisionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiAgentRevisionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiAgentRevisionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiAgentRevisionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldTenantID))
 }
 
-// WhereAppID applies the entql uint32 predicate on the app_id field.
-func (f *AiAgentRevisionFilter) WhereAppID(p entql.Uint32P) {
+// WhereAppID applies the entql uint64 predicate on the app_id field.
+func (f *AiAgentRevisionFilter) WhereAppID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrevision.FieldAppID))
 }
 
@@ -2621,8 +2621,8 @@ func (f *AiAgentRunFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiAgentRunFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiAgentRunFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldID))
 }
 
@@ -2641,28 +2641,28 @@ func (f *AiAgentRunFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiagentrun.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiAgentRunFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiAgentRunFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiAgentRunFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiAgentRunFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiAgentRunFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiAgentRunFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiAgentRunFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiAgentRunFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldTenantID))
 }
 
-// WhereAppID applies the entql uint32 predicate on the app_id field.
-func (f *AiAgentRunFilter) WhereAppID(p entql.Uint32P) {
+// WhereAppID applies the entql uint64 predicate on the app_id field.
+func (f *AiAgentRunFilter) WhereAppID(p entql.Uint64P) {
 	f.Where(p.Field(aiagentrun.FieldAppID))
 }
 
@@ -2746,8 +2746,8 @@ func (f *AiChunkFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiChunkFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiChunkFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aichunk.FieldID))
 }
 
@@ -2756,13 +2756,13 @@ func (f *AiChunkFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(aichunk.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiChunkFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiChunkFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aichunk.FieldTenantID))
 }
 
-// WhereDocID applies the entql uint32 predicate on the doc_id field.
-func (f *AiChunkFilter) WhereDocID(p entql.Uint32P) {
+// WhereDocID applies the entql uint64 predicate on the doc_id field.
+func (f *AiChunkFilter) WhereDocID(p entql.Uint64P) {
 	f.Where(p.Field(aichunk.FieldDocID))
 }
 
@@ -2825,8 +2825,8 @@ func (f *AiConversationFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiConversationFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiConversationFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldID))
 }
 
@@ -2845,23 +2845,23 @@ func (f *AiConversationFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiconversation.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiConversationFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiConversationFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiConversationFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiConversationFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiConversationFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiConversationFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiConversationFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiConversationFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldTenantID))
 }
 
@@ -2870,13 +2870,13 @@ func (f *AiConversationFilter) WhereTitle(p entql.StringP) {
 	f.Where(p.Field(aiconversation.FieldTitle))
 }
 
-// WhereProviderID applies the entql uint32 predicate on the provider_id field.
-func (f *AiConversationFilter) WhereProviderID(p entql.Uint32P) {
+// WhereProviderID applies the entql uint64 predicate on the provider_id field.
+func (f *AiConversationFilter) WhereProviderID(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldProviderID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *AiConversationFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *AiConversationFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(aiconversation.FieldUserID))
 }
 
@@ -2934,8 +2934,8 @@ func (f *AiDocFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiDocFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiDocFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldID))
 }
 
@@ -2954,28 +2954,28 @@ func (f *AiDocFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aidoc.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiDocFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiDocFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiDocFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiDocFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiDocFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiDocFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiDocFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiDocFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldTenantID))
 }
 
-// WhereBaseID applies the entql uint32 predicate on the base_id field.
-func (f *AiDocFilter) WhereBaseID(p entql.Uint32P) {
+// WhereBaseID applies the entql uint64 predicate on the base_id field.
+func (f *AiDocFilter) WhereBaseID(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldBaseID))
 }
 
@@ -2999,8 +2999,8 @@ func (f *AiDocFilter) WhereErrorMessage(p entql.StringP) {
 	f.Where(p.Field(aidoc.FieldErrorMessage))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *AiDocFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *AiDocFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(aidoc.FieldUserID))
 }
 
@@ -3067,8 +3067,8 @@ func (f *AiKnowledgeBaseFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiKnowledgeBaseFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiKnowledgeBaseFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldID))
 }
 
@@ -3087,23 +3087,23 @@ func (f *AiKnowledgeBaseFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiknowledgebase.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiKnowledgeBaseFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiKnowledgeBaseFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiKnowledgeBaseFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiKnowledgeBaseFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiKnowledgeBaseFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiKnowledgeBaseFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiKnowledgeBaseFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiKnowledgeBaseFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldTenantID))
 }
 
@@ -3117,8 +3117,8 @@ func (f *AiKnowledgeBaseFilter) WhereDescription(p entql.StringP) {
 	f.Where(p.Field(aiknowledgebase.FieldDescription))
 }
 
-// WhereProviderID applies the entql uint32 predicate on the provider_id field.
-func (f *AiKnowledgeBaseFilter) WhereProviderID(p entql.Uint32P) {
+// WhereProviderID applies the entql uint64 predicate on the provider_id field.
+func (f *AiKnowledgeBaseFilter) WhereProviderID(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldProviderID))
 }
 
@@ -3127,8 +3127,8 @@ func (f *AiKnowledgeBaseFilter) WhereEmbeddingModel(p entql.StringP) {
 	f.Where(p.Field(aiknowledgebase.FieldEmbeddingModel))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *AiKnowledgeBaseFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *AiKnowledgeBaseFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(aiknowledgebase.FieldUserID))
 }
 
@@ -3181,8 +3181,8 @@ func (f *AiMessageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiMessageFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiMessageFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldID))
 }
 
@@ -3201,23 +3201,23 @@ func (f *AiMessageFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aimessage.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiMessageFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiMessageFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiMessageFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiMessageFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiMessageFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiMessageFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiMessageFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiMessageFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldTenantID))
 }
 
@@ -3256,13 +3256,13 @@ func (f *AiMessageFilter) WhereErrorMessage(p entql.StringP) {
 	f.Where(p.Field(aimessage.FieldErrorMessage))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *AiMessageFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *AiMessageFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldUserID))
 }
 
-// WhereConversationID applies the entql uint32 predicate on the conversation_id field.
-func (f *AiMessageFilter) WhereConversationID(p entql.Uint32P) {
+// WhereConversationID applies the entql uint64 predicate on the conversation_id field.
+func (f *AiMessageFilter) WhereConversationID(p entql.Uint64P) {
 	f.Where(p.Field(aimessage.FieldConversationID))
 }
 
@@ -3315,8 +3315,8 @@ func (f *AiProviderFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiProviderFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiProviderFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiprovider.FieldID))
 }
 
@@ -3335,18 +3335,18 @@ func (f *AiProviderFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(aiprovider.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *AiProviderFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *AiProviderFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiprovider.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *AiProviderFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *AiProviderFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiprovider.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *AiProviderFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *AiProviderFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(aiprovider.FieldDeletedBy))
 }
 
@@ -3455,8 +3455,8 @@ func (f *AiUsageLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *AiUsageLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *AiUsageLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(aiusagelog.FieldID))
 }
 
@@ -3465,23 +3465,23 @@ func (f *AiUsageLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(aiusagelog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *AiUsageLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *AiUsageLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(aiusagelog.FieldTenantID))
 }
 
-// WhereProviderID applies the entql uint32 predicate on the provider_id field.
-func (f *AiUsageLogFilter) WhereProviderID(p entql.Uint32P) {
+// WhereProviderID applies the entql uint64 predicate on the provider_id field.
+func (f *AiUsageLogFilter) WhereProviderID(p entql.Uint64P) {
 	f.Where(p.Field(aiusagelog.FieldProviderID))
 }
 
-// WhereConversationID applies the entql uint32 predicate on the conversation_id field.
-func (f *AiUsageLogFilter) WhereConversationID(p entql.Uint32P) {
+// WhereConversationID applies the entql uint64 predicate on the conversation_id field.
+func (f *AiUsageLogFilter) WhereConversationID(p entql.Uint64P) {
 	f.Where(p.Field(aiusagelog.FieldConversationID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *AiUsageLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *AiUsageLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(aiusagelog.FieldUserID))
 }
 
@@ -3545,8 +3545,8 @@ func (f *APIFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *APIFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *APIFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(api.FieldID))
 }
 
@@ -3565,18 +3565,18 @@ func (f *APIFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(api.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *APIFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *APIFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(api.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *APIFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *APIFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(api.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *APIFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *APIFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(api.FieldDeletedBy))
 }
 
@@ -3660,8 +3660,8 @@ func (f *ApiAuditLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *ApiAuditLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ApiAuditLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(apiauditlog.FieldID))
 }
 
@@ -3670,13 +3670,13 @@ func (f *ApiAuditLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(apiauditlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *ApiAuditLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *ApiAuditLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(apiauditlog.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *ApiAuditLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *ApiAuditLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(apiauditlog.FieldUserID))
 }
 
@@ -3835,8 +3835,8 @@ func (f *BiDashboardFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *BiDashboardFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *BiDashboardFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(bidashboard.FieldID))
 }
 
@@ -3855,18 +3855,18 @@ func (f *BiDashboardFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(bidashboard.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *BiDashboardFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *BiDashboardFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboard.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *BiDashboardFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *BiDashboardFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboard.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *BiDashboardFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *BiDashboardFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboard.FieldDeletedBy))
 }
 
@@ -3880,8 +3880,8 @@ func (f *BiDashboardFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(bidashboard.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *BiDashboardFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *BiDashboardFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(bidashboard.FieldTenantID))
 }
 
@@ -3989,8 +3989,8 @@ func (f *BiDashboardRevisionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *BiDashboardRevisionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *BiDashboardRevisionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldID))
 }
 
@@ -4009,28 +4009,28 @@ func (f *BiDashboardRevisionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(bidashboardrevision.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *BiDashboardRevisionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *BiDashboardRevisionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *BiDashboardRevisionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *BiDashboardRevisionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *BiDashboardRevisionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *BiDashboardRevisionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *BiDashboardRevisionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *BiDashboardRevisionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldTenantID))
 }
 
-// WhereDashboardID applies the entql uint32 predicate on the dashboard_id field.
-func (f *BiDashboardRevisionFilter) WhereDashboardID(p entql.Uint32P) {
+// WhereDashboardID applies the entql uint64 predicate on the dashboard_id field.
+func (f *BiDashboardRevisionFilter) WhereDashboardID(p entql.Uint64P) {
 	f.Where(p.Field(bidashboardrevision.FieldDashboardID))
 }
 
@@ -4103,8 +4103,8 @@ func (f *DataAccessAuditLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *DataAccessAuditLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *DataAccessAuditLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(dataaccessauditlog.FieldID))
 }
 
@@ -4113,13 +4113,13 @@ func (f *DataAccessAuditLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(dataaccessauditlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *DataAccessAuditLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *DataAccessAuditLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(dataaccessauditlog.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *DataAccessAuditLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *DataAccessAuditLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(dataaccessauditlog.FieldUserID))
 }
 
@@ -4273,8 +4273,8 @@ func (f *DictEntryFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *DictEntryFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *DictEntryFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(dictentry.FieldID))
 }
 
@@ -4293,18 +4293,18 @@ func (f *DictEntryFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(dictentry.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *DictEntryFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *DictEntryFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentry.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *DictEntryFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *DictEntryFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentry.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *DictEntryFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *DictEntryFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentry.FieldDeletedBy))
 }
 
@@ -4318,8 +4318,8 @@ func (f *DictEntryFilter) WhereIsEnabled(p entql.BoolP) {
 	f.Where(p.Field(dictentry.FieldIsEnabled))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *DictEntryFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *DictEntryFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(dictentry.FieldTenantID))
 }
 
@@ -4396,8 +4396,8 @@ func (f *DictEntryI18nFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *DictEntryI18nFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *DictEntryI18nFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(dictentryi18n.FieldID))
 }
 
@@ -4416,18 +4416,18 @@ func (f *DictEntryI18nFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(dictentryi18n.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *DictEntryI18nFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *DictEntryI18nFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentryi18n.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *DictEntryI18nFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *DictEntryI18nFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentryi18n.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *DictEntryI18nFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *DictEntryI18nFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(dictentryi18n.FieldDeletedBy))
 }
 
@@ -4441,8 +4441,8 @@ func (f *DictEntryI18nFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(dictentryi18n.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *DictEntryI18nFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *DictEntryI18nFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(dictentryi18n.FieldTenantID))
 }
 
@@ -4505,8 +4505,8 @@ func (f *DictTypeFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *DictTypeFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *DictTypeFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(dicttype.FieldID))
 }
 
@@ -4525,18 +4525,18 @@ func (f *DictTypeFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(dicttype.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *DictTypeFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *DictTypeFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dicttype.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *DictTypeFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *DictTypeFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(dicttype.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *DictTypeFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *DictTypeFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(dicttype.FieldDeletedBy))
 }
 
@@ -4550,8 +4550,8 @@ func (f *DictTypeFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(dicttype.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *DictTypeFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *DictTypeFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(dicttype.FieldTenantID))
 }
 
@@ -4614,8 +4614,8 @@ func (f *FileFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *FileFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *FileFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(file.FieldID))
 }
 
@@ -4634,18 +4634,18 @@ func (f *FileFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(file.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *FileFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *FileFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(file.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *FileFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *FileFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(file.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *FileFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *FileFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(file.FieldDeletedBy))
 }
 
@@ -4654,8 +4654,8 @@ func (f *FileFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(file.FieldRemark))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *FileFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *FileFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(file.FieldTenantID))
 }
 
@@ -4749,8 +4749,8 @@ func (f *InternalMessageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *InternalMessageFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *InternalMessageFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldID))
 }
 
@@ -4769,23 +4769,23 @@ func (f *InternalMessageFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(internalmessage.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *InternalMessageFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *InternalMessageFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *InternalMessageFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *InternalMessageFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *InternalMessageFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *InternalMessageFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *InternalMessageFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *InternalMessageFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldTenantID))
 }
 
@@ -4799,13 +4799,13 @@ func (f *InternalMessageFilter) WhereContent(p entql.StringP) {
 	f.Where(p.Field(internalmessage.FieldContent))
 }
 
-// WhereSenderID applies the entql uint32 predicate on the sender_id field.
-func (f *InternalMessageFilter) WhereSenderID(p entql.Uint32P) {
+// WhereSenderID applies the entql uint64 predicate on the sender_id field.
+func (f *InternalMessageFilter) WhereSenderID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldSenderID))
 }
 
-// WhereCategoryID applies the entql uint32 predicate on the category_id field.
-func (f *InternalMessageFilter) WhereCategoryID(p entql.Uint32P) {
+// WhereCategoryID applies the entql uint64 predicate on the category_id field.
+func (f *InternalMessageFilter) WhereCategoryID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessage.FieldCategoryID))
 }
 
@@ -4854,8 +4854,8 @@ func (f *InternalMessageCategoryFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *InternalMessageCategoryFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *InternalMessageCategoryFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagecategory.FieldID))
 }
 
@@ -4874,18 +4874,18 @@ func (f *InternalMessageCategoryFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(internalmessagecategory.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *InternalMessageCategoryFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *InternalMessageCategoryFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagecategory.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *InternalMessageCategoryFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *InternalMessageCategoryFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagecategory.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *InternalMessageCategoryFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *InternalMessageCategoryFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagecategory.FieldDeletedBy))
 }
 
@@ -4904,8 +4904,8 @@ func (f *InternalMessageCategoryFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(internalmessagecategory.FieldRemark))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *InternalMessageCategoryFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *InternalMessageCategoryFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagecategory.FieldTenantID))
 }
 
@@ -4959,8 +4959,8 @@ func (f *InternalMessageRecipientFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *InternalMessageRecipientFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *InternalMessageRecipientFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagerecipient.FieldID))
 }
 
@@ -4979,18 +4979,18 @@ func (f *InternalMessageRecipientFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(internalmessagerecipient.FieldDeletedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *InternalMessageRecipientFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *InternalMessageRecipientFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagerecipient.FieldTenantID))
 }
 
-// WhereMessageID applies the entql uint32 predicate on the message_id field.
-func (f *InternalMessageRecipientFilter) WhereMessageID(p entql.Uint32P) {
+// WhereMessageID applies the entql uint64 predicate on the message_id field.
+func (f *InternalMessageRecipientFilter) WhereMessageID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagerecipient.FieldMessageID))
 }
 
-// WhereRecipientUserID applies the entql uint32 predicate on the recipient_user_id field.
-func (f *InternalMessageRecipientFilter) WhereRecipientUserID(p entql.Uint32P) {
+// WhereRecipientUserID applies the entql uint64 predicate on the recipient_user_id field.
+func (f *InternalMessageRecipientFilter) WhereRecipientUserID(p entql.Uint64P) {
 	f.Where(p.Field(internalmessagerecipient.FieldRecipientUserID))
 }
 
@@ -5044,8 +5044,8 @@ func (f *LanguageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *LanguageFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *LanguageFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(language.FieldID))
 }
 
@@ -5064,18 +5064,18 @@ func (f *LanguageFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(language.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *LanguageFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *LanguageFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(language.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *LanguageFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *LanguageFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(language.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *LanguageFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *LanguageFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(language.FieldDeletedBy))
 }
 
@@ -5144,8 +5144,8 @@ func (f *LoginAuditLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *LoginAuditLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *LoginAuditLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(loginauditlog.FieldID))
 }
 
@@ -5154,13 +5154,13 @@ func (f *LoginAuditLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(loginauditlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *LoginAuditLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *LoginAuditLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(loginauditlog.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *LoginAuditLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *LoginAuditLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(loginauditlog.FieldUserID))
 }
 
@@ -5284,8 +5284,8 @@ func (f *LoginPolicyFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *LoginPolicyFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *LoginPolicyFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldID))
 }
 
@@ -5304,28 +5304,28 @@ func (f *LoginPolicyFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(loginpolicy.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *LoginPolicyFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *LoginPolicyFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *LoginPolicyFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *LoginPolicyFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *LoginPolicyFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *LoginPolicyFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *LoginPolicyFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *LoginPolicyFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldTenantID))
 }
 
-// WhereTargetID applies the entql uint32 predicate on the target_id field.
-func (f *LoginPolicyFilter) WhereTargetID(p entql.Uint32P) {
+// WhereTargetID applies the entql uint64 predicate on the target_id field.
+func (f *LoginPolicyFilter) WhereTargetID(p entql.Uint64P) {
 	f.Where(p.Field(loginpolicy.FieldTargetID))
 }
 
@@ -5384,8 +5384,8 @@ func (f *MembershipFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MembershipFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MembershipFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldID))
 }
 
@@ -5404,23 +5404,23 @@ func (f *MembershipFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(membership.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MembershipFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MembershipFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MembershipFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MembershipFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MembershipFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MembershipFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MembershipFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *MembershipFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldTenantID))
 }
 
@@ -5429,23 +5429,23 @@ func (f *MembershipFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(membership.FieldRemark))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *MembershipFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *MembershipFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldUserID))
 }
 
-// WhereOrgUnitID applies the entql uint32 predicate on the org_unit_id field.
-func (f *MembershipFilter) WhereOrgUnitID(p entql.Uint32P) {
+// WhereOrgUnitID applies the entql uint64 predicate on the org_unit_id field.
+func (f *MembershipFilter) WhereOrgUnitID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldOrgUnitID))
 }
 
-// WherePositionID applies the entql uint32 predicate on the position_id field.
-func (f *MembershipFilter) WherePositionID(p entql.Uint32P) {
+// WherePositionID applies the entql uint64 predicate on the position_id field.
+func (f *MembershipFilter) WherePositionID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldPositionID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *MembershipFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *MembershipFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldRoleID))
 }
 
@@ -5469,8 +5469,8 @@ func (f *MembershipFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(membership.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *MembershipFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *MembershipFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(membership.FieldAssignedBy))
 }
 
@@ -5519,8 +5519,8 @@ func (f *MembershipOrgUnitFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MembershipOrgUnitFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MembershipOrgUnitFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldID))
 }
 
@@ -5539,23 +5539,23 @@ func (f *MembershipOrgUnitFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(membershiporgunit.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MembershipOrgUnitFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MembershipOrgUnitFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MembershipOrgUnitFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MembershipOrgUnitFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MembershipOrgUnitFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MembershipOrgUnitFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MembershipOrgUnitFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *MembershipOrgUnitFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldTenantID))
 }
 
@@ -5564,23 +5564,23 @@ func (f *MembershipOrgUnitFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(membershiporgunit.FieldRemark))
 }
 
-// WhereMembershipID applies the entql uint32 predicate on the membership_id field.
-func (f *MembershipOrgUnitFilter) WhereMembershipID(p entql.Uint32P) {
+// WhereMembershipID applies the entql uint64 predicate on the membership_id field.
+func (f *MembershipOrgUnitFilter) WhereMembershipID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldMembershipID))
 }
 
-// WhereOrgUnitID applies the entql uint32 predicate on the org_unit_id field.
-func (f *MembershipOrgUnitFilter) WhereOrgUnitID(p entql.Uint32P) {
+// WhereOrgUnitID applies the entql uint64 predicate on the org_unit_id field.
+func (f *MembershipOrgUnitFilter) WhereOrgUnitID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldOrgUnitID))
 }
 
-// WherePositionID applies the entql uint32 predicate on the position_id field.
-func (f *MembershipOrgUnitFilter) WherePositionID(p entql.Uint32P) {
+// WherePositionID applies the entql uint64 predicate on the position_id field.
+func (f *MembershipOrgUnitFilter) WherePositionID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldPositionID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *MembershipOrgUnitFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *MembershipOrgUnitFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldRoleID))
 }
 
@@ -5599,8 +5599,8 @@ func (f *MembershipOrgUnitFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(membershiporgunit.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *MembershipOrgUnitFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *MembershipOrgUnitFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiporgunit.FieldAssignedBy))
 }
 
@@ -5649,8 +5649,8 @@ func (f *MembershipPositionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MembershipPositionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MembershipPositionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldID))
 }
 
@@ -5669,23 +5669,23 @@ func (f *MembershipPositionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(membershipposition.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MembershipPositionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MembershipPositionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MembershipPositionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MembershipPositionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MembershipPositionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MembershipPositionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MembershipPositionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *MembershipPositionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldTenantID))
 }
 
@@ -5694,13 +5694,13 @@ func (f *MembershipPositionFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(membershipposition.FieldRemark))
 }
 
-// WhereMembershipID applies the entql uint32 predicate on the membership_id field.
-func (f *MembershipPositionFilter) WhereMembershipID(p entql.Uint32P) {
+// WhereMembershipID applies the entql uint64 predicate on the membership_id field.
+func (f *MembershipPositionFilter) WhereMembershipID(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldMembershipID))
 }
 
-// WherePositionID applies the entql uint32 predicate on the position_id field.
-func (f *MembershipPositionFilter) WherePositionID(p entql.Uint32P) {
+// WherePositionID applies the entql uint64 predicate on the position_id field.
+func (f *MembershipPositionFilter) WherePositionID(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldPositionID))
 }
 
@@ -5724,8 +5724,8 @@ func (f *MembershipPositionFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(membershipposition.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *MembershipPositionFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *MembershipPositionFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershipposition.FieldAssignedBy))
 }
 
@@ -5769,8 +5769,8 @@ func (f *MembershipRoleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MembershipRoleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MembershipRoleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldID))
 }
 
@@ -5789,33 +5789,33 @@ func (f *MembershipRoleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(membershiprole.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MembershipRoleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MembershipRoleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MembershipRoleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MembershipRoleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MembershipRoleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MembershipRoleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MembershipRoleFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *MembershipRoleFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldTenantID))
 }
 
-// WhereMembershipID applies the entql uint32 predicate on the membership_id field.
-func (f *MembershipRoleFilter) WhereMembershipID(p entql.Uint32P) {
+// WhereMembershipID applies the entql uint64 predicate on the membership_id field.
+func (f *MembershipRoleFilter) WhereMembershipID(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldMembershipID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *MembershipRoleFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *MembershipRoleFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldRoleID))
 }
 
@@ -5834,8 +5834,8 @@ func (f *MembershipRoleFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(membershiprole.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *MembershipRoleFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *MembershipRoleFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(membershiprole.FieldAssignedBy))
 }
 
@@ -5884,8 +5884,8 @@ func (f *MenuFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MenuFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MenuFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(menu.FieldID))
 }
 
@@ -5904,23 +5904,23 @@ func (f *MenuFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(menu.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MenuFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MenuFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(menu.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MenuFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MenuFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(menu.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MenuFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MenuFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(menu.FieldDeletedBy))
 }
 
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *MenuFilter) WhereParentID(p entql.Uint32P) {
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *MenuFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(menu.FieldParentID))
 }
 
@@ -6037,8 +6037,8 @@ func (f *MonitorAlertRuleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MonitorAlertRuleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *MonitorAlertRuleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(monitoralertrule.FieldID))
 }
 
@@ -6057,18 +6057,18 @@ func (f *MonitorAlertRuleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(monitoralertrule.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MonitorAlertRuleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *MonitorAlertRuleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(monitoralertrule.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MonitorAlertRuleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *MonitorAlertRuleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(monitoralertrule.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MonitorAlertRuleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *MonitorAlertRuleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(monitoralertrule.FieldDeletedBy))
 }
 
@@ -6167,8 +6167,8 @@ func (f *NotificationChannelFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NotificationChannelFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *NotificationChannelFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(notificationchannel.FieldID))
 }
 
@@ -6187,18 +6187,18 @@ func (f *NotificationChannelFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(notificationchannel.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NotificationChannelFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *NotificationChannelFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationchannel.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NotificationChannelFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *NotificationChannelFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationchannel.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NotificationChannelFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *NotificationChannelFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationchannel.FieldDeletedBy))
 }
 
@@ -6352,8 +6352,8 @@ func (f *NotificationDeliveryFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NotificationDeliveryFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *NotificationDeliveryFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldID))
 }
 
@@ -6372,18 +6372,18 @@ func (f *NotificationDeliveryFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(notificationdelivery.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NotificationDeliveryFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *NotificationDeliveryFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NotificationDeliveryFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *NotificationDeliveryFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NotificationDeliveryFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *NotificationDeliveryFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldDeletedBy))
 }
 
@@ -6397,18 +6397,18 @@ func (f *NotificationDeliveryFilter) WhereChannel(p entql.StringP) {
 	f.Where(p.Field(notificationdelivery.FieldChannel))
 }
 
-// WhereChannelID applies the entql uint32 predicate on the channel_id field.
-func (f *NotificationDeliveryFilter) WhereChannelID(p entql.Uint32P) {
+// WhereChannelID applies the entql uint64 predicate on the channel_id field.
+func (f *NotificationDeliveryFilter) WhereChannelID(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldChannelID))
 }
 
-// WhereRecipientUserID applies the entql uint32 predicate on the recipient_user_id field.
-func (f *NotificationDeliveryFilter) WhereRecipientUserID(p entql.Uint32P) {
+// WhereRecipientUserID applies the entql uint64 predicate on the recipient_user_id field.
+func (f *NotificationDeliveryFilter) WhereRecipientUserID(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldRecipientUserID))
 }
 
-// WhereRelatedID applies the entql uint32 predicate on the related_id field.
-func (f *NotificationDeliveryFilter) WhereRelatedID(p entql.Uint32P) {
+// WhereRelatedID applies the entql uint64 predicate on the related_id field.
+func (f *NotificationDeliveryFilter) WhereRelatedID(p entql.Uint64P) {
 	f.Where(p.Field(notificationdelivery.FieldRelatedID))
 }
 
@@ -6482,8 +6482,8 @@ func (f *NotificationPreferenceFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NotificationPreferenceFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *NotificationPreferenceFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(notificationpreference.FieldID))
 }
 
@@ -6502,23 +6502,23 @@ func (f *NotificationPreferenceFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(notificationpreference.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NotificationPreferenceFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *NotificationPreferenceFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationpreference.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NotificationPreferenceFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *NotificationPreferenceFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationpreference.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NotificationPreferenceFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *NotificationPreferenceFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationpreference.FieldDeletedBy))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *NotificationPreferenceFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *NotificationPreferenceFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(notificationpreference.FieldUserID))
 }
 
@@ -6577,8 +6577,8 @@ func (f *NotificationRuleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NotificationRuleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *NotificationRuleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(notificationrule.FieldID))
 }
 
@@ -6597,18 +6597,18 @@ func (f *NotificationRuleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(notificationrule.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NotificationRuleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *NotificationRuleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationrule.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NotificationRuleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *NotificationRuleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationrule.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NotificationRuleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *NotificationRuleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationrule.FieldDeletedBy))
 }
 
@@ -6672,8 +6672,8 @@ func (f *NotificationTemplateFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NotificationTemplateFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *NotificationTemplateFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(notificationtemplate.FieldID))
 }
 
@@ -6692,18 +6692,18 @@ func (f *NotificationTemplateFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(notificationtemplate.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NotificationTemplateFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *NotificationTemplateFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationtemplate.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NotificationTemplateFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *NotificationTemplateFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationtemplate.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NotificationTemplateFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *NotificationTemplateFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(notificationtemplate.FieldDeletedBy))
 }
 
@@ -6772,8 +6772,8 @@ func (f *OperationAuditLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *OperationAuditLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OperationAuditLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(operationauditlog.FieldID))
 }
 
@@ -6782,13 +6782,13 @@ func (f *OperationAuditLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(operationauditlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *OperationAuditLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *OperationAuditLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(operationauditlog.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *OperationAuditLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *OperationAuditLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(operationauditlog.FieldUserID))
 }
 
@@ -6907,8 +6907,8 @@ func (f *OrgUnitFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *OrgUnitFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OrgUnitFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldID))
 }
 
@@ -6927,18 +6927,18 @@ func (f *OrgUnitFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(orgunit.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *OrgUnitFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *OrgUnitFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *OrgUnitFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *OrgUnitFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *OrgUnitFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *OrgUnitFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldDeletedBy))
 }
 
@@ -6952,8 +6952,8 @@ func (f *OrgUnitFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(orgunit.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *OrgUnitFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *OrgUnitFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldTenantID))
 }
 
@@ -6967,8 +6967,8 @@ func (f *OrgUnitFilter) WhereDescription(p entql.StringP) {
 	f.Where(p.Field(orgunit.FieldDescription))
 }
 
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *OrgUnitFilter) WhereParentID(p entql.Uint32P) {
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *OrgUnitFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldParentID))
 }
 
@@ -6987,8 +6987,8 @@ func (f *OrgUnitFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(orgunit.FieldCode))
 }
 
-// WhereLeaderID applies the entql uint32 predicate on the leader_id field.
-func (f *OrgUnitFilter) WhereLeaderID(p entql.Uint32P) {
+// WhereLeaderID applies the entql uint64 predicate on the leader_id field.
+func (f *OrgUnitFilter) WhereLeaderID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldLeaderID))
 }
 
@@ -7022,8 +7022,8 @@ func (f *OrgUnitFilter) WhereTaxID(p entql.StringP) {
 	f.Where(p.Field(orgunit.FieldTaxID))
 }
 
-// WhereLegalEntityOrgID applies the entql uint32 predicate on the legal_entity_org_id field.
-func (f *OrgUnitFilter) WhereLegalEntityOrgID(p entql.Uint32P) {
+// WhereLegalEntityOrgID applies the entql uint64 predicate on the legal_entity_org_id field.
+func (f *OrgUnitFilter) WhereLegalEntityOrgID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldLegalEntityOrgID))
 }
 
@@ -7072,8 +7072,8 @@ func (f *OrgUnitFilter) WhereEndAt(p entql.TimeP) {
 	f.Where(p.Field(orgunit.FieldEndAt))
 }
 
-// WhereContactUserID applies the entql uint32 predicate on the contact_user_id field.
-func (f *OrgUnitFilter) WhereContactUserID(p entql.Uint32P) {
+// WhereContactUserID applies the entql uint64 predicate on the contact_user_id field.
+func (f *OrgUnitFilter) WhereContactUserID(p entql.Uint64P) {
 	f.Where(p.Field(orgunit.FieldContactUserID))
 }
 
@@ -7145,8 +7145,8 @@ func (f *PermissionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permission.FieldID))
 }
 
@@ -7165,18 +7165,18 @@ func (f *PermissionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(permission.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PermissionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permission.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PermissionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permission.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PermissionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(permission.FieldDeletedBy))
 }
 
@@ -7200,8 +7200,8 @@ func (f *PermissionFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(permission.FieldCode))
 }
 
-// WhereGroupID applies the entql uint32 predicate on the group_id field.
-func (f *PermissionFilter) WhereGroupID(p entql.Uint32P) {
+// WhereGroupID applies the entql uint64 predicate on the group_id field.
+func (f *PermissionFilter) WhereGroupID(p entql.Uint64P) {
 	f.Where(p.Field(permission.FieldGroupID))
 }
 
@@ -7240,8 +7240,8 @@ func (f *PermissionApiFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionApiFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionApiFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permissionapi.FieldID))
 }
 
@@ -7260,23 +7260,23 @@ func (f *PermissionApiFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(permissionapi.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionApiFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PermissionApiFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionapi.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionApiFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PermissionApiFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionapi.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionApiFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PermissionApiFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionapi.FieldDeletedBy))
 }
 
-// WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *PermissionApiFilter) WherePermissionID(p entql.Uint32P) {
+// WherePermissionID applies the entql uint64 predicate on the permission_id field.
+func (f *PermissionApiFilter) WherePermissionID(p entql.Uint64P) {
 	f.Where(p.Field(permissionapi.FieldPermissionID))
 }
 
@@ -7325,8 +7325,8 @@ func (f *PermissionAuditLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionAuditLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionAuditLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permissionauditlog.FieldID))
 }
 
@@ -7335,13 +7335,13 @@ func (f *PermissionAuditLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(permissionauditlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PermissionAuditLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *PermissionAuditLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(permissionauditlog.FieldTenantID))
 }
 
-// WhereOperatorID applies the entql uint32 predicate on the operator_id field.
-func (f *PermissionAuditLogFilter) WhereOperatorID(p entql.Uint32P) {
+// WhereOperatorID applies the entql uint64 predicate on the operator_id field.
+func (f *PermissionAuditLogFilter) WhereOperatorID(p entql.Uint64P) {
 	f.Where(p.Field(permissionauditlog.FieldOperatorID))
 }
 
@@ -7440,8 +7440,8 @@ func (f *PermissionGroupFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionGroupFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionGroupFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permissiongroup.FieldID))
 }
 
@@ -7460,18 +7460,18 @@ func (f *PermissionGroupFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(permissiongroup.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionGroupFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PermissionGroupFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissiongroup.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionGroupFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PermissionGroupFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissiongroup.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionGroupFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PermissionGroupFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissiongroup.FieldDeletedBy))
 }
 
@@ -7490,8 +7490,8 @@ func (f *PermissionGroupFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(permissiongroup.FieldSortOrder))
 }
 
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *PermissionGroupFilter) WhereParentID(p entql.Uint32P) {
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *PermissionGroupFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(permissiongroup.FieldParentID))
 }
 
@@ -7573,8 +7573,8 @@ func (f *PermissionMenuFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionMenuFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionMenuFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permissionmenu.FieldID))
 }
 
@@ -7593,23 +7593,23 @@ func (f *PermissionMenuFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(permissionmenu.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionMenuFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PermissionMenuFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionmenu.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionMenuFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PermissionMenuFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionmenu.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionMenuFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PermissionMenuFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionmenu.FieldDeletedBy))
 }
 
-// WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *PermissionMenuFilter) WherePermissionID(p entql.Uint32P) {
+// WherePermissionID applies the entql uint64 predicate on the permission_id field.
+func (f *PermissionMenuFilter) WherePermissionID(p entql.Uint64P) {
 	f.Where(p.Field(permissionmenu.FieldPermissionID))
 }
 
@@ -7653,8 +7653,8 @@ func (f *PermissionPolicyFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionPolicyFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PermissionPolicyFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(permissionpolicy.FieldID))
 }
 
@@ -7673,18 +7673,18 @@ func (f *PermissionPolicyFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(permissionpolicy.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionPolicyFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PermissionPolicyFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionpolicy.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionPolicyFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PermissionPolicyFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionpolicy.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionPolicyFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PermissionPolicyFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(permissionpolicy.FieldDeletedBy))
 }
 
@@ -7693,8 +7693,8 @@ func (f *PermissionPolicyFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(permissionpolicy.FieldStatus))
 }
 
-// WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *PermissionPolicyFilter) WherePermissionID(p entql.Uint32P) {
+// WherePermissionID applies the entql uint64 predicate on the permission_id field.
+func (f *PermissionPolicyFilter) WherePermissionID(p entql.Uint64P) {
 	f.Where(p.Field(permissionpolicy.FieldPermissionID))
 }
 
@@ -7758,8 +7758,8 @@ func (f *PlanFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PlanFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PlanFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldID))
 }
 
@@ -7778,18 +7778,18 @@ func (f *PlanFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(plan.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PlanFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PlanFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PlanFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PlanFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PlanFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PlanFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldDeletedBy))
 }
 
@@ -7900,8 +7900,8 @@ func (f *PlanModuleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PlanModuleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PlanModuleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(planmodule.FieldID))
 }
 
@@ -7920,18 +7920,18 @@ func (f *PlanModuleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(planmodule.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PlanModuleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PlanModuleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(planmodule.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PlanModuleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PlanModuleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(planmodule.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PlanModuleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PlanModuleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(planmodule.FieldDeletedBy))
 }
 
@@ -7989,8 +7989,8 @@ func (f *PlanQuotaFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PlanQuotaFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PlanQuotaFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(planquota.FieldID))
 }
 
@@ -8009,18 +8009,18 @@ func (f *PlanQuotaFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(planquota.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PlanQuotaFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PlanQuotaFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(planquota.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PlanQuotaFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PlanQuotaFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(planquota.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PlanQuotaFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PlanQuotaFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(planquota.FieldDeletedBy))
 }
 
@@ -8083,8 +8083,8 @@ func (f *PolicyEvaluationLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PolicyEvaluationLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PolicyEvaluationLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldID))
 }
 
@@ -8093,28 +8093,28 @@ func (f *PolicyEvaluationLogFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(policyevaluationlog.FieldCreatedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PolicyEvaluationLogFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *PolicyEvaluationLogFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *PolicyEvaluationLogFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *PolicyEvaluationLogFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldUserID))
 }
 
-// WhereMembershipID applies the entql uint32 predicate on the membership_id field.
-func (f *PolicyEvaluationLogFilter) WhereMembershipID(p entql.Uint32P) {
+// WhereMembershipID applies the entql uint64 predicate on the membership_id field.
+func (f *PolicyEvaluationLogFilter) WhereMembershipID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldMembershipID))
 }
 
-// WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *PolicyEvaluationLogFilter) WherePermissionID(p entql.Uint32P) {
+// WherePermissionID applies the entql uint64 predicate on the permission_id field.
+func (f *PolicyEvaluationLogFilter) WherePermissionID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldPermissionID))
 }
 
-// WherePolicyID applies the entql uint32 predicate on the policy_id field.
-func (f *PolicyEvaluationLogFilter) WherePolicyID(p entql.Uint32P) {
+// WherePolicyID applies the entql uint64 predicate on the policy_id field.
+func (f *PolicyEvaluationLogFilter) WherePolicyID(p entql.Uint64P) {
 	f.Where(p.Field(policyevaluationlog.FieldPolicyID))
 }
 
@@ -8203,8 +8203,8 @@ func (f *PositionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PositionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PositionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldID))
 }
 
@@ -8223,18 +8223,18 @@ func (f *PositionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(position.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PositionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PositionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PositionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PositionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PositionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PositionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldDeletedBy))
 }
 
@@ -8248,8 +8248,8 @@ func (f *PositionFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(position.FieldRemark))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PositionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *PositionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldTenantID))
 }
 
@@ -8268,13 +8268,13 @@ func (f *PositionFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(position.FieldCode))
 }
 
-// WhereOrgUnitID applies the entql uint32 predicate on the org_unit_id field.
-func (f *PositionFilter) WhereOrgUnitID(p entql.Uint32P) {
+// WhereOrgUnitID applies the entql uint64 predicate on the org_unit_id field.
+func (f *PositionFilter) WhereOrgUnitID(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldOrgUnitID))
 }
 
-// WhereReportsToPositionID applies the entql uint32 predicate on the reports_to_position_id field.
-func (f *PositionFilter) WhereReportsToPositionID(p entql.Uint32P) {
+// WhereReportsToPositionID applies the entql uint64 predicate on the reports_to_position_id field.
+func (f *PositionFilter) WhereReportsToPositionID(p entql.Uint64P) {
 	f.Where(p.Field(position.FieldReportsToPositionID))
 }
 
@@ -8358,8 +8358,8 @@ func (f *PrintTemplateFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PrintTemplateFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PrintTemplateFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(printtemplate.FieldID))
 }
 
@@ -8378,18 +8378,18 @@ func (f *PrintTemplateFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(printtemplate.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PrintTemplateFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *PrintTemplateFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(printtemplate.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PrintTemplateFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *PrintTemplateFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(printtemplate.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PrintTemplateFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *PrintTemplateFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(printtemplate.FieldDeletedBy))
 }
 
@@ -8403,8 +8403,8 @@ func (f *PrintTemplateFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(printtemplate.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PrintTemplateFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *PrintTemplateFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(printtemplate.FieldTenantID))
 }
 
@@ -8478,8 +8478,8 @@ func (f *RoleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RoleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldID))
 }
 
@@ -8498,18 +8498,18 @@ func (f *RoleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(role.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *RoleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *RoleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *RoleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldDeletedBy))
 }
 
@@ -8528,8 +8528,8 @@ func (f *RoleFilter) WhereSortOrder(p entql.Uint32P) {
 	f.Where(p.Field(role.FieldSortOrder))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *RoleFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *RoleFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldTenantID))
 }
 
@@ -8563,8 +8563,8 @@ func (f *RoleFilter) WhereDataScope(p entql.StringP) {
 	f.Where(p.Field(role.FieldDataScope))
 }
 
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *RoleFilter) WhereParentID(p entql.Uint32P) {
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *RoleFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(role.FieldParentID))
 }
 
@@ -8603,8 +8603,8 @@ func (f *RoleFieldPermissionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleFieldPermissionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RoleFieldPermissionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldID))
 }
 
@@ -8623,28 +8623,28 @@ func (f *RoleFieldPermissionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(rolefieldpermission.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleFieldPermissionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *RoleFieldPermissionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleFieldPermissionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *RoleFieldPermissionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleFieldPermissionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *RoleFieldPermissionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *RoleFieldPermissionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *RoleFieldPermissionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldTenantID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RoleFieldPermissionFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *RoleFieldPermissionFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(rolefieldpermission.FieldRoleID))
 }
 
@@ -8693,8 +8693,8 @@ func (f *RoleMetadataFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleMetadataFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RoleMetadataFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldID))
 }
 
@@ -8713,28 +8713,28 @@ func (f *RoleMetadataFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(rolemetadata.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleMetadataFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *RoleMetadataFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleMetadataFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *RoleMetadataFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleMetadataFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *RoleMetadataFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *RoleMetadataFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *RoleMetadataFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldTenantID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RoleMetadataFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *RoleMetadataFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(rolemetadata.FieldRoleID))
 }
 
@@ -8813,8 +8813,8 @@ func (f *RoleOrgUnitFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleOrgUnitFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RoleOrgUnitFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldID))
 }
 
@@ -8833,33 +8833,33 @@ func (f *RoleOrgUnitFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(roleorgunit.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleOrgUnitFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *RoleOrgUnitFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleOrgUnitFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *RoleOrgUnitFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleOrgUnitFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *RoleOrgUnitFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *RoleOrgUnitFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *RoleOrgUnitFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldTenantID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RoleOrgUnitFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *RoleOrgUnitFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldRoleID))
 }
 
-// WhereOrgUnitID applies the entql uint32 predicate on the org_unit_id field.
-func (f *RoleOrgUnitFilter) WhereOrgUnitID(p entql.Uint32P) {
+// WhereOrgUnitID applies the entql uint64 predicate on the org_unit_id field.
+func (f *RoleOrgUnitFilter) WhereOrgUnitID(p entql.Uint64P) {
 	f.Where(p.Field(roleorgunit.FieldOrgUnitID))
 }
 
@@ -8898,8 +8898,8 @@ func (f *RolePermissionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RolePermissionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RolePermissionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldID))
 }
 
@@ -8918,23 +8918,23 @@ func (f *RolePermissionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(rolepermission.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RolePermissionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *RolePermissionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RolePermissionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *RolePermissionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RolePermissionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *RolePermissionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *RolePermissionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *RolePermissionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldTenantID))
 }
 
@@ -8943,13 +8943,13 @@ func (f *RolePermissionFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(rolepermission.FieldStatus))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RolePermissionFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *RolePermissionFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldRoleID))
 }
 
-// WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *RolePermissionFilter) WherePermissionID(p entql.Uint32P) {
+// WherePermissionID applies the entql uint64 predicate on the permission_id field.
+func (f *RolePermissionFilter) WherePermissionID(p entql.Uint64P) {
 	f.Where(p.Field(rolepermission.FieldPermissionID))
 }
 
@@ -8998,8 +8998,8 @@ func (f *ScriptFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *ScriptFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ScriptFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(script.FieldID))
 }
 
@@ -9018,18 +9018,18 @@ func (f *ScriptFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(script.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *ScriptFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *ScriptFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(script.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *ScriptFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *ScriptFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(script.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *ScriptFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *ScriptFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(script.FieldDeletedBy))
 }
 
@@ -9113,8 +9113,8 @@ func (f *ScriptLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *ScriptLogFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ScriptLogFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(scriptlog.FieldID))
 }
 
@@ -9133,8 +9133,8 @@ func (f *ScriptLogFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(scriptlog.FieldDeletedAt))
 }
 
-// WhereScriptID applies the entql uint32 predicate on the script_id field.
-func (f *ScriptLogFilter) WhereScriptID(p entql.Uint32P) {
+// WhereScriptID applies the entql uint64 predicate on the script_id field.
+func (f *ScriptLogFilter) WhereScriptID(p entql.Uint64P) {
 	f.Where(p.Field(scriptlog.FieldScriptID))
 }
 
@@ -9213,8 +9213,8 @@ func (f *SysConfigFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *SysConfigFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *SysConfigFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(sysconfig.FieldID))
 }
 
@@ -9233,18 +9233,18 @@ func (f *SysConfigFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(sysconfig.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *SysConfigFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *SysConfigFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(sysconfig.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *SysConfigFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *SysConfigFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(sysconfig.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *SysConfigFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *SysConfigFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(sysconfig.FieldDeletedBy))
 }
 
@@ -9308,8 +9308,8 @@ func (f *TaskFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *TaskFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *TaskFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(task.FieldID))
 }
 
@@ -9328,18 +9328,18 @@ func (f *TaskFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(task.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *TaskFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *TaskFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(task.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *TaskFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *TaskFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(task.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *TaskFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *TaskFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(task.FieldDeletedBy))
 }
 
@@ -9348,8 +9348,8 @@ func (f *TaskFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(task.FieldRemark))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *TaskFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *TaskFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(task.FieldTenantID))
 }
 
@@ -9418,8 +9418,8 @@ func (f *TenantFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *TenantFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *TenantFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(tenant.FieldID))
 }
 
@@ -9438,18 +9438,18 @@ func (f *TenantFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(tenant.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *TenantFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *TenantFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(tenant.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *TenantFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *TenantFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(tenant.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *TenantFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *TenantFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(tenant.FieldDeletedBy))
 }
 
@@ -9483,8 +9483,8 @@ func (f *TenantFilter) WhereIndustry(p entql.StringP) {
 	f.Where(p.Field(tenant.FieldIndustry))
 }
 
-// WhereAdminUserID applies the entql uint32 predicate on the admin_user_id field.
-func (f *TenantFilter) WhereAdminUserID(p entql.Uint32P) {
+// WhereAdminUserID applies the entql uint64 predicate on the admin_user_id field.
+func (f *TenantFilter) WhereAdminUserID(p entql.Uint64P) {
 	f.Where(p.Field(tenant.FieldAdminUserID))
 }
 
@@ -9572,23 +9572,23 @@ func (f *UserFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(user.FieldID))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *UserFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *UserFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(user.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *UserFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *UserFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(user.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *UserFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *UserFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(user.FieldDeletedBy))
 }
 
@@ -9612,8 +9612,8 @@ func (f *UserFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(user.FieldRemark))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(user.FieldTenantID))
 }
 
@@ -9732,8 +9732,8 @@ func (f *UserCredentialFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserCredentialFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserCredentialFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(usercredential.FieldID))
 }
 
@@ -9752,13 +9752,13 @@ func (f *UserCredentialFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(usercredential.FieldDeletedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserCredentialFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserCredentialFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(usercredential.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *UserCredentialFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *UserCredentialFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(usercredential.FieldUserID))
 }
 
@@ -9872,8 +9872,8 @@ func (f *UserMfaFactorFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserMfaFactorFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserMfaFactorFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(usermfafactor.FieldID))
 }
 
@@ -9892,13 +9892,13 @@ func (f *UserMfaFactorFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(usermfafactor.FieldDeletedAt))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserMfaFactorFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserMfaFactorFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(usermfafactor.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *UserMfaFactorFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *UserMfaFactorFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(usermfafactor.FieldUserID))
 }
 
@@ -9962,8 +9962,8 @@ func (f *UserOrgUnitFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserOrgUnitFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserOrgUnitFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldID))
 }
 
@@ -9982,23 +9982,23 @@ func (f *UserOrgUnitFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(userorgunit.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *UserOrgUnitFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *UserOrgUnitFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *UserOrgUnitFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *UserOrgUnitFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *UserOrgUnitFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *UserOrgUnitFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserOrgUnitFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserOrgUnitFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldTenantID))
 }
 
@@ -10007,18 +10007,18 @@ func (f *UserOrgUnitFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(userorgunit.FieldRemark))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *UserOrgUnitFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *UserOrgUnitFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldUserID))
 }
 
-// WhereOrgUnitID applies the entql uint32 predicate on the org_unit_id field.
-func (f *UserOrgUnitFilter) WhereOrgUnitID(p entql.Uint32P) {
+// WhereOrgUnitID applies the entql uint64 predicate on the org_unit_id field.
+func (f *UserOrgUnitFilter) WhereOrgUnitID(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldOrgUnitID))
 }
 
-// WherePositionID applies the entql uint32 predicate on the position_id field.
-func (f *UserOrgUnitFilter) WherePositionID(p entql.Uint32P) {
+// WherePositionID applies the entql uint64 predicate on the position_id field.
+func (f *UserOrgUnitFilter) WherePositionID(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldPositionID))
 }
 
@@ -10037,8 +10037,8 @@ func (f *UserOrgUnitFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(userorgunit.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *UserOrgUnitFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *UserOrgUnitFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(userorgunit.FieldAssignedBy))
 }
 
@@ -10087,8 +10087,8 @@ func (f *UserPositionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserPositionFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserPositionFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldID))
 }
 
@@ -10107,23 +10107,23 @@ func (f *UserPositionFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(userposition.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *UserPositionFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *UserPositionFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *UserPositionFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *UserPositionFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *UserPositionFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *UserPositionFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserPositionFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserPositionFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldTenantID))
 }
 
@@ -10132,13 +10132,13 @@ func (f *UserPositionFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(userposition.FieldRemark))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *UserPositionFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *UserPositionFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldUserID))
 }
 
-// WherePositionID applies the entql uint32 predicate on the position_id field.
-func (f *UserPositionFilter) WherePositionID(p entql.Uint32P) {
+// WherePositionID applies the entql uint64 predicate on the position_id field.
+func (f *UserPositionFilter) WherePositionID(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldPositionID))
 }
 
@@ -10162,8 +10162,8 @@ func (f *UserPositionFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(userposition.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *UserPositionFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *UserPositionFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(userposition.FieldAssignedBy))
 }
 
@@ -10207,8 +10207,8 @@ func (f *UserRoleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *UserRoleFilter) WhereID(p entql.Uint32P) {
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *UserRoleFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldID))
 }
 
@@ -10227,33 +10227,33 @@ func (f *UserRoleFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(userrole.FieldDeletedAt))
 }
 
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *UserRoleFilter) WhereCreatedBy(p entql.Uint32P) {
+// WhereCreatedBy applies the entql uint64 predicate on the created_by field.
+func (f *UserRoleFilter) WhereCreatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldCreatedBy))
 }
 
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *UserRoleFilter) WhereUpdatedBy(p entql.Uint32P) {
+// WhereUpdatedBy applies the entql uint64 predicate on the updated_by field.
+func (f *UserRoleFilter) WhereUpdatedBy(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldUpdatedBy))
 }
 
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *UserRoleFilter) WhereDeletedBy(p entql.Uint32P) {
+// WhereDeletedBy applies the entql uint64 predicate on the deleted_by field.
+func (f *UserRoleFilter) WhereDeletedBy(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldDeletedBy))
 }
 
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *UserRoleFilter) WhereTenantID(p entql.Uint32P) {
+// WhereTenantID applies the entql uint64 predicate on the tenant_id field.
+func (f *UserRoleFilter) WhereTenantID(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldTenantID))
 }
 
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *UserRoleFilter) WhereUserID(p entql.Uint32P) {
+// WhereUserID applies the entql uint64 predicate on the user_id field.
+func (f *UserRoleFilter) WhereUserID(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldUserID))
 }
 
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *UserRoleFilter) WhereRoleID(p entql.Uint32P) {
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *UserRoleFilter) WhereRoleID(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldRoleID))
 }
 
@@ -10272,8 +10272,8 @@ func (f *UserRoleFilter) WhereAssignedAt(p entql.TimeP) {
 	f.Where(p.Field(userrole.FieldAssignedAt))
 }
 
-// WhereAssignedBy applies the entql uint32 predicate on the assigned_by field.
-func (f *UserRoleFilter) WhereAssignedBy(p entql.Uint32P) {
+// WhereAssignedBy applies the entql uint64 predicate on the assigned_by field.
+func (f *UserRoleFilter) WhereAssignedBy(p entql.Uint64P) {
 	f.Where(p.Field(userrole.FieldAssignedBy))
 }
 

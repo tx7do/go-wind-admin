@@ -96,7 +96,7 @@ func (r *LoginPolicyRepo) List(ctx context.Context, req *paginationV1.PagingRequ
 	}, nil
 }
 
-func (r *LoginPolicyRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *LoginPolicyRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})

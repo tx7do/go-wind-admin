@@ -24,7 +24,7 @@ func (AiChunk) Annotations() []schema.Annotation {
 
 func (AiChunk) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("doc_id").Comment("所属文档ID（edge 外键）").Optional().Nillable(),
+		field.Uint64("doc_id").Comment("所属文档ID（edge 外键）").Optional().Nillable(),
 		field.Text("content").Comment("切片文本").Optional().Nillable(),
 		field.Uint32("chunk_index").Comment("切片序号").Optional().Nillable(),
 	}
@@ -32,9 +32,9 @@ func (AiChunk) Fields() []ent.Field {
 
 func (AiChunk) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.CreatedAt{},
-		mixin.TenantID[uint32]{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

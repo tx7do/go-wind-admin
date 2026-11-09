@@ -28,7 +28,7 @@ func TestReproNilPanicOnRoleIdsUpdate(t *testing.T) {
 
 	req := &identityV1.UpdateUserRequest{
 		Id:         *created.Id,
-		Data:       &identityV1.User{RoleIds: []uint32{1}},
+		Data:       &identityV1.User{RoleIds: []uint64{1}},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"role_ids"}},
 	}
 	require.NotPanics(t, func() {

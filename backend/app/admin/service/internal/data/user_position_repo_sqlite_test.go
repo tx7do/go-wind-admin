@@ -39,9 +39,9 @@ func TestUserPositionRepoSqlite_AssignListAndClean(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(5101)
-		testPosA   = uint32(6101)
-		testPosB   = uint32(6102)
+		testUserID = uint64(5101)
+		testPosA   = uint64(6101)
+		testPosB   = uint64(6102)
 	)
 
 	// 单条分配（无预清理语义）
@@ -77,15 +77,15 @@ func TestUserPositionRepoSqlite_AssignListAndClean(t *testing.T) {
 	// 正向：按用户列出岗位 ID
 	positionIDs, err := repo.ListPositionIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint32{testPosA, testPosB}, positionIDs, "按用户查询应返回两条关联的岗位 ID")
+	require.ElementsMatch(t, []uint64{testPosA, testPosB}, positionIDs, "按用户查询应返回两条关联的岗位 ID")
 
 	// 反向：按岗位列出用户 ID（含多岗位批量变体，按岗位逐个收集不去重）
 	userIDs, err := repo.ListUserIDs(ctx, testPosA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testUserID}, userIDs, "按岗位查询应返回关联的用户 ID")
-	userIDsByPositions, err := repo.ListUserIDsByPositionIDs(ctx, []uint32{testPosA, testPosB}, false)
+	require.Equal(t, []uint64{testUserID}, userIDs, "按岗位查询应返回关联的用户 ID")
+	userIDsByPositions, err := repo.ListUserIDsByPositionIDs(ctx, []uint64{testPosA, testPosB}, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testUserID, testUserID}, userIDsByPositions, "按岗位列表查询应每岗位各返回一份关联")
+	require.Equal(t, []uint64{testUserID, testUserID}, userIDsByPositions, "按岗位列表查询应每岗位各返回一份关联")
 
 	// 清理：按用户删除全部关联
 	tx3, err := repo.entClient.Client().Tx(ctx)
@@ -112,9 +112,9 @@ func TestUserPositionRepoSqlite_RemoveAndCleanByPosition(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(5102)
-		testPosA   = uint32(6103)
-		testPosB   = uint32(6104)
+		testUserID = uint64(5102)
+		testPosA   = uint64(6103)
+		testPosB   = uint64(6104)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -129,11 +129,11 @@ func TestUserPositionRepoSqlite_RemoveAndCleanByPosition(t *testing.T) {
 	require.NoError(t, tx.Commit())
 
 	// 单向解除 posA：仅剩 posB
-	require.NoError(t, repo.RemovePositionsFromUser(ctx, testUserID, []uint32{testPosA}))
+	require.NoError(t, repo.RemovePositionsFromUser(ctx, testUserID, []uint64{testPosA}))
 
 	positionIDs, err := repo.ListPositionIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testPosB}, positionIDs, "解除后应仅保留未被移除的关联")
+	require.Equal(t, []uint64{testPosB}, positionIDs, "解除后应仅保留未被移除的关联")
 
 	// 按岗位清理：posB 的关联被整体删除
 	tx2, err := repo.entClient.Client().Tx(ctx)
@@ -141,7 +141,7 @@ func TestUserPositionRepoSqlite_RemoveAndCleanByPosition(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByPositionIDs(ctx, tx2, []uint32{testPosB}))
+	require.NoError(t, repo.CleanRelationsByPositionIDs(ctx, tx2, []uint64{testPosB}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().UserPosition.Query().Count(ctx)
@@ -156,9 +156,9 @@ func TestUserPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint32(5103)
-		testPosOK  = uint32(6105)
-		testPosEx  = uint32(6106)
+		testUserID = uint64(5103)
+		testPosOK  = uint64(6105)
+		testPosEx  = uint64(6106)
 	)
 
 	past := timestamppb.New(time.Now().Add(-1 * time.Hour))
@@ -182,7 +182,7 @@ func TestUserPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 过滤过期：仅剩未过期那条
 	active, err := repo.ListPositionIDs(ctx, testUserID, true)
 	require.NoError(t, err)
-	require.Equal(t, []uint32{testPosOK}, active, "过滤过期后应仅返回未过期关联")
+	require.Equal(t, []uint64{testPosOK}, active, "过滤过期后应仅返回未过期关联")
 
 	// 反向过滤同理
 	activeUsers, err := repo.ListUserIDs(ctx, testPosEx, true)
@@ -195,7 +195,7 @@ func TestUserPositionRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []uint32{testUserID}))
+	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []uint64{testUserID}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().UserPosition.Query().Count(ctx)

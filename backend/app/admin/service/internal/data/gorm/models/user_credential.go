@@ -10,9 +10,9 @@ import (
 
 // UserCredential 对应表 sys_user_credentials，用户认证信息表
 type UserCredential struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	UserID                 *uint32         `gorm:"column:user_id;type:int unsigned;comment:关联主表的用户ID;index:idx_sys_user_credential_user_id;uniqueIndex:idx_sys_user_credential_uid_identity_identifier,priority:1"`
+	UserID                 *uint64         `gorm:"column:user_id;type:int unsigned;comment:关联主表的用户ID;index:idx_sys_user_credential_user_id;uniqueIndex:idx_sys_user_credential_uid_identity_identifier,priority:1"`
 	IdentityType           *string         `gorm:"column:identity_type;type:varchar(128);comment:认证方式类型;index:idx_sys_user_credential_identity_type;uniqueIndex:idx_sys_user_credential_uid_identity_identifier,priority:2"`
 	Identifier             *string         `gorm:"column:identifier;type:varchar(255);comment:身份唯一标识符;index:idx_sys_user_credential_identifier;uniqueIndex:idx_sys_user_credential_uid_identity_identifier,priority:3"`
 	Credential             *string         `gorm:"column:credential;type:varchar(1024);comment:凭证"`
@@ -29,7 +29,7 @@ type UserCredential struct {
 	ResetTokenUsedAt       *time.Time      `gorm:"column:reset_token_used_at;type:datetime;comment:重置令牌使用时间"`
 
 	mixin.TimeAt
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

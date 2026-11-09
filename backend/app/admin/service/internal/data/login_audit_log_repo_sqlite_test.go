@@ -53,7 +53,7 @@ func TestLoginAuditLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{
 		Data: &auditV1.LoginAuditLog{
-			UserId:        trans.Ptr(uint32(7)),
+			UserId:        trans.Ptr(uint64(7)),
 			Username:      trans.Ptr("sqlite_login_user"),
 			IpAddress:     trans.Ptr("10.0.0.3"),
 			SessionId:     trans.Ptr("sess-sqlite-1"),
@@ -77,7 +77,7 @@ func TestLoginAuditLogRepoSqlite_Create(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "sys_login_audit_logs 应有 1 条记录")
 	row := rows[0]
-	require.Equal(t, uint32(7), *row.UserID, "user_id 应按请求落库")
+	require.Equal(t, uint64(7), *row.UserID, "user_id 应按请求落库")
 	require.Equal(t, "sqlite_login_user", *row.Username, "username 应按请求落库")
 	require.Equal(t, "10.0.0.3", *row.IPAddress, "ip_address 应按请求落库")
 	require.Equal(t, "sess-sqlite-1", *row.SessionID, "session_id 应按请求落库")
@@ -349,8 +349,8 @@ func TestLoginAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint32{firstID, secondID},
-		[]uint32{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []uint64{firstID, secondID},
+		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestLoginAuditLogRepoSqlite_Get 验证 Get 按主键的命中与未命中。

@@ -6,16 +6,16 @@ import (
 
 // DictEntryI18n 对应表 sys_dict_entry_i18n
 type DictEntryI18n struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	LanguageCode *string `gorm:"column:language_code;type:varchar(128);comment:标准语言代码"`
 	EntryLabel   *string `gorm:"column:entry_label;type:varchar(255);comment:字典项标签"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Description
 	mixin.SortOrder
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

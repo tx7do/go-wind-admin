@@ -76,18 +76,18 @@ func (PermissionGroup_Status) EnumDescriptor() ([]byte, []int) {
 // 权限组
 type PermissionGroup struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Id            *uint32                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                           // 权限组ID
+	Id            *uint64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                           // 权限组ID
 	Name          *string                 `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                        // 分组名称（如：用户管理、订单操作）
 	Path          *string                 `protobuf:"bytes,3,opt,name=path,proto3,oneof" json:"path,omitempty"`                                                        // 树形路径，格式：/1/10/101/（包含自身且首尾带/）
 	Module        *string                 `protobuf:"bytes,4,opt,name=module,proto3,oneof" json:"module,omitempty"`                                                    // 业务模块标识（如：opm、order、pay）
 	SortOrder     *uint32                 `protobuf:"varint,5,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`                            // 排序值（越小越靠前）
 	Status        *PermissionGroup_Status `protobuf:"varint,6,opt,name=status,proto3,enum=permission.service.v1.PermissionGroup_Status,oneof" json:"status,omitempty"` // 状态
 	Description   *string                 `protobuf:"bytes,7,opt,name=description,proto3,oneof" json:"description,omitempty"`                                          // 描述
-	ParentId      *uint32                 `protobuf:"varint,50,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                              // 父节点ID
+	ParentId      *uint64                 `protobuf:"varint,50,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                              // 父节点ID
 	Children      []*PermissionGroup      `protobuf:"bytes,51,rep,name=children,proto3" json:"children,omitempty"`                                                     // 子节点树
-	CreatedBy     *uint32                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                          // 创建者ID
-	UpdatedBy     *uint32                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                          // 更新者ID
-	DeletedBy     *uint32                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                          // 删除者用户ID
+	CreatedBy     *uint64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                          // 创建者ID
+	UpdatedBy     *uint64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                          // 更新者ID
+	DeletedBy     *uint64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                          // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp  `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                           // 创建时间
 	UpdatedAt     *timestamppb.Timestamp  `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                           // 更新时间
 	DeletedAt     *timestamppb.Timestamp  `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                           // 删除时间
@@ -125,7 +125,7 @@ func (*PermissionGroup) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_group_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PermissionGroup) GetId() uint32 {
+func (x *PermissionGroup) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -174,7 +174,7 @@ func (x *PermissionGroup) GetDescription() string {
 	return ""
 }
 
-func (x *PermissionGroup) GetParentId() uint32 {
+func (x *PermissionGroup) GetParentId() uint64 {
 	if x != nil && x.ParentId != nil {
 		return *x.ParentId
 	}
@@ -188,21 +188,21 @@ func (x *PermissionGroup) GetChildren() []*PermissionGroup {
 	return nil
 }
 
-func (x *PermissionGroup) GetCreatedBy() uint32 {
+func (x *PermissionGroup) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *PermissionGroup) GetUpdatedBy() uint32 {
+func (x *PermissionGroup) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *PermissionGroup) GetDeletedBy() uint32 {
+func (x *PermissionGroup) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -332,7 +332,7 @@ func (x *GetPermissionGroupRequest) GetQueryBy() isGetPermissionGroupRequest_Que
 	return nil
 }
 
-func (x *GetPermissionGroupRequest) GetId() uint32 {
+func (x *GetPermissionGroupRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPermissionGroupRequest_Id); ok {
 			return x.Id
@@ -353,7 +353,7 @@ type isGetPermissionGroupRequest_QueryBy interface {
 }
 
 type GetPermissionGroupRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetPermissionGroupRequest_Id) isGetPermissionGroupRequest_QueryBy() {}
@@ -406,7 +406,7 @@ func (x *CreatePermissionGroupRequest) GetData() *PermissionGroup {
 // 更新 - 请求
 type UpdatePermissionGroupRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *PermissionGroup       `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -444,7 +444,7 @@ func (*UpdatePermissionGroupRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_group_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePermissionGroupRequest) GetId() uint32 {
+func (x *UpdatePermissionGroupRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -520,7 +520,7 @@ func (x *DeletePermissionGroupRequest) GetQueryBy() isDeletePermissionGroupReque
 	return nil
 }
 
-func (x *DeletePermissionGroupRequest) GetId() uint32 {
+func (x *DeletePermissionGroupRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePermissionGroupRequest_Id); ok {
 			return x.Id
@@ -534,7 +534,7 @@ type isDeletePermissionGroupRequest_QueryBy interface {
 }
 
 type DeletePermissionGroupRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeletePermissionGroupRequest_Id) isDeletePermissionGroupRequest_QueryBy() {}
@@ -590,7 +590,7 @@ const file_permission_service_v1_permission_group_proto_rawDesc = "" +
 	",permission/service/v1/permission_group.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xa4\n" +
 	"\n" +
 	"\x0fPermissionGroup\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限组IDH\x00R\x02id\x88\x01\x01\x12R\n" +
+	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限组IDH\x00R\x02id\x88\x01\x01\x12R\n" +
 	"\x04name\x18\x02 \x01(\tB9\xbaG6\x92\x023分组名称（如：用户管理、订单操作）H\x01R\x04name\x88\x01\x01\x12`\n" +
 	"\x04path\x18\x03 \x01(\tBG\xbaGD\x92\x02A树形路径，格式：/1/10/101/（包含自身且首尾带/）H\x02R\x04path\x88\x01\x01\x12R\n" +
 	"\x06module\x18\x04 \x01(\tB5\xbaG2\x92\x02/业务模块标识（如：opm、order、pay）H\x03R\x06module\x88\x01\x01\x12H\n" +
@@ -598,14 +598,14 @@ const file_permission_service_v1_permission_group_proto_rawDesc = "" +
 	"sort_order\x18\x05 \x01(\rB$\xbaG!\x92\x02\x1e排序值（越小越靠前）H\x04R\tsortOrder\x88\x01\x01\x12X\n" +
 	"\x06status\x18\x06 \x01(\x0e2-.permission.service.v1.PermissionGroup.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x123\n" +
 	"\vdescription\x18\a \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x06R\vdescription\x88\x01\x01\x123\n" +
-	"\tparent_id\x182 \x01(\rB\x11\xbaG\x0e\x92\x02\v父节点IDH\aR\bparentId\x88\x01\x01\x12V\n" +
+	"\tparent_id\x182 \x01(\x04B\x11\xbaG\x0e\x92\x02\v父节点IDH\aR\bparentId\x88\x01\x01\x12V\n" +
 	"\bchildren\x183 \x03(\v2&.permission.service.v1.PermissionGroupB\x12\xbaG\x0f\x92\x02\f子节点树R\bchildren\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
 	"R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +
@@ -635,7 +635,7 @@ const file_permission_service_v1_permission_group_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2&.permission.service.v1.PermissionGroupR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcc\x01\n" +
 	"\x19GetPermissionGroupRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -645,14 +645,14 @@ const file_permission_service_v1_permission_group_proto_rawDesc = "" +
 	"\x1cCreatePermissionGroupRequest\x12:\n" +
 	"\x04data\x18\x01 \x01(\v2&.permission.service.v1.PermissionGroupR\x04data\"\xa8\x03\n" +
 	"\x1cUpdatePermissionGroupRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12:\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12:\n" +
 	"\x04data\x18\x02 \x01(\v2&.permission.service.v1.PermissionGroupR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"H\n" +
 	"\x1cDeletePermissionGroupRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"4\n" +

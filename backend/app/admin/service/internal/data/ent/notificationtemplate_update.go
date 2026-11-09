@@ -70,14 +70,14 @@ func (_u *NotificationTemplateUpdate) ClearDeletedAt() *NotificationTemplateUpda
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *NotificationTemplateUpdate) SetCreatedBy(v uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetCreatedBy(v uint64) *NotificationTemplateUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdate) SetNillableCreatedBy(v *uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetNillableCreatedBy(v *uint64) *NotificationTemplateUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *NotificationTemplateUpdate) SetNillableCreatedBy(v *uint32) *Notificat
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *NotificationTemplateUpdate) AddCreatedBy(v int32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) AddCreatedBy(v int64) *NotificationTemplateUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *NotificationTemplateUpdate) ClearCreatedBy() *NotificationTemplateUpda
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *NotificationTemplateUpdate) SetUpdatedBy(v uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetUpdatedBy(v uint64) *NotificationTemplateUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdate) SetNillableUpdatedBy(v *uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetNillableUpdatedBy(v *uint64) *NotificationTemplateUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *NotificationTemplateUpdate) SetNillableUpdatedBy(v *uint32) *Notificat
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *NotificationTemplateUpdate) AddUpdatedBy(v int32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) AddUpdatedBy(v int64) *NotificationTemplateUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *NotificationTemplateUpdate) ClearUpdatedBy() *NotificationTemplateUpda
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *NotificationTemplateUpdate) SetDeletedBy(v uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetDeletedBy(v uint64) *NotificationTemplateUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdate) SetNillableDeletedBy(v *uint32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) SetNillableDeletedBy(v *uint64) *NotificationTemplateUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *NotificationTemplateUpdate) SetNillableDeletedBy(v *uint32) *Notificat
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *NotificationTemplateUpdate) AddDeletedBy(v int32) *NotificationTemplateUpdate {
+func (_u *NotificationTemplateUpdate) AddDeletedBy(v int64) *NotificationTemplateUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -337,7 +337,7 @@ func (_u *NotificationTemplateUpdate) sqlSave(ctx context.Context) (_node int, e
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(notificationtemplate.Table, notificationtemplate.Columns, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(notificationtemplate.Table, notificationtemplate.Columns, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -361,31 +361,31 @@ func (_u *NotificationTemplateUpdate) sqlSave(ctx context.Context) (_node int, e
 		_spec.ClearField(notificationtemplate.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(notificationtemplate.FieldIsEnabled, field.TypeBool, value)
@@ -486,14 +486,14 @@ func (_u *NotificationTemplateUpdateOne) ClearDeletedAt() *NotificationTemplateU
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *NotificationTemplateUpdateOne) SetCreatedBy(v uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetCreatedBy(v uint64) *NotificationTemplateUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdateOne) SetNillableCreatedBy(v *uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetNillableCreatedBy(v *uint64) *NotificationTemplateUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -501,7 +501,7 @@ func (_u *NotificationTemplateUpdateOne) SetNillableCreatedBy(v *uint32) *Notifi
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *NotificationTemplateUpdateOne) AddCreatedBy(v int32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) AddCreatedBy(v int64) *NotificationTemplateUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -513,14 +513,14 @@ func (_u *NotificationTemplateUpdateOne) ClearCreatedBy() *NotificationTemplateU
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *NotificationTemplateUpdateOne) SetUpdatedBy(v uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetUpdatedBy(v uint64) *NotificationTemplateUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdateOne) SetNillableUpdatedBy(v *uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetNillableUpdatedBy(v *uint64) *NotificationTemplateUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -528,7 +528,7 @@ func (_u *NotificationTemplateUpdateOne) SetNillableUpdatedBy(v *uint32) *Notifi
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *NotificationTemplateUpdateOne) AddUpdatedBy(v int32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) AddUpdatedBy(v int64) *NotificationTemplateUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -540,14 +540,14 @@ func (_u *NotificationTemplateUpdateOne) ClearUpdatedBy() *NotificationTemplateU
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *NotificationTemplateUpdateOne) SetDeletedBy(v uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetDeletedBy(v uint64) *NotificationTemplateUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *NotificationTemplateUpdateOne) SetNillableDeletedBy(v *uint32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) SetNillableDeletedBy(v *uint64) *NotificationTemplateUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -555,7 +555,7 @@ func (_u *NotificationTemplateUpdateOne) SetNillableDeletedBy(v *uint32) *Notifi
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *NotificationTemplateUpdateOne) AddDeletedBy(v int32) *NotificationTemplateUpdateOne {
+func (_u *NotificationTemplateUpdateOne) AddDeletedBy(v int64) *NotificationTemplateUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -766,7 +766,7 @@ func (_u *NotificationTemplateUpdateOne) sqlSave(ctx context.Context) (_node *No
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(notificationtemplate.Table, notificationtemplate.Columns, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(notificationtemplate.Table, notificationtemplate.Columns, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "NotificationTemplate.id" for update`)}
@@ -807,31 +807,31 @@ func (_u *NotificationTemplateUpdateOne) sqlSave(ctx context.Context) (_node *No
 		_spec.ClearField(notificationtemplate.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(notificationtemplate.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(notificationtemplate.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(notificationtemplate.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(notificationtemplate.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(notificationtemplate.FieldIsEnabled, field.TypeBool, value)

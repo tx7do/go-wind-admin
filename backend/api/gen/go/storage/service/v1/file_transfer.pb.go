@@ -81,7 +81,7 @@ func (x *DownloadFileRequest) GetSelector() isDownloadFileRequest_Selector {
 	return nil
 }
 
-func (x *DownloadFileRequest) GetFileId() uint32 {
+func (x *DownloadFileRequest) GetFileId() uint64 {
 	if x != nil {
 		if x, ok := x.Selector.(*DownloadFileRequest_FileId); ok {
 			return x.FileId
@@ -155,7 +155,7 @@ type isDownloadFileRequest_Selector interface {
 }
 
 type DownloadFileRequest_FileId struct {
-	FileId uint32 `protobuf:"varint,1,opt,name=file_id,json=fileId,proto3,oneof"` // 服务端内部文件 ID
+	FileId uint64 `protobuf:"varint,1,opt,name=file_id,json=fileId,proto3,oneof"` // 服务端内部文件 ID
 }
 
 type DownloadFileRequest_StorageObject struct {
@@ -486,7 +486,7 @@ const file_storage_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
 	"&storage/service/v1/file_transfer.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cstorage/service/v1/oss.proto\"\xd7\b\n" +
 	"\x13DownloadFileRequest\x129\n" +
-	"\afile_id\x18\x01 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12d\n" +
+	"\afile_id\x18\x01 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12d\n" +
 	"\x0estorage_object\x18\x02 \x01(\v2!.storage.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象H\x00R\rstorageObject\x12\\\n" +
 	"\fdownload_url\x18\x03 \x01(\tB7\xbaG4\x92\x021直接的外部 URL（可用于代理或验证）H\x00R\vdownloadUrl\x12P\n" +
 	"\vrange_start\x18\x04 \x01(\x03B*\xbaG'\x92\x02$下载范围开始区域，闭区间H\x01R\n" +

@@ -59,12 +59,12 @@ message DataAccessAuditLog {
     OTHER = 100;    // 其他
   }
 
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
   ]; // 数据访问审计日志ID
 
-  optional uint32 tenant_id = 2 [
+  optional uint64 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -74,7 +74,7 @@ message DataAccessAuditLog {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ]; // 租户名称
 
-  optional uint32 user_id = 4 [
+  optional uint64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
   ]; // 用户ID
@@ -203,7 +203,7 @@ message ListDataAccessAuditLogResponse {
 // 查询数据访问审计日志详情 - 请求
 message GetDataAccessAuditLogRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID

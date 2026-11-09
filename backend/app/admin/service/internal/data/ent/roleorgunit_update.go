@@ -70,14 +70,14 @@ func (_u *RoleOrgUnitUpdate) ClearDeletedAt() *RoleOrgUnitUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RoleOrgUnitUpdate) SetCreatedBy(v uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetCreatedBy(v uint64) *RoleOrgUnitUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdate) SetNillableCreatedBy(v *uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetNillableCreatedBy(v *uint64) *RoleOrgUnitUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *RoleOrgUnitUpdate) SetNillableCreatedBy(v *uint32) *RoleOrgUnitUpdate 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *RoleOrgUnitUpdate) AddCreatedBy(v int32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) AddCreatedBy(v int64) *RoleOrgUnitUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *RoleOrgUnitUpdate) ClearCreatedBy() *RoleOrgUnitUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RoleOrgUnitUpdate) SetUpdatedBy(v uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetUpdatedBy(v uint64) *RoleOrgUnitUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdate) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetNillableUpdatedBy(v *uint64) *RoleOrgUnitUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *RoleOrgUnitUpdate) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitUpdate 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *RoleOrgUnitUpdate) AddUpdatedBy(v int32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) AddUpdatedBy(v int64) *RoleOrgUnitUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *RoleOrgUnitUpdate) ClearUpdatedBy() *RoleOrgUnitUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RoleOrgUnitUpdate) SetDeletedBy(v uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetDeletedBy(v uint64) *RoleOrgUnitUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdate) SetNillableDeletedBy(v *uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetNillableDeletedBy(v *uint64) *RoleOrgUnitUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *RoleOrgUnitUpdate) SetNillableDeletedBy(v *uint32) *RoleOrgUnitUpdate 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *RoleOrgUnitUpdate) AddDeletedBy(v int32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) AddDeletedBy(v int64) *RoleOrgUnitUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -151,14 +151,14 @@ func (_u *RoleOrgUnitUpdate) ClearDeletedBy() *RoleOrgUnitUpdate {
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *RoleOrgUnitUpdate) SetRoleID(v uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetRoleID(v uint64) *RoleOrgUnitUpdate {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdate) SetNillableRoleID(v *uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetNillableRoleID(v *uint64) *RoleOrgUnitUpdate {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -166,20 +166,20 @@ func (_u *RoleOrgUnitUpdate) SetNillableRoleID(v *uint32) *RoleOrgUnitUpdate {
 }
 
 // AddRoleID adds value to the "role_id" field.
-func (_u *RoleOrgUnitUpdate) AddRoleID(v int32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) AddRoleID(v int64) *RoleOrgUnitUpdate {
 	_u.mutation.AddRoleID(v)
 	return _u
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *RoleOrgUnitUpdate) SetOrgUnitID(v uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetOrgUnitID(v uint64) *RoleOrgUnitUpdate {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdate) SetNillableOrgUnitID(v *uint32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) SetNillableOrgUnitID(v *uint64) *RoleOrgUnitUpdate {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -187,7 +187,7 @@ func (_u *RoleOrgUnitUpdate) SetNillableOrgUnitID(v *uint32) *RoleOrgUnitUpdate 
 }
 
 // AddOrgUnitID adds value to the "org_unit_id" field.
-func (_u *RoleOrgUnitUpdate) AddOrgUnitID(v int32) *RoleOrgUnitUpdate {
+func (_u *RoleOrgUnitUpdate) AddOrgUnitID(v int64) *RoleOrgUnitUpdate {
 	_u.mutation.AddOrgUnitID(v)
 	return _u
 }
@@ -231,7 +231,7 @@ func (_u *RoleOrgUnitUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ro
 }
 
 func (_u *RoleOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(roleorgunit.Table, roleorgunit.Columns, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(roleorgunit.Table, roleorgunit.Columns, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -255,46 +255,46 @@ func (_u *RoleOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(roleorgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(roleorgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(roleorgunit.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(roleorgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(roleorgunit.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(roleorgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(roleorgunit.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(roleorgunit.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(roleorgunit.FieldRoleID, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(roleorgunit.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldOrgUnitID, field.TypeUint64, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -359,14 +359,14 @@ func (_u *RoleOrgUnitUpdateOne) ClearDeletedAt() *RoleOrgUnitUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RoleOrgUnitUpdateOne) SetCreatedBy(v uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetCreatedBy(v uint64) *RoleOrgUnitUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdateOne) SetNillableCreatedBy(v *uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetNillableCreatedBy(v *uint64) *RoleOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -374,7 +374,7 @@ func (_u *RoleOrgUnitUpdateOne) SetNillableCreatedBy(v *uint32) *RoleOrgUnitUpda
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *RoleOrgUnitUpdateOne) AddCreatedBy(v int32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) AddCreatedBy(v int64) *RoleOrgUnitUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -386,14 +386,14 @@ func (_u *RoleOrgUnitUpdateOne) ClearCreatedBy() *RoleOrgUnitUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RoleOrgUnitUpdateOne) SetUpdatedBy(v uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetUpdatedBy(v uint64) *RoleOrgUnitUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdateOne) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetNillableUpdatedBy(v *uint64) *RoleOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -401,7 +401,7 @@ func (_u *RoleOrgUnitUpdateOne) SetNillableUpdatedBy(v *uint32) *RoleOrgUnitUpda
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *RoleOrgUnitUpdateOne) AddUpdatedBy(v int32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) AddUpdatedBy(v int64) *RoleOrgUnitUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -413,14 +413,14 @@ func (_u *RoleOrgUnitUpdateOne) ClearUpdatedBy() *RoleOrgUnitUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RoleOrgUnitUpdateOne) SetDeletedBy(v uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetDeletedBy(v uint64) *RoleOrgUnitUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdateOne) SetNillableDeletedBy(v *uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetNillableDeletedBy(v *uint64) *RoleOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -428,7 +428,7 @@ func (_u *RoleOrgUnitUpdateOne) SetNillableDeletedBy(v *uint32) *RoleOrgUnitUpda
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *RoleOrgUnitUpdateOne) AddDeletedBy(v int32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) AddDeletedBy(v int64) *RoleOrgUnitUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -440,14 +440,14 @@ func (_u *RoleOrgUnitUpdateOne) ClearDeletedBy() *RoleOrgUnitUpdateOne {
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *RoleOrgUnitUpdateOne) SetRoleID(v uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetRoleID(v uint64) *RoleOrgUnitUpdateOne {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdateOne) SetNillableRoleID(v *uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetNillableRoleID(v *uint64) *RoleOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -455,20 +455,20 @@ func (_u *RoleOrgUnitUpdateOne) SetNillableRoleID(v *uint32) *RoleOrgUnitUpdateO
 }
 
 // AddRoleID adds value to the "role_id" field.
-func (_u *RoleOrgUnitUpdateOne) AddRoleID(v int32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) AddRoleID(v int64) *RoleOrgUnitUpdateOne {
 	_u.mutation.AddRoleID(v)
 	return _u
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *RoleOrgUnitUpdateOne) SetOrgUnitID(v uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetOrgUnitID(v uint64) *RoleOrgUnitUpdateOne {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *RoleOrgUnitUpdateOne) SetNillableOrgUnitID(v *uint32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) SetNillableOrgUnitID(v *uint64) *RoleOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -476,7 +476,7 @@ func (_u *RoleOrgUnitUpdateOne) SetNillableOrgUnitID(v *uint32) *RoleOrgUnitUpda
 }
 
 // AddOrgUnitID adds value to the "org_unit_id" field.
-func (_u *RoleOrgUnitUpdateOne) AddOrgUnitID(v int32) *RoleOrgUnitUpdateOne {
+func (_u *RoleOrgUnitUpdateOne) AddOrgUnitID(v int64) *RoleOrgUnitUpdateOne {
 	_u.mutation.AddOrgUnitID(v)
 	return _u
 }
@@ -533,7 +533,7 @@ func (_u *RoleOrgUnitUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (_u *RoleOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *RoleOrgUnit, err error) {
-	_spec := sqlgraph.NewUpdateSpec(roleorgunit.Table, roleorgunit.Columns, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(roleorgunit.Table, roleorgunit.Columns, sqlgraph.NewFieldSpec(roleorgunit.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RoleOrgUnit.id" for update`)}
@@ -574,46 +574,46 @@ func (_u *RoleOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *RoleOrgUnit
 		_spec.ClearField(roleorgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(roleorgunit.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(roleorgunit.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(roleorgunit.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(roleorgunit.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(roleorgunit.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(roleorgunit.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(roleorgunit.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(roleorgunit.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(roleorgunit.FieldRoleID, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldRoleID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.SetField(roleorgunit.FieldOrgUnitID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(roleorgunit.FieldOrgUnitID, field.TypeUint32, value)
+		_spec.AddField(roleorgunit.FieldOrgUnitID, field.TypeUint64, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &RoleOrgUnit{config: _u.config}

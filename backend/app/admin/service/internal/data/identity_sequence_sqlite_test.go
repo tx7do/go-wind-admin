@@ -40,7 +40,7 @@ func TestAlignIdentitySequenceSqliteIsNoop(t *testing.T) {
 		SetPath("/sqlite/identity/next").
 		Save(ctx)
 	require.NoError(t, err, "no-op 之后无 ID 插入应照常成功")
-	require.Greater(t, created.ID, uint32(9001), "SQLite 自增应自动抬过显式 ID")
+	require.Greater(t, created.ID, uint64(9001), "SQLite 自增应自动抬过显式 ID")
 }
 
 // TestAlignIdentitySequenceNilHandle 验证句柄缺失时报错而不是静默成功——

@@ -17,19 +17,19 @@ type PolicyEvaluationLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 租户ID
-	TenantID *uint32 `json:"tenant_id,omitempty"`
+	TenantID *uint64 `json:"tenant_id,omitempty"`
 	// 用户ID
-	UserID *uint32 `json:"user_id,omitempty"`
+	UserID *uint64 `json:"user_id,omitempty"`
 	// 成员身份ID
-	MembershipID *uint32 `json:"membership_id,omitempty"`
+	MembershipID *uint64 `json:"membership_id,omitempty"`
 	// 权限点ID
-	PermissionID *uint32 `json:"permission_id,omitempty"`
+	PermissionID *uint64 `json:"permission_id,omitempty"`
 	// 策略ID（可能无策略）
-	PolicyID *uint32 `json:"policy_id,omitempty"`
+	PolicyID *uint64 `json:"policy_id,omitempty"`
 	// 请求API路径
 	RequestPath *string `json:"request_path,omitempty"`
 	// 请求HTTP方法
@@ -88,7 +88,7 @@ func (_m *PolicyEvaluationLog) assignValues(columns []string, values []any) erro
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case policyevaluationlog.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -100,36 +100,36 @@ func (_m *PolicyEvaluationLog) assignValues(columns []string, values []any) erro
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint32)
-				*_m.TenantID = uint32(value.Int64)
+				_m.TenantID = new(uint64)
+				*_m.TenantID = uint64(value.Int64)
 			}
 		case policyevaluationlog.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint32)
-				*_m.UserID = uint32(value.Int64)
+				_m.UserID = new(uint64)
+				*_m.UserID = uint64(value.Int64)
 			}
 		case policyevaluationlog.FieldMembershipID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field membership_id", values[i])
 			} else if value.Valid {
-				_m.MembershipID = new(uint32)
-				*_m.MembershipID = uint32(value.Int64)
+				_m.MembershipID = new(uint64)
+				*_m.MembershipID = uint64(value.Int64)
 			}
 		case policyevaluationlog.FieldPermissionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field permission_id", values[i])
 			} else if value.Valid {
-				_m.PermissionID = new(uint32)
-				*_m.PermissionID = uint32(value.Int64)
+				_m.PermissionID = new(uint64)
+				*_m.PermissionID = uint64(value.Int64)
 			}
 		case policyevaluationlog.FieldPolicyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field policy_id", values[i])
 			} else if value.Valid {
-				_m.PolicyID = new(uint32)
-				*_m.PolicyID = uint32(value.Int64)
+				_m.PolicyID = new(uint64)
+				*_m.PolicyID = uint64(value.Int64)
 			}
 		case policyevaluationlog.FieldRequestPath:
 			if value, ok := values[i].(*sql.NullString); !ok {

@@ -72,7 +72,7 @@ func savedVCode(t *testing.T, e *authSvcEnv, identifier string) string {
 }
 
 // seedEmailCredential 落一条 EMAIL/PASSWORD_HASH 凭证。
-func (e *authSvcEnv) seedEmailCredential(t *testing.T, userID uint32, identifier string) {
+func (e *authSvcEnv) seedEmailCredential(t *testing.T, userID uint64, identifier string) {
 	t.Helper()
 	require.NoError(t, e.svc.userCredentialRepo.Create(e.ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
@@ -129,7 +129,7 @@ func TestForgotPassword_EmailBranch(t *testing.T) {
 	req := notifier.reqs[0]
 	require.Equal(t, notificationV1.EventType_PASSWORD_RESET_CODE, req.GetEventType())
 	require.Equal(t, identifier, req.GetTarget())
-	require.Equal(t, uint32(5501), req.GetRecipientUserId())
+	require.Equal(t, uint64(5501), req.GetRecipientUserId())
 	require.NotEmpty(t, req.GetTitle(), "邮件标题应有内容")
 	require.NotEmpty(t, req.GetContent(), "邮件正文应有内容")
 	require.NotContains(t, req.GetContent(), "code", "正文应为渲染后的文案而非占位符")
@@ -156,7 +156,7 @@ func TestForgotPassword_PhoneBranch(t *testing.T) {
 
 	require.NoError(t, e.svc.userCredentialRepo.Create(e.ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint32(5502)),
+			UserId:         trans.Ptr(uint64(5502)),
 			IdentityType:   authenticationV1.UserCredential_PHONE.Enum(),
 			Identifier:     trans.Ptr(phone),
 			CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
@@ -175,7 +175,7 @@ func TestForgotPassword_PhoneBranch(t *testing.T) {
 	req := notifier.reqs[0]
 	require.Equal(t, notificationV1.Channel_SMS, req.GetChannel(), "手机号应点名 SMS 渠道")
 	require.NotEmpty(t, req.GetParams()["code"], "code 应经 params 交给渠道")
-	require.Equal(t, uint32(5502), req.GetRecipientUserId())
+	require.Equal(t, uint64(5502), req.GetRecipientUserId())
 }
 
 // TestForgotPassword_SkippedChannel SKIPPED＝渠道一条都没发出去（没配启用），
@@ -207,7 +207,7 @@ func TestResetPasswordByCode(t *testing.T) {
 	wireVCodeAndNotifier(t, e, notifier)
 
 	const identifier = "reset@example.com"
-	const userID = uint32(5504)
+	const userID = uint64(5504)
 	e.seedEmailCredential(t, userID, identifier)
 	// ResetCredential 按 USERNAME 凭证重置口令：需先落 USERNAME 行
 	e.seedCredential(t, nil, userID, "reset_user", authenticationV1.UserCredential_ENABLED)

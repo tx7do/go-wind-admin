@@ -58,7 +58,7 @@ func TestInternalMessageCategoryService_CreateAndUpdateStamps(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.NotNil(t, created.GetCreatedBy())
-	require.Equal(t, uint32(81), created.GetCreatedBy(), "CreatedBy 应落操作人")
+	require.Equal(t, uint64(81), created.GetCreatedBy(), "CreatedBy 应落操作人")
 
 	mask, err := fieldmaskpb.New(&internalMessageV1.InternalMessageCategory{}, "name")
 	require.NoError(t, err)

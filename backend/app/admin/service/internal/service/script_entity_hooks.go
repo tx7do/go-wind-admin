@@ -136,8 +136,8 @@ func mutationOpName(op ent.Op) string {
 }
 
 // mutationID 从 mutation 尽力提取实体 ID（取不到为 0）。
-func mutationID(m ent.Mutation) uint32 {
-	type idGetter interface{ ID() (uint32, bool) }
+func mutationID(m ent.Mutation) uint64 {
+	type idGetter interface{ ID() (uint64, bool) }
 	if g, ok := m.(idGetter); ok {
 		if id, exists := g.ID(); exists {
 			return id

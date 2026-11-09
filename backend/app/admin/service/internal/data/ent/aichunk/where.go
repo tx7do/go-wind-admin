@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.AiChunk {
+func ID(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.AiChunk {
+func IDEQ(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.AiChunk {
+func IDNEQ(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.AiChunk {
+func IDIn(ids ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.AiChunk {
+func IDNotIn(ids ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.AiChunk {
+func IDGT(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.AiChunk {
+func IDGTE(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.AiChunk {
+func IDLT(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.AiChunk {
+func IDLTE(id uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldLTE(FieldID, id))
 }
 
@@ -61,12 +61,12 @@ func CreatedAt(v time.Time) predicate.AiChunk {
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.AiChunk {
+func TenantID(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldTenantID, v))
 }
 
 // DocID applies equality check predicate on the "doc_id" field. It's identical to DocIDEQ.
-func DocID(v uint32) predicate.AiChunk {
+func DocID(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldDocID, v))
 }
 
@@ -131,42 +131,42 @@ func CreatedAtNotNil() predicate.AiChunk {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.AiChunk {
+func TenantIDEQ(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.AiChunk {
+func TenantIDNEQ(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.AiChunk {
+func TenantIDIn(vs ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.AiChunk {
+func TenantIDNotIn(vs ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.AiChunk {
+func TenantIDGT(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.AiChunk {
+func TenantIDGTE(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.AiChunk {
+func TenantIDLT(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.AiChunk {
+func TenantIDLTE(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -181,22 +181,22 @@ func TenantIDNotNil() predicate.AiChunk {
 }
 
 // DocIDEQ applies the EQ predicate on the "doc_id" field.
-func DocIDEQ(v uint32) predicate.AiChunk {
+func DocIDEQ(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldEQ(FieldDocID, v))
 }
 
 // DocIDNEQ applies the NEQ predicate on the "doc_id" field.
-func DocIDNEQ(v uint32) predicate.AiChunk {
+func DocIDNEQ(v uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNEQ(FieldDocID, v))
 }
 
 // DocIDIn applies the In predicate on the "doc_id" field.
-func DocIDIn(vs ...uint32) predicate.AiChunk {
+func DocIDIn(vs ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldIn(FieldDocID, vs...))
 }
 
 // DocIDNotIn applies the NotIn predicate on the "doc_id" field.
-func DocIDNotIn(vs ...uint32) predicate.AiChunk {
+func DocIDNotIn(vs ...uint64) predicate.AiChunk {
 	return predicate.AiChunk(sql.FieldNotIn(FieldDocID, vs...))
 }
 

@@ -25,18 +25,18 @@ func (AiKnowledgeBase) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("知识库名称").Optional().Nillable(),
 		field.String("description").Comment("描述").Optional().Nillable(),
-		field.Uint32("provider_id").Comment("向量化使用的模型提供商ID").Optional().Nillable(),
+		field.Uint64("provider_id").Comment("向量化使用的模型提供商ID").Optional().Nillable(),
 		field.String("embedding_model").Comment("embedding 模型名").Optional().Nillable(),
-		field.Uint32("user_id").Comment("创建人用户ID").Optional().Nillable(),
+		field.Uint64("user_id").Comment("创建人用户ID").Optional().Nillable(),
 	}
 }
 
 func (AiKnowledgeBase) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

@@ -40,9 +40,9 @@ func TestUserMfaFactorRepoSqlite_CreateAndFindEnabledTotp(t *testing.T) {
 	row := rows[0]
 	require.Equal(t, factorID, row.ID, "直查 ID 应与返回 ID 一致")
 	require.NotNil(t, row.TenantID)
-	require.Equal(t, uint32(1), *row.TenantID, "tenant_id 应按参数落库")
+	require.Equal(t, uint64(1), *row.TenantID, "tenant_id 应按参数落库")
 	require.NotNil(t, row.UserID)
-	require.Equal(t, uint32(10), *row.UserID, "user_id 应按参数落库")
+	require.Equal(t, uint64(10), *row.UserID, "user_id 应按参数落库")
 	require.NotNil(t, row.Method)
 	require.Equal(t, entUserMfaFactor.MethodTotp, *row.Method, "method 应为 TOTP")
 	require.NotNil(t, row.Status)
@@ -231,8 +231,8 @@ func TestUserMfaFactorRepoSqlite_GetFindFirstAndUpdateLastUsed(t *testing.T) {
 	tid, uid, found, err := repo.GetFactorById(ctx, rowA.ID)
 	require.NoError(t, err)
 	require.True(t, found, "存在的因子应命中")
-	require.Equal(t, uint32(3), tid, "应返回归属租户")
-	require.Equal(t, uint32(30), uid, "应返回归属用户")
+	require.Equal(t, uint64(3), tid, "应返回归属租户")
+	require.Equal(t, uint64(30), uid, "应返回归属用户")
 
 	// GetFactorById：未命中（found=false，不报错）
 	tid, uid, found, err = repo.GetFactorById(ctx, 424242)
@@ -245,8 +245,8 @@ func TestUserMfaFactorRepoSqlite_GetFindFirstAndUpdateLastUsed(t *testing.T) {
 	tid, uid, found, err = repo.FindFirstByUser(ctx, 31, entUserMfaFactor.MethodTotp)
 	require.NoError(t, err)
 	require.True(t, found, "存在 (user,method) 行应命中")
-	require.Equal(t, uint32(3), tid)
-	require.Equal(t, uint32(31), uid)
+	require.Equal(t, uint64(3), tid)
+	require.Equal(t, uint64(31), uid)
 
 	// FindFirstByUser：无行命中
 	tid, uid, found, err = repo.FindFirstByUser(ctx, 999, entUserMfaFactor.MethodTotp)

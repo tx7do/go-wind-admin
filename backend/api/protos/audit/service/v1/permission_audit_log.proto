@@ -48,17 +48,17 @@ message PermissionAuditLog {
     OTHER = 100;      // 其他未分类操作
   }
 
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "权限变更审计日志ID"}
   ]; // 权限变更审计日志ID
 
-  optional uint32 tenant_id = 2 [
+  optional uint64 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
 
-  optional uint32 operator_id = 3 [
+  optional uint64 operator_id = 3 [
     json_name = "operatorId",
     (gnostic.openapi.v3.property) = {description: "操作者用户ID"}
   ]; // 操作者用户ID
@@ -146,7 +146,7 @@ message ListPermissionAuditLogResponse {
 // 查询权限变更审计日志详情 - 请求
 message GetPermissionAuditLogRequest {
   oneof query_by {
-    uint32 id = 1 [
+    uint64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID

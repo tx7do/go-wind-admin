@@ -66,13 +66,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableDeletedAt(v *time.Time) *AiKnowledge
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AiKnowledgeBaseCreate) SetCreatedBy(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetCreatedBy(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableCreatedBy(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableCreatedBy(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableCreatedBy(v *uint32) *AiKnowledgeBas
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AiKnowledgeBaseCreate) SetUpdatedBy(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetUpdatedBy(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableUpdatedBy(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableUpdatedBy(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableUpdatedBy(v *uint32) *AiKnowledgeBas
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AiKnowledgeBaseCreate) SetDeletedBy(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetDeletedBy(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableDeletedBy(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableDeletedBy(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableDeletedBy(v *uint32) *AiKnowledgeBas
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiKnowledgeBaseCreate) SetTenantID(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetTenantID(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableTenantID(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableTenantID(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -150,13 +150,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableDescription(v *string) *AiKnowledgeB
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_c *AiKnowledgeBaseCreate) SetProviderID(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetProviderID(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetProviderID(v)
 	return _c
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableProviderID(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableProviderID(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetProviderID(*v)
 	}
@@ -178,13 +178,13 @@ func (_c *AiKnowledgeBaseCreate) SetNillableEmbeddingModel(v *string) *AiKnowled
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *AiKnowledgeBaseCreate) SetUserID(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetUserID(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *AiKnowledgeBaseCreate) SetNillableUserID(v *uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetNillableUserID(v *uint64) *AiKnowledgeBaseCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -192,20 +192,20 @@ func (_c *AiKnowledgeBaseCreate) SetNillableUserID(v *uint32) *AiKnowledgeBaseCr
 }
 
 // SetID sets the "id" field.
-func (_c *AiKnowledgeBaseCreate) SetID(v uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) SetID(v uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // AddDocIDs adds the "docs" edge to the AiDoc entity by IDs.
-func (_c *AiKnowledgeBaseCreate) AddDocIDs(ids ...uint32) *AiKnowledgeBaseCreate {
+func (_c *AiKnowledgeBaseCreate) AddDocIDs(ids ...uint64) *AiKnowledgeBaseCreate {
 	_c.mutation.AddDocIDs(ids...)
 	return _c
 }
 
 // AddDocs adds the "docs" edges to the AiDoc entity.
 func (_c *AiKnowledgeBaseCreate) AddDocs(v ...*AiDoc) *AiKnowledgeBaseCreate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -279,7 +279,7 @@ func (_c *AiKnowledgeBaseCreate) sqlSave(ctx context.Context) (*AiKnowledgeBase,
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -289,7 +289,7 @@ func (_c *AiKnowledgeBaseCreate) sqlSave(ctx context.Context) (*AiKnowledgeBase,
 func (_c *AiKnowledgeBaseCreate) createSpec() (*AiKnowledgeBase, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiKnowledgeBase{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aiknowledgebase.Table, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(aiknowledgebase.Table, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -309,19 +309,19 @@ func (_c *AiKnowledgeBaseCreate) createSpec() (*AiKnowledgeBase, *sqlgraph.Creat
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(aiknowledgebase.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiknowledgebase.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(aiknowledgebase.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aiknowledgebase.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -333,7 +333,7 @@ func (_c *AiKnowledgeBaseCreate) createSpec() (*AiKnowledgeBase, *sqlgraph.Creat
 		_node.Description = &value
 	}
 	if value, ok := _c.mutation.ProviderID(); ok {
-		_spec.SetField(aiknowledgebase.FieldProviderID, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldProviderID, field.TypeUint64, value)
 		_node.ProviderID = &value
 	}
 	if value, ok := _c.mutation.EmbeddingModel(); ok {
@@ -341,7 +341,7 @@ func (_c *AiKnowledgeBaseCreate) createSpec() (*AiKnowledgeBase, *sqlgraph.Creat
 		_node.EmbeddingModel = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(aiknowledgebase.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(aiknowledgebase.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if nodes := _c.mutation.DocsIDs(); len(nodes) > 0 {
@@ -352,7 +352,7 @@ func (_c *AiKnowledgeBaseCreate) createSpec() (*AiKnowledgeBase, *sqlgraph.Creat
 			Columns: []string{aiknowledgebase.DocsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -449,7 +449,7 @@ func (u *AiKnowledgeBaseUpsert) ClearDeletedAt() *AiKnowledgeBaseUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiKnowledgeBaseUpsert) SetCreatedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) SetCreatedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Set(aiknowledgebase.FieldCreatedBy, v)
 	return u
 }
@@ -461,7 +461,7 @@ func (u *AiKnowledgeBaseUpsert) UpdateCreatedBy() *AiKnowledgeBaseUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiKnowledgeBaseUpsert) AddCreatedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) AddCreatedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Add(aiknowledgebase.FieldCreatedBy, v)
 	return u
 }
@@ -473,7 +473,7 @@ func (u *AiKnowledgeBaseUpsert) ClearCreatedBy() *AiKnowledgeBaseUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiKnowledgeBaseUpsert) SetUpdatedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) SetUpdatedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Set(aiknowledgebase.FieldUpdatedBy, v)
 	return u
 }
@@ -485,7 +485,7 @@ func (u *AiKnowledgeBaseUpsert) UpdateUpdatedBy() *AiKnowledgeBaseUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiKnowledgeBaseUpsert) AddUpdatedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) AddUpdatedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Add(aiknowledgebase.FieldUpdatedBy, v)
 	return u
 }
@@ -497,7 +497,7 @@ func (u *AiKnowledgeBaseUpsert) ClearUpdatedBy() *AiKnowledgeBaseUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsert) SetDeletedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) SetDeletedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Set(aiknowledgebase.FieldDeletedBy, v)
 	return u
 }
@@ -509,7 +509,7 @@ func (u *AiKnowledgeBaseUpsert) UpdateDeletedBy() *AiKnowledgeBaseUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsert) AddDeletedBy(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) AddDeletedBy(v uint64) *AiKnowledgeBaseUpsert {
 	u.Add(aiknowledgebase.FieldDeletedBy, v)
 	return u
 }
@@ -557,7 +557,7 @@ func (u *AiKnowledgeBaseUpsert) ClearDescription() *AiKnowledgeBaseUpsert {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiKnowledgeBaseUpsert) SetProviderID(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) SetProviderID(v uint64) *AiKnowledgeBaseUpsert {
 	u.Set(aiknowledgebase.FieldProviderID, v)
 	return u
 }
@@ -569,7 +569,7 @@ func (u *AiKnowledgeBaseUpsert) UpdateProviderID() *AiKnowledgeBaseUpsert {
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiKnowledgeBaseUpsert) AddProviderID(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) AddProviderID(v uint64) *AiKnowledgeBaseUpsert {
 	u.Add(aiknowledgebase.FieldProviderID, v)
 	return u
 }
@@ -599,7 +599,7 @@ func (u *AiKnowledgeBaseUpsert) ClearEmbeddingModel() *AiKnowledgeBaseUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiKnowledgeBaseUpsert) SetUserID(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) SetUserID(v uint64) *AiKnowledgeBaseUpsert {
 	u.Set(aiknowledgebase.FieldUserID, v)
 	return u
 }
@@ -611,7 +611,7 @@ func (u *AiKnowledgeBaseUpsert) UpdateUserID() *AiKnowledgeBaseUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiKnowledgeBaseUpsert) AddUserID(v uint32) *AiKnowledgeBaseUpsert {
+func (u *AiKnowledgeBaseUpsert) AddUserID(v uint64) *AiKnowledgeBaseUpsert {
 	u.Add(aiknowledgebase.FieldUserID, v)
 	return u
 }
@@ -719,14 +719,14 @@ func (u *AiKnowledgeBaseUpsertOne) ClearDeletedAt() *AiKnowledgeBaseUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiKnowledgeBaseUpsertOne) SetCreatedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) SetCreatedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiKnowledgeBaseUpsertOne) AddCreatedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) AddCreatedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -747,14 +747,14 @@ func (u *AiKnowledgeBaseUpsertOne) ClearCreatedBy() *AiKnowledgeBaseUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiKnowledgeBaseUpsertOne) SetUpdatedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) SetUpdatedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiKnowledgeBaseUpsertOne) AddUpdatedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) AddUpdatedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -775,14 +775,14 @@ func (u *AiKnowledgeBaseUpsertOne) ClearUpdatedBy() *AiKnowledgeBaseUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsertOne) SetDeletedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) SetDeletedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsertOne) AddDeletedBy(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) AddDeletedBy(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -845,14 +845,14 @@ func (u *AiKnowledgeBaseUpsertOne) ClearDescription() *AiKnowledgeBaseUpsertOne 
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiKnowledgeBaseUpsertOne) SetProviderID(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) SetProviderID(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiKnowledgeBaseUpsertOne) AddProviderID(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) AddProviderID(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddProviderID(v)
 	})
@@ -894,14 +894,14 @@ func (u *AiKnowledgeBaseUpsertOne) ClearEmbeddingModel() *AiKnowledgeBaseUpsertO
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiKnowledgeBaseUpsertOne) SetUserID(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) SetUserID(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiKnowledgeBaseUpsertOne) AddUserID(v uint32) *AiKnowledgeBaseUpsertOne {
+func (u *AiKnowledgeBaseUpsertOne) AddUserID(v uint64) *AiKnowledgeBaseUpsertOne {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddUserID(v)
 	})
@@ -937,7 +937,7 @@ func (u *AiKnowledgeBaseUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiKnowledgeBaseUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *AiKnowledgeBaseUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -946,7 +946,7 @@ func (u *AiKnowledgeBaseUpsertOne) ID(ctx context.Context) (id uint32, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiKnowledgeBaseUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *AiKnowledgeBaseUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1003,7 +1003,7 @@ func (_c *AiKnowledgeBaseCreateBulk) Save(ctx context.Context) ([]*AiKnowledgeBa
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1184,14 +1184,14 @@ func (u *AiKnowledgeBaseUpsertBulk) ClearDeletedAt() *AiKnowledgeBaseUpsertBulk 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) SetCreatedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) SetCreatedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) AddCreatedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) AddCreatedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1212,14 +1212,14 @@ func (u *AiKnowledgeBaseUpsertBulk) ClearCreatedBy() *AiKnowledgeBaseUpsertBulk 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) SetUpdatedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) SetUpdatedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) AddUpdatedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) AddUpdatedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1240,14 +1240,14 @@ func (u *AiKnowledgeBaseUpsertBulk) ClearUpdatedBy() *AiKnowledgeBaseUpsertBulk 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) SetDeletedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) SetDeletedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiKnowledgeBaseUpsertBulk) AddDeletedBy(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) AddDeletedBy(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1310,14 +1310,14 @@ func (u *AiKnowledgeBaseUpsertBulk) ClearDescription() *AiKnowledgeBaseUpsertBul
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiKnowledgeBaseUpsertBulk) SetProviderID(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) SetProviderID(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiKnowledgeBaseUpsertBulk) AddProviderID(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) AddProviderID(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddProviderID(v)
 	})
@@ -1359,14 +1359,14 @@ func (u *AiKnowledgeBaseUpsertBulk) ClearEmbeddingModel() *AiKnowledgeBaseUpsert
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiKnowledgeBaseUpsertBulk) SetUserID(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) SetUserID(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiKnowledgeBaseUpsertBulk) AddUserID(v uint32) *AiKnowledgeBaseUpsertBulk {
+func (u *AiKnowledgeBaseUpsertBulk) AddUserID(v uint64) *AiKnowledgeBaseUpsertBulk {
 	return u.Update(func(s *AiKnowledgeBaseUpsert) {
 		s.AddUserID(v)
 	})

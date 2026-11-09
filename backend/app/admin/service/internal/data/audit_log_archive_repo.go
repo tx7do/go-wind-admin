@@ -55,20 +55,20 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 
 	type tableJob struct {
 		name  string
-		query func() (rows []any, ids []uint32, err error)
-		del   func(ids []uint32) (int, error)
+		query func() (rows []any, ids []uint64, err error)
+		del   func(ids []uint64) (int, error)
 	}
 
 	jobs := []tableJob{
 		{
 			name: "sys_api_audit_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.ApiAuditLog.Query().
 					Where(apiauditlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -76,19 +76,19 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.ApiAuditLog.Delete().Where(apiauditlog.IDIn(ids...)).Exec(ctx)
 			},
 		},
 		{
 			name: "sys_login_audit_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.LoginAuditLog.Query().
 					Where(loginauditlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -96,19 +96,19 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.LoginAuditLog.Delete().Where(loginauditlog.IDIn(ids...)).Exec(ctx)
 			},
 		},
 		{
 			name: "sys_operation_audit_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.OperationAuditLog.Query().
 					Where(operationauditlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -116,19 +116,19 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.OperationAuditLog.Delete().Where(operationauditlog.IDIn(ids...)).Exec(ctx)
 			},
 		},
 		{
 			name: "sys_permission_audit_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.PermissionAuditLog.Query().
 					Where(permissionauditlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -136,19 +136,19 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.PermissionAuditLog.Delete().Where(permissionauditlog.IDIn(ids...)).Exec(ctx)
 			},
 		},
 		{
 			name: "sys_data_access_audit_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.DataAccessAuditLog.Query().
 					Where(dataaccessauditlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -156,19 +156,19 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.DataAccessAuditLog.Delete().Where(dataaccessauditlog.IDIn(ids...)).Exec(ctx)
 			},
 		},
 		{
 			name: "sys_policy_evaluation_logs",
-			query: func() ([]any, []uint32, error) {
+			query: func() ([]any, []uint64, error) {
 				rows, err := client.PolicyEvaluationLog.Query().
 					Where(policyevaluationlog.CreatedAtLT(before)).Limit(archiveBatch).All(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
-				ids := make([]uint32, 0, len(rows))
+				ids := make([]uint64, 0, len(rows))
 				out := make([]any, 0, len(rows))
 				for _, e := range rows {
 					ids = append(ids, e.ID)
@@ -176,7 +176,7 @@ func (r *AuditLogArchiveRepo) ArchiveExpired(ctx context.Context, before time.Ti
 				}
 				return out, ids, nil
 			},
-			del: func(ids []uint32) (int, error) {
+			del: func(ids []uint64) (int, error) {
 				return client.PolicyEvaluationLog.Delete().Where(policyevaluationlog.IDIn(ids...)).Exec(ctx)
 			},
 		},

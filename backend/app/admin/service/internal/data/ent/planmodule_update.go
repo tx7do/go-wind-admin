@@ -71,14 +71,14 @@ func (_u *PlanModuleUpdate) ClearDeletedAt() *PlanModuleUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PlanModuleUpdate) SetCreatedBy(v uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetCreatedBy(v uint64) *PlanModuleUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PlanModuleUpdate) SetNillableCreatedBy(v *uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetNillableCreatedBy(v *uint64) *PlanModuleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *PlanModuleUpdate) SetNillableCreatedBy(v *uint32) *PlanModuleUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *PlanModuleUpdate) AddCreatedBy(v int32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) AddCreatedBy(v int64) *PlanModuleUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *PlanModuleUpdate) ClearCreatedBy() *PlanModuleUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PlanModuleUpdate) SetUpdatedBy(v uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetUpdatedBy(v uint64) *PlanModuleUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PlanModuleUpdate) SetNillableUpdatedBy(v *uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetNillableUpdatedBy(v *uint64) *PlanModuleUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *PlanModuleUpdate) SetNillableUpdatedBy(v *uint32) *PlanModuleUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *PlanModuleUpdate) AddUpdatedBy(v int32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) AddUpdatedBy(v int64) *PlanModuleUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *PlanModuleUpdate) ClearUpdatedBy() *PlanModuleUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PlanModuleUpdate) SetDeletedBy(v uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetDeletedBy(v uint64) *PlanModuleUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PlanModuleUpdate) SetNillableDeletedBy(v *uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetNillableDeletedBy(v *uint64) *PlanModuleUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *PlanModuleUpdate) SetNillableDeletedBy(v *uint32) *PlanModuleUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *PlanModuleUpdate) AddDeletedBy(v int32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) AddDeletedBy(v int64) *PlanModuleUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -172,13 +172,13 @@ func (_u *PlanModuleUpdate) ClearModule() *PlanModuleUpdate {
 }
 
 // SetPlanID sets the "plan" edge to the Plan entity by ID.
-func (_u *PlanModuleUpdate) SetPlanID(id uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetPlanID(id uint64) *PlanModuleUpdate {
 	_u.mutation.SetPlanID(id)
 	return _u
 }
 
 // SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
-func (_u *PlanModuleUpdate) SetNillablePlanID(id *uint32) *PlanModuleUpdate {
+func (_u *PlanModuleUpdate) SetNillablePlanID(id *uint64) *PlanModuleUpdate {
 	if id != nil {
 		_u = _u.SetPlanID(*id)
 	}
@@ -248,7 +248,7 @@ func (_u *PlanModuleUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(planmodule.Table, planmodule.Columns, sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(planmodule.Table, planmodule.Columns, sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -272,31 +272,31 @@ func (_u *PlanModuleUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		_spec.ClearField(planmodule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(planmodule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(planmodule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(planmodule.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(planmodule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(planmodule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(planmodule.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(planmodule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(planmodule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(planmodule.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Module(); ok {
 		_spec.SetField(planmodule.FieldModule, field.TypeEnum, value)
@@ -312,7 +312,7 @@ func (_u *PlanModuleUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 			Columns: []string{planmodule.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -325,7 +325,7 @@ func (_u *PlanModuleUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 			Columns: []string{planmodule.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -396,14 +396,14 @@ func (_u *PlanModuleUpdateOne) ClearDeletedAt() *PlanModuleUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PlanModuleUpdateOne) SetCreatedBy(v uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetCreatedBy(v uint64) *PlanModuleUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PlanModuleUpdateOne) SetNillableCreatedBy(v *uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetNillableCreatedBy(v *uint64) *PlanModuleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -411,7 +411,7 @@ func (_u *PlanModuleUpdateOne) SetNillableCreatedBy(v *uint32) *PlanModuleUpdate
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *PlanModuleUpdateOne) AddCreatedBy(v int32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) AddCreatedBy(v int64) *PlanModuleUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -423,14 +423,14 @@ func (_u *PlanModuleUpdateOne) ClearCreatedBy() *PlanModuleUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PlanModuleUpdateOne) SetUpdatedBy(v uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetUpdatedBy(v uint64) *PlanModuleUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PlanModuleUpdateOne) SetNillableUpdatedBy(v *uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetNillableUpdatedBy(v *uint64) *PlanModuleUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -438,7 +438,7 @@ func (_u *PlanModuleUpdateOne) SetNillableUpdatedBy(v *uint32) *PlanModuleUpdate
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *PlanModuleUpdateOne) AddUpdatedBy(v int32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) AddUpdatedBy(v int64) *PlanModuleUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -450,14 +450,14 @@ func (_u *PlanModuleUpdateOne) ClearUpdatedBy() *PlanModuleUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PlanModuleUpdateOne) SetDeletedBy(v uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetDeletedBy(v uint64) *PlanModuleUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PlanModuleUpdateOne) SetNillableDeletedBy(v *uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetNillableDeletedBy(v *uint64) *PlanModuleUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -465,7 +465,7 @@ func (_u *PlanModuleUpdateOne) SetNillableDeletedBy(v *uint32) *PlanModuleUpdate
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *PlanModuleUpdateOne) AddDeletedBy(v int32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) AddDeletedBy(v int64) *PlanModuleUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -497,13 +497,13 @@ func (_u *PlanModuleUpdateOne) ClearModule() *PlanModuleUpdateOne {
 }
 
 // SetPlanID sets the "plan" edge to the Plan entity by ID.
-func (_u *PlanModuleUpdateOne) SetPlanID(id uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetPlanID(id uint64) *PlanModuleUpdateOne {
 	_u.mutation.SetPlanID(id)
 	return _u
 }
 
 // SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
-func (_u *PlanModuleUpdateOne) SetNillablePlanID(id *uint32) *PlanModuleUpdateOne {
+func (_u *PlanModuleUpdateOne) SetNillablePlanID(id *uint64) *PlanModuleUpdateOne {
 	if id != nil {
 		_u = _u.SetPlanID(*id)
 	}
@@ -586,7 +586,7 @@ func (_u *PlanModuleUpdateOne) sqlSave(ctx context.Context) (_node *PlanModule, 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(planmodule.Table, planmodule.Columns, sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(planmodule.Table, planmodule.Columns, sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PlanModule.id" for update`)}
@@ -627,31 +627,31 @@ func (_u *PlanModuleUpdateOne) sqlSave(ctx context.Context) (_node *PlanModule, 
 		_spec.ClearField(planmodule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(planmodule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(planmodule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(planmodule.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(planmodule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(planmodule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(planmodule.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(planmodule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(planmodule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(planmodule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(planmodule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(planmodule.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(planmodule.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Module(); ok {
 		_spec.SetField(planmodule.FieldModule, field.TypeEnum, value)
@@ -667,7 +667,7 @@ func (_u *PlanModuleUpdateOne) sqlSave(ctx context.Context) (_node *PlanModule, 
 			Columns: []string{planmodule.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -680,7 +680,7 @@ func (_u *PlanModuleUpdateOne) sqlSave(ctx context.Context) (_node *PlanModule, 
 			Columns: []string{planmodule.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

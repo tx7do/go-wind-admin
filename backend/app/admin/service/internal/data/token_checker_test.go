@@ -27,7 +27,7 @@ import (
 
 // newTokenCheckerForTest 组装 miniredis + 真 Authenticator 的 TokenChecker，
 // 返回可供吊销/拉黑操作的 Authenticator 与一个已签发的有效令牌。
-func newTokenCheckerForTest(t *testing.T) (checker *TokenChecker, authn *Authenticator, validToken string, userID uint32) {
+func newTokenCheckerForTest(t *testing.T) (checker *TokenChecker, authn *Authenticator, validToken string, userID uint64) {
 	t.Helper()
 	mr, err := miniredis.Run()
 	require.NoError(t, err, "miniredis 启动失败")
@@ -55,7 +55,7 @@ func newTokenCheckerForTest(t *testing.T) (checker *TokenChecker, authn *Authent
 	userID = 42
 	access, _, err := authn.CreateUserToken(context.Background(), authenticationV1.ClientType_admin, &authenticationV1.UserTokenPayload{
 		UserId:   userID,
-		TenantId: trans.Ptr(uint32(7)),
+		TenantId: trans.Ptr(uint64(7)),
 		Username: trans.Ptr("alice"),
 	})
 	require.NoError(t, err, "签发测试令牌失败")

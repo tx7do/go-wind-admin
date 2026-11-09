@@ -161,7 +161,7 @@ message DisableMFARequest {
   optional string reason = 20;
   // 管理端重置：指定目标用户（不传=操作当前登录用户）。
   // 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
-  optional uint32 user_id = 21;
+  optional uint64 user_id = 21;
 }
 
 // Start authentication challenge

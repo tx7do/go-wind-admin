@@ -6,13 +6,13 @@ import (
 
 // PlanQuota 对应表 sys_plan_quotas
 type PlanQuota struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	QuotaType  *string `gorm:"column:quota_type;type:varchar(128);comment:配额类型"`
 	QuotaValue *uint64 `gorm:"column:quota_value;type:bigint unsigned;comment:配额值"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 }
 
 // TableName 指定表名

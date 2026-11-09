@@ -60,12 +60,12 @@ func TestBiDashboardRevision_Sqlite_SaveAndRestore(t *testing.T) {
 
 	revs, total, err := svc.revisionRepo.List(ctx, dashId, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint32(1), total, "应有一行 v1 快照")
+	require.Equal(t, uint64(1), total, "应有一行 v1 快照")
 	require.Equal(t, uint32(1), revs[0].GetVersion(), "快照记的是保存前的旧版本")
 	require.Equal(t, "v1", revs[0].GetName())
 	require.JSONEq(t, `{"charts":[1]}`, revs[0].GetPayload())
 	require.Equal(t, "SAVE", revs[0].GetSource())
-	require.Equal(t, uint32(7), revs[0].GetCreatedBy())
+	require.Equal(t, uint64(7), revs[0].GetCreatedBy())
 
 	// ② 恢复到 v1 快照：当前 v2 先以 RESTORE 留底，再把 v1 写回
 	_, err = svc.RestoreRevision(ctx, &biV1.RestoreBiDashboardRevisionRequest{Id: revs[0].GetId()})
@@ -79,7 +79,7 @@ func TestBiDashboardRevision_Sqlite_SaveAndRestore(t *testing.T) {
 
 	revs2, total2, err := svc.revisionRepo.List(ctx, dashId, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint32(2), total2, "恢复前应先留底当前版本")
+	require.Equal(t, uint64(2), total2, "恢复前应先留底当前版本")
 	sources := map[string]bool{}
 	for _, r := range revs2 {
 		sources[r.GetSource()] = true

@@ -40,7 +40,7 @@ func TestDefaultUserCredentialsUsePolicyCompliantPassword(t *testing.T) {
 // TestDefaultMenusHaveExplicitIds 防漂移：菜单播种按显式 Id 落库（全路径身份
 // 键父链拼接、权限种子引用都依赖它），漏 Id 的菜单行会拿自增 id——引用全部悬空。
 func TestDefaultMenusHaveExplicitIds(t *testing.T) {
-	seen := make(map[uint32]string, len(DefaultMenus))
+	seen := make(map[uint64]string, len(DefaultMenus))
 	for _, m := range DefaultMenus {
 		require.NotNil(t, m.Id, "菜单 [%s] 必须显式声明 Id", m.GetName())
 		require.NotContains(t, seen, m.GetId(), "菜单 Id %d 重复声明（[%s] 与 [%s]）",
@@ -53,7 +53,7 @@ func TestDefaultMenusHaveExplicitIds(t *testing.T) {
 // DefaultMenus 内已声明的菜单 id（父链断裂会让全路径拼接把子菜单当根节点，
 // 绑定快照与导航反查两侧错位）。
 func TestDefaultMenusTreeReferencesAreClosed(t *testing.T) {
-	byID := make(map[uint32]*permissionV1.Menu, len(DefaultMenus))
+	byID := make(map[uint64]*permissionV1.Menu, len(DefaultMenus))
 	for _, m := range DefaultMenus {
 		byID[m.GetId()] = m
 	}
@@ -74,7 +74,7 @@ func TestDefaultMenusTreeReferencesAreClosed(t *testing.T) {
 // 引用的菜单 id 必须都在 DefaultMenus 里——菜单播种以 DefaultMenus 为源，
 // 引用了不存在的 id 即播种期收敛剔除（软降级 WARN），属于种子笔误。
 func TestDefaultPermissionMenuIdsReferenceExistingMenus(t *testing.T) {
-	menuIDs := make(map[uint32]struct{}, len(DefaultMenus))
+	menuIDs := make(map[uint64]struct{}, len(DefaultMenus))
 	for _, m := range DefaultMenus {
 		menuIDs[m.GetId()] = struct{}{}
 	}

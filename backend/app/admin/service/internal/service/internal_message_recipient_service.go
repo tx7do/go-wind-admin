@@ -52,7 +52,7 @@ func (s *InternalMessageRecipientService) ListUserInbox(ctx context.Context, req
 	// 于是公告进了收件箱却没有标题正文（推送侧从内存 DTO 取正文，反而是全的，两路径就此分叉）。
 	// messageIds 不是外部输入：它们全部来自上面已按读者租户过滤过的收件行，
 	// "能读到这条收件行"就是"能读到它的父消息"的授权凭据。
-	messageIds := make([]uint32, 0, len(resp.Items))
+	messageIds := make([]uint64, 0, len(resp.Items))
 	for _, d := range resp.Items {
 		if d.MessageId != nil {
 			messageIds = append(messageIds, d.GetMessageId())

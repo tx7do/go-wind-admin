@@ -68,7 +68,7 @@ func ValidColumn(column string) bool {
 
 var (
 	// DefaultScriptID holds the default value on creation for the "script_id" field.
-	DefaultScriptID uint32
+	DefaultScriptID uint64
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion uint32
 	// DefaultSuccess holds the default value on creation for the "success" field.
@@ -76,7 +76,7 @@ var (
 	// DefaultDurationMs holds the default value on creation for the "duration_ms" field.
 	DefaultDurationMs int64
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // OrderOption defines the ordering options for the ScriptLog queries.

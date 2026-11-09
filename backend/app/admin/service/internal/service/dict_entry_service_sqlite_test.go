@@ -34,7 +34,7 @@ func newDictEntryServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent.
 }
 
 // createDictTypeParent 直建一条父 dict_type 行，返回其主键。
-func createDictTypeParent(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, typeCode string) uint32 {
+func createDictTypeParent(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, typeCode string) uint64 {
 	t.Helper()
 	parent, err := entClient.Client().DictType.Create().
 		SetNillableTypeCode(trans.Ptr(typeCode)).
@@ -73,7 +73,7 @@ func TestDictEntryServiceSqlite_Create_PersistsParentAssociation(t *testing.T) {
 	require.NotNil(t, rows[0].SortOrder, "sort_order 应按请求落库")
 	require.Equal(t, uint32(3), *rows[0].SortOrder, "sort_order 应落库为 3")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint32(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	// 外键回归断言：entry 必须挂在请求指定的父类型上（边与 TypeId 条件写反的历史 bug）
 	linked, err := entClient.Client().DictEntry.Query().
@@ -103,7 +103,7 @@ func TestDictEntryServiceSqlite_ListByTypeCode(t *testing.T) {
 		value    string
 		sort     uint32
 		enabled  bool
-		parentID uint32
+		parentID uint64
 	}{
 		{"ENTRY-SORT-2", 2, true, parentA},
 		{"ENTRY-SORT-1", 1, true, parentA},
@@ -257,7 +257,7 @@ func TestDictEntryServiceSqlite_Delete(t *testing.T) {
 	rows, err := entClient.Client().DictEntry.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	ids := []uint32{rows[0].ID, rows[1].ID}
+	ids := []uint64{rows[0].ID, rows[1].ID}
 
 	_, err = svc.Delete(ctx, &dictV1.DeleteDictEntryRequest{Ids: ids})
 	require.NoError(t, err, "批量删除应成功")

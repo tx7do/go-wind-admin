@@ -33,7 +33,7 @@ message OnlineSession {
     (gnostic.openapi.v3.property) = { description: "会话令牌对ID" }
   ];
 
-  optional uint32 user_id = 2 [
+  optional uint64 user_id = 2 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
@@ -43,7 +43,7 @@ message OnlineSession {
     (gnostic.openapi.v3.property) = { description: "用户名" }
   ]; // 用户名
 
-  optional uint32 tenant_id = 4 [
+  optional uint64 tenant_id = 4 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = { description: "租户ID，0代表平台" }
   ]; // 租户ID
@@ -108,7 +108,7 @@ message ForceLogoutSessionRequest {
     (gnostic.openapi.v3.property) = { description: "客户端类型" }
   ]; // 客户端类型
 
-  optional uint32 user_id = 2 [
+  optional uint64 user_id = 2 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "目标用户ID" }
   ]; // 目标用户ID

@@ -182,7 +182,7 @@ func (s *InternalMessageService) HandleAuthorize(r *http.Request, token string) 
 	if err != nil {
 		return authenticationV1.ErrorForbidden("stream user mismatch")
 	}
-	if uint32(streamUserId) != tokenUserId {
+	if uint64(streamUserId) != tokenUserId {
 		s.log.Warnf(context.Background(), "stream user mismatch: token uid=%d, stream uid=%d", tokenUserId, streamUserId)
 		return authenticationV1.ErrorForbidden("stream user mismatch")
 	}
@@ -198,7 +198,7 @@ func (s *InternalMessageService) HandleSubscribe(streamID sse.StreamID, _ *sse.S
 
 func (s *InternalMessageService) extractRelationIDs(
 	messages []*internalMessageV1.InternalMessage,
-	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+	categorySet aggregator.ResourceMap[uint64, *internalMessageV1.InternalMessageCategory],
 ) {
 	for _, p := range messages {
 		if p.GetCategoryId() > 0 {
@@ -209,10 +209,10 @@ func (s *InternalMessageService) extractRelationIDs(
 
 func (s *InternalMessageService) fetchRelationInfo(
 	ctx context.Context,
-	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+	categorySet aggregator.ResourceMap[uint64, *internalMessageV1.InternalMessageCategory],
 ) error {
 	if len(categorySet) > 0 {
-		categoryIds := make([]uint32, 0, len(categorySet))
+		categoryIds := make([]uint64, 0, len(categorySet))
 		for i := range categorySet {
 			categoryIds = append(categoryIds, i)
 		}
@@ -233,12 +233,12 @@ func (s *InternalMessageService) fetchRelationInfo(
 
 func (s *InternalMessageService) bindRelations(
 	messages []*internalMessageV1.InternalMessage,
-	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+	categorySet aggregator.ResourceMap[uint64, *internalMessageV1.InternalMessageCategory],
 ) {
 	aggregator.Populate(
 		messages,
 		categorySet,
-		func(ou *internalMessageV1.InternalMessage) uint32 { return ou.GetCategoryId() },
+		func(ou *internalMessageV1.InternalMessage) uint64 { return ou.GetCategoryId() },
 		func(ou *internalMessageV1.InternalMessage, c *internalMessageV1.InternalMessageCategory) {
 			ou.CategoryName = c.Name
 		},
@@ -246,7 +246,7 @@ func (s *InternalMessageService) bindRelations(
 }
 
 func (s *InternalMessageService) enrichRelations(ctx context.Context, messages []*internalMessageV1.InternalMessage) error {
-	var categorySet = make(aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory])
+	var categorySet = make(aggregator.ResourceMap[uint64, *internalMessageV1.InternalMessageCategory])
 	s.extractRelationIDs(messages, categorySet)
 	if err := s.fetchRelationInfo(ctx, categorySet); err != nil {
 		return err
@@ -427,7 +427,7 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 // 对收件人来说是"落了库但永远读不到"，既不报错也不留日志（§2.4-2 的原始成因）。
 // 租户上下文下这一列会被 TenantPrivacy 强制覆盖为 viewer 租户，与受众必然同值，
 // 所以两条入口都不会因为传参而分叉。
-func newMessageRecipient(messageId, recipientUserId, senderUserId, tenantId uint32, now *time.Time, title, content string) *internalMessageV1.InternalMessageRecipient {
+func newMessageRecipient(messageId, recipientUserId, senderUserId, tenantId uint64, now *time.Time, title, content string) *internalMessageV1.InternalMessageRecipient {
 	return &internalMessageV1.InternalMessageRecipient{
 		TenantId:        trans.Ptr(tenantId),
 		MessageId:       trans.Ptr(messageId),
@@ -478,7 +478,7 @@ func (s *InternalMessageService) publishNotification(ctx context.Context, recipi
 //
 // 不显式传 Channel：让 sys_notification_rules 的 INTERNAL_MESSAGE 一行成为唯一声明处，
 // 路由表被绕开时测试会红。
-func (s *InternalMessageService) deliverViaNotifier(ctx context.Context, messageId, recipientUserId, operatorUserId uint32, title, content string) error {
+func (s *InternalMessageService) deliverViaNotifier(ctx context.Context, messageId, recipientUserId, operatorUserId uint64, title, content string) error {
 	// Target 是收件用户 ID 的十进制字符串：缝要求调用方自己给出投递目标，
 	// INTERNAL 渠道的"地址"就是这个人（台账里与脱敏邮箱并列时保持可读）。
 	target := strconv.FormatUint(uint64(recipientUserId), 10)
@@ -502,7 +502,7 @@ func (s *InternalMessageService) deliverViaNotifier(ctx context.Context, message
 
 // sendNotification 单个收件人：落库 + 实时推送。这是 INTERNAL 渠道的投递内核，
 // 由 InternalMessageSender 经缝调用（全员广播的批量形态见 executeBroadcast）。
-func (s *InternalMessageService) sendNotification(ctx context.Context, messageId, recipientUserId, senderUserId uint32, now *time.Time, title, content string) error {
+func (s *InternalMessageService) sendNotification(ctx context.Context, messageId, recipientUserId, senderUserId uint64, now *time.Time, title, content string) error {
 	recipient := newMessageRecipient(messageId, recipientUserId, senderUserId, s.recipientTenantID(ctx, recipientUserId), now, title, content)
 
 	var err error
@@ -526,7 +526,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 
 // userInQuietWindow 判定用户当前是否处于其静音时段内。
 // 偏好仓储未接线/查询失败/用户未配置 → false（不过抑制）。
-func (s *InternalMessageService) userInQuietWindow(ctx context.Context, userID uint32, now time.Time) bool {
+func (s *InternalMessageService) userInQuietWindow(ctx context.Context, userID uint64, now time.Time) bool {
 	if s.notificationPreferenceRepo == nil {
 		return false
 	}
@@ -544,7 +544,7 @@ func (s *InternalMessageService) userInQuietWindow(ctx context.Context, userID u
 // 查不到就回退 ctx viewer 的租户并留下 error：跨租户定向（租户 A 的收件人在 B，读取被
 // 隐私层挡掉）与"DTO 没带 tenant_id"都属异常，此时按操作人租户落库至少保持改动前的行为，
 // 而不是静默写 0 —— 0 是"平台"，会把行藏进任何租户读者都看不见的地方。
-func (s *InternalMessageService) recipientTenantID(ctx context.Context, recipientUserId uint32) uint32 {
+func (s *InternalMessageService) recipientTenantID(ctx context.Context, recipientUserId uint64) uint64 {
 	user, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
 		QueryBy: &identityV1.GetUserRequest_Id{Id: recipientUserId},
 	})
@@ -558,9 +558,9 @@ func (s *InternalMessageService) recipientTenantID(ctx context.Context, recipien
 
 // viewerTenantID 取 ctx viewer 的租户，viewer 缺失时返回 0（调用方负责把这次兜底记成 error，
 // 因为"缺 viewer"只有结合具体投递才知道后果）。
-func viewerTenantID(ctx context.Context) uint32 {
+func viewerTenantID(ctx context.Context) uint64 {
 	if vc, ok := viewer.FromContext(ctx); ok {
-		return uint32(vc.TenantID())
+		return uint64(vc.TenantID())
 	}
 	return 0
 }
@@ -577,7 +577,7 @@ func viewerTenantID(ctx context.Context) uint32 {
 //
 // categoryId 是消息本体的分类：收件人在偏好里退订了它则整行不落库也不推送
 // （点对点定向发送不走这里，不受退订约束）。
-func (s *InternalMessageService) executeBroadcast(ctx context.Context, messageId, senderUserId, categoryId uint32, title, content string) {
+func (s *InternalMessageService) executeBroadcast(ctx context.Context, messageId, senderUserId, categoryId uint64, title, content string) {
 	now := time.Now()
 
 	broadcastTenantId := viewerTenantID(ctx)
@@ -602,14 +602,14 @@ func (s *InternalMessageService) executeBroadcast(ctx context.Context, messageId
 		// 一页受众的偏好一次取齐：退订的整行跳过（不落库不推送），
 		// 静音时段的照常落库但跳过实时推送。查询失败按"无人配置"处理——
 		// 偏好层永远 fail-open，只影响打扰度，不影响消息到达。
-		userIds := make([]uint32, 0, len(users.GetItems()))
+		userIds := make([]uint64, 0, len(users.GetItems()))
 		for _, user := range users.GetItems() {
 			userIds = append(userIds, user.GetId())
 		}
 		prefs := s.broadcastPreferences(ctx, messageId, userIds)
 
 		recipients := make([]*internalMessageV1.InternalMessageRecipient, 0, len(users.GetItems()))
-		quietUserIds := make(map[uint32]struct{})
+		quietUserIds := make(map[uint64]struct{})
 		for _, user := range users.GetItems() {
 			userId := user.GetId()
 			if pref := prefs[userId]; pref != nil {
@@ -639,7 +639,7 @@ func (s *InternalMessageService) executeBroadcast(ctx context.Context, messageId
 		}
 		total += len(recipients)
 
-		pushUserIds := make([]uint32, 0, len(recipients))
+		pushUserIds := make([]uint64, 0, len(recipients))
 		for _, recipient := range recipients {
 			pushUserIds = append(pushUserIds, recipient.GetRecipientUserId())
 		}
@@ -666,7 +666,7 @@ func (s *InternalMessageService) executeBroadcast(ctx context.Context, messageId
 
 // broadcastPreferences 拉一页受众的偏好，按 user_id 索引。
 // 仓储未接线或查询失败时返回空 map（偏好层 fail-open），但失败必须留下日志。
-func (s *InternalMessageService) broadcastPreferences(ctx context.Context, messageId uint32, userIds []uint32) map[uint32]*notificationV1.NotificationPreference {
+func (s *InternalMessageService) broadcastPreferences(ctx context.Context, messageId uint64, userIds []uint64) map[uint64]*notificationV1.NotificationPreference {
 	if s.notificationPreferenceRepo == nil || len(userIds) == 0 {
 		return nil
 	}
@@ -679,7 +679,7 @@ func (s *InternalMessageService) broadcastPreferences(ctx context.Context, messa
 }
 
 // categoryMuted 判定偏好是否退订了给定分类；分类为零值（未归类消息）时不退订任何人。
-func categoryMuted(pref *notificationV1.NotificationPreference, categoryId uint32) bool {
+func categoryMuted(pref *notificationV1.NotificationPreference, categoryId uint64) bool {
 	if pref == nil || categoryId == 0 {
 		return false
 	}
@@ -694,7 +694,7 @@ func categoryMuted(pref *notificationV1.NotificationPreference, categoryId uint3
 // fanoutBroadcastGoroutine 是 asynq 未配置时的回退路径：
 // 在脱离请求的后台 ctx 上异步执行 fan-out（客户端断连不会中断投递）。
 // viewer 从请求 ctx 取出后贴到后台 ctx，保持租户可见性。
-func (s *InternalMessageService) fanoutBroadcastGoroutine(messageId, senderUserId, categoryId uint32, title, content string, vc viewer.Context) {
+func (s *InternalMessageService) fanoutBroadcastGoroutine(messageId, senderUserId, categoryId uint64, title, content string, vc viewer.Context) {
 	go func() {
 		broadcastCtx, cancel := context.WithTimeout(context.Background(), defaultBroadcastTimeout)
 		defer cancel()

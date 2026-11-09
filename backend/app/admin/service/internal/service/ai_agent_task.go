@@ -40,7 +40,7 @@ func (s *AiAgentService) AsyncAgentRun(taskType string, data *task.AgentRunTaskD
 	if err != nil {
 		return err
 	}
-	tenantID := uint32(0)
+	tenantID := uint64(0)
 	if app.TenantID != nil {
 		tenantID = *app.TenantID
 	}
@@ -71,7 +71,7 @@ func (s *AiAgentService) AsyncAgentRun(taskType string, data *task.AgentRunTaskD
 
 // notifyAgentRun 把定时触发的执行结论以站内信回传给 notifyUserId
 // （发送失败仅记日志——通知是辅功能，不该让 asynq 重试一次已完成的执行）。
-func (s *AiAgentService) notifyAgentRun(ctx context.Context, run *aiV1.AiAgentRun, notifyUserID, tenantID uint32) {
+func (s *AiAgentService) notifyAgentRun(ctx context.Context, run *aiV1.AiAgentRun, notifyUserID, tenantID uint64) {
 	if s.internalMessages == nil || s.internalMsgRepo == nil {
 		return
 	}
@@ -99,7 +99,7 @@ func (s *AiAgentService) notifyAgentRun(ctx context.Context, run *aiV1.AiAgentRu
 			Content:   trans.Ptr(content),
 			Status:    trans.Ptr(internalMessageV1.InternalMessage_PUBLISHED),
 			Type:      trans.Ptr(internalMessageV1.InternalMessage_NOTIFICATION),
-			CreatedBy: trans.Ptr(uint32(0)),
+			CreatedBy: trans.Ptr(uint64(0)),
 			CreatedAt: timeutil.TimeToTimestamppb(&now),
 		},
 	})

@@ -6,12 +6,12 @@ import (
 
 // PolicyEvaluationLog 对应表 sys_policy_evaluation_logs
 type PolicyEvaluationLog struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	UserId            *uint32 `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
-	MembershipId      *uint32 `gorm:"column:membership_id;type:int unsigned;comment:成员关系ID"`
-	PermissionId      *uint32 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
-	PolicyId          *uint32 `gorm:"column:policy_id;type:int unsigned;comment:策略ID"`
+	UserId            *uint64 `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
+	MembershipId      *uint64 `gorm:"column:membership_id;type:int unsigned;comment:成员关系ID"`
+	PermissionId      *uint64 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
+	PolicyId          *uint64 `gorm:"column:policy_id;type:int unsigned;comment:策略ID"`
 	RequestPath       *string `gorm:"column:request_path;type:varchar(255);comment:请求路径"`
 	RequestMethod     *string `gorm:"column:request_method;type:varchar(16);comment:请求方法"`
 	Result            *bool   `gorm:"column:result;type:boolean;comment:结果"`
@@ -24,7 +24,7 @@ type PolicyEvaluationLog struct {
 	Signature         []byte  `gorm:"column:signature;type:longblob;comment:日志数字签名"`
 
 	mixin.CreatedAt
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

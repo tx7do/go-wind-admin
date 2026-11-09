@@ -60,9 +60,9 @@ func (NotificationTemplate) Fields() []ent.Field {
 // Mixin of the NotificationTemplate.
 func (NotificationTemplate) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.IsEnabled{},
 		mixin.Remark{},
 	}

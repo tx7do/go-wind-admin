@@ -63,7 +63,7 @@ func TestPositionServiceSqlite_CreateListCountAndGet(t *testing.T) {
 		require.Equal(t, entPosition.StatusOn, *r.Status, "status 应经转换器落库为 ON")
 		require.Equal(t, entPosition.TypeManager, r.Type, "type 应经转换器落库为 MANAGER")
 		require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-		require.Equal(t, uint32(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+		require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 	}
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
@@ -79,7 +79,7 @@ func TestPositionServiceSqlite_CreateListCountAndGet(t *testing.T) {
 	require.Equal(t, uint64(2), countResp.GetCount(), "Count 应统计全部 2 条")
 
 	got, err := svc.Get(ctx, &identityV1.GetPositionRequest{
-		QueryBy: &identityV1.GetPositionRequest_Id{Id: uint32(rows[0].ID)},
+		QueryBy: &identityV1.GetPositionRequest_Id{Id: uint64(rows[0].ID)},
 	})
 	require.NoError(t, err, "按已存在主键查询应命中")
 	require.Equal(t, "服务层职位甲", got.GetName(), "命中记录的 name 应与写入一致")

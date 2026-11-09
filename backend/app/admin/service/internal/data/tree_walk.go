@@ -5,10 +5,10 @@ package data
 //   - 方言全覆盖（go-crud 的 QueryAllChildrenIds 递归 CTE 只有 MySQL/Postgres
 //     分支，其余方言静默返回空集——删除会只删根、整条子树变孤儿）；
 //   - visited 防护让存量环脏数据（外部导入/直改库）正常收敛，不打转挂死。
-func collectTreeIDs[V any](childrenOf map[uint32][]V, nodeID func(V) uint32, rootID uint32) []uint32 {
-	ids := make([]uint32, 0, 8)
-	visited := map[uint32]struct{}{rootID: {}}
-	stack := []uint32{rootID}
+func collectTreeIDs[V any](childrenOf map[uint64][]V, nodeID func(V) uint64, rootID uint64) []uint64 {
+	ids := make([]uint64, 0, 8)
+	visited := map[uint64]struct{}{rootID: {}}
+	stack := []uint64{rootID}
 	for len(stack) > 0 {
 		cur := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]

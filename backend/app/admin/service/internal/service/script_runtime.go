@@ -490,7 +490,7 @@ func (r *ScriptRuntime) Close() {
 // ChatForScript 实现 scripting/api.AICompleter：脚本 ai 模块的对话入口。
 // 复用 chat 主链路的 provider 解析 / 密钥解密 / 客户端工厂；每次调用记一条
 // 用量流水（tenant/user/conversation 均为 0 = 系统脚本发起），记账失败不阻断调用。
-func (r *ScriptRuntime) ChatForScript(ctx context.Context, providerId uint32, systemPrompt, content string) (string, error) {
+func (r *ScriptRuntime) ChatForScript(ctx context.Context, providerId uint64, systemPrompt, content string) (string, error) {
 	if r.aiProviderRepo == nil {
 		return "", adminV1.ErrorInternalServerError("ai module is not available")
 	}
@@ -547,8 +547,8 @@ func (r *ScriptRuntime) ChatForScript(ctx context.Context, providerId uint32, sy
 		totalTokens := uint32(resp.Usage.TotalTokens)
 		if uerr := r.aiUsageRepo.Create(ctx, &aiV1.AiUsageLog{
 			ProviderId:       &provider.ID,
-			UserId:           trans.Ptr(uint32(0)),
-			TenantId:         trans.Ptr(uint32(0)),
+			UserId:           trans.Ptr(uint64(0)),
+			TenantId:         trans.Ptr(uint64(0)),
 			ModelName:        &modelName,
 			PromptTokens:     &promptTokens,
 			CompletionTokens: &completionTokens,

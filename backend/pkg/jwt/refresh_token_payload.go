@@ -16,7 +16,7 @@ import (
 // NewRefreshTokenAuthClaims 创建刷新令牌的最小认证声明。
 // 仅包含 uid、jti、exp、iat，不含任何业务权限字段。
 func NewRefreshTokenAuthClaims(
-	userId uint32,
+	userId uint64,
 	jti string,
 	expirationTime *time.Time,
 ) (*authn.AuthClaims, error) {
@@ -43,12 +43,12 @@ func NewRefreshTokenAuthClaims(
 // ParseRefreshTokenClaims 从已验签的 refresh token claims 中提取 uid 和 jti。
 // 调用方须先用 authenticator.AuthenticateToken 验签取得 *authn.AuthClaims，
 // 再调用本函数提取定位信息。
-func ParseRefreshTokenClaims(claims *authn.AuthClaims) (userId uint32, jti string, err error) {
+func ParseRefreshTokenClaims(claims *authn.AuthClaims) (userId uint64, jti string, err error) {
 	if claims == nil {
 		return 0, "", errors.New("refresh token claims: nil claims")
 	}
 
-	userId, err = claims.GetUint32(ClaimFieldUserID)
+	userId, err = claims.GetUint64(ClaimFieldUserID)
 	if err != nil {
 		return 0, "", err
 	}

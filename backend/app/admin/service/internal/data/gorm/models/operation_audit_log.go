@@ -7,9 +7,9 @@ import (
 
 // OperationAuditLog 对应表 sys_operation_audit_logs
 type OperationAuditLog struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	UserId         *uint32         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
+	UserId         *uint64         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
 	Username       *string         `gorm:"column:username;type:varchar(255);comment:操作者账号名"`
 	ResourceType   *string         `gorm:"column:resource_type;type:varchar(255);comment:资源类型"`
 	ResourceId     *string         `gorm:"column:resource_id;type:varchar(255);comment:资源ID"`
@@ -28,7 +28,7 @@ type OperationAuditLog struct {
 	Signature      []byte          `gorm:"column:signature;type:longblob;comment:日志数字签名"`
 
 	mixin.CreatedAt
-	mixin.TenantID
+	mixin.TenantID64
 }
 
 // TableName 指定表名

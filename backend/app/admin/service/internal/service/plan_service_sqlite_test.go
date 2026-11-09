@@ -62,7 +62,7 @@ func TestPlanServiceSqlite_Create(t *testing.T) {
 	require.Equal(t, "服务层创建的套餐描述", *rows[0].Description, "description 应按请求落库")
 	require.Equal(t, "服务层创建的备注", *rows[0].Remark, "remark 应按请求落库")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint32(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 }
 
 // TestPlanServiceSqlite_CreateGuards 服务层 Create 的入参守卫：
@@ -194,7 +194,7 @@ func TestPlanServiceSqlite_Update(t *testing.T) {
 	require.Equal(t, entPlan.VersionStandard, *after.Version, "掩码外字段 version 应保持原值")
 	require.Equal(t, "更新前描述", *after.Description, "掩码外字段 description 应保持原值")
 	require.NotNil(t, after.UpdatedBy, "服务层应把操作人 ID 盖入 updated_by")
-	require.Equal(t, uint32(7), *after.UpdatedBy, "updated_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, uint64(7), *after.UpdatedBy, "updated_by 应等于令牌声明中的操作人 ID")
 }
 
 // TestPlanServiceSqlite_Delete 验证服务层 Delete 后表内计数归零。

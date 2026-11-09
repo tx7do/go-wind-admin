@@ -32,7 +32,7 @@ func (UserMfaFactor) Annotations() []schema.Annotation {
 // Fields of the UserMfaFactor.
 func (UserMfaFactor) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Uint64("user_id").
 			Comment("关联主表的用户ID").
 			Nillable().
 			Optional(),
@@ -87,8 +87,8 @@ func (UserMfaFactor) Fields() []ent.Field {
 func (UserMfaFactor) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeAt{},
-		mixin.AutoIncrementId{},
-		mixin.TenantID[uint32]{},
+		mixin.AutoIncrementId64{},
+		mixin.TenantID[uint64]{},
 	}
 }
 

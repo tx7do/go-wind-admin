@@ -6,17 +6,17 @@ import "gnostic/openapi/v3/annotations.proto";
 
 // 权限点 - 菜单 关联关系
 message PermissionMenu {
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "ID" }
   ]; // ID
 
-  optional uint32 permission_id = 2 [
+  optional uint64 permission_id = 2 [
     json_name = "permissionId",
     (gnostic.openapi.v3.property) = { description: "权限点ID" }
   ]; // 权限点ID
 
-  optional uint32 menu_id = 3 [
+  optional uint64 menu_id = 3 [
     json_name = "menuId",
     (gnostic.openapi.v3.property) = { description: "菜单ID" }
   ]; // 菜单ID

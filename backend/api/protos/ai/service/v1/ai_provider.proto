@@ -41,7 +41,7 @@ message AiProvider {
     CLOUD = 2; // 云端模型（OpenAI 兼容 API）
   }
 
-  optional uint32 id = 1 [
+  optional uint64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "提供商ID"
@@ -118,9 +118,9 @@ message AiProvider {
     (gnostic.openapi.v3.property) = {description: "是否启用"}
   ]; // 是否启用
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -136,7 +136,7 @@ message ListAiProviderResponse {
 // 查询 AI 提供商详情 - 请求
 message GetAiProviderRequest {
   oneof query_by {
-    uint32 id = 1;
+    uint64 id = 1;
   }
 
   optional google.protobuf.FieldMask view_mask = 100 [
@@ -154,7 +154,7 @@ message CreateAiProviderRequest {
 
 // 更新 AI 提供商 - 请求
 message UpdateAiProviderRequest {
-  uint32 id = 1;
+  uint64 id = 1;
 
   AiProvider data = 2;
 
@@ -173,7 +173,7 @@ message UpdateAiProviderRequest {
 // 删除 AI 提供商 - 请求
 message DeleteAiProviderRequest {
   oneof query_by {
-    uint32 id = 1;
+    uint64 id = 1;
   }
 }
 

@@ -70,14 +70,14 @@ func (_u *NotificationRuleUpdate) ClearDeletedAt() *NotificationRuleUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *NotificationRuleUpdate) SetCreatedBy(v uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetCreatedBy(v uint64) *NotificationRuleUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdate) SetNillableCreatedBy(v *uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetNillableCreatedBy(v *uint64) *NotificationRuleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *NotificationRuleUpdate) SetNillableCreatedBy(v *uint32) *NotificationR
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *NotificationRuleUpdate) AddCreatedBy(v int32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) AddCreatedBy(v int64) *NotificationRuleUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *NotificationRuleUpdate) ClearCreatedBy() *NotificationRuleUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *NotificationRuleUpdate) SetUpdatedBy(v uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetUpdatedBy(v uint64) *NotificationRuleUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdate) SetNillableUpdatedBy(v *uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetNillableUpdatedBy(v *uint64) *NotificationRuleUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *NotificationRuleUpdate) SetNillableUpdatedBy(v *uint32) *NotificationR
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *NotificationRuleUpdate) AddUpdatedBy(v int32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) AddUpdatedBy(v int64) *NotificationRuleUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *NotificationRuleUpdate) ClearUpdatedBy() *NotificationRuleUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *NotificationRuleUpdate) SetDeletedBy(v uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetDeletedBy(v uint64) *NotificationRuleUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdate) SetNillableDeletedBy(v *uint32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) SetNillableDeletedBy(v *uint64) *NotificationRuleUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *NotificationRuleUpdate) SetNillableDeletedBy(v *uint32) *NotificationR
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *NotificationRuleUpdate) AddDeletedBy(v int32) *NotificationRuleUpdate {
+func (_u *NotificationRuleUpdate) AddDeletedBy(v int64) *NotificationRuleUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -307,7 +307,7 @@ func (_u *NotificationRuleUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(notificationrule.Table, notificationrule.Columns, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(notificationrule.Table, notificationrule.Columns, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -331,31 +331,31 @@ func (_u *NotificationRuleUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(notificationrule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(notificationrule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(notificationrule.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(notificationrule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(notificationrule.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(notificationrule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(notificationrule.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(notificationrule.FieldIsEnabled, field.TypeBool, value)
@@ -450,14 +450,14 @@ func (_u *NotificationRuleUpdateOne) ClearDeletedAt() *NotificationRuleUpdateOne
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *NotificationRuleUpdateOne) SetCreatedBy(v uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetCreatedBy(v uint64) *NotificationRuleUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdateOne) SetNillableCreatedBy(v *uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetNillableCreatedBy(v *uint64) *NotificationRuleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -465,7 +465,7 @@ func (_u *NotificationRuleUpdateOne) SetNillableCreatedBy(v *uint32) *Notificati
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *NotificationRuleUpdateOne) AddCreatedBy(v int32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) AddCreatedBy(v int64) *NotificationRuleUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -477,14 +477,14 @@ func (_u *NotificationRuleUpdateOne) ClearCreatedBy() *NotificationRuleUpdateOne
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *NotificationRuleUpdateOne) SetUpdatedBy(v uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetUpdatedBy(v uint64) *NotificationRuleUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdateOne) SetNillableUpdatedBy(v *uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetNillableUpdatedBy(v *uint64) *NotificationRuleUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -492,7 +492,7 @@ func (_u *NotificationRuleUpdateOne) SetNillableUpdatedBy(v *uint32) *Notificati
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *NotificationRuleUpdateOne) AddUpdatedBy(v int32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) AddUpdatedBy(v int64) *NotificationRuleUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -504,14 +504,14 @@ func (_u *NotificationRuleUpdateOne) ClearUpdatedBy() *NotificationRuleUpdateOne
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *NotificationRuleUpdateOne) SetDeletedBy(v uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetDeletedBy(v uint64) *NotificationRuleUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *NotificationRuleUpdateOne) SetNillableDeletedBy(v *uint32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) SetNillableDeletedBy(v *uint64) *NotificationRuleUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -519,7 +519,7 @@ func (_u *NotificationRuleUpdateOne) SetNillableDeletedBy(v *uint32) *Notificati
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *NotificationRuleUpdateOne) AddDeletedBy(v int32) *NotificationRuleUpdateOne {
+func (_u *NotificationRuleUpdateOne) AddDeletedBy(v int64) *NotificationRuleUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -700,7 +700,7 @@ func (_u *NotificationRuleUpdateOne) sqlSave(ctx context.Context) (_node *Notifi
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(notificationrule.Table, notificationrule.Columns, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(notificationrule.Table, notificationrule.Columns, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "NotificationRule.id" for update`)}
@@ -741,31 +741,31 @@ func (_u *NotificationRuleUpdateOne) sqlSave(ctx context.Context) (_node *Notifi
 		_spec.ClearField(notificationrule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(notificationrule.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(notificationrule.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(notificationrule.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(notificationrule.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(notificationrule.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(notificationrule.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(notificationrule.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(notificationrule.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(notificationrule.FieldIsEnabled, field.TypeBool, value)

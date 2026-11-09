@@ -31,7 +31,7 @@ func (s *innerRoleStub) List(_ context.Context, in *paginationV1.PagingRequest) 
 	s.gotListReq = in
 	return &permissionV1.ListRoleResponse{
 		Items: []*permissionV1.Role{
-			{Name: trans.Ptr("桩角色甲"), Permissions: []uint32{1, 2, 3}},
+			{Name: trans.Ptr("桩角色甲"), Permissions: []uint64{1, 2, 3}},
 		},
 		Total: 1,
 	}, nil
@@ -39,7 +39,7 @@ func (s *innerRoleStub) List(_ context.Context, in *paginationV1.PagingRequest) 
 
 func (s *innerRoleStub) Get(_ context.Context, in *permissionV1.GetRoleRequest) (*permissionV1.Role, error) {
 	s.gotGetReq = in
-	return &permissionV1.Role{Name: trans.Ptr("桩角色甲"), Permissions: []uint32{1, 2, 3}}, nil
+	return &permissionV1.Role{Name: trans.Ptr("桩角色甲"), Permissions: []uint64{1, 2, 3}}, nil
 }
 
 func (s *innerRoleStub) Create(_ context.Context, in *permissionV1.CreateRoleRequest) (*emptypb.Empty, error) {
@@ -93,7 +93,7 @@ func TestFieldPermissionRole_WriteStrip(t *testing.T) {
 	_, err := wrapped.Create(ctx, &permissionV1.CreateRoleRequest{
 		Data: &permissionV1.Role{
 			Name:        trans.Ptr("新角色"),
-			Permissions: []uint32{9, 9, 9},
+			Permissions: []uint64{9, 9, 9},
 		},
 	})
 	require.NoError(t, err)
@@ -104,7 +104,7 @@ func TestFieldPermissionRole_WriteStrip(t *testing.T) {
 	mask := &fieldmaskpb.FieldMask{Paths: []string{"name", "permissions"}}
 	_, err = wrapped.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:         1,
-		Data:       &permissionV1.Role{Name: trans.Ptr("改名"), Permissions: []uint32{7}},
+		Data:       &permissionV1.Role{Name: trans.Ptr("改名"), Permissions: []uint64{7}},
 		UpdateMask: mask,
 	})
 	require.NoError(t, err)

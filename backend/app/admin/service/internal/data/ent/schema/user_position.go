@@ -30,12 +30,12 @@ func (UserPosition) Annotations() []schema.Annotation {
 // Fields of the UserPosition.
 func (UserPosition) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Uint64("user_id").
 			Comment("用户ID").
 			Nillable(),
 
 		// 关联到岗位（必填）
-		field.Uint32("position_id").
+		field.Uint64("position_id").
 			Comment("岗位ID").
 			Nillable(),
 
@@ -60,7 +60,7 @@ func (UserPosition) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("assigned_by").
+		field.Uint64("assigned_by").
 			Comment("分配者用户 ID").
 			Optional().
 			Nillable(),
@@ -81,10 +81,10 @@ func (UserPosition) Fields() []ent.Field {
 // Mixin of the UserPosition.
 func (UserPosition) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[uint64]{},
 		mixin.Remark{},
 	}
 }

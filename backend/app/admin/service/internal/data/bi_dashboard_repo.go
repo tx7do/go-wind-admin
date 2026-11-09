@@ -107,7 +107,7 @@ func (r *BiDashboardRepo) List(ctx context.Context, req *paginationV1.PagingRequ
 	}, nil
 }
 
-func (r *BiDashboardRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *BiDashboardRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().BiDashboard.Query().
 		Where(bidashboard.IDEQ(id)).
 		Exist(ctx)

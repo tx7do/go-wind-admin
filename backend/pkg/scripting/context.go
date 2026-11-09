@@ -27,11 +27,11 @@ type Context struct {
 
 // UserContext contains user information
 type UserContext struct {
-	ID       uint32   `json:"id"`
+	ID       uint64   `json:"id"`
 	Username string   `json:"username"`
 	Email    string   `json:"email"`
 	Roles    []string `json:"roles"`
-	TenantID uint32   `json:"tenant_id"`
+	TenantID uint64   `json:"tenant_id"`
 }
 
 // HTTPContext contains HTTP request information

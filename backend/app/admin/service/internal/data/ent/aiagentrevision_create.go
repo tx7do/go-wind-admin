@@ -66,13 +66,13 @@ func (_c *AiAgentRevisionCreate) SetNillableDeletedAt(v *time.Time) *AiAgentRevi
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AiAgentRevisionCreate) SetCreatedBy(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetCreatedBy(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AiAgentRevisionCreate) SetNillableCreatedBy(v *uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetNillableCreatedBy(v *uint64) *AiAgentRevisionCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *AiAgentRevisionCreate) SetNillableCreatedBy(v *uint32) *AiAgentRevisio
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AiAgentRevisionCreate) SetUpdatedBy(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetUpdatedBy(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AiAgentRevisionCreate) SetNillableUpdatedBy(v *uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetNillableUpdatedBy(v *uint64) *AiAgentRevisionCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *AiAgentRevisionCreate) SetNillableUpdatedBy(v *uint32) *AiAgentRevisio
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AiAgentRevisionCreate) SetDeletedBy(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetDeletedBy(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AiAgentRevisionCreate) SetNillableDeletedBy(v *uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetNillableDeletedBy(v *uint64) *AiAgentRevisionCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *AiAgentRevisionCreate) SetNillableDeletedBy(v *uint32) *AiAgentRevisio
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiAgentRevisionCreate) SetTenantID(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetTenantID(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiAgentRevisionCreate) SetNillableTenantID(v *uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetNillableTenantID(v *uint64) *AiAgentRevisionCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -122,13 +122,13 @@ func (_c *AiAgentRevisionCreate) SetNillableTenantID(v *uint32) *AiAgentRevision
 }
 
 // SetAppID sets the "app_id" field.
-func (_c *AiAgentRevisionCreate) SetAppID(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetAppID(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetAppID(v)
 	return _c
 }
 
 // SetNillableAppID sets the "app_id" field if the given value is not nil.
-func (_c *AiAgentRevisionCreate) SetNillableAppID(v *uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetNillableAppID(v *uint64) *AiAgentRevisionCreate {
 	if v != nil {
 		_c.SetAppID(*v)
 	}
@@ -164,7 +164,7 @@ func (_c *AiAgentRevisionCreate) SetNillableSource(v *aiagentrevision.Source) *A
 }
 
 // SetID sets the "id" field.
-func (_c *AiAgentRevisionCreate) SetID(v uint32) *AiAgentRevisionCreate {
+func (_c *AiAgentRevisionCreate) SetID(v uint64) *AiAgentRevisionCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -250,7 +250,7 @@ func (_c *AiAgentRevisionCreate) sqlSave(ctx context.Context) (*AiAgentRevision,
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -260,7 +260,7 @@ func (_c *AiAgentRevisionCreate) sqlSave(ctx context.Context) (*AiAgentRevision,
 func (_c *AiAgentRevisionCreate) createSpec() (*AiAgentRevision, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiAgentRevision{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aiagentrevision.Table, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(aiagentrevision.Table, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -280,19 +280,19 @@ func (_c *AiAgentRevisionCreate) createSpec() (*AiAgentRevision, *sqlgraph.Creat
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aiagentrevision.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Graph(); ok {
@@ -311,7 +311,7 @@ func (_c *AiAgentRevisionCreate) createSpec() (*AiAgentRevision, *sqlgraph.Creat
 			Columns: []string{aiagentrevision.AppColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -409,7 +409,7 @@ func (u *AiAgentRevisionUpsert) ClearDeletedAt() *AiAgentRevisionUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiAgentRevisionUpsert) SetCreatedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) SetCreatedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Set(aiagentrevision.FieldCreatedBy, v)
 	return u
 }
@@ -421,7 +421,7 @@ func (u *AiAgentRevisionUpsert) UpdateCreatedBy() *AiAgentRevisionUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiAgentRevisionUpsert) AddCreatedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) AddCreatedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Add(aiagentrevision.FieldCreatedBy, v)
 	return u
 }
@@ -433,7 +433,7 @@ func (u *AiAgentRevisionUpsert) ClearCreatedBy() *AiAgentRevisionUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiAgentRevisionUpsert) SetUpdatedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) SetUpdatedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Set(aiagentrevision.FieldUpdatedBy, v)
 	return u
 }
@@ -445,7 +445,7 @@ func (u *AiAgentRevisionUpsert) UpdateUpdatedBy() *AiAgentRevisionUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiAgentRevisionUpsert) AddUpdatedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) AddUpdatedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Add(aiagentrevision.FieldUpdatedBy, v)
 	return u
 }
@@ -457,7 +457,7 @@ func (u *AiAgentRevisionUpsert) ClearUpdatedBy() *AiAgentRevisionUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiAgentRevisionUpsert) SetDeletedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) SetDeletedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Set(aiagentrevision.FieldDeletedBy, v)
 	return u
 }
@@ -469,7 +469,7 @@ func (u *AiAgentRevisionUpsert) UpdateDeletedBy() *AiAgentRevisionUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiAgentRevisionUpsert) AddDeletedBy(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) AddDeletedBy(v uint64) *AiAgentRevisionUpsert {
 	u.Add(aiagentrevision.FieldDeletedBy, v)
 	return u
 }
@@ -481,7 +481,7 @@ func (u *AiAgentRevisionUpsert) ClearDeletedBy() *AiAgentRevisionUpsert {
 }
 
 // SetAppID sets the "app_id" field.
-func (u *AiAgentRevisionUpsert) SetAppID(v uint32) *AiAgentRevisionUpsert {
+func (u *AiAgentRevisionUpsert) SetAppID(v uint64) *AiAgentRevisionUpsert {
 	u.Set(aiagentrevision.FieldAppID, v)
 	return u
 }
@@ -631,14 +631,14 @@ func (u *AiAgentRevisionUpsertOne) ClearDeletedAt() *AiAgentRevisionUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiAgentRevisionUpsertOne) SetCreatedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) SetCreatedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiAgentRevisionUpsertOne) AddCreatedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) AddCreatedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -659,14 +659,14 @@ func (u *AiAgentRevisionUpsertOne) ClearCreatedBy() *AiAgentRevisionUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiAgentRevisionUpsertOne) SetUpdatedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) SetUpdatedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiAgentRevisionUpsertOne) AddUpdatedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) AddUpdatedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -687,14 +687,14 @@ func (u *AiAgentRevisionUpsertOne) ClearUpdatedBy() *AiAgentRevisionUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiAgentRevisionUpsertOne) SetDeletedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) SetDeletedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiAgentRevisionUpsertOne) AddDeletedBy(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) AddDeletedBy(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -715,7 +715,7 @@ func (u *AiAgentRevisionUpsertOne) ClearDeletedBy() *AiAgentRevisionUpsertOne {
 }
 
 // SetAppID sets the "app_id" field.
-func (u *AiAgentRevisionUpsertOne) SetAppID(v uint32) *AiAgentRevisionUpsertOne {
+func (u *AiAgentRevisionUpsertOne) SetAppID(v uint64) *AiAgentRevisionUpsertOne {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetAppID(v)
 	})
@@ -793,7 +793,7 @@ func (u *AiAgentRevisionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiAgentRevisionUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *AiAgentRevisionUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -802,7 +802,7 @@ func (u *AiAgentRevisionUpsertOne) ID(ctx context.Context) (id uint32, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiAgentRevisionUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *AiAgentRevisionUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -859,7 +859,7 @@ func (_c *AiAgentRevisionCreateBulk) Save(ctx context.Context) ([]*AiAgentRevisi
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1040,14 +1040,14 @@ func (u *AiAgentRevisionUpsertBulk) ClearDeletedAt() *AiAgentRevisionUpsertBulk 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiAgentRevisionUpsertBulk) SetCreatedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) SetCreatedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiAgentRevisionUpsertBulk) AddCreatedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) AddCreatedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1068,14 +1068,14 @@ func (u *AiAgentRevisionUpsertBulk) ClearCreatedBy() *AiAgentRevisionUpsertBulk 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiAgentRevisionUpsertBulk) SetUpdatedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) SetUpdatedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiAgentRevisionUpsertBulk) AddUpdatedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) AddUpdatedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1096,14 +1096,14 @@ func (u *AiAgentRevisionUpsertBulk) ClearUpdatedBy() *AiAgentRevisionUpsertBulk 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiAgentRevisionUpsertBulk) SetDeletedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) SetDeletedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiAgentRevisionUpsertBulk) AddDeletedBy(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) AddDeletedBy(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1124,7 +1124,7 @@ func (u *AiAgentRevisionUpsertBulk) ClearDeletedBy() *AiAgentRevisionUpsertBulk 
 }
 
 // SetAppID sets the "app_id" field.
-func (u *AiAgentRevisionUpsertBulk) SetAppID(v uint32) *AiAgentRevisionUpsertBulk {
+func (u *AiAgentRevisionUpsertBulk) SetAppID(v uint64) *AiAgentRevisionUpsertBulk {
 	return u.Update(func(s *AiAgentRevisionUpsert) {
 		s.SetAppID(v)
 	})

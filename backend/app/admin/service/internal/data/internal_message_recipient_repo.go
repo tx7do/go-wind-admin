@@ -87,7 +87,7 @@ func (r *InternalMessageRecipientRepo) Count(ctx context.Context, whereCond []fu
 	return count, nil
 }
 
-func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().InternalMessageRecipient.Query().
 		Where(internalmessagerecipient.IDEQ(id)).
 		Exist(ctx)
@@ -111,7 +111,7 @@ func (r *InternalMessageRecipientRepo) List(ctx context.Context, req *pagination
 	// 钉住之后前端传不传都只会拿到自己的行。
 	// 平台/系统视图豁免：用户详情页要看指定用户的收件箱，异步任务路径也需要全量读。
 	if vc, ok := viewer.FromContext(ctx); ok && !vc.IsPlatformContext() && !vc.IsSystemContext() {
-		builder.Where(internalmessagerecipient.RecipientUserIDEQ(uint32(vc.UserID())))
+		builder.Where(internalmessagerecipient.RecipientUserIDEQ(uint64(vc.UserID())))
 	}
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
@@ -237,7 +237,7 @@ func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*i
 //
 // 租户语义：查询经 ent 租户隐私层，调用方 ctx 的 viewer 决定可见范围——广播的收件行正是
 // 同一 viewer 落库的，回读范围与写入范围天然一致。
-func (r *InternalMessageRecipientRepo) IdsByMessageAndRecipients(ctx context.Context, messageID uint32, userIDs []uint32) (map[uint32]uint32, error) {
+func (r *InternalMessageRecipientRepo) IdsByMessageAndRecipients(ctx context.Context, messageID uint64, userIDs []uint64) (map[uint64]uint64, error) {
 	if messageID == 0 || len(userIDs) == 0 {
 		return nil, nil
 	}
@@ -253,7 +253,7 @@ func (r *InternalMessageRecipientRepo) IdsByMessageAndRecipients(ctx context.Con
 		return nil, internalMessageV1.ErrorInternalServerError("query internal message recipient ids failed")
 	}
 
-	ids := make(map[uint32]uint32, len(entities))
+	ids := make(map[uint64]uint64, len(entities))
 	for _, e := range entities {
 		if e.RecipientUserID == nil {
 			continue
@@ -305,7 +305,7 @@ func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internal
 	return err
 }
 
-func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) error {
+func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint64) error {
 	if id == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
@@ -329,9 +329,9 @@ func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) er
 // user_id 就能把别人的收件行标成已读，而 DeleteNotificationFromInbox 在 recipient_ids 为空时
 // 是"按用户维度整箱清空"——换一个 id 就是清空别人的收件箱。平台/系统上下文豁免同读侧：
 // 用户详情页这类"代客"场景要按指定用户操作。
-func (r *InternalMessageRecipientRepo) inboxScopedUserID(ctx context.Context, reqUserID uint32) uint32 {
+func (r *InternalMessageRecipientRepo) inboxScopedUserID(ctx context.Context, reqUserID uint64) uint64 {
 	if vc, ok := viewer.FromContext(ctx); ok && !vc.IsPlatformContext() && !vc.IsSystemContext() {
-		return uint32(vc.UserID())
+		return uint64(vc.UserID())
 	}
 
 	return reqUserID
@@ -475,7 +475,7 @@ func (r *InternalMessageRecipientRepo) RevokeMessageWithMessage(ctx context.Cont
 // DeleteMessageWithRecipients 删除消息本体及其全部收件记录（同一事务）。
 // 消息管理后台的删除入口走此方法，避免只删消息留下孤儿收件行
 // （收件箱/通知弹窗会出现无标题的幽灵记录）。
-func (r *InternalMessageRecipientRepo) DeleteMessageWithRecipients(ctx context.Context, messageID uint32) (err error) {
+func (r *InternalMessageRecipientRepo) DeleteMessageWithRecipients(ctx context.Context, messageID uint64) (err error) {
 	if messageID == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}

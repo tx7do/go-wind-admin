@@ -6,14 +6,14 @@ import (
 
 // Permission 对应表 sys_permissions
 type Permission struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Name    *string `gorm:"column:name;type:varchar(255);comment:名称"`
 	Code    *string `gorm:"column:code;type:varchar(255);comment:编码"`
-	GroupId *uint32 `gorm:"column:group_id;type:int unsigned;comment:权限组ID"`
+	GroupId *uint64 `gorm:"column:group_id;type:int unsigned;comment:权限组ID"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.SwitchStatus
 	mixin.Description
 }

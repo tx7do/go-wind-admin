@@ -6,7 +6,7 @@ import (
 
 // Plan 对应表 sys_plans
 type Plan struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
 	Name              *string `gorm:"column:name;type:varchar(255);comment:名称"`
 	Version           *string `gorm:"column:version;type:varchar(128);comment:版本"`
@@ -15,7 +15,7 @@ type Plan struct {
 	Description       *string `gorm:"column:description;type:text;comment:描述"`
 
 	mixin.TimeAt
-	mixin.OperatorID
+	mixin.OperatorID64
 	mixin.Remark
 }
 

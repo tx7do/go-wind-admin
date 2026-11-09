@@ -142,7 +142,7 @@ func (r *ConfigRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	}, nil
 }
 
-func (r *ConfigRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *ConfigRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().SysConfig.Query().
 		Where(sysconfig.IDEQ(id)).
 		Exist(ctx)

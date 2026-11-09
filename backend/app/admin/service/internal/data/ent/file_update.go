@@ -70,14 +70,14 @@ func (_u *FileUpdate) ClearDeletedAt() *FileUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *FileUpdate) SetCreatedBy(v uint32) *FileUpdate {
+func (_u *FileUpdate) SetCreatedBy(v uint64) *FileUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *FileUpdate) SetNillableCreatedBy(v *uint32) *FileUpdate {
+func (_u *FileUpdate) SetNillableCreatedBy(v *uint64) *FileUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *FileUpdate) SetNillableCreatedBy(v *uint32) *FileUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *FileUpdate) AddCreatedBy(v int32) *FileUpdate {
+func (_u *FileUpdate) AddCreatedBy(v int64) *FileUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *FileUpdate) ClearCreatedBy() *FileUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *FileUpdate) SetUpdatedBy(v uint32) *FileUpdate {
+func (_u *FileUpdate) SetUpdatedBy(v uint64) *FileUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *FileUpdate) SetNillableUpdatedBy(v *uint32) *FileUpdate {
+func (_u *FileUpdate) SetNillableUpdatedBy(v *uint64) *FileUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *FileUpdate) SetNillableUpdatedBy(v *uint32) *FileUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *FileUpdate) AddUpdatedBy(v int32) *FileUpdate {
+func (_u *FileUpdate) AddUpdatedBy(v int64) *FileUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *FileUpdate) ClearUpdatedBy() *FileUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *FileUpdate) SetDeletedBy(v uint32) *FileUpdate {
+func (_u *FileUpdate) SetDeletedBy(v uint64) *FileUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *FileUpdate) SetNillableDeletedBy(v *uint32) *FileUpdate {
+func (_u *FileUpdate) SetNillableDeletedBy(v *uint64) *FileUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *FileUpdate) SetNillableDeletedBy(v *uint32) *FileUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *FileUpdate) AddDeletedBy(v int32) *FileUpdate {
+func (_u *FileUpdate) AddDeletedBy(v int64) *FileUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -449,7 +449,7 @@ func (_u *FileUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(file.Table, file.Columns, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(file.Table, file.Columns, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -473,31 +473,31 @@ func (_u *FileUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(file.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(file.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(file.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(file.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(file.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(file.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(file.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(file.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(file.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(file.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(file.FieldRemark, field.TypeString, value)
@@ -506,7 +506,7 @@ func (_u *FileUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(file.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(file.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(file.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(file.FieldProvider, field.TypeEnum, value)
@@ -640,14 +640,14 @@ func (_u *FileUpdateOne) ClearDeletedAt() *FileUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *FileUpdateOne) SetCreatedBy(v uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetCreatedBy(v uint64) *FileUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *FileUpdateOne) SetNillableCreatedBy(v *uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetNillableCreatedBy(v *uint64) *FileUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -655,7 +655,7 @@ func (_u *FileUpdateOne) SetNillableCreatedBy(v *uint32) *FileUpdateOne {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *FileUpdateOne) AddCreatedBy(v int32) *FileUpdateOne {
+func (_u *FileUpdateOne) AddCreatedBy(v int64) *FileUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -667,14 +667,14 @@ func (_u *FileUpdateOne) ClearCreatedBy() *FileUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *FileUpdateOne) SetUpdatedBy(v uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetUpdatedBy(v uint64) *FileUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *FileUpdateOne) SetNillableUpdatedBy(v *uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetNillableUpdatedBy(v *uint64) *FileUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -682,7 +682,7 @@ func (_u *FileUpdateOne) SetNillableUpdatedBy(v *uint32) *FileUpdateOne {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *FileUpdateOne) AddUpdatedBy(v int32) *FileUpdateOne {
+func (_u *FileUpdateOne) AddUpdatedBy(v int64) *FileUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -694,14 +694,14 @@ func (_u *FileUpdateOne) ClearUpdatedBy() *FileUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *FileUpdateOne) SetDeletedBy(v uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetDeletedBy(v uint64) *FileUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *FileUpdateOne) SetNillableDeletedBy(v *uint32) *FileUpdateOne {
+func (_u *FileUpdateOne) SetNillableDeletedBy(v *uint64) *FileUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -709,7 +709,7 @@ func (_u *FileUpdateOne) SetNillableDeletedBy(v *uint32) *FileUpdateOne {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *FileUpdateOne) AddDeletedBy(v int32) *FileUpdateOne {
+func (_u *FileUpdateOne) AddDeletedBy(v int64) *FileUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -1032,7 +1032,7 @@ func (_u *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(file.Table, file.Columns, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(file.Table, file.Columns, sqlgraph.NewFieldSpec(file.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "File.id" for update`)}
@@ -1073,31 +1073,31 @@ func (_u *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) {
 		_spec.ClearField(file.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(file.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(file.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(file.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(file.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(file.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(file.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(file.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(file.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(file.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(file.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(file.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(file.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(file.FieldRemark, field.TypeString, value)
@@ -1106,7 +1106,7 @@ func (_u *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) {
 		_spec.ClearField(file.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(file.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(file.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(file.FieldProvider, field.TypeEnum, value)

@@ -30,10 +30,10 @@ const (
 // 接口审计日志
 type ApiAuditLog struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                               // 接口审计日志ID
-	TenantId       *uint32                `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                   // 租户ID
+	Id             *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                               // 接口审计日志ID
+	TenantId       *uint64                `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                   // 租户ID
 	TenantName     *string                `protobuf:"bytes,3,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`              // 租户名称
-	UserId         *uint32                `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                         // 用户ID
+	UserId         *uint64                `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                         // 用户ID
 	Username       *string                `protobuf:"bytes,5,opt,name=username,proto3,oneof" json:"username,omitempty"`                                    // 账号名
 	IpAddress      *string                `protobuf:"bytes,10,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                // IP地址
 	GeoLocation    *GeoLocation           `protobuf:"bytes,11,opt,name=geo_location,json=geoLocation,proto3,oneof" json:"geo_location,omitempty"`          // 地理位置(来自IP库)
@@ -93,14 +93,14 @@ func (*ApiAuditLog) Descriptor() ([]byte, []int) {
 	return file_audit_service_v1_api_audit_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ApiAuditLog) GetId() uint32 {
+func (x *ApiAuditLog) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *ApiAuditLog) GetTenantId() uint32 {
+func (x *ApiAuditLog) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -114,7 +114,7 @@ func (x *ApiAuditLog) GetTenantName() string {
 	return ""
 }
 
-func (x *ApiAuditLog) GetUserId() uint32 {
+func (x *ApiAuditLog) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -398,7 +398,7 @@ func (x *GetApiAuditLogRequest) GetQueryBy() isGetApiAuditLogRequest_QueryBy {
 	return nil
 }
 
-func (x *GetApiAuditLogRequest) GetId() uint32 {
+func (x *GetApiAuditLogRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetApiAuditLogRequest_Id); ok {
 			return x.Id
@@ -419,7 +419,7 @@ type isGetApiAuditLogRequest_QueryBy interface {
 }
 
 type GetApiAuditLogRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetApiAuditLogRequest_Id) isGetApiAuditLogRequest_QueryBy() {}
@@ -475,11 +475,11 @@ const file_audit_service_v1_api_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"$audit/service/v1/api_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a#audit/service/v1/geo_location.proto\x1a\"audit/service/v1/device_info.proto\"\xcc\x15\n" +
 	"\vApiAuditLog\x12/\n" +
-	"\x02id\x18\x01 \x01(\rB\x1a\xbaG\x17\x92\x02\x14接口审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
+	"\x02id\x18\x01 \x01(\x04B\x1a\xbaG\x17\x92\x02\x14接口审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x02R\n" +
 	"tenantName\x88\x01\x01\x12,\n" +
-	"\auser_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x03R\x06userId\x88\x01\x01\x120\n" +
+	"\auser_id\x18\x04 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDH\x03R\x06userId\x88\x01\x01\x120\n" +
 	"\busername\x18\x05 \x01(\tB\x0f\xbaG\f\x92\x02\t账号名H\x04R\busername\x88\x01\x01\x122\n" +
 	"\n" +
 	"ip_address\x18\n" +
@@ -556,7 +556,7 @@ const file_audit_service_v1_api_audit_log_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1d.audit.service.v1.ApiAuditLogR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc8\x01\n" +
 	"\x15GetApiAuditLogRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +

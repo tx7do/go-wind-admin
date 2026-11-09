@@ -86,12 +86,12 @@ type tenantCheckerStub struct {
 }
 
 type tenantAccessCall struct {
-	tenantId uint32
+	tenantId uint64
 	path     string
 	method   string
 }
 
-func (s *tenantCheckerStub) CheckTenantAccess(_ context.Context, tenantId uint32, path, method string) error {
+func (s *tenantCheckerStub) CheckTenantAccess(_ context.Context, tenantId uint64, path, method string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.calls = append(s.calls, tenantAccessCall{tenantId: tenantId, path: path, method: method})
@@ -190,7 +190,7 @@ func TestServer_InvalidToken_Rejected(t *testing.T) {
 func TestServer_ValidToken_ContextInjection(t *testing.T) {
 	payload := &authenticationV1.UserTokenPayload{
 		UserId:     42,
-		OrgUnitId:  trans.Ptr(uint32(9)),
+		OrgUnitId:  trans.Ptr(uint64(9)),
 		Roles:      []string{"ROLE_ADMIN"},
 		DataScopes: []identityV1.DataScope{identityV1.DataScope_ALL},
 	}
@@ -275,7 +275,7 @@ func TestServer_TenantCheckerGating(t *testing.T) {
 		t, newTransportCtx("Bearer good-token"), nil,
 		validChecker(&authenticationV1.UserTokenPayload{
 			UserId:   2,
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 		}),
 		WithTenantAccessChecker(tenant),
 	)
@@ -285,7 +285,7 @@ func TestServer_TenantCheckerGating(t *testing.T) {
 	tenant.mu.Lock()
 	call := tenant.calls[0]
 	tenant.mu.Unlock()
-	require.Equal(t, uint32(7), call.tenantId)
+	require.Equal(t, uint64(7), call.tenantId)
 	require.Equal(t, "/fake.Test/Op", call.path)
 	require.Equal(t, "", call.method)
 
@@ -295,7 +295,7 @@ func TestServer_TenantCheckerGating(t *testing.T) {
 		t, newTransportCtx("Bearer good-token"), nil,
 		validChecker(&authenticationV1.UserTokenPayload{
 			UserId:   2,
-			TenantId: trans.Ptr(uint32(7)),
+			TenantId: trans.Ptr(uint64(7)),
 		}),
 		WithTenantAccessChecker(deny),
 	)
@@ -320,13 +320,13 @@ func TestServer_OperatorIdInjection(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, reached)
 	require.NotNil(t, req.OperatorId, "OperatorId 应回填为令牌用户ID")
-	require.Equal(t, uint32(77), *req.OperatorId)
+	require.Equal(t, uint64(77), *req.OperatorId)
 }
 
 // tenantCarrier 带 TenantId 指针字段的本地载体，
 // 用于验证 setRequestTenantId 的字段回填（请求壳无此字段类型，用反射语义等价的本地结构体）。
 type tenantCarrier struct {
-	TenantId *uint32
+	TenantId *uint64
 }
 
 // TestServer_TenantIdInjection 开启 injectTenantId 时，
@@ -334,7 +334,7 @@ type tenantCarrier struct {
 func TestServer_TenantIdInjection(t *testing.T) {
 	payload := &authenticationV1.UserTokenPayload{
 		UserId:   2,
-		TenantId: trans.Ptr(uint32(3)),
+		TenantId: trans.Ptr(uint64(3)),
 	}
 	req := &tenantCarrier{}
 	reached, _, err := runAuthMiddleware(
@@ -345,7 +345,7 @@ func TestServer_TenantIdInjection(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, reached)
 	require.NotNil(t, req.TenantId, "TenantId 应回填为令牌租户ID")
-	require.Equal(t, uint32(3), *req.TenantId)
+	require.Equal(t, uint64(3), *req.TenantId)
 }
 
 // TestSetRequestIds_NilAndNoMatch 直接单元测试回填函数：

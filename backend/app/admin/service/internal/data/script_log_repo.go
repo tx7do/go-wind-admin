@@ -59,7 +59,7 @@ func NewScriptLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.
 
 // ScriptLogRecord 一次脚本执行的记录。
 type ScriptLogRecord struct {
-	ScriptID   uint32
+	ScriptID   uint64
 	ScriptName string
 	Language   string
 	Trigger    string // hook / task / test_run / manual
@@ -100,7 +100,7 @@ func (r *ScriptLogRepo) PurgeBefore(ctx context.Context, before time.Time) (int,
 	return deleted, nil
 }
 
-func nonZero(v uint32) *uint32 {
+func nonZero[T ~uint32 | ~uint64](v T) *T {
 	if v == 0 {
 		return nil
 	}

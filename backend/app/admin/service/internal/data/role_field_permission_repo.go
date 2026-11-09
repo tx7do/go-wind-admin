@@ -62,7 +62,7 @@ func (r *RoleFieldPermissionRepo) validateEntries(entries []*permissionV1.RoleFi
 func (r *RoleFieldPermissionRepo) CleanFieldPermissions(
 	ctx context.Context,
 	tx *ent.Tx,
-	roleID uint32,
+	roleID uint64,
 ) error {
 	if _, err := tx.RoleFieldPermission.Delete().
 		Where(
@@ -77,8 +77,8 @@ func (r *RoleFieldPermissionRepo) CleanFieldPermissions(
 
 // ReplaceFieldPermissions 整体替换角色的字段权限配置：先清空既有配置，再插入新集合。
 func (r *RoleFieldPermissionRepo) ReplaceFieldPermissions(ctx context.Context, tx *ent.Tx,
-	tenantID, operatorID uint32,
-	roleID uint32,
+	tenantID, operatorID uint64,
+	roleID uint64,
 	entries []*permissionV1.RoleFieldPermission,
 ) error {
 	if err := r.validateEntries(entries); err != nil {
@@ -133,9 +133,9 @@ func (r *RoleFieldPermissionRepo) ReplaceFieldPermissions(ctx context.Context, t
 
 // ListHiddenFieldGroupsByRoleIDs 按角色ID列表取字段权限配置（按角色分组）。
 // 登录聚合用：一次查询取全部角色的配置，避免 N+1。
-func (r *RoleFieldPermissionRepo) ListHiddenFieldGroupsByRoleIDs(ctx context.Context, roleIDs []uint32) (map[uint32][]*permissionV1.RoleFieldPermission, error) {
+func (r *RoleFieldPermissionRepo) ListHiddenFieldGroupsByRoleIDs(ctx context.Context, roleIDs []uint64) (map[uint64][]*permissionV1.RoleFieldPermission, error) {
 	if len(roleIDs) == 0 {
-		return map[uint32][]*permissionV1.RoleFieldPermission{}, nil
+		return map[uint64][]*permissionV1.RoleFieldPermission{}, nil
 	}
 
 	entities, err := r.entClient.Client().RoleFieldPermission.Query().
@@ -154,12 +154,12 @@ func (r *RoleFieldPermissionRepo) ListHiddenFieldGroupsByRoleIDs(ctx context.Con
 	}
 
 	type groupKey struct {
-		roleID   uint32
+		roleID   uint64
 		resource string
 	}
 
 	index := make(map[groupKey]int)
-	result := make(map[uint32][]*permissionV1.RoleFieldPermission, len(roleIDs))
+	result := make(map[uint64][]*permissionV1.RoleFieldPermission, len(roleIDs))
 	for _, e := range entities {
 		if e.RoleID == nil || e.Resource == nil || e.FieldName == nil {
 			continue
@@ -181,8 +181,8 @@ func (r *RoleFieldPermissionRepo) ListHiddenFieldGroupsByRoleIDs(ctx context.Con
 }
 
 // ListFieldPermissions 列出角色的字段权限配置（角色详情/列表回显用）
-func (r *RoleFieldPermissionRepo) ListFieldPermissions(ctx context.Context, roleID uint32) ([]*permissionV1.RoleFieldPermission, error) {
-	groups, err := r.ListHiddenFieldGroupsByRoleIDs(ctx, []uint32{roleID})
+func (r *RoleFieldPermissionRepo) ListFieldPermissions(ctx context.Context, roleID uint64) ([]*permissionV1.RoleFieldPermission, error) {
+	groups, err := r.ListHiddenFieldGroupsByRoleIDs(ctx, []uint64{roleID})
 	if err != nil {
 		return nil, err
 	}

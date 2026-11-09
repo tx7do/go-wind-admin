@@ -595,7 +595,7 @@ func TestExecuteAgentGraph_Subflow(t *testing.T) {
 	}
 
 	deps := &agentEngineDeps{
-		loadSubflowGraph: func(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+		loadSubflowGraph: func(ctx context.Context, appID uint64) (string, *agentGraph, error) {
 			if appID != 7 {
 				return "", nil, fmt.Errorf("unexpected app %d", appID)
 			}
@@ -638,7 +638,7 @@ func TestExecuteAgentGraph_SubflowDepthLimit(t *testing.T) {
 
 	calls := 0
 	deps := &agentEngineDeps{
-		loadSubflowGraph: func(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+		loadSubflowGraph: func(ctx context.Context, appID uint64) (string, *agentGraph, error) {
 			calls++
 			return "自引用", selfGraph, nil
 		},

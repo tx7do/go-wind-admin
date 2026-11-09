@@ -93,13 +93,13 @@ func TestExportCommon_AuthorizeAndPlatformGate(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer good-token")
 	ctx, operator, ok := authorizeExportRequest(rec, req, newChecker(true, platformPayload))
 	require.True(t, ok, "平台管理员的合法令牌应放行")
-	require.Equal(t, uint32(1), operator.GetUserId())
+	require.Equal(t, uint64(1), operator.GetUserId())
 	vc, vcOK := viewer.FromContext(ctx)
 	require.True(t, vcOK, "应重建 viewer 上下文（ent 租户收窄的种子）")
 	require.Equal(t, uint64(0), vc.TenantID(), "平台管理员应落系统视图（租户 0）")
 
 	// 租户用户：viewer 重建为用户上下文（租户号与操作人一致）
-	tenantID := uint32(7)
+	tenantID := uint64(7)
 	tenantPayload := &authenticationV1.UserTokenPayload{UserId: 9, TenantId: &tenantID}
 	rec = httptest.NewRecorder()
 	req = httptest.NewRequest(http.MethodGet, "/export", nil)

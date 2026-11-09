@@ -39,7 +39,7 @@ func TestAggregateHiddenFields_PlatformContextSkips(t *testing.T) {
 	require.NoError(t, err)
 
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateHiddenFields(sysCtx, 0, []uint32{11}, payload)
+	svc.aggregateHiddenFields(sysCtx, 0, []uint64{11}, payload)
 	require.Empty(t, payload.GetHiddenFields(), "平台上下文（tenantID==0）不应聚合隐藏字段")
 }
 
@@ -52,7 +52,7 @@ func TestAggregateHiddenFields_UnionsAndDedupes(t *testing.T) {
 	}
 	sysCtx := enttest.NewSystemContext(context.Background())
 
-	seed := func(roleID uint32, resource, field string) {
+	seed := func(roleID uint64, resource, field string) {
 		_, err := entClient.Client().RoleFieldPermission.Create().
 			SetRoleID(roleID).
 			SetResource(resource).
@@ -70,7 +70,7 @@ func TestAggregateHiddenFields_UnionsAndDedupes(t *testing.T) {
 	seed(12, "order", "")
 
 	payload := &authenticationV1.UserTokenPayload{}
-	svc.aggregateHiddenFields(sysCtx, 5, []uint32{11, 12}, payload)
+	svc.aggregateHiddenFields(sysCtx, 5, []uint64{11, 12}, payload)
 
 	// 分组来自 map 遍历，条目顺序不承诺；语义只有并集+去重+脏条目剔除
 	require.ElementsMatch(t, []string{"user.phone", "user.id_card", "order.email"},

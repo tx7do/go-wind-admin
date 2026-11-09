@@ -43,7 +43,7 @@ func NewOrgUnitService(
 // extractRelationIDs 提取关联数据ID
 func (s *OrgUnitService) extractRelationIDs(
 	orgUnits []*identityV1.OrgUnit,
-	userSet aggregator.ResourceMap[uint32, *identityV1.User],
+	userSet aggregator.ResourceMap[uint64, *identityV1.User],
 ) {
 	for _, ou := range orgUnits {
 		if ou == nil {
@@ -65,13 +65,13 @@ func (s *OrgUnitService) extractRelationIDs(
 // fetchRelationInfo 获取关联数据
 func (s *OrgUnitService) fetchRelationInfo(
 	ctx context.Context,
-	userSet aggregator.ResourceMap[uint32, *identityV1.User],
+	userSet aggregator.ResourceMap[uint64, *identityV1.User],
 ) error {
 	if len(userSet) == 0 {
 		return nil
 	}
 
-	userIds := make([]uint32, 0, len(userSet))
+	userIds := make([]uint64, 0, len(userSet))
 	for id := range userSet {
 		userIds = append(userIds, id)
 	}
@@ -91,7 +91,7 @@ func (s *OrgUnitService) fetchRelationInfo(
 // bindRelations 绑定关联数据
 func (s *OrgUnitService) bindRelations(
 	orgUnits []*identityV1.OrgUnit,
-	userSet aggregator.ResourceMap[uint32, *identityV1.User],
+	userSet aggregator.ResourceMap[uint64, *identityV1.User],
 ) {
 	childrenFunc := func(ou *identityV1.OrgUnit) []*identityV1.OrgUnit { return ou.GetChildren() }
 
@@ -99,7 +99,7 @@ func (s *OrgUnitService) bindRelations(
 	aggregator.PopulateTree(
 		orgUnits,
 		userSet,
-		func(ou *identityV1.OrgUnit) uint32 { return ou.GetLeaderId() },
+		func(ou *identityV1.OrgUnit) uint64 { return ou.GetLeaderId() },
 		func(ou *identityV1.OrgUnit, user *identityV1.User) {
 			ou.LeaderName = trans.Ptr(user.GetUsername())
 		},
@@ -110,7 +110,7 @@ func (s *OrgUnitService) bindRelations(
 	aggregator.PopulateTree(
 		orgUnits,
 		userSet,
-		func(ou *identityV1.OrgUnit) uint32 { return ou.GetContactUserId() },
+		func(ou *identityV1.OrgUnit) uint64 { return ou.GetContactUserId() },
 		func(ou *identityV1.OrgUnit, user *identityV1.User) {
 			ou.ContactUserName = trans.Ptr(user.GetUsername())
 		},
@@ -120,7 +120,7 @@ func (s *OrgUnitService) bindRelations(
 
 // enrichRelations 填充关联数据
 func (s *OrgUnitService) enrichRelations(ctx context.Context, orgUnits []*identityV1.OrgUnit) error {
-	var userSet = make(aggregator.ResourceMap[uint32, *identityV1.User])
+	var userSet = make(aggregator.ResourceMap[uint64, *identityV1.User])
 	s.extractRelationIDs(orgUnits, userSet)
 	if err := s.fetchRelationInfo(ctx, userSet); err != nil {
 		return err
@@ -167,7 +167,7 @@ func (s *OrgUnitService) Get(ctx context.Context, req *identityV1.GetOrgUnitRequ
 // TenantPrivacy 承担，但 parent_id 此前不做归属校验——本租户部门可挂到他租户
 // 部门树下（数据范围 UNIT/UNIT_AND_CHILD 的 path 前缀语义被污染 + 外租户 id
 // 存在性探测）。经 tenant 过滤的 Get 查 0 行即拒绝；与角色父子绑定同口径。
-func (s *OrgUnitService) validateOrgUnitParent(ctx context.Context, parentId uint32) error {
+func (s *OrgUnitService) validateOrgUnitParent(ctx context.Context, parentId uint64) error {
 	if parentId == 0 {
 		return nil
 	}

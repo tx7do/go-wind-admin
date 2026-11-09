@@ -61,12 +61,12 @@ import (
 // 桩数据与实体表无关；真实落库的只有凭证表（经真实 userCredentialRepo）。
 type userServiceUserRepoStub struct {
 	data.UserRepo
-	usersByID     map[uint32]*identityV1.User
+	usersByID     map[uint64]*identityV1.User
 	listUsers     []*identityV1.User
 	count         int
 	creates       []*identityV1.CreateUserRequest
 	updates       []*identityV1.UpdateUserRequest
-	deletes       []uint32
+	deletes       []uint64
 	assignedRoles []*permissionV1.UserRole
 }
 
@@ -88,7 +88,7 @@ func (s *userServiceUserRepoStub) Count(_ context.Context, _ *paginationV1.Pagin
 func (s *userServiceUserRepoStub) Create(_ context.Context, req *identityV1.CreateUserRequest) (*identityV1.User, error) {
 	s.creates = append(s.creates, req)
 	// 直接透传请求体内的租户指针（含 nil=平台），保持 Create 返回行的租户语义。
-	return &identityV1.User{Id: trans.Ptr(uint32(66001)), TenantId: req.Data.TenantId}, nil
+	return &identityV1.User{Id: trans.Ptr(uint64(66001)), TenantId: req.Data.TenantId}, nil
 }
 
 func (s *userServiceUserRepoStub) Update(_ context.Context, req *identityV1.UpdateUserRequest) error {
@@ -137,7 +137,7 @@ func newUserServiceForTest(t *testing.T) *userServiceEnv {
 	authenticator, err := data.NewAuthenticatorForTest(jwtCfg, userTokenCache)
 	require.NoError(t, err)
 
-	stub := &userServiceUserRepoStub{usersByID: make(map[uint32]*identityV1.User)}
+	stub := &userServiceUserRepoStub{usersByID: make(map[uint64]*identityV1.User)}
 
 	svc := &UserService{
 		log:                bLogger.NewHelper(bLogger.NopLogger()),
@@ -159,7 +159,7 @@ func newUserServiceForTest(t *testing.T) *userServiceEnv {
 }
 
 // seedUserSvcRole 落库一个角色并按 (tenant, code) 反查 ID。
-func (e *userServiceEnv) seedUserSvcRole(t *testing.T, tenantID *uint32, roleType permissionV1.Role_Type, roleCode string) uint32 {
+func (e *userServiceEnv) seedUserSvcRole(t *testing.T, tenantID *uint64, roleType permissionV1.Role_Type, roleCode string) uint64 {
 	t.Helper()
 	require.NoError(t, e.svc.roleRepo.Create(e.ctx, &permissionV1.CreateRoleRequest{
 		Data: &permissionV1.Role{
@@ -170,7 +170,7 @@ func (e *userServiceEnv) seedUserSvcRole(t *testing.T, tenantID *uint32, roleTyp
 			Type:     roleType.Enum(),
 		},
 	}))
-	var wantTenant uint32
+	var wantTenant uint64
 	if tenantID != nil {
 		wantTenant = *tenantID
 	}
@@ -186,7 +186,7 @@ func (e *userServiceEnv) seedUserSvcRole(t *testing.T, tenantID *uint32, roleTyp
 }
 
 // seedUserSvcTenant 落库一个启用租户并返回其 ID。
-func (e *userServiceEnv) seedUserSvcTenant(t *testing.T, name, code string) uint32 {
+func (e *userServiceEnv) seedUserSvcTenant(t *testing.T, name, code string) uint64 {
 	t.Helper()
 	created, err := e.svc.tenantRepo.Create(e.ctx, &identityV1.Tenant{
 		Name:        trans.Ptr(name),
@@ -201,7 +201,7 @@ func (e *userServiceEnv) seedUserSvcTenant(t *testing.T, name, code string) uint
 }
 
 // seedUserSvcCredential 落库一条 USERNAME/PASSWORD_HASH 凭证（bcrypt 经复杂度校验）。
-func (e *userServiceEnv) seedUserSvcCredential(t *testing.T, tenantID *uint32, userID uint32, identifier string) {
+func (e *userServiceEnv) seedUserSvcCredential(t *testing.T, tenantID *uint64, userID uint64, identifier string) {
 	t.Helper()
 	require.NoError(t, e.svc.userCredentialRepo.Create(e.ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
@@ -226,14 +226,14 @@ func (e *userServiceEnv) credentialCount(t *testing.T) int {
 }
 
 // findCred 以明文密码直查凭证（needDecrypt=false），返回匹配到的用户 ID。
-func (e *userServiceEnv) findCred(t *testing.T, tenantID uint32, identifier, plainPassword string) (uint32, error) {
+func (e *userServiceEnv) findCred(t *testing.T, tenantID uint64, identifier, plainPassword string) (uint64, error) {
 	t.Helper()
 	return e.svc.userCredentialRepo.FindUserCredential(e.ctx, tenantID,
 		authenticationV1.UserCredential_USERNAME, identifier, plainPassword, false)
 }
 
 // opCtx 构造带操作人载荷的上下文（UserId / TenantId / IsPlatformAdmin 按需指定）。
-func opCtx(ctx context.Context, userID, tenantID uint32, platformAdmin bool) context.Context {
+func opCtx(ctx context.Context, userID, tenantID uint64, platformAdmin bool) context.Context {
 	payload := &authenticationV1.UserTokenPayload{UserId: userID, IsPlatformAdmin: trans.Ptr(platformAdmin)}
 	if tenantID > 0 {
 		payload.TenantId = trans.Ptr(tenantID)
@@ -246,7 +246,7 @@ func opCtx(ctx context.Context, userID, tenantID uint32, platformAdmin bool) con
 
 // registerOperator 回放操作人的占位用户行（服务在授权分支前会按操作人 ID
 // 取用户行，桩需回放该行才能推进到目标分支；行内容仅含 ID）。
-func (e *userServiceEnv) registerOperator(userID uint32) {
+func (e *userServiceEnv) registerOperator(userID uint64) {
 	e.stub.usersByID[userID] = &identityV1.User{Id: trans.Ptr(userID)}
 }
 
@@ -272,7 +272,7 @@ func TestUserServiceSqlite_ListEnrichment(t *testing.T) {
 	}))
 	orgListResp, err := e.svc.orgUnitRepo.List(e.ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var orgUnitID uint32
+	var orgUnitID uint64
 	for _, item := range orgListResp.GetItems() {
 		if item.GetCode() == "USERSVC_ORGUNIT_ENRICH" {
 			orgUnitID = item.GetId()
@@ -295,7 +295,7 @@ func TestUserServiceSqlite_ListEnrichment(t *testing.T) {
 	}))
 	posListResp, err := e.svc.positionRepo.List(e.ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var positionID uint32
+	var positionID uint64
 	for _, item := range posListResp.GetItems() {
 		if item.GetCode() == "USERSVC_POSITION_ENRICH" {
 			positionID = item.GetId()
@@ -307,14 +307,14 @@ func TestUserServiceSqlite_ListEnrichment(t *testing.T) {
 	// u1 走多值轨道（RoleIds / OrgUnitIds / PositionIds），u2 走单值轨道（RoleId /
 	// OrgUnitId / PositionId）。
 	u1 := &identityV1.User{
-		Id:          trans.Ptr(uint32(88001)),
+		Id:          trans.Ptr(uint64(88001)),
 		TenantId:    trans.Ptr(tenantID),
-		RoleIds:     []uint32{tenantRoleID},
-		OrgUnitIds:  []uint32{orgUnitID},
-		PositionIds: []uint32{positionID},
+		RoleIds:     []uint64{tenantRoleID},
+		OrgUnitIds:  []uint64{orgUnitID},
+		PositionIds: []uint64{positionID},
 	}
 	u2 := &identityV1.User{
-		Id:         trans.Ptr(uint32(88002)),
+		Id:         trans.Ptr(uint64(88002)),
 		RoleId:     trans.Ptr(systemRoleID),
 		OrgUnitId:  trans.Ptr(orgUnitID),
 		PositionId: trans.Ptr(positionID),
@@ -359,7 +359,7 @@ func TestUserServiceSqlite_GetEnrichment(t *testing.T) {
 	e := newUserServiceForTest(t)
 	tenantID := e.seedUserSvcTenant(t, "UserService 单条富集租户", "USERSVC_TENANT_GET")
 	e.stub.usersByID[88003] = &identityV1.User{
-		Id:       trans.Ptr(uint32(88003)),
+		Id:       trans.Ptr(uint64(88003)),
 		TenantId: trans.Ptr(tenantID),
 	}
 
@@ -435,7 +435,7 @@ func TestUserServiceSqlite_CreateGuards(t *testing.T) {
 
 	// 角色不存在。
 	resp, err = e.svc.Create(platformOp, &identityV1.CreateUserRequest{
-		Data: &identityV1.User{Username: trans.Ptr("usersvc-ghostrole"), RoleIds: []uint32{987654}},
+		Data: &identityV1.User{Username: trans.Ptr("usersvc-ghostrole"), RoleIds: []uint64{987654}},
 	})
 	require.Error(t, err)
 	require.True(t, adminV1.IsBadRequest(err), "不存在的角色应 400 some roles not found")
@@ -446,7 +446,7 @@ func TestUserServiceSqlite_CreateGuards(t *testing.T) {
 	resp, err = e.svc.Create(tenantOp, &identityV1.CreateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-crosstyperole"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 	})
 	require.Error(t, err)
@@ -467,23 +467,23 @@ func TestUserServiceSqlite_CreatePlatform(t *testing.T) {
 	_, err := e.svc.Create(platformOp, &identityV1.CreateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-default-pw"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 	})
 	require.NoError(t, err, "默认密码创建应成功")
 	require.Equal(t, 1, e.credentialCount(t), "应恰好落库一条凭证")
 	matched, ferr := e.findCred(t, 0, "usersvc-default-pw", constants.DefaultUserPassword)
 	require.NoError(t, ferr, "默认密码应能通过凭证校验")
-	require.Equal(t, uint32(66001), matched, "凭证应绑定桩返回的用户 ID")
+	require.Equal(t, uint64(66001), matched, "凭证应绑定桩返回的用户 ID")
 	// 记录的创建请求：CreatedBy 被注入操作人 ID。
 	require.Len(t, e.stub.creates, 1)
-	require.Equal(t, uint32(9001), e.stub.creates[0].Data.GetCreatedBy(), "CreatedBy 应注入操作人")
+	require.Equal(t, uint64(9001), e.stub.creates[0].Data.GetCreatedBy(), "CreatedBy 应注入操作人")
 
 	// 自定义密码路径。
 	_, err = e.svc.Create(platformOp, &identityV1.CreateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-custom-pw"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 		Password: trans.Ptr("CustomP@ss777"),
 	})
@@ -491,7 +491,7 @@ func TestUserServiceSqlite_CreatePlatform(t *testing.T) {
 	require.Equal(t, 2, e.credentialCount(t))
 	matched, ferr = e.findCred(t, 0, "usersvc-custom-pw", "CustomP@ss777")
 	require.NoError(t, ferr, "自定义密码应能通过凭证校验")
-	require.Equal(t, uint32(66001), matched)
+	require.Equal(t, uint64(66001), matched)
 	_, ferr = e.findCred(t, 0, "usersvc-custom-pw", constants.DefaultUserPassword)
 	require.True(t, authenticationV1.IsInvalidPassword(ferr), "旧密码不应通过校验")
 
@@ -500,7 +500,7 @@ func TestUserServiceSqlite_CreatePlatform(t *testing.T) {
 	_, err = e.svc.Create(platformOp, &identityV1.CreateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-weak-pw"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 		Password: trans.Ptr("short"),
 	})
@@ -523,7 +523,7 @@ func TestUserServiceSqlite_CreateTenant(t *testing.T) {
 	_, err := e.svc.Create(tenantOp, &identityV1.CreateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-tenant-created"),
-			RoleIds:  []uint32{tenantRoleID},
+			RoleIds:  []uint64{tenantRoleID},
 		},
 	})
 	require.NoError(t, err, "租户内创建应成功")
@@ -533,7 +533,7 @@ func TestUserServiceSqlite_CreateTenant(t *testing.T) {
 	require.Equal(t, tenantID, e.stub.creates[0].Data.GetTenantId(), "请求租户应被覆盖为操作人租户")
 	matched, ferr := e.findCred(t, tenantID, "usersvc-tenant-created", constants.DefaultUserPassword)
 	require.NoError(t, ferr, "租户凭证应能以默认密码通过校验")
-	require.Equal(t, uint32(66001), matched)
+	require.Equal(t, uint64(66001), matched)
 	_, ferr = e.findCred(t, 0, "usersvc-tenant-created", constants.DefaultUserPassword)
 	require.Error(t, ferr, "平台(0)上下文不应命中租户凭证")
 }
@@ -550,9 +550,9 @@ func TestUserServiceSqlite_UpdatePasswordReset(t *testing.T) {
 
 	e.seedUserSvcCredential(t, nil, 10501, "usersvc-reset-target")
 	// Username 必填：ResetCredential 以目标用户行（而非请求体）的用户名为标识符定位凭证。
-	e.stub.usersByID[10501] = &identityV1.User{Id: trans.Ptr(uint32(10501)), Username: trans.Ptr("usersvc-reset-target")}
+	e.stub.usersByID[10501] = &identityV1.User{Id: trans.Ptr(uint64(10501)), Username: trans.Ptr("usersvc-reset-target")}
 	e.seedUserSvcCredential(t, trans.Ptr(tenantB), 10502, "usersvc-cross-tenant-target")
-	e.stub.usersByID[10502] = &identityV1.User{Id: trans.Ptr(uint32(10502)), TenantId: trans.Ptr(tenantB), Username: trans.Ptr("usersvc-cross-tenant-target")}
+	e.stub.usersByID[10502] = &identityV1.User{Id: trans.Ptr(uint64(10502)), TenantId: trans.Ptr(tenantB), Username: trans.Ptr("usersvc-cross-tenant-target")}
 
 	// 操作人占位行（下方平台/租户操作人分支用）。
 	e.registerOperator(9001)
@@ -565,16 +565,16 @@ func TestUserServiceSqlite_UpdatePasswordReset(t *testing.T) {
 		Id: 10501,
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-reset-target"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"nickname"}},
 	})
 	require.NoError(t, err)
 	require.Len(t, e.stub.updates, 1, "无密码路径应记录一次用户更新")
 	recorded := e.stub.updates[0]
-	require.Equal(t, uint32(10501), recorded.GetId())
-	require.Equal(t, uint32(10501), recorded.Data.GetId(), "Data.Id 应对齐目标用户")
-	require.Equal(t, uint32(9001), recorded.Data.GetUpdatedBy(), "UpdatedBy 应注入操作人")
+	require.Equal(t, uint64(10501), recorded.GetId())
+	require.Equal(t, uint64(10501), recorded.Data.GetId(), "Data.Id 应对齐目标用户")
+	require.Equal(t, uint64(9001), recorded.Data.GetUpdatedBy(), "UpdatedBy 应注入操作人")
 	require.Contains(t, recorded.UpdateMask.GetPaths(), "updated_by", "mask 应追加 updated_by")
 
 	// 平台管理员重置密码：旧失效、新生效。
@@ -583,7 +583,7 @@ func TestUserServiceSqlite_UpdatePasswordReset(t *testing.T) {
 		Password: trans.Ptr(encryptLoginPassword(t, "ResetP@ss888")),
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-reset-target"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 	})
 	require.NoError(t, err, "平台管理员重置应成功")
@@ -598,7 +598,7 @@ func TestUserServiceSqlite_UpdatePasswordReset(t *testing.T) {
 		Password: trans.Ptr(encryptLoginPassword(t, "abc")),
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-reset-target"),
-			RoleIds:  []uint32{systemRoleID},
+			RoleIds:  []uint64{systemRoleID},
 		},
 	})
 	require.Error(t, err)
@@ -615,7 +615,7 @@ func TestUserServiceSqlite_UpdatePasswordReset(t *testing.T) {
 		Password: trans.Ptr(encryptLoginPassword(t, "HackedP@ss999")),
 		Data: &identityV1.User{
 			Username: trans.Ptr("usersvc-cross-tenant-target"),
-			RoleIds:  []uint32{tenantRoleA},
+			RoleIds:  []uint64{tenantRoleA},
 		},
 	})
 	require.Error(t, err)
@@ -636,11 +636,11 @@ func TestUserServiceSqlite_EditUserPassword(t *testing.T) {
 
 	e.seedUserSvcCredential(t, nil, 10601, "usersvc-edit-target-platform")
 	// Username 必填：EditUserPassword 以目标用户行的用户名为标识符定位凭证。
-	e.stub.usersByID[10601] = &identityV1.User{Id: trans.Ptr(uint32(10601)), Username: trans.Ptr("usersvc-edit-target-platform")}
+	e.stub.usersByID[10601] = &identityV1.User{Id: trans.Ptr(uint64(10601)), Username: trans.Ptr("usersvc-edit-target-platform")}
 	e.seedUserSvcCredential(t, trans.Ptr(tenantA), 10602, "usersvc-edit-target-tenant")
-	e.stub.usersByID[10602] = &identityV1.User{Id: trans.Ptr(uint32(10602)), TenantId: trans.Ptr(tenantA), Username: trans.Ptr("usersvc-edit-target-tenant")}
+	e.stub.usersByID[10602] = &identityV1.User{Id: trans.Ptr(uint64(10602)), TenantId: trans.Ptr(tenantA), Username: trans.Ptr("usersvc-edit-target-tenant")}
 	e.seedUserSvcCredential(t, trans.Ptr(tenantB), 10603, "usersvc-edit-target-foreign")
-	e.stub.usersByID[10603] = &identityV1.User{Id: trans.Ptr(uint32(10603)), TenantId: trans.Ptr(tenantB), Username: trans.Ptr("usersvc-edit-target-foreign")}
+	e.stub.usersByID[10603] = &identityV1.User{Id: trans.Ptr(uint64(10603)), TenantId: trans.Ptr(tenantB), Username: trans.Ptr("usersvc-edit-target-foreign")}
 
 	// 操作人占位行（下方平台/租户管理员分支用）。
 	e.registerOperator(9001)
@@ -729,7 +729,7 @@ func TestUserServiceSqlite_DeleteGuards(t *testing.T) {
 	require.Nil(t, resp)
 
 	// id=1 默认管理员保护。
-	e.stub.usersByID[1] = &identityV1.User{Id: trans.Ptr(uint32(1))}
+	e.stub.usersByID[1] = &identityV1.User{Id: trans.Ptr(uint64(1))}
 	resp, err = e.svc.Delete(platformOp, &identityV1.DeleteUserRequest{QueryBy: &identityV1.DeleteUserRequest_Id{Id: 1}})
 	require.Error(t, err)
 	require.True(t, adminV1.IsBadRequest(err), "id=1 应触发默认管理员保护")
@@ -737,7 +737,7 @@ func TestUserServiceSqlite_DeleteGuards(t *testing.T) {
 
 	// 平台 admin 用户名 + 租户 0 的改名后兜底保护。
 	e.stub.usersByID[5] = &identityV1.User{
-		Id:       trans.Ptr(uint32(5)),
+		Id:       trans.Ptr(uint64(5)),
 		Username: trans.Ptr(constants.DefaultAdminUserName),
 	}
 	resp, err = e.svc.Delete(platformOp, &identityV1.DeleteUserRequest{QueryBy: &identityV1.DeleteUserRequest_Id{Id: 5}})
@@ -752,10 +752,10 @@ func TestUserServiceSqlite_DeleteGuards(t *testing.T) {
 	require.Nil(t, resp)
 
 	// 正常目标：删除被记录。
-	e.stub.usersByID[10701] = &identityV1.User{Id: trans.Ptr(uint32(10701))}
+	e.stub.usersByID[10701] = &identityV1.User{Id: trans.Ptr(uint64(10701))}
 	_, err = e.svc.Delete(platformOp, &identityV1.DeleteUserRequest{QueryBy: &identityV1.DeleteUserRequest_Id{Id: 10701}})
 	require.NoError(t, err)
-	require.Equal(t, []uint32{10701}, e.stub.deletes, "删除调用应被记录")
+	require.Equal(t, []uint64{10701}, e.stub.deletes, "删除调用应被记录")
 }
 
 // TestUserServiceSqlite_InitSeedsEmptyDB 验证空库初始化播种：
@@ -773,7 +773,7 @@ func TestUserServiceSqlite_InitSeedsEmptyDB(t *testing.T) {
 	require.Equal(t, 1, e.credentialCount(t), "默认凭证应落库一行")
 	matched, ferr := e.findCred(t, 0, "admin", constants.DefaultUserPassword)
 	require.NoError(t, ferr, "播种凭证应可经默认口令校验")
-	require.Equal(t, uint32(66001), matched, "播种凭证应绑定 Create 返回的用户 ID（overrideUserID）")
+	require.Equal(t, uint64(66001), matched, "播种凭证应绑定 Create 返回的用户 ID（overrideUserID）")
 }
 
 // TestUserServiceSqlite_InitReseedsMissingCredentials 验证凭证自愈补种：
@@ -782,7 +782,7 @@ func TestUserServiceSqlite_InitSeedsEmptyDB(t *testing.T) {
 func TestUserServiceSqlite_InitReseedsMissingCredentials(t *testing.T) {
 	e := newUserServiceForTest(t)
 	e.stub.count = 1 // 用户表非空：跳过 createDefaultUser
-	e.stub.usersByID[1] = &identityV1.User{Id: trans.Ptr(uint32(1))}
+	e.stub.usersByID[1] = &identityV1.User{Id: trans.Ptr(uint64(1))}
 
 	e.svc.init()
 
@@ -791,7 +791,7 @@ func TestUserServiceSqlite_InitReseedsMissingCredentials(t *testing.T) {
 	require.Equal(t, 1, e.credentialCount(t), "自愈补种应重建默认凭证")
 	matched, ferr := e.findCred(t, 0, "admin", constants.DefaultUserPassword)
 	require.NoError(t, ferr)
-	require.Equal(t, uint32(1), matched, "补种凭证应保留种子内的 UserId（overrideUserID=0 路径）")
+	require.Equal(t, uint64(1), matched, "补种凭证应保留种子内的 UserId（overrideUserID=0 路径）")
 }
 
 // TestUserServiceSqlite_CreateDefaultUserCredentialsOverride 验证
@@ -803,5 +803,5 @@ func TestUserServiceSqlite_CreateDefaultUserCredentialsOverride(t *testing.T) {
 	require.Equal(t, 1, e.credentialCount(t))
 	matched, ferr := e.findCred(t, 0, "admin", constants.DefaultUserPassword)
 	require.NoError(t, ferr)
-	require.Equal(t, uint32(2002), matched, "凭证应绑定显式传入的 overrideUserID")
+	require.Equal(t, uint64(2002), matched, "凭证应绑定显式传入的 overrideUserID")
 }

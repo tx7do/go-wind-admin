@@ -65,13 +65,13 @@ func (_c *APICreate) SetNillableDeletedAt(v *time.Time) *APICreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *APICreate) SetCreatedBy(v uint32) *APICreate {
+func (_c *APICreate) SetCreatedBy(v uint64) *APICreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *APICreate) SetNillableCreatedBy(v *uint32) *APICreate {
+func (_c *APICreate) SetNillableCreatedBy(v *uint64) *APICreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *APICreate) SetNillableCreatedBy(v *uint32) *APICreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *APICreate) SetUpdatedBy(v uint32) *APICreate {
+func (_c *APICreate) SetUpdatedBy(v uint64) *APICreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *APICreate) SetNillableUpdatedBy(v *uint32) *APICreate {
+func (_c *APICreate) SetNillableUpdatedBy(v *uint64) *APICreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *APICreate) SetNillableUpdatedBy(v *uint32) *APICreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *APICreate) SetDeletedBy(v uint32) *APICreate {
+func (_c *APICreate) SetDeletedBy(v uint64) *APICreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *APICreate) SetNillableDeletedBy(v *uint32) *APICreate {
+func (_c *APICreate) SetNillableDeletedBy(v *uint64) *APICreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -233,7 +233,7 @@ func (_c *APICreate) SetNillableScope(v *api.Scope) *APICreate {
 }
 
 // SetID sets the "id" field.
-func (_c *APICreate) SetID(v uint32) *APICreate {
+func (_c *APICreate) SetID(v uint64) *APICreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -324,7 +324,7 @@ func (_c *APICreate) sqlSave(ctx context.Context) (*Api, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -334,7 +334,7 @@ func (_c *APICreate) sqlSave(ctx context.Context) (*Api, error) {
 func (_c *APICreate) createSpec() (*Api, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Api{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(api.Table, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(api.Table, sqlgraph.NewFieldSpec(api.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -354,15 +354,15 @@ func (_c *APICreate) createSpec() (*Api, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(api.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldCreatedBy, field.TypeUint64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(api.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldUpdatedBy, field.TypeUint64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(api.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(api.FieldDeletedBy, field.TypeUint64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -490,7 +490,7 @@ func (u *ApiUpsert) ClearDeletedAt() *ApiUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ApiUpsert) SetCreatedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) SetCreatedBy(v uint64) *ApiUpsert {
 	u.Set(api.FieldCreatedBy, v)
 	return u
 }
@@ -502,7 +502,7 @@ func (u *ApiUpsert) UpdateCreatedBy() *ApiUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ApiUpsert) AddCreatedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) AddCreatedBy(v uint64) *ApiUpsert {
 	u.Add(api.FieldCreatedBy, v)
 	return u
 }
@@ -514,7 +514,7 @@ func (u *ApiUpsert) ClearCreatedBy() *ApiUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ApiUpsert) SetUpdatedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) SetUpdatedBy(v uint64) *ApiUpsert {
 	u.Set(api.FieldUpdatedBy, v)
 	return u
 }
@@ -526,7 +526,7 @@ func (u *ApiUpsert) UpdateUpdatedBy() *ApiUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ApiUpsert) AddUpdatedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) AddUpdatedBy(v uint64) *ApiUpsert {
 	u.Add(api.FieldUpdatedBy, v)
 	return u
 }
@@ -538,7 +538,7 @@ func (u *ApiUpsert) ClearUpdatedBy() *ApiUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ApiUpsert) SetDeletedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) SetDeletedBy(v uint64) *ApiUpsert {
 	u.Set(api.FieldDeletedBy, v)
 	return u
 }
@@ -550,7 +550,7 @@ func (u *ApiUpsert) UpdateDeletedBy() *ApiUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ApiUpsert) AddDeletedBy(v uint32) *ApiUpsert {
+func (u *ApiUpsert) AddDeletedBy(v uint64) *ApiUpsert {
 	u.Add(api.FieldDeletedBy, v)
 	return u
 }
@@ -811,14 +811,14 @@ func (u *ApiUpsertOne) ClearDeletedAt() *ApiUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ApiUpsertOne) SetCreatedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) SetCreatedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ApiUpsertOne) AddCreatedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) AddCreatedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -839,14 +839,14 @@ func (u *ApiUpsertOne) ClearCreatedBy() *ApiUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ApiUpsertOne) SetUpdatedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) SetUpdatedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ApiUpsertOne) AddUpdatedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) AddUpdatedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -867,14 +867,14 @@ func (u *ApiUpsertOne) ClearUpdatedBy() *ApiUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ApiUpsertOne) SetDeletedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) SetDeletedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ApiUpsertOne) AddDeletedBy(v uint32) *ApiUpsertOne {
+func (u *ApiUpsertOne) AddDeletedBy(v uint64) *ApiUpsertOne {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1092,7 +1092,7 @@ func (u *ApiUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ApiUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *ApiUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1101,7 +1101,7 @@ func (u *ApiUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ApiUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *ApiUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1158,7 +1158,7 @@ func (_c *APICreateBulk) Save(ctx context.Context) ([]*Api, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1336,14 +1336,14 @@ func (u *ApiUpsertBulk) ClearDeletedAt() *ApiUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ApiUpsertBulk) SetCreatedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) SetCreatedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ApiUpsertBulk) AddCreatedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) AddCreatedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1364,14 +1364,14 @@ func (u *ApiUpsertBulk) ClearCreatedBy() *ApiUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ApiUpsertBulk) SetUpdatedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) SetUpdatedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ApiUpsertBulk) AddUpdatedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) AddUpdatedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1392,14 +1392,14 @@ func (u *ApiUpsertBulk) ClearUpdatedBy() *ApiUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ApiUpsertBulk) SetDeletedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) SetDeletedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ApiUpsertBulk) AddDeletedBy(v uint32) *ApiUpsertBulk {
+func (u *ApiUpsertBulk) AddDeletedBy(v uint64) *ApiUpsertBulk {
 	return u.Update(func(s *ApiUpsert) {
 		s.AddDeletedBy(v)
 	})

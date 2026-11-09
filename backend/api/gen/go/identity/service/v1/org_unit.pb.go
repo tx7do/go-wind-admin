@@ -147,16 +147,16 @@ func (OrgUnit_Type) EnumDescriptor() ([]byte, []int) {
 // 组织单元
 type OrgUnit struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Id                 *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                      // 组织单元ID
+	Id                 *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                      // 组织单元ID
 	Name               *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                                   // 组织单元名称
 	Code               *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                                                   // 唯一编码（建议规则：部门编码 + 组织单元类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别
 	Type               *OrgUnit_Type          `protobuf:"varint,4,opt,name=type,proto3,enum=identity.service.v1.OrgUnit_Type,oneof" json:"type,omitempty"`                                            // 组织类型
 	Path               *string                `protobuf:"bytes,5,opt,name=path,proto3,oneof" json:"path,omitempty"`                                                                                   // 树路径
 	Status             *OrgUnit_Status        `protobuf:"varint,6,opt,name=status,proto3,enum=identity.service.v1.OrgUnit_Status,oneof" json:"status,omitempty"`                                      // 状态
 	SortOrder          *uint32                `protobuf:"varint,7,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`                                                       // 排序顺序，值越小越靠前
-	LeaderId           *uint32                `protobuf:"varint,10,opt,name=leader_id,json=leaderId,proto3,oneof" json:"leader_id,omitempty"`                                                         // 负责人用户ID
+	LeaderId           *uint64                `protobuf:"varint,10,opt,name=leader_id,json=leaderId,proto3,oneof" json:"leader_id,omitempty"`                                                         // 负责人用户ID
 	LeaderName         *string                `protobuf:"bytes,11,opt,name=leader_name,json=leaderName,proto3,oneof" json:"leader_name,omitempty"`                                                    // 负责人用户名称
-	TenantId           *uint32                `protobuf:"varint,12,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID
+	TenantId           *uint64                `protobuf:"varint,12,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID
 	TenantName         *string                `protobuf:"bytes,13,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                                    // 租户名称
 	Remark             *string                `protobuf:"bytes,20,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                              // 备注
 	Description        *string                `protobuf:"bytes,21,opt,name=description,proto3,oneof" json:"description,omitempty"`                                                                    // 描述信息
@@ -165,7 +165,7 @@ type OrgUnit struct {
 	IsLegalEntity      *bool                  `protobuf:"varint,101,opt,name=is_legal_entity,json=isLegalEntity,proto3,oneof" json:"is_legal_entity,omitempty"`                                       // 是否为法定主体
 	RegistrationNumber *string                `protobuf:"bytes,102,opt,name=registration_number,json=registrationNumber,proto3,oneof" json:"registration_number,omitempty"`                           // 注册号/统一社会信用代码
 	TaxId              *string                `protobuf:"bytes,103,opt,name=tax_id,json=taxId,proto3,oneof" json:"tax_id,omitempty"`                                                                  // 税号
-	LegalEntityOrgId   *uint32                `protobuf:"varint,104,opt,name=legal_entity_org_id,json=legalEntityOrgId,proto3,oneof" json:"legal_entity_org_id,omitempty"`                            // 关联的法定主体组织ID（若有）
+	LegalEntityOrgId   *uint64                `protobuf:"varint,104,opt,name=legal_entity_org_id,json=legalEntityOrgId,proto3,oneof" json:"legal_entity_org_id,omitempty"`                            // 关联的法定主体组织ID（若有）
 	Address            *string                `protobuf:"bytes,105,opt,name=address,proto3,oneof" json:"address,omitempty"`                                                                           // 详细地址
 	Phone              *string                `protobuf:"bytes,106,opt,name=phone,proto3,oneof" json:"phone,omitempty"`                                                                               // 联系电话
 	Email              *string                `protobuf:"bytes,107,opt,name=email,proto3,oneof" json:"email,omitempty"`                                                                               // 联系邮箱
@@ -177,13 +177,13 @@ type OrgUnit struct {
 	EndAt              *timestamppb.Timestamp `protobuf:"bytes,113,opt,name=end_at,json=endAt,proto3,oneof" json:"end_at,omitempty"`                                                                  // 生效结束时间（UTC）
 	Attributes         map[string]string      `protobuf:"bytes,114,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 自定义扩展属性
 	PermissionTags     []string               `protobuf:"bytes,115,rep,name=permission_tags,json=permissionTags,proto3" json:"permission_tags,omitempty"`                                             // 与权限/角色映射的标签
-	ContactUserId      *uint32                `protobuf:"varint,116,opt,name=contact_user_id,json=contactUserId,proto3,oneof" json:"contact_user_id,omitempty"`                                       // 业务联系人用户ID
+	ContactUserId      *uint64                `protobuf:"varint,116,opt,name=contact_user_id,json=contactUserId,proto3,oneof" json:"contact_user_id,omitempty"`                                       // 业务联系人用户ID
 	ContactUserName    *string                `protobuf:"bytes,117,opt,name=contact_user_name,json=contactUserName,proto3,oneof" json:"contact_user_name,omitempty"`                                  // 业务联系人用户名称
-	ParentId           *uint32                `protobuf:"varint,500,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                                                        // 父节点ID
+	ParentId           *uint64                `protobuf:"varint,500,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                                                        // 父节点ID
 	Children           []*OrgUnit             `protobuf:"bytes,501,rep,name=children,proto3" json:"children,omitempty"`                                                                               // 子节点树
-	CreatedBy          *uint32                `protobuf:"varint,510,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                     // 创建者ID
-	UpdatedBy          *uint32                `protobuf:"varint,511,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                     // 更新者ID
-	DeletedBy          *uint32                `protobuf:"varint,512,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                     // 删除者用户ID
+	CreatedBy          *uint64                `protobuf:"varint,510,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                     // 创建者ID
+	UpdatedBy          *uint64                `protobuf:"varint,511,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                     // 更新者ID
+	DeletedBy          *uint64                `protobuf:"varint,512,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                     // 删除者用户ID
 	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,520,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                      // 创建时间
 	UpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,521,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                      // 更新时间
 	DeletedAt          *timestamppb.Timestamp `protobuf:"bytes,522,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                      // 删除时间
@@ -221,7 +221,7 @@ func (*OrgUnit) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_org_unit_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OrgUnit) GetId() uint32 {
+func (x *OrgUnit) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -270,7 +270,7 @@ func (x *OrgUnit) GetSortOrder() uint32 {
 	return 0
 }
 
-func (x *OrgUnit) GetLeaderId() uint32 {
+func (x *OrgUnit) GetLeaderId() uint64 {
 	if x != nil && x.LeaderId != nil {
 		return *x.LeaderId
 	}
@@ -284,7 +284,7 @@ func (x *OrgUnit) GetLeaderName() string {
 	return ""
 }
 
-func (x *OrgUnit) GetTenantId() uint32 {
+func (x *OrgUnit) GetTenantId() uint64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -347,7 +347,7 @@ func (x *OrgUnit) GetTaxId() string {
 	return ""
 }
 
-func (x *OrgUnit) GetLegalEntityOrgId() uint32 {
+func (x *OrgUnit) GetLegalEntityOrgId() uint64 {
 	if x != nil && x.LegalEntityOrgId != nil {
 		return *x.LegalEntityOrgId
 	}
@@ -431,7 +431,7 @@ func (x *OrgUnit) GetPermissionTags() []string {
 	return nil
 }
 
-func (x *OrgUnit) GetContactUserId() uint32 {
+func (x *OrgUnit) GetContactUserId() uint64 {
 	if x != nil && x.ContactUserId != nil {
 		return *x.ContactUserId
 	}
@@ -445,7 +445,7 @@ func (x *OrgUnit) GetContactUserName() string {
 	return ""
 }
 
-func (x *OrgUnit) GetParentId() uint32 {
+func (x *OrgUnit) GetParentId() uint64 {
 	if x != nil && x.ParentId != nil {
 		return *x.ParentId
 	}
@@ -459,21 +459,21 @@ func (x *OrgUnit) GetChildren() []*OrgUnit {
 	return nil
 }
 
-func (x *OrgUnit) GetCreatedBy() uint32 {
+func (x *OrgUnit) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *OrgUnit) GetUpdatedBy() uint32 {
+func (x *OrgUnit) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *OrgUnit) GetDeletedBy() uint32 {
+func (x *OrgUnit) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -603,7 +603,7 @@ func (x *GetOrgUnitRequest) GetQueryBy() isGetOrgUnitRequest_QueryBy {
 	return nil
 }
 
-func (x *GetOrgUnitRequest) GetId() uint32 {
+func (x *GetOrgUnitRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetOrgUnitRequest_Id); ok {
 			return x.Id
@@ -624,7 +624,7 @@ type isGetOrgUnitRequest_QueryBy interface {
 }
 
 type GetOrgUnitRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetOrgUnitRequest_Id) isGetOrgUnitRequest_QueryBy() {}
@@ -677,7 +677,7 @@ func (x *CreateOrgUnitRequest) GetData() *OrgUnit {
 // 更新组织单元 - 请求
 type UpdateOrgUnitRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *OrgUnit               `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -715,7 +715,7 @@ func (*UpdateOrgUnitRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_org_unit_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateOrgUnitRequest) GetId() uint32 {
+func (x *UpdateOrgUnitRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -791,7 +791,7 @@ func (x *DeleteOrgUnitRequest) GetQueryBy() isDeleteOrgUnitRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteOrgUnitRequest) GetId() uint32 {
+func (x *DeleteOrgUnitRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteOrgUnitRequest_Id); ok {
 			return x.Id
@@ -805,7 +805,7 @@ type isDeleteOrgUnitRequest_QueryBy interface {
 }
 
 type DeleteOrgUnitRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteOrgUnitRequest_Id) isDeleteOrgUnitRequest_QueryBy() {}
@@ -948,7 +948,7 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\n" +
 	"\"identity/service/v1/org_unit.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x96\x1c\n" +
 	"\aOrgUnit\x12)\n" +
-	"\x02id\x18\x01 \x01(\rB\x14\xbaG\x11\x92\x02\x0e组织单元IDH\x00R\x02id\x88\x01\x01\x121\n" +
+	"\x02id\x18\x01 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e组织单元IDH\x00R\x02id\x88\x01\x01\x121\n" +
 	"\x04name\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12组织单元名称H\x01R\x04name\x88\x01\x01\x12\xac\x01\n" +
 	"\x04code\x18\x03 \x01(\tB\x92\x01\xbaG\x8e\x01\x92\x02\x8a\x01唯一编码（建议规则：部门编码 + 组织单元类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别H\x02R\x04code\x88\x01\x01\x12N\n" +
 	"\x04type\x18\x04 \x01(\x0e2!.identity.service.v1.OrgUnit.TypeB\x12\xbaG\x0f\x92\x02\f组织类型H\x03R\x04type\x88\x01\x01\x12(\n" +
@@ -957,10 +957,10 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\n" +
 	"sort_order\x18\a \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x06R\tsortOrder\x88\x01\x01\x129\n" +
 	"\tleader_id\x18\n" +
-	" \x01(\rB\x17\xbaG\x14\x92\x02\x11负责人用户IDH\aR\bleaderId\x88\x01\x01\x12A\n" +
+	" \x01(\x04B\x17\xbaG\x14\x92\x02\x11负责人用户IDH\aR\bleaderId\x88\x01\x01\x12A\n" +
 	"\vleader_name\x18\v \x01(\tB\x1b\xbaG\x18\x92\x02\x15负责人用户名称H\bR\n" +
 	"leaderName\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\f \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\tR\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18\f \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\tR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18\r \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\n" +
 	"R\n" +
 	"tenantName\x88\x01\x01\x12)\n" +
@@ -972,7 +972,7 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\x0fis_legal_entity\x18e \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否为法定主体H\x0eR\risLegalEntity\x88\x01\x01\x12^\n" +
 	"\x13registration_number\x18f \x01(\tB(\xbaG%\x92\x02\"注册号/统一社会信用代码H\x0fR\x12registrationNumber\x88\x01\x01\x12(\n" +
 	"\x06tax_id\x18g \x01(\tB\f\xbaG\t\x92\x02\x06税号H\x10R\x05taxId\x88\x01\x01\x12c\n" +
-	"\x13legal_entity_org_id\x18h \x01(\rB/\xbaG,\x92\x02)关联的法定主体组织ID（若有）H\x11R\x10legalEntityOrgId\x88\x01\x01\x121\n" +
+	"\x13legal_entity_org_id\x18h \x01(\x04B/\xbaG,\x92\x02)关联的法定主体组织ID（若有）H\x11R\x10legalEntityOrgId\x88\x01\x01\x121\n" +
 	"\aaddress\x18i \x01(\tB\x12\xbaG\x0f\x92\x02\f详细地址H\x12R\aaddress\x88\x01\x01\x12-\n" +
 	"\x05phone\x18j \x01(\tB\x12\xbaG\x0f\x92\x02\f联系电话H\x13R\x05phone\x88\x01\x01\x12-\n" +
 	"\x05email\x18k \x01(\tB\x12\xbaG\x0f\x92\x02\f联系邮箱H\x14R\x05email\x88\x01\x01\x12F\n" +
@@ -986,16 +986,16 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"attributes\x18r \x03(\v2,.identity.service.v1.OrgUnit.AttributesEntryB\x1b\xbaG\x18\x92\x02\x15自定义扩展属性R\n" +
 	"attributes\x12N\n" +
 	"\x0fpermission_tags\x18s \x03(\tB%\xbaG\"\x92\x02\x1f与权限/角色映射的标签R\x0epermissionTags\x12J\n" +
-	"\x0fcontact_user_id\x18t \x01(\rB\x1d\xbaG\x1a\x92\x02\x17业务联系人用户IDH\x1bR\rcontactUserId\x88\x01\x01\x12R\n" +
+	"\x0fcontact_user_id\x18t \x01(\x04B\x1d\xbaG\x1a\x92\x02\x17业务联系人用户IDH\x1bR\rcontactUserId\x88\x01\x01\x12R\n" +
 	"\x11contact_user_name\x18u \x01(\tB!\xbaG\x1e\x92\x02\x1b业务联系人用户名称H\x1cR\x0fcontactUserName\x88\x01\x01\x124\n" +
-	"\tparent_id\x18\xf4\x03 \x01(\rB\x11\xbaG\x0e\x92\x02\v父节点IDH\x1dR\bparentId\x88\x01\x01\x12M\n" +
+	"\tparent_id\x18\xf4\x03 \x01(\x04B\x11\xbaG\x0e\x92\x02\v父节点IDH\x1dR\bparentId\x88\x01\x01\x12M\n" +
 	"\bchildren\x18\xf5\x03 \x03(\v2\x1c.identity.service.v1.OrgUnitB\x12\xbaG\x0f\x92\x02\f子节点树R\bchildren\x126\n" +
 	"\n" +
-	"created_by\x18\xfe\x03 \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\x1eR\tcreatedBy\x88\x01\x01\x126\n" +
+	"created_by\x18\xfe\x03 \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\x1eR\tcreatedBy\x88\x01\x01\x126\n" +
 	"\n" +
-	"updated_by\x18\xff\x03 \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\x1fR\tupdatedBy\x88\x01\x01\x12<\n" +
+	"updated_by\x18\xff\x03 \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x1fR\tupdatedBy\x88\x01\x01\x12<\n" +
 	"\n" +
-	"deleted_by\x18\x80\x04 \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18\x80\x04 \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\x88\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H!R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -1069,7 +1069,7 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1c.identity.service.v1.OrgUnitR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc4\x01\n" +
 	"\x11GetOrgUnitRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -1079,14 +1079,14 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\x14CreateOrgUnitRequest\x120\n" +
 	"\x04data\x18\x01 \x01(\v2\x1c.identity.service.v1.OrgUnitR\x04data\"\x96\x03\n" +
 	"\x14UpdateOrgUnitRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x120\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x120\n" +
 	"\x04data\x18\x02 \x01(\v2\x1c.identity.service.v1.OrgUnitR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"@\n" +
 	"\x14DeleteOrgUnitRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"P\n" +

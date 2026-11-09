@@ -85,8 +85,8 @@ func (_q *PermissionAuditLogQuery) FirstX(ctx context.Context) *PermissionAuditL
 
 // FirstID returns the first PermissionAuditLog ID from the query.
 // Returns a *NotFoundError when no PermissionAuditLog ID was found.
-func (_q *PermissionAuditLogQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *PermissionAuditLogQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -98,7 +98,7 @@ func (_q *PermissionAuditLogQuery) FirstID(ctx context.Context) (id uint32, err 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *PermissionAuditLogQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *PermissionAuditLogQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -136,8 +136,8 @@ func (_q *PermissionAuditLogQuery) OnlyX(ctx context.Context) *PermissionAuditLo
 // OnlyID is like Only, but returns the only PermissionAuditLog ID in the query.
 // Returns a *NotSingularError when more than one PermissionAuditLog ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *PermissionAuditLogQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *PermissionAuditLogQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -153,7 +153,7 @@ func (_q *PermissionAuditLogQuery) OnlyID(ctx context.Context) (id uint32, err e
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *PermissionAuditLogQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *PermissionAuditLogQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,7 +181,7 @@ func (_q *PermissionAuditLogQuery) AllX(ctx context.Context) []*PermissionAuditL
 }
 
 // IDs executes the query and returns a list of PermissionAuditLog IDs.
-func (_q *PermissionAuditLogQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *PermissionAuditLogQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -193,7 +193,7 @@ func (_q *PermissionAuditLogQuery) IDs(ctx context.Context) (ids []uint32, err e
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *PermissionAuditLogQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *PermissionAuditLogQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -381,7 +381,7 @@ func (_q *PermissionAuditLogQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *PermissionAuditLogQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeUint64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -38,13 +38,13 @@ func (_c *DataAccessAuditLogCreate) SetNillableCreatedAt(v *time.Time) *DataAcce
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *DataAccessAuditLogCreate) SetTenantID(v uint32) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetTenantID(v uint64) *DataAccessAuditLogCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *DataAccessAuditLogCreate) SetNillableTenantID(v *uint32) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetNillableTenantID(v *uint64) *DataAccessAuditLogCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -52,13 +52,13 @@ func (_c *DataAccessAuditLogCreate) SetNillableTenantID(v *uint32) *DataAccessAu
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *DataAccessAuditLogCreate) SetUserID(v uint32) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetUserID(v uint64) *DataAccessAuditLogCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *DataAccessAuditLogCreate) SetNillableUserID(v *uint32) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetNillableUserID(v *uint64) *DataAccessAuditLogCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -364,7 +364,7 @@ func (_c *DataAccessAuditLogCreate) SetSignature(v []byte) *DataAccessAuditLogCr
 }
 
 // SetID sets the "id" field.
-func (_c *DataAccessAuditLogCreate) SetID(v uint32) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetID(v uint64) *DataAccessAuditLogCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -456,7 +456,7 @@ func (_c *DataAccessAuditLogCreate) sqlSave(ctx context.Context) (*DataAccessAud
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -466,7 +466,7 @@ func (_c *DataAccessAuditLogCreate) sqlSave(ctx context.Context) (*DataAccessAud
 func (_c *DataAccessAuditLogCreate) createSpec() (*DataAccessAuditLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &DataAccessAuditLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(dataaccessauditlog.Table, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(dataaccessauditlog.Table, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -478,11 +478,11 @@ func (_c *DataAccessAuditLogCreate) createSpec() (*DataAccessAuditLog, *sqlgraph
 		_node.CreatedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(dataaccessauditlog.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(dataaccessauditlog.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeUint64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.Username(); ok {
@@ -630,7 +630,7 @@ type (
 )
 
 // SetUserID sets the "user_id" field.
-func (u *DataAccessAuditLogUpsert) SetUserID(v uint32) *DataAccessAuditLogUpsert {
+func (u *DataAccessAuditLogUpsert) SetUserID(v uint64) *DataAccessAuditLogUpsert {
 	u.Set(dataaccessauditlog.FieldUserID, v)
 	return u
 }
@@ -642,7 +642,7 @@ func (u *DataAccessAuditLogUpsert) UpdateUserID() *DataAccessAuditLogUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *DataAccessAuditLogUpsert) AddUserID(v uint32) *DataAccessAuditLogUpsert {
+func (u *DataAccessAuditLogUpsert) AddUserID(v uint64) *DataAccessAuditLogUpsert {
 	u.Add(dataaccessauditlog.FieldUserID, v)
 	return u
 }
@@ -1134,14 +1134,14 @@ func (u *DataAccessAuditLogUpsertOne) Update(set func(*DataAccessAuditLogUpsert)
 }
 
 // SetUserID sets the "user_id" field.
-func (u *DataAccessAuditLogUpsertOne) SetUserID(v uint32) *DataAccessAuditLogUpsertOne {
+func (u *DataAccessAuditLogUpsertOne) SetUserID(v uint64) *DataAccessAuditLogUpsertOne {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *DataAccessAuditLogUpsertOne) AddUserID(v uint32) *DataAccessAuditLogUpsertOne {
+func (u *DataAccessAuditLogUpsertOne) AddUserID(v uint64) *DataAccessAuditLogUpsertOne {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.AddUserID(v)
 	})
@@ -1674,7 +1674,7 @@ func (u *DataAccessAuditLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *DataAccessAuditLogUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *DataAccessAuditLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1683,7 +1683,7 @@ func (u *DataAccessAuditLogUpsertOne) ID(ctx context.Context) (id uint32, err er
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *DataAccessAuditLogUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *DataAccessAuditLogUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1740,7 +1740,7 @@ func (_c *DataAccessAuditLogCreateBulk) Save(ctx context.Context) ([]*DataAccess
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1879,14 +1879,14 @@ func (u *DataAccessAuditLogUpsertBulk) Update(set func(*DataAccessAuditLogUpsert
 }
 
 // SetUserID sets the "user_id" field.
-func (u *DataAccessAuditLogUpsertBulk) SetUserID(v uint32) *DataAccessAuditLogUpsertBulk {
+func (u *DataAccessAuditLogUpsertBulk) SetUserID(v uint64) *DataAccessAuditLogUpsertBulk {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *DataAccessAuditLogUpsertBulk) AddUserID(v uint32) *DataAccessAuditLogUpsertBulk {
+func (u *DataAccessAuditLogUpsertBulk) AddUserID(v uint64) *DataAccessAuditLogUpsertBulk {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.AddUserID(v)
 	})

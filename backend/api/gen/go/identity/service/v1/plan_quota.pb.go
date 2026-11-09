@@ -88,13 +88,13 @@ func (PlanQuota_QuotaType) EnumDescriptor() ([]byte, []int) {
 // 套餐配额
 type PlanQuota struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                             // 配额项ID
-	PlanId        *uint32                `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                                                       // 所属套餐ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                             // 配额项ID
+	PlanId        *uint64                `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                                                       // 所属套餐ID
 	QuotaType     *PlanQuota_QuotaType   `protobuf:"varint,3,opt,name=quota_type,json=quotaType,proto3,enum=identity.service.v1.PlanQuota_QuotaType,oneof" json:"quota_type,omitempty"` // 配额类型
 	QuotaValue    *uint64                `protobuf:"varint,4,opt,name=quota_value,json=quotaValue,proto3,oneof" json:"quota_value,omitempty"`                                           // 配额值
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                            // 创建者用户ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                            // 更新者用户ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                            // 删除者用户ID
+	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                            // 创建者用户ID
+	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                            // 更新者用户ID
+	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                            // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                             // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                             // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                             // 删除时间
@@ -132,14 +132,14 @@ func (*PlanQuota) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_plan_quota_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PlanQuota) GetId() uint32 {
+func (x *PlanQuota) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PlanQuota) GetPlanId() uint32 {
+func (x *PlanQuota) GetPlanId() uint64 {
 	if x != nil && x.PlanId != nil {
 		return *x.PlanId
 	}
@@ -160,21 +160,21 @@ func (x *PlanQuota) GetQuotaValue() uint64 {
 	return 0
 }
 
-func (x *PlanQuota) GetCreatedBy() uint32 {
+func (x *PlanQuota) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *PlanQuota) GetUpdatedBy() uint32 {
+func (x *PlanQuota) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *PlanQuota) GetDeletedBy() uint32 {
+func (x *PlanQuota) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -304,7 +304,7 @@ func (x *GetPlanQuotaRequest) GetQueryBy() isGetPlanQuotaRequest_QueryBy {
 	return nil
 }
 
-func (x *GetPlanQuotaRequest) GetId() uint32 {
+func (x *GetPlanQuotaRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPlanQuotaRequest_Id); ok {
 			return x.Id
@@ -325,7 +325,7 @@ type isGetPlanQuotaRequest_QueryBy interface {
 }
 
 type GetPlanQuotaRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetPlanQuotaRequest_Id) isGetPlanQuotaRequest_QueryBy() {}
@@ -378,7 +378,7 @@ func (x *CreatePlanQuotaRequest) GetData() *PlanQuota {
 // 更新套餐配额 -请求
 type UpdatePlanQuotaRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *PlanQuota             `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -416,7 +416,7 @@ func (*UpdatePlanQuotaRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_plan_quota_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePlanQuotaRequest) GetId() uint32 {
+func (x *UpdatePlanQuotaRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -492,7 +492,7 @@ func (x *DeletePlanQuotaRequest) GetQueryBy() isDeletePlanQuotaRequest_QueryBy {
 	return nil
 }
 
-func (x *DeletePlanQuotaRequest) GetId() uint32 {
+func (x *DeletePlanQuotaRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePlanQuotaRequest_Id); ok {
 			return x.Id
@@ -506,7 +506,7 @@ type isDeletePlanQuotaRequest_QueryBy interface {
 }
 
 type DeletePlanQuotaRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeletePlanQuotaRequest_Id) isDeletePlanQuotaRequest_QueryBy() {}
@@ -561,18 +561,18 @@ const file_identity_service_v1_plan_quota_proto_rawDesc = "" +
 	"\n" +
 	"$identity/service/v1/plan_quota.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xbe\a\n" +
 	"\tPlanQuota\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v配额项IDH\x00R\x02id\x88\x01\x01\x122\n" +
-	"\aplan_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e所属套餐IDH\x01R\x06planId\x88\x01\x01\x12`\n" +
+	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v配额项IDH\x00R\x02id\x88\x01\x01\x122\n" +
+	"\aplan_id\x18\x02 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e所属套餐IDH\x01R\x06planId\x88\x01\x01\x12`\n" +
 	"\n" +
 	"quota_type\x18\x03 \x01(\x0e2(.identity.service.v1.PlanQuota.QuotaTypeB\x12\xbaG\x0f\x92\x02\f配额类型H\x02R\tquotaType\x88\x01\x01\x125\n" +
 	"\vquota_value\x18\x04 \x01(\x04B\x0f\xbaG\f\x92\x02\t配额值H\x03R\n" +
 	"quotaValue\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x04R\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x04R\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x05R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x05R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x06R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x06R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\aR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -602,7 +602,7 @@ const file_identity_service_v1_plan_quota_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x1e.identity.service.v1.PlanQuotaR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc6\x01\n" +
 	"\x13GetPlanQuotaRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -612,14 +612,14 @@ const file_identity_service_v1_plan_quota_proto_rawDesc = "" +
 	"\x16CreatePlanQuotaRequest\x122\n" +
 	"\x04data\x18\x01 \x01(\v2\x1e.identity.service.v1.PlanQuotaR\x04data\"\x9a\x03\n" +
 	"\x16UpdatePlanQuotaRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x122\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x122\n" +
 	"\x04data\x18\x02 \x01(\v2\x1e.identity.service.v1.PlanQuotaR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"B\n" +
 	"\x16DeletePlanQuotaRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\rB\n" +
+	"\x02id\x18\x01 \x01(\x04B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\".\n" +

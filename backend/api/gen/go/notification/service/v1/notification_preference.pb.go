@@ -26,7 +26,7 @@ const (
 // 服务端从操作人/收件人钉定 user_id，客户端传入的 user_id 一律忽略。
 type NotificationPreference struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	UserId *uint32                `protobuf:"varint,1,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	UserId *uint64                `protobuf:"varint,1,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
 	// 是否启用实时推送静音时段：只抑制 SSE 实时推送（桌面通知/角标即时性），
 	// 收件行照常落库，用户打开收件箱仍能看到全部消息。
 	QuietEnabled *bool `protobuf:"varint,2,opt,name=quiet_enabled,json=quietEnabled,proto3,oneof" json:"quiet_enabled,omitempty"`
@@ -37,7 +37,7 @@ type NotificationPreference struct {
 	QuietEndMinute *int32 `protobuf:"varint,4,opt,name=quiet_end_minute,json=quietEndMinute,proto3,oneof" json:"quiet_end_minute,omitempty"`
 	// 退订的站内信分类 ID 列表：仅约束全员广播（targetAll），
 	// 点对点定向发送不受退订影响（直接指名发给你的消息不可拒收）。
-	MutedCategoryIds []uint32               `protobuf:"varint,5,rep,packed,name=muted_category_ids,json=mutedCategoryIds,proto3" json:"muted_category_ids,omitempty"`
+	MutedCategoryIds []uint64               `protobuf:"varint,5,rep,packed,name=muted_category_ids,json=mutedCategoryIds,proto3" json:"muted_category_ids,omitempty"`
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -73,7 +73,7 @@ func (*NotificationPreference) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_preference_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *NotificationPreference) GetUserId() uint32 {
+func (x *NotificationPreference) GetUserId() uint64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -101,7 +101,7 @@ func (x *NotificationPreference) GetQuietEndMinute() int32 {
 	return 0
 }
 
-func (x *NotificationPreference) GetMutedCategoryIds() []uint32 {
+func (x *NotificationPreference) GetMutedCategoryIds() []uint64 {
 	if x != nil {
 		return x.MutedCategoryIds
 	}
@@ -121,7 +121,7 @@ type UpdateNotificationPreferenceRequest struct {
 	QuietEnabled     *bool                  `protobuf:"varint,1,opt,name=quiet_enabled,json=quietEnabled,proto3,oneof" json:"quiet_enabled,omitempty"`
 	QuietStartMinute *int32                 `protobuf:"varint,2,opt,name=quiet_start_minute,json=quietStartMinute,proto3,oneof" json:"quiet_start_minute,omitempty"`
 	QuietEndMinute   *int32                 `protobuf:"varint,3,opt,name=quiet_end_minute,json=quietEndMinute,proto3,oneof" json:"quiet_end_minute,omitempty"`
-	MutedCategoryIds []uint32               `protobuf:"varint,4,rep,packed,name=muted_category_ids,json=mutedCategoryIds,proto3" json:"muted_category_ids,omitempty"`
+	MutedCategoryIds []uint64               `protobuf:"varint,4,rep,packed,name=muted_category_ids,json=mutedCategoryIds,proto3" json:"muted_category_ids,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -177,7 +177,7 @@ func (x *UpdateNotificationPreferenceRequest) GetQuietEndMinute() int32 {
 	return 0
 }
 
-func (x *UpdateNotificationPreferenceRequest) GetMutedCategoryIds() []uint32 {
+func (x *UpdateNotificationPreferenceRequest) GetMutedCategoryIds() []uint64 {
 	if x != nil {
 		return x.MutedCategoryIds
 	}
@@ -187,7 +187,7 @@ func (x *UpdateNotificationPreferenceRequest) GetMutedCategoryIds() []uint32 {
 // 可退订分类的精简项（只取 id + 名称，避免拖整个分类实体）。
 type NotificationCategoryItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -223,7 +223,7 @@ func (*NotificationCategoryItem) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_preference_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *NotificationCategoryItem) GetId() uint32 {
+func (x *NotificationCategoryItem) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -288,11 +288,11 @@ const file_notification_service_v1_notification_preference_proto_rawDesc = "" +
 	"\n" +
 	"5notification/service/v1/notification_preference.proto\x12\x17notification.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x03\n" +
 	"\x16NotificationPreference\x12\x1c\n" +
-	"\auser_id\x18\x01 \x01(\rH\x00R\x06userId\x88\x01\x01\x12(\n" +
+	"\auser_id\x18\x01 \x01(\x04H\x00R\x06userId\x88\x01\x01\x12(\n" +
 	"\rquiet_enabled\x18\x02 \x01(\bH\x01R\fquietEnabled\x88\x01\x01\x121\n" +
 	"\x12quiet_start_minute\x18\x03 \x01(\x05H\x02R\x10quietStartMinute\x88\x01\x01\x12-\n" +
 	"\x10quiet_end_minute\x18\x04 \x01(\x05H\x03R\x0equietEndMinute\x88\x01\x01\x12,\n" +
-	"\x12muted_category_ids\x18\x05 \x03(\rR\x10mutedCategoryIds\x12>\n" +
+	"\x12muted_category_ids\x18\x05 \x03(\x04R\x10mutedCategoryIds\x12>\n" +
 	"\n" +
 	"updated_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x04R\tupdatedAt\x88\x01\x01B\n" +
 	"\n" +
@@ -305,12 +305,12 @@ const file_notification_service_v1_notification_preference_proto_rawDesc = "" +
 	"\rquiet_enabled\x18\x01 \x01(\bH\x00R\fquietEnabled\x88\x01\x01\x121\n" +
 	"\x12quiet_start_minute\x18\x02 \x01(\x05H\x01R\x10quietStartMinute\x88\x01\x01\x12-\n" +
 	"\x10quiet_end_minute\x18\x03 \x01(\x05H\x02R\x0equietEndMinute\x88\x01\x01\x12,\n" +
-	"\x12muted_category_ids\x18\x04 \x03(\rR\x10mutedCategoryIdsB\x10\n" +
+	"\x12muted_category_ids\x18\x04 \x03(\x04R\x10mutedCategoryIdsB\x10\n" +
 	"\x0e_quiet_enabledB\x15\n" +
 	"\x13_quiet_start_minuteB\x13\n" +
 	"\x11_quiet_end_minute\"X\n" +
 	"\x18NotificationCategoryItem\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x88\x01\x01\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tH\x01R\x04name\x88\x01\x01B\x05\n" +
 	"\x03_idB\a\n" +
 	"\x05_name\"o\n" +

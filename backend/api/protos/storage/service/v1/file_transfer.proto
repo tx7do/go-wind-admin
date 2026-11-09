@@ -23,7 +23,7 @@ service FileTransferService {
 // 文件下载请求
 message DownloadFileRequest {
   oneof selector {
-    uint32 file_id = 1 [
+    uint64 file_id = 1 [
       json_name = "fileId",
       (gnostic.openapi.v3.property) = { description: "服务端内部文件 ID" }
     ]; // 服务端内部文件 ID

@@ -179,7 +179,7 @@ func TestTenantUsageRepoSqlite_CleanupTenantData(t *testing.T) {
 
 	require.NoError(t, repo.CleanupTenantData(ctx, tid), "清理租户数据应成功")
 
-	fileCountByTenant := map[uint32]int{}
+	fileCountByTenant := map[uint64]int{}
 	fileRows, err := client.File.Query().All(ctx)
 	require.NoError(t, err)
 	for _, f := range fileRows {
@@ -231,7 +231,7 @@ func TestTenantUsageRepoSqlite_EnforceExpiryPolicies(t *testing.T) {
 		require.NoError(t, err, "建租户 %s 应成功", name)
 		return row
 	}
-	linkPlan := func(tid uint32, policy *entPlan.ExpiryPolicy) {
+	linkPlan := func(tid uint64, policy *entPlan.ExpiryPolicy) {
 		builder := client.Plan.Create().SetNillableName(
 			trans.Ptr("sqlite_expiry_plan_" + strconv.FormatUint(uint64(tid), 10)))
 		if policy != nil {
@@ -263,7 +263,7 @@ func TestTenantUsageRepoSqlite_EnforceExpiryPolicies(t *testing.T) {
 	require.NoError(t, err, "到期扫描应成功")
 	require.Equal(t, 2, enforced, "仅 BLOCK_LOGIN 与 FREEZE 两个租户被改状态")
 
-	statusOf := func(id uint32) entTenant.Status {
+	statusOf := func(id uint64) entTenant.Status {
 		row, err := client.Tenant.Query().Where(entTenant.IDEQ(id)).Only(ctx)
 		require.NoError(t, err)
 		require.NotNil(t, row.Status)

@@ -52,7 +52,7 @@ func TestPrintTemplateRepoSqlite_Create(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	payload := newPrintTemplatePayload("order-out-a4")
-	payload.CreatedBy = trans.Ptr(uint32(1001))
+	payload.CreatedBy = trans.Ptr(uint64(1001))
 	require.NoError(t, repo.Create(ctx, &printV1.CreatePrintTemplateRequest{Data: payload}),
 		"完整载荷的 Create 应成功")
 
@@ -83,10 +83,10 @@ func TestPrintTemplateRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.SortOrder)
 	require.Equal(t, uint32(5), *row.SortOrder)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint32(1001), *row.CreatedBy, "载荷的 createdBy 应落 created_by")
+	require.Equal(t, uint64(1001), *row.CreatedBy, "载荷的 createdBy 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入")
 	require.NotNil(t, row.TenantID)
-	require.Equal(t, uint32(0), *row.TenantID, "系统上下文落平台租户 0")
+	require.Equal(t, uint64(0), *row.TenantID, "系统上下文落平台租户 0")
 
 	// 读视图：DTO 全量回读
 	dto, err := repo.Get(ctx, &printV1.GetPrintTemplateRequest{
@@ -100,7 +100,7 @@ func TestPrintTemplateRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, "A4", dto.GetPaperSize())
 	require.Equal(t, "portrait", dto.GetOrientation())
 	require.False(t, dto.GetIsBuiltIn())
-	require.Equal(t, uint32(1001), dto.GetCreatedBy())
+	require.Equal(t, uint64(1001), dto.GetCreatedBy())
 
 	// 未携带创建人的创建（系统播种路径）：不写出不存在的操作人
 	require.NoError(t, repo.Create(ctx, &printV1.CreatePrintTemplateRequest{
@@ -255,7 +255,7 @@ func TestPrintTemplateRepoSqlite_Update(t *testing.T) {
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "updated_by"}},
 		Data: &printV1.PrintTemplate{
 			Name:      trans.Ptr("改名后的模板"),
-			UpdatedBy: trans.Ptr(uint32(2001)),
+			UpdatedBy: trans.Ptr(uint64(2001)),
 		},
 	}))
 	row, err = entClient.Client().PrintTemplate.Query().
@@ -264,7 +264,7 @@ func TestPrintTemplateRepoSqlite_Update(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "改名后的模板", *row.Name)
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint32(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 	require.Equal(t, "80mm", *row.PaperSize, "掩码外的 paper_size 应保持上次值")
 
@@ -275,9 +275,9 @@ func TestPrintTemplateRepoSqlite_Update(t *testing.T) {
 		Id:           424242,
 		AllowMissing: trans.Ptr(true),
 		Data: func(d *printV1.PrintTemplate) *printV1.PrintTemplate {
-			d.Id = trans.Ptr(uint32(424242))
+			d.Id = trans.Ptr(uint64(424242))
 			d.Code = trans.Ptr("allow-missing-tpl")
-			d.UpdatedBy = trans.Ptr(uint32(3001))
+			d.UpdatedBy = trans.Ptr(uint64(3001))
 			return d
 		}(newPrintTemplatePayload("allow-missing-tpl")),
 	}), "allow_missing 且行不存在时应按载荷创建")
@@ -285,9 +285,9 @@ func TestPrintTemplateRepoSqlite_Update(t *testing.T) {
 		Where(printtemplate.CodeEQ("allow-missing-tpl")).
 		Only(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint32(424242), rowMissing.ID, "创建应落在请求指定的 ID 上")
+	require.Equal(t, uint64(424242), rowMissing.ID, "创建应落在请求指定的 ID 上")
 	require.NotNil(t, rowMissing.CreatedBy)
-	require.Equal(t, uint32(3001), *rowMissing.CreatedBy,
+	require.Equal(t, uint64(3001), *rowMissing.CreatedBy,
 		"创建分支的 created_by 应取自 updated_by：操作人不能在两条审计列里丢一个")
 	require.Nil(t, rowMissing.UpdatedBy, "创建分支不应双写 updated_by")
 

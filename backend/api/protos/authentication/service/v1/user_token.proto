@@ -8,14 +8,14 @@ import "identity/service/v1/types.proto";
 
 // 用户令牌载体
 message UserTokenPayload {
-  uint32 user_id = 1 [
+  uint64 user_id = 1 [
     json_name = "uid",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
     }
   ]; // 用户ID
 
-  optional uint32 tenant_id = 2 [
+  optional uint64 tenant_id = 2 [
     json_name = "tid",
     (gnostic.openapi.v3.property) = {
       description: "租户ID"
@@ -57,7 +57,7 @@ message UserTokenPayload {
     }
   ]; // 数据权限范围（旧单值字段，仅为令牌平滑过渡保留）
 
-  optional uint32 org_unit_id = 12 [
+  optional uint64 org_unit_id = 12 [
     json_name = "ouid",
     (gnostic.openapi.v3.property) = {
       description: "当前组织单元ID"

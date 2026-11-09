@@ -17,7 +17,7 @@ type ScriptLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,7 +25,7 @@ type ScriptLog struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 脚本ID（试运行草稿为 0）
-	ScriptID *uint32 `json:"script_id,omitempty"`
+	ScriptID *uint64 `json:"script_id,omitempty"`
 	// 脚本名称
 	ScriptName *string `json:"script_name,omitempty"`
 	// 脚本语言（LUA/JAVASCRIPT）
@@ -78,7 +78,7 @@ func (_m *ScriptLog) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case scriptlog.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -104,8 +104,8 @@ func (_m *ScriptLog) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field script_id", values[i])
 			} else if value.Valid {
-				_m.ScriptID = new(uint32)
-				*_m.ScriptID = uint32(value.Int64)
+				_m.ScriptID = new(uint64)
+				*_m.ScriptID = uint64(value.Int64)
 			}
 		case scriptlog.FieldScriptName:
 			if value, ok := values[i].(*sql.NullString); !ok {

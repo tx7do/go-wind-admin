@@ -78,7 +78,7 @@ func (Language) EnumDescriptor() ([]byte, []int) {
 // 脚本
 type Script struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                             // 脚本ID
+	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                             // 脚本ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                          // 脚本唯一名称
 	Language      *Language              `protobuf:"varint,3,opt,name=language,proto3,enum=script.service.v1.Language,oneof" json:"language,omitempty"` // 脚本语言
 	HookPoint     *string                `protobuf:"bytes,4,opt,name=hook_point,json=hookPoint,proto3,oneof" json:"hook_point,omitempty"`               // 挂载的钩子点
@@ -88,9 +88,9 @@ type Script struct {
 	Critical      *bool                  `protobuf:"varint,8,opt,name=critical,proto3,oneof" json:"critical,omitempty"`                                 // 关键脚本
 	Version       *uint32                `protobuf:"varint,9,opt,name=version,proto3,oneof" json:"version,omitempty"`                                   // 版本号
 	IsEnabled     *bool                  `protobuf:"varint,10,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`             // 是否启用
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`            // 创建者用户ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`            // 更新者用户ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`            // 删除者用户ID
+	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`            // 创建者用户ID
+	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`            // 更新者用户ID
+	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`            // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`             // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`             // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`             // 删除时间
@@ -128,7 +128,7 @@ func (*Script) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Script) GetId() uint32 {
+func (x *Script) GetId() uint64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -198,21 +198,21 @@ func (x *Script) GetIsEnabled() bool {
 	return false
 }
 
-func (x *Script) GetCreatedBy() uint32 {
+func (x *Script) GetCreatedBy() uint64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Script) GetUpdatedBy() uint32 {
+func (x *Script) GetUpdatedBy() uint64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Script) GetDeletedBy() uint32 {
+func (x *Script) GetDeletedBy() uint64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -343,7 +343,7 @@ func (x *GetScriptRequest) GetQueryBy() isGetScriptRequest_QueryBy {
 	return nil
 }
 
-func (x *GetScriptRequest) GetId() uint32 {
+func (x *GetScriptRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetScriptRequest_Id); ok {
 			return x.Id
@@ -373,7 +373,7 @@ type isGetScriptRequest_QueryBy interface {
 }
 
 type GetScriptRequest_Id struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 type GetScriptRequest_Name struct {
@@ -432,7 +432,7 @@ func (x *CreateScriptRequest) GetData() *Script {
 // 更新脚本 - 请求
 type UpdateScriptRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Script                `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -470,7 +470,7 @@ func (*UpdateScriptRequest) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateScriptRequest) GetId() uint32 {
+func (x *UpdateScriptRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
@@ -501,7 +501,7 @@ func (x *UpdateScriptRequest) GetAllowMissing() bool {
 // 删除脚本 - 请求
 type DeleteScriptRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ids           []uint32               `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"` // 要删除的ID列表
+	Ids           []uint64               `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"` // 要删除的ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -536,7 +536,7 @@ func (*DeleteScriptRequest) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeleteScriptRequest) GetIds() []uint32 {
+func (x *DeleteScriptRequest) GetIds() []uint64 {
 	if x != nil {
 		return x.Ids
 	}
@@ -594,7 +594,7 @@ func (x *TestRunScriptRequest) GetTarget() isTestRunScriptRequest_Target {
 	return nil
 }
 
-func (x *TestRunScriptRequest) GetId() uint32 {
+func (x *TestRunScriptRequest) GetId() uint64 {
 	if x != nil {
 		if x, ok := x.Target.(*TestRunScriptRequest_Id); ok {
 			return x.Id
@@ -625,7 +625,7 @@ type isTestRunScriptRequest_Target interface {
 
 type TestRunScriptRequest_Id struct {
 	// 运行已保存的脚本
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 type TestRunScriptRequest_Draft struct {
@@ -873,7 +873,7 @@ const file_script_service_v1_script_proto_rawDesc = "" +
 	"\x1escript/service/v1/script.proto\x12\x11script.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xf2\n" +
 	"\n" +
 	"\x06Script\x12#\n" +
-	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b脚本IDH\x00R\x02id\x88\x01\x01\x12P\n" +
+	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b脚本IDH\x00R\x02id\x88\x01\x01\x12P\n" +
 	"\x04name\x18\x02 \x01(\tB7\xbaG4\x92\x021脚本唯一名称，如 user_after_create_notifyH\x01R\x04name\x88\x01\x01\x12P\n" +
 	"\blanguage\x18\x03 \x01(\x0e2\x1b.script.service.v1.LanguageB\x12\xbaG\x0f\x92\x02\f脚本语言H\x02R\blanguage\x88\x01\x01\x12l\n" +
 	"\n" +
@@ -887,12 +887,12 @@ const file_script_service_v1_script_proto_rawDesc = "" +
 	"is_enabled\x18\n" +
 	" \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\tR\tisEnabled\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\n" +
+	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\n" +
 	"R\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -920,7 +920,7 @@ const file_script_service_v1_script_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x19.script.service.v1.ScriptR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcd\x01\n" +
 	"\x10GetScriptRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x12\x14\n" +
 	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -930,16 +930,16 @@ const file_script_service_v1_script_proto_rawDesc = "" +
 	"\x13CreateScriptRequest\x12-\n" +
 	"\x04data\x18\x01 \x01(\v2\x19.script.service.v1.ScriptR\x04data\"\x94\x03\n" +
 	"\x13UpdateScriptRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12-\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12-\n" +
 	"\x04data\x18\x02 \x01(\v2\x19.script.service.v1.ScriptR\x04data\x12u\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB8\xbaG5:\x18\x12\x16name,source,is_enabled\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"'\n" +
 	"\x13DeleteScriptRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\rR\x03ids\"\xab\x02\n" +
+	"\x03ids\x18\x01 \x03(\x04R\x03ids\"\xab\x02\n" +
 	"\x14TestRunScriptRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x121\n" +
+	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x121\n" +
 	"\x05draft\x18\x02 \x01(\v2\x19.script.service.v1.ScriptH\x00R\x05draft\x12\x89\x01\n" +
 	"\x05input\x18\x03 \x03(\v22.script.service.v1.TestRunScriptRequest.InputEntryB?\xbaG<\x92\x029执行上下文初始数据，值以 JSON 字符串提供R\x05input\x1a8\n" +
 	"\n" +

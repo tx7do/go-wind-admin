@@ -109,7 +109,7 @@ func (r *ScriptRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	}, nil
 }
 
-func (r *ScriptRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *ScriptRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	exist, err := r.entClient.Client().Script.Query().
 		Where(script.IDEQ(id)).
 		Exist(ctx)
@@ -120,7 +120,7 @@ func (r *ScriptRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 	return exist, nil
 }
 
-func (r *ScriptRepo) IsNameExist(ctx context.Context, name string, excludeID uint32) (bool, error) {
+func (r *ScriptRepo) IsNameExist(ctx context.Context, name string, excludeID uint64) (bool, error) {
 	query := r.entClient.Client().Script.Query().Where(script.NameEQ(name))
 	if excludeID > 0 {
 		query = query.Where(script.IDNEQ(excludeID))

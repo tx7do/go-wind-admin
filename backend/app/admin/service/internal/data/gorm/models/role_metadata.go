@@ -9,9 +9,9 @@ import (
 
 // RoleMetadata 对应表 sys_role_metadata
 type RoleMetadata struct {
-	mixin.AutoIncrementID
+	mixin.AutoIncrementID64
 
-	RoleId            *uint32         `gorm:"column:role_id;type:int unsigned;comment:角色ID"`
+	RoleId            *uint64         `gorm:"column:role_id;type:int unsigned;comment:角色ID"`
 	IsTemplate        *bool           `gorm:"column:is_template;type:boolean;comment:是否模板"`
 	TemplateFor       *string         `gorm:"column:template_for;type:varchar(255);comment:模板用于"`
 	TemplateVersion   *int32          `gorm:"column:template_version;type:int;comment:模板版本"`
@@ -22,8 +22,8 @@ type RoleMetadata struct {
 	CustomOverrides   *datatypes.JSON `gorm:"column:custom_overrides;type:json;comment:自定义覆盖"`
 
 	mixin.TimeAt
-	mixin.OperatorID
-	mixin.TenantID
+	mixin.OperatorID64
+	mixin.TenantID64
 }
 
 // TableName 指定表名

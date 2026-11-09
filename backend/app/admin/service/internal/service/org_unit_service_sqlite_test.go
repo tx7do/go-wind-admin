@@ -39,7 +39,7 @@ type orgUnitServiceUserRepoStub struct {
 	data.UserRepo
 }
 
-func (s *orgUnitServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []uint32) ([]*identityV1.User, error) {
+func (s *orgUnitServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []uint64) ([]*identityV1.User, error) {
 	users := make([]*identityV1.User, 0, len(ids))
 	for _, id := range ids {
 		users = append(users, &identityV1.User{
@@ -75,7 +75,7 @@ func TestOrgUnitServiceSqlite_ListTreeAssemblyAndEnrichment(t *testing.T) {
 			Code:     trans.Ptr("ORGSVC_ROOT_A"),
 			Status:   identityV1.OrgUnit_ON.Enum(),
 			Type:     identityV1.OrgUnit_DEPARTMENT.Enum(),
-			LeaderId: trans.Ptr(uint32(5551)),
+			LeaderId: trans.Ptr(uint64(5551)),
 		},
 	}))
 	// 取根节点 ID（repo Create 不返回 DTO，从列表反查）。
@@ -130,8 +130,8 @@ func TestOrgUnitServiceSqlite_GetEnrichment(t *testing.T) {
 			Code:          trans.Ptr("ORGSVC_GET_A"),
 			Status:        identityV1.OrgUnit_ON.Enum(),
 			Type:          identityV1.OrgUnit_DEPARTMENT.Enum(),
-			LeaderId:      trans.Ptr(uint32(5552)),
-			ContactUserId: trans.Ptr(uint32(5553)),
+			LeaderId:      trans.Ptr(uint64(5552)),
+			ContactUserId: trans.Ptr(uint64(5553)),
 		},
 	}))
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})

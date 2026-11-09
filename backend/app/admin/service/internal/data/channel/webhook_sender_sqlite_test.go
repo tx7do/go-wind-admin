@@ -76,7 +76,7 @@ func newWebhookSenderEnv(t *testing.T, allowPrivate bool) *webhookSenderEnv {
 }
 
 // createWebhook 落一条 WEBHOOK 渠道配置，返回主键。url/secret 传空串表示该列不写。
-func (e *webhookSenderEnv) createWebhook(t *testing.T, url, secret string, enabled bool) uint32 {
+func (e *webhookSenderEnv) createWebhook(t *testing.T, url, secret string, enabled bool) uint64 {
 	t.Helper()
 
 	// name 上有唯一索引，而 Windows 的 time.Now 粒度足以让同一测试里的两次调用取到同一个
@@ -111,7 +111,7 @@ func (e *webhookSenderEnv) receiver(t *testing.T, status int, responseBody strin
 	return srv
 }
 
-func webhookReq(target string, channelID uint32) *SendRequest {
+func webhookReq(target string, channelID uint64) *SendRequest {
 	return &SendRequest{
 		Target:          target,
 		Title:           "重置验证码",
@@ -147,8 +147,8 @@ func TestWebhookSenderSqlite_DeliversSignedJson(t *testing.T) {
 		"对端只能靠 event_type 判断这是什么事件（正文里没有别的信息）")
 	require.Equal(t, "重置验证码", got.Title)
 	require.Equal(t, "您的验证码是 123456", got.Content)
-	require.Equal(t, uint32(1024), got.RecipientUserID)
-	require.Equal(t, uint32(7), got.RelatedID)
+	require.Equal(t, uint64(1024), got.RecipientUserID)
+	require.Equal(t, uint64(7), got.RelatedID)
 	_, parseErr := time.Parse(time.RFC3339, got.DeliveredAt)
 	require.NoError(t, parseErr, "delivered_at 必须是 RFC3339，对端据此判重放")
 
@@ -248,7 +248,7 @@ func TestWebhookSenderSqlite_ConfigIssuesAreSkipped(t *testing.T) {
 
 	for _, c := range []struct {
 		name string
-		id   uint32
+		id   uint64
 	}{
 		{"disabled", disabled},
 		{"no webhook_url", noUrl},
@@ -323,7 +323,7 @@ func TestWebhookSenderSqlite_AutoPickSkipsDisabled(t *testing.T) {
 
 // createWebhookStyle 落一条带签名风格/载荷模板的 WEBHOOK 渠道行（本块新加的两列）。
 // style 传空串表示该列不写（等价于存量行的 NULL）。
-func (e *webhookSenderEnv) createWebhookStyle(t *testing.T, url, secret, style, template string, enabled bool) uint32 {
+func (e *webhookSenderEnv) createWebhookStyle(t *testing.T, url, secret, style, template string, enabled bool) uint64 {
 	t.Helper()
 
 	data := &notificationChannelV1.NotificationChannel{

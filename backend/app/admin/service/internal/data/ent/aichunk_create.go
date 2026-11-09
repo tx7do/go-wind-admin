@@ -38,13 +38,13 @@ func (_c *AiChunkCreate) SetNillableCreatedAt(v *time.Time) *AiChunkCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiChunkCreate) SetTenantID(v uint32) *AiChunkCreate {
+func (_c *AiChunkCreate) SetTenantID(v uint64) *AiChunkCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiChunkCreate) SetNillableTenantID(v *uint32) *AiChunkCreate {
+func (_c *AiChunkCreate) SetNillableTenantID(v *uint64) *AiChunkCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -52,13 +52,13 @@ func (_c *AiChunkCreate) SetNillableTenantID(v *uint32) *AiChunkCreate {
 }
 
 // SetDocID sets the "doc_id" field.
-func (_c *AiChunkCreate) SetDocID(v uint32) *AiChunkCreate {
+func (_c *AiChunkCreate) SetDocID(v uint64) *AiChunkCreate {
 	_c.mutation.SetDocID(v)
 	return _c
 }
 
 // SetNillableDocID sets the "doc_id" field if the given value is not nil.
-func (_c *AiChunkCreate) SetNillableDocID(v *uint32) *AiChunkCreate {
+func (_c *AiChunkCreate) SetNillableDocID(v *uint64) *AiChunkCreate {
 	if v != nil {
 		_c.SetDocID(*v)
 	}
@@ -94,7 +94,7 @@ func (_c *AiChunkCreate) SetNillableChunkIndex(v *uint32) *AiChunkCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *AiChunkCreate) SetID(v uint32) *AiChunkCreate {
+func (_c *AiChunkCreate) SetID(v uint64) *AiChunkCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -171,7 +171,7 @@ func (_c *AiChunkCreate) sqlSave(ctx context.Context) (*AiChunk, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = uint64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -181,7 +181,7 @@ func (_c *AiChunkCreate) sqlSave(ctx context.Context) (*AiChunk, error) {
 func (_c *AiChunkCreate) createSpec() (*AiChunk, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiChunk{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aichunk.Table, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(aichunk.Table, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -193,7 +193,7 @@ func (_c *AiChunkCreate) createSpec() (*AiChunk, *sqlgraph.CreateSpec) {
 		_node.CreatedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aichunk.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(aichunk.FieldTenantID, field.TypeUint64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Content(); ok {
@@ -212,7 +212,7 @@ func (_c *AiChunkCreate) createSpec() (*AiChunk, *sqlgraph.CreateSpec) {
 			Columns: []string{aichunk.DocColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -274,7 +274,7 @@ type (
 )
 
 // SetDocID sets the "doc_id" field.
-func (u *AiChunkUpsert) SetDocID(v uint32) *AiChunkUpsert {
+func (u *AiChunkUpsert) SetDocID(v uint64) *AiChunkUpsert {
 	u.Set(aichunk.FieldDocID, v)
 	return u
 }
@@ -388,7 +388,7 @@ func (u *AiChunkUpsertOne) Update(set func(*AiChunkUpsert)) *AiChunkUpsertOne {
 }
 
 // SetDocID sets the "doc_id" field.
-func (u *AiChunkUpsertOne) SetDocID(v uint32) *AiChunkUpsertOne {
+func (u *AiChunkUpsertOne) SetDocID(v uint64) *AiChunkUpsertOne {
 	return u.Update(func(s *AiChunkUpsert) {
 		s.SetDocID(v)
 	})
@@ -473,7 +473,7 @@ func (u *AiChunkUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiChunkUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *AiChunkUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -482,7 +482,7 @@ func (u *AiChunkUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiChunkUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *AiChunkUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -539,7 +539,7 @@ func (_c *AiChunkCreateBulk) Save(ctx context.Context) ([]*AiChunk, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -678,7 +678,7 @@ func (u *AiChunkUpsertBulk) Update(set func(*AiChunkUpsert)) *AiChunkUpsertBulk 
 }
 
 // SetDocID sets the "doc_id" field.
-func (u *AiChunkUpsertBulk) SetDocID(v uint32) *AiChunkUpsertBulk {
+func (u *AiChunkUpsertBulk) SetDocID(v uint64) *AiChunkUpsertBulk {
 	return u.Update(func(s *AiChunkUpsert) {
 		s.SetDocID(v)
 	})

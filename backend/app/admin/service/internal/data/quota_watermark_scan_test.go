@@ -129,7 +129,7 @@ func TestScanQuotaWatermarksSqlite(t *testing.T) {
 	h := hits[0]
 	require.Equal(t, tenantHit.ID, h.TenantID)
 	require.Equal(t, "水位租户甲", h.TenantName)
-	require.Equal(t, uint32(77), h.AdminUserID)
+	require.Equal(t, uint64(77), h.AdminUserID)
 	require.Equal(t, "API_CALL", h.QuotaType)
 	require.Equal(t, uint64(2), h.Used)
 	require.Equal(t, uint64(2), h.Limit)

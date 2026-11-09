@@ -70,14 +70,14 @@ func (_u *LanguageUpdate) ClearDeletedAt() *LanguageUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LanguageUpdate) SetCreatedBy(v uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetCreatedBy(v uint64) *LanguageUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LanguageUpdate) SetNillableCreatedBy(v *uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetNillableCreatedBy(v *uint64) *LanguageUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *LanguageUpdate) SetNillableCreatedBy(v *uint32) *LanguageUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LanguageUpdate) AddCreatedBy(v int32) *LanguageUpdate {
+func (_u *LanguageUpdate) AddCreatedBy(v int64) *LanguageUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *LanguageUpdate) ClearCreatedBy() *LanguageUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LanguageUpdate) SetUpdatedBy(v uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetUpdatedBy(v uint64) *LanguageUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LanguageUpdate) SetNillableUpdatedBy(v *uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetNillableUpdatedBy(v *uint64) *LanguageUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *LanguageUpdate) SetNillableUpdatedBy(v *uint32) *LanguageUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LanguageUpdate) AddUpdatedBy(v int32) *LanguageUpdate {
+func (_u *LanguageUpdate) AddUpdatedBy(v int64) *LanguageUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *LanguageUpdate) ClearUpdatedBy() *LanguageUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LanguageUpdate) SetDeletedBy(v uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetDeletedBy(v uint64) *LanguageUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LanguageUpdate) SetNillableDeletedBy(v *uint32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetNillableDeletedBy(v *uint64) *LanguageUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *LanguageUpdate) SetNillableDeletedBy(v *uint32) *LanguageUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LanguageUpdate) AddDeletedBy(v int32) *LanguageUpdate {
+func (_u *LanguageUpdate) AddDeletedBy(v int64) *LanguageUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -314,7 +314,7 @@ func (_u *LanguageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(language.Table, language.Columns, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(language.Table, language.Columns, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -338,31 +338,31 @@ func (_u *LanguageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(language.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(language.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(language.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(language.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(language.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(language.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(language.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(language.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(language.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(language.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
 		_spec.SetField(language.FieldSortOrder, field.TypeUint32, value)
@@ -463,14 +463,14 @@ func (_u *LanguageUpdateOne) ClearDeletedAt() *LanguageUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LanguageUpdateOne) SetCreatedBy(v uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetCreatedBy(v uint64) *LanguageUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LanguageUpdateOne) SetNillableCreatedBy(v *uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetNillableCreatedBy(v *uint64) *LanguageUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -478,7 +478,7 @@ func (_u *LanguageUpdateOne) SetNillableCreatedBy(v *uint32) *LanguageUpdateOne 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LanguageUpdateOne) AddCreatedBy(v int32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) AddCreatedBy(v int64) *LanguageUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -490,14 +490,14 @@ func (_u *LanguageUpdateOne) ClearCreatedBy() *LanguageUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LanguageUpdateOne) SetUpdatedBy(v uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetUpdatedBy(v uint64) *LanguageUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LanguageUpdateOne) SetNillableUpdatedBy(v *uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetNillableUpdatedBy(v *uint64) *LanguageUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -505,7 +505,7 @@ func (_u *LanguageUpdateOne) SetNillableUpdatedBy(v *uint32) *LanguageUpdateOne 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LanguageUpdateOne) AddUpdatedBy(v int32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) AddUpdatedBy(v int64) *LanguageUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -517,14 +517,14 @@ func (_u *LanguageUpdateOne) ClearUpdatedBy() *LanguageUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LanguageUpdateOne) SetDeletedBy(v uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetDeletedBy(v uint64) *LanguageUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LanguageUpdateOne) SetNillableDeletedBy(v *uint32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetNillableDeletedBy(v *uint64) *LanguageUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -532,7 +532,7 @@ func (_u *LanguageUpdateOne) SetNillableDeletedBy(v *uint32) *LanguageUpdateOne 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LanguageUpdateOne) AddDeletedBy(v int32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) AddDeletedBy(v int64) *LanguageUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -720,7 +720,7 @@ func (_u *LanguageUpdateOne) sqlSave(ctx context.Context) (_node *Language, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(language.Table, language.Columns, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(language.Table, language.Columns, sqlgraph.NewFieldSpec(language.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Language.id" for update`)}
@@ -761,31 +761,31 @@ func (_u *LanguageUpdateOne) sqlSave(ctx context.Context) (_node *Language, err 
 		_spec.ClearField(language.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(language.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(language.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(language.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(language.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(language.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(language.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(language.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(language.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(language.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(language.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(language.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(language.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
 		_spec.SetField(language.FieldSortOrder, field.TypeUint32, value)

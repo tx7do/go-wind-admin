@@ -18,7 +18,7 @@ type NotificationPreference struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,13 +26,13 @@ type NotificationPreference struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint32 `json:"created_by,omitempty"`
+	CreatedBy *uint64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint32 `json:"updated_by,omitempty"`
+	UpdatedBy *uint64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint32 `json:"deleted_by,omitempty"`
+	DeletedBy *uint64 `json:"deleted_by,omitempty"`
 	// 用户ID（唯一，每用户一行）
-	UserID uint32 `json:"user_id,omitempty"`
+	UserID uint64 `json:"user_id,omitempty"`
 	// 是否启用实时推送静音时段（只抑制 SSE 实时推送，收件行照常落库）
 	QuietEnabled bool `json:"quiet_enabled,omitempty"`
 	// 静音开始：自当日 00:00 起的分钟数（0-1439）
@@ -40,7 +40,7 @@ type NotificationPreference struct {
 	// 静音结束：自当日 00:00 起的分钟数（0-1439）；跨零点窗口 start > end 合法
 	QuietEndMinute int32 `json:"quiet_end_minute,omitempty"`
 	// 退订的站内信分类ID列表（仅约束全员广播，点对点定向发送不受影响）
-	MutedCategoryIds []uint32 `json:"muted_category_ids,omitempty"`
+	MutedCategoryIds []uint64 `json:"muted_category_ids,omitempty"`
 	selectValues     sql.SelectValues
 }
 
@@ -77,7 +77,7 @@ func (_m *NotificationPreference) assignValues(columns []string, values []any) e
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = uint64(value.Int64)
 		case notificationpreference.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -103,28 +103,28 @@ func (_m *NotificationPreference) assignValues(columns []string, values []any) e
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint32)
-				*_m.CreatedBy = uint32(value.Int64)
+				_m.CreatedBy = new(uint64)
+				*_m.CreatedBy = uint64(value.Int64)
 			}
 		case notificationpreference.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint32)
-				*_m.UpdatedBy = uint32(value.Int64)
+				_m.UpdatedBy = new(uint64)
+				*_m.UpdatedBy = uint64(value.Int64)
 			}
 		case notificationpreference.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint32)
-				*_m.DeletedBy = uint32(value.Int64)
+				_m.DeletedBy = new(uint64)
+				*_m.DeletedBy = uint64(value.Int64)
 			}
 		case notificationpreference.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = uint32(value.Int64)
+				_m.UserID = uint64(value.Int64)
 			}
 		case notificationpreference.FieldQuietEnabled:
 			if value, ok := values[i].(*sql.NullBool); !ok {

@@ -87,7 +87,7 @@ func TestAuthorizerProvider_ProvidePoliciesFilters(t *testing.T) {
 	roleNormal, err := client.Role.Create().
 		SetNillableName(trans.Ptr("策略装载角色")).
 		SetNillableCode(trans.Ptr("authz_provider_role")).
-		SetNillableTenantID(trans.Ptr(uint32(7))).
+		SetNillableTenantID(trans.Ptr(uint64(7))).
 		Save(ctx)
 	require.NoError(t, err)
 	require.NoError(t, client.RolePermission.Create().

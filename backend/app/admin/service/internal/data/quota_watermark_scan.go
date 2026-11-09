@@ -30,10 +30,10 @@ const QuotaWatermarkThreshold = 0.8
 
 // QuotaWatermarkHit 单租户单配额类型的水位命中（只读扫描结果，无任何拒绝语义）。
 type QuotaWatermarkHit struct {
-	TenantID   uint32
+	TenantID   uint64
 	TenantName string
 	// AdminUserID 租户管理员（sys_tenants.admin_user_id；0 = 未设置，投递侧跳过）。
-	AdminUserID uint32
+	AdminUserID uint64
 	// QuotaType 配额类型技术名（proto 枚举名，与用量页/闸门报错口径一致，不做翻译）。
 	QuotaType string
 	Used      uint64
@@ -85,7 +85,7 @@ func (r *TenantUsageRepo) ScanQuotaWatermarks(ctx context.Context, aiRepo *AiUsa
 		if t.Name != nil {
 			tenantName = *t.Name
 		}
-		adminUserID := uint32(0)
+		adminUserID := uint64(0)
 		if t.AdminUserID != nil {
 			adminUserID = *t.AdminUserID
 		}

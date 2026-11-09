@@ -71,14 +71,14 @@ func (_u *DictTypeUpdate) ClearDeletedAt() *DictTypeUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *DictTypeUpdate) SetCreatedBy(v uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetCreatedBy(v uint64) *DictTypeUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *DictTypeUpdate) SetNillableCreatedBy(v *uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetNillableCreatedBy(v *uint64) *DictTypeUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *DictTypeUpdate) SetNillableCreatedBy(v *uint32) *DictTypeUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *DictTypeUpdate) AddCreatedBy(v int32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) AddCreatedBy(v int64) *DictTypeUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *DictTypeUpdate) ClearCreatedBy() *DictTypeUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *DictTypeUpdate) SetUpdatedBy(v uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetUpdatedBy(v uint64) *DictTypeUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *DictTypeUpdate) SetNillableUpdatedBy(v *uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetNillableUpdatedBy(v *uint64) *DictTypeUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *DictTypeUpdate) SetNillableUpdatedBy(v *uint32) *DictTypeUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *DictTypeUpdate) AddUpdatedBy(v int32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) AddUpdatedBy(v int64) *DictTypeUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *DictTypeUpdate) ClearUpdatedBy() *DictTypeUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *DictTypeUpdate) SetDeletedBy(v uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetDeletedBy(v uint64) *DictTypeUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *DictTypeUpdate) SetNillableDeletedBy(v *uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetNillableDeletedBy(v *uint64) *DictTypeUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *DictTypeUpdate) SetNillableDeletedBy(v *uint32) *DictTypeUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *DictTypeUpdate) AddDeletedBy(v int32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) AddDeletedBy(v int64) *DictTypeUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -219,14 +219,14 @@ func (_u *DictTypeUpdate) ClearTypeName() *DictTypeUpdate {
 }
 
 // AddEntryIDs adds the "entries" edge to the DictEntry entity by IDs.
-func (_u *DictTypeUpdate) AddEntryIDs(ids ...uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) AddEntryIDs(ids ...uint64) *DictTypeUpdate {
 	_u.mutation.AddEntryIDs(ids...)
 	return _u
 }
 
 // AddEntries adds the "entries" edges to the DictEntry entity.
 func (_u *DictTypeUpdate) AddEntries(v ...*DictEntry) *DictTypeUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -245,14 +245,14 @@ func (_u *DictTypeUpdate) ClearEntries() *DictTypeUpdate {
 }
 
 // RemoveEntryIDs removes the "entries" edge to DictEntry entities by IDs.
-func (_u *DictTypeUpdate) RemoveEntryIDs(ids ...uint32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) RemoveEntryIDs(ids ...uint64) *DictTypeUpdate {
 	_u.mutation.RemoveEntryIDs(ids...)
 	return _u
 }
 
 // RemoveEntries removes "entries" edges to DictEntry entities.
 func (_u *DictTypeUpdate) RemoveEntries(v ...*DictEntry) *DictTypeUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -306,7 +306,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(dicttype.Table, dicttype.Columns, sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(dicttype.Table, dicttype.Columns, sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -330,31 +330,31 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(dicttype.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(dicttype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(dicttype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(dicttype.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(dicttype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(dicttype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(dicttype.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(dicttype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(dicttype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(dicttype.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(dicttype.FieldIsEnabled, field.TypeBool, value)
@@ -372,7 +372,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(dicttype.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(dicttype.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldTenantID, field.TypeUint64)
 	}
 	if _u.mutation.TypeCodeCleared() {
 		_spec.ClearField(dicttype.FieldTypeCode, field.TypeString)
@@ -391,7 +391,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -404,7 +404,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -420,7 +420,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -491,14 +491,14 @@ func (_u *DictTypeUpdateOne) ClearDeletedAt() *DictTypeUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *DictTypeUpdateOne) SetCreatedBy(v uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetCreatedBy(v uint64) *DictTypeUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *DictTypeUpdateOne) SetNillableCreatedBy(v *uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetNillableCreatedBy(v *uint64) *DictTypeUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -506,7 +506,7 @@ func (_u *DictTypeUpdateOne) SetNillableCreatedBy(v *uint32) *DictTypeUpdateOne 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *DictTypeUpdateOne) AddCreatedBy(v int32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) AddCreatedBy(v int64) *DictTypeUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -518,14 +518,14 @@ func (_u *DictTypeUpdateOne) ClearCreatedBy() *DictTypeUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *DictTypeUpdateOne) SetUpdatedBy(v uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetUpdatedBy(v uint64) *DictTypeUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *DictTypeUpdateOne) SetNillableUpdatedBy(v *uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetNillableUpdatedBy(v *uint64) *DictTypeUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -533,7 +533,7 @@ func (_u *DictTypeUpdateOne) SetNillableUpdatedBy(v *uint32) *DictTypeUpdateOne 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *DictTypeUpdateOne) AddUpdatedBy(v int32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) AddUpdatedBy(v int64) *DictTypeUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -545,14 +545,14 @@ func (_u *DictTypeUpdateOne) ClearUpdatedBy() *DictTypeUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *DictTypeUpdateOne) SetDeletedBy(v uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetDeletedBy(v uint64) *DictTypeUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *DictTypeUpdateOne) SetNillableDeletedBy(v *uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetNillableDeletedBy(v *uint64) *DictTypeUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -560,7 +560,7 @@ func (_u *DictTypeUpdateOne) SetNillableDeletedBy(v *uint32) *DictTypeUpdateOne 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *DictTypeUpdateOne) AddDeletedBy(v int32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) AddDeletedBy(v int64) *DictTypeUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -639,14 +639,14 @@ func (_u *DictTypeUpdateOne) ClearTypeName() *DictTypeUpdateOne {
 }
 
 // AddEntryIDs adds the "entries" edge to the DictEntry entity by IDs.
-func (_u *DictTypeUpdateOne) AddEntryIDs(ids ...uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) AddEntryIDs(ids ...uint64) *DictTypeUpdateOne {
 	_u.mutation.AddEntryIDs(ids...)
 	return _u
 }
 
 // AddEntries adds the "entries" edges to the DictEntry entity.
 func (_u *DictTypeUpdateOne) AddEntries(v ...*DictEntry) *DictTypeUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -665,14 +665,14 @@ func (_u *DictTypeUpdateOne) ClearEntries() *DictTypeUpdateOne {
 }
 
 // RemoveEntryIDs removes the "entries" edge to DictEntry entities by IDs.
-func (_u *DictTypeUpdateOne) RemoveEntryIDs(ids ...uint32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) RemoveEntryIDs(ids ...uint64) *DictTypeUpdateOne {
 	_u.mutation.RemoveEntryIDs(ids...)
 	return _u
 }
 
 // RemoveEntries removes "entries" edges to DictEntry entities.
 func (_u *DictTypeUpdateOne) RemoveEntries(v ...*DictEntry) *DictTypeUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]uint64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -739,7 +739,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(dicttype.Table, dicttype.Columns, sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(dicttype.Table, dicttype.Columns, sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "DictType.id" for update`)}
@@ -780,31 +780,31 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 		_spec.ClearField(dicttype.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(dicttype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(dicttype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(dicttype.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(dicttype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(dicttype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(dicttype.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(dicttype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(dicttype.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(dicttype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(dicttype.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(dicttype.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldDeletedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(dicttype.FieldIsEnabled, field.TypeBool, value)
@@ -822,7 +822,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 		_spec.ClearField(dicttype.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(dicttype.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(dicttype.FieldTenantID, field.TypeUint64)
 	}
 	if _u.mutation.TypeCodeCleared() {
 		_spec.ClearField(dicttype.FieldTypeCode, field.TypeString)
@@ -841,7 +841,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -854,7 +854,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -870,7 +870,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

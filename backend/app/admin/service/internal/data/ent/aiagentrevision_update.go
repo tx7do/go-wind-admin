@@ -71,14 +71,14 @@ func (_u *AiAgentRevisionUpdate) ClearDeletedAt() *AiAgentRevisionUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiAgentRevisionUpdate) SetCreatedBy(v uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetCreatedBy(v uint64) *AiAgentRevisionUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdate) SetNillableCreatedBy(v *uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetNillableCreatedBy(v *uint64) *AiAgentRevisionUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *AiAgentRevisionUpdate) SetNillableCreatedBy(v *uint32) *AiAgentRevisio
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AiAgentRevisionUpdate) AddCreatedBy(v int32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) AddCreatedBy(v int64) *AiAgentRevisionUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *AiAgentRevisionUpdate) ClearCreatedBy() *AiAgentRevisionUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiAgentRevisionUpdate) SetUpdatedBy(v uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetUpdatedBy(v uint64) *AiAgentRevisionUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdate) SetNillableUpdatedBy(v *uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetNillableUpdatedBy(v *uint64) *AiAgentRevisionUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *AiAgentRevisionUpdate) SetNillableUpdatedBy(v *uint32) *AiAgentRevisio
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AiAgentRevisionUpdate) AddUpdatedBy(v int32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) AddUpdatedBy(v int64) *AiAgentRevisionUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *AiAgentRevisionUpdate) ClearUpdatedBy() *AiAgentRevisionUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiAgentRevisionUpdate) SetDeletedBy(v uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetDeletedBy(v uint64) *AiAgentRevisionUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdate) SetNillableDeletedBy(v *uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetNillableDeletedBy(v *uint64) *AiAgentRevisionUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *AiAgentRevisionUpdate) SetNillableDeletedBy(v *uint32) *AiAgentRevisio
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AiAgentRevisionUpdate) AddDeletedBy(v int32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) AddDeletedBy(v int64) *AiAgentRevisionUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -152,13 +152,13 @@ func (_u *AiAgentRevisionUpdate) ClearDeletedBy() *AiAgentRevisionUpdate {
 }
 
 // SetAppID sets the "app_id" field.
-func (_u *AiAgentRevisionUpdate) SetAppID(v uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetAppID(v uint64) *AiAgentRevisionUpdate {
 	_u.mutation.SetAppID(v)
 	return _u
 }
 
 // SetNillableAppID sets the "app_id" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdate) SetNillableAppID(v *uint32) *AiAgentRevisionUpdate {
+func (_u *AiAgentRevisionUpdate) SetNillableAppID(v *uint64) *AiAgentRevisionUpdate {
 	if v != nil {
 		_u.SetAppID(*v)
 	}
@@ -274,7 +274,7 @@ func (_u *AiAgentRevisionUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(aiagentrevision.Table, aiagentrevision.Columns, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiagentrevision.Table, aiagentrevision.Columns, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -298,34 +298,34 @@ func (_u *AiAgentRevisionUpdate) sqlSave(ctx context.Context) (_node int, err er
 		_spec.ClearField(aiagentrevision.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiagentrevision.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Graph(); ok {
 		_spec.SetField(aiagentrevision.FieldGraph, field.TypeString, value)
@@ -347,7 +347,7 @@ func (_u *AiAgentRevisionUpdate) sqlSave(ctx context.Context) (_node int, err er
 			Columns: []string{aiagentrevision.AppColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -360,7 +360,7 @@ func (_u *AiAgentRevisionUpdate) sqlSave(ctx context.Context) (_node int, err er
 			Columns: []string{aiagentrevision.AppColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -431,14 +431,14 @@ func (_u *AiAgentRevisionUpdateOne) ClearDeletedAt() *AiAgentRevisionUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiAgentRevisionUpdateOne) SetCreatedBy(v uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetCreatedBy(v uint64) *AiAgentRevisionUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdateOne) SetNillableCreatedBy(v *uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetNillableCreatedBy(v *uint64) *AiAgentRevisionUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -446,7 +446,7 @@ func (_u *AiAgentRevisionUpdateOne) SetNillableCreatedBy(v *uint32) *AiAgentRevi
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AiAgentRevisionUpdateOne) AddCreatedBy(v int32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) AddCreatedBy(v int64) *AiAgentRevisionUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -458,14 +458,14 @@ func (_u *AiAgentRevisionUpdateOne) ClearCreatedBy() *AiAgentRevisionUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiAgentRevisionUpdateOne) SetUpdatedBy(v uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetUpdatedBy(v uint64) *AiAgentRevisionUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdateOne) SetNillableUpdatedBy(v *uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetNillableUpdatedBy(v *uint64) *AiAgentRevisionUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -473,7 +473,7 @@ func (_u *AiAgentRevisionUpdateOne) SetNillableUpdatedBy(v *uint32) *AiAgentRevi
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AiAgentRevisionUpdateOne) AddUpdatedBy(v int32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) AddUpdatedBy(v int64) *AiAgentRevisionUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -485,14 +485,14 @@ func (_u *AiAgentRevisionUpdateOne) ClearUpdatedBy() *AiAgentRevisionUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiAgentRevisionUpdateOne) SetDeletedBy(v uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetDeletedBy(v uint64) *AiAgentRevisionUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdateOne) SetNillableDeletedBy(v *uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetNillableDeletedBy(v *uint64) *AiAgentRevisionUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -500,7 +500,7 @@ func (_u *AiAgentRevisionUpdateOne) SetNillableDeletedBy(v *uint32) *AiAgentRevi
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AiAgentRevisionUpdateOne) AddDeletedBy(v int32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) AddDeletedBy(v int64) *AiAgentRevisionUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -512,13 +512,13 @@ func (_u *AiAgentRevisionUpdateOne) ClearDeletedBy() *AiAgentRevisionUpdateOne {
 }
 
 // SetAppID sets the "app_id" field.
-func (_u *AiAgentRevisionUpdateOne) SetAppID(v uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetAppID(v uint64) *AiAgentRevisionUpdateOne {
 	_u.mutation.SetAppID(v)
 	return _u
 }
 
 // SetNillableAppID sets the "app_id" field if the given value is not nil.
-func (_u *AiAgentRevisionUpdateOne) SetNillableAppID(v *uint32) *AiAgentRevisionUpdateOne {
+func (_u *AiAgentRevisionUpdateOne) SetNillableAppID(v *uint64) *AiAgentRevisionUpdateOne {
 	if v != nil {
 		_u.SetAppID(*v)
 	}
@@ -647,7 +647,7 @@ func (_u *AiAgentRevisionUpdateOne) sqlSave(ctx context.Context) (_node *AiAgent
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(aiagentrevision.Table, aiagentrevision.Columns, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(aiagentrevision.Table, aiagentrevision.Columns, sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiAgentRevision.id" for update`)}
@@ -688,34 +688,34 @@ func (_u *AiAgentRevisionUpdateOne) sqlSave(ctx context.Context) (_node *AiAgent
 		_spec.ClearField(aiagentrevision.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldCreatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldCreatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldUpdatedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldUpdatedBy, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(aiagentrevision.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiagentrevision.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(aiagentrevision.FieldDeletedBy, field.TypeUint64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiagentrevision.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldDeletedBy, field.TypeUint64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiagentrevision.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(aiagentrevision.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Graph(); ok {
 		_spec.SetField(aiagentrevision.FieldGraph, field.TypeString, value)
@@ -737,7 +737,7 @@ func (_u *AiAgentRevisionUpdateOne) sqlSave(ctx context.Context) (_node *AiAgent
 			Columns: []string{aiagentrevision.AppColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -750,7 +750,7 @@ func (_u *AiAgentRevisionUpdateOne) sqlSave(ctx context.Context) (_node *AiAgent
 			Columns: []string{aiagentrevision.AppColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(aiagentapp.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

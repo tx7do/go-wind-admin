@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.DataAccessAuditLog {
+func ID(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.DataAccessAuditLog {
+func IDEQ(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.DataAccessAuditLog {
+func IDNEQ(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.DataAccessAuditLog {
+func IDIn(ids ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.DataAccessAuditLog {
+func IDNotIn(ids ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.DataAccessAuditLog {
+func IDGT(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.DataAccessAuditLog {
+func IDGTE(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.DataAccessAuditLog {
+func IDLT(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.DataAccessAuditLog {
+func IDLTE(id uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -60,12 +60,12 @@ func CreatedAt(v time.Time) predicate.DataAccessAuditLog {
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.DataAccessAuditLog {
+func TenantID(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint32) predicate.DataAccessAuditLog {
+func UserID(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldUserID, v))
 }
 
@@ -215,42 +215,42 @@ func CreatedAtNotNil() predicate.DataAccessAuditLog {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.DataAccessAuditLog {
+func TenantIDEQ(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.DataAccessAuditLog {
+func TenantIDNEQ(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.DataAccessAuditLog {
+func TenantIDIn(vs ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.DataAccessAuditLog {
+func TenantIDNotIn(vs ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.DataAccessAuditLog {
+func TenantIDGT(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.DataAccessAuditLog {
+func TenantIDGTE(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.DataAccessAuditLog {
+func TenantIDLT(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.DataAccessAuditLog {
+func TenantIDLTE(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -265,42 +265,42 @@ func TenantIDNotNil() predicate.DataAccessAuditLog {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint32) predicate.DataAccessAuditLog {
+func UserIDEQ(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint32) predicate.DataAccessAuditLog {
+func UserIDNEQ(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint32) predicate.DataAccessAuditLog {
+func UserIDIn(vs ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint32) predicate.DataAccessAuditLog {
+func UserIDNotIn(vs ...uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint32) predicate.DataAccessAuditLog {
+func UserIDGT(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint32) predicate.DataAccessAuditLog {
+func UserIDGTE(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint32) predicate.DataAccessAuditLog {
+func UserIDLT(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint32) predicate.DataAccessAuditLog {
+func UserIDLTE(v uint64) predicate.DataAccessAuditLog {
 	return predicate.DataAccessAuditLog(sql.FieldLTE(FieldUserID, v))
 }
 

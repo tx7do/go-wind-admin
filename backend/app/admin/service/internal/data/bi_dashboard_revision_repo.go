@@ -53,7 +53,7 @@ func (r *BiDashboardRevisionRepo) Create(ctx context.Context, revision *biV1.BiD
 }
 
 // List 按仪表盘拉取快照分页（新快照在前）。
-func (r *BiDashboardRevisionRepo) List(ctx context.Context, dashboardId uint32, page *paginationV1.PagingRequest) ([]*biV1.BiDashboardRevision, uint32, error) {
+func (r *BiDashboardRevisionRepo) List(ctx context.Context, dashboardId uint64, page *paginationV1.PagingRequest) ([]*biV1.BiDashboardRevision, uint64, error) {
 	query := r.entClient.Client().BiDashboardRevision.Query().
 		Where(bidashboardrevision.DashboardIDEQ(dashboardId))
 
@@ -90,11 +90,11 @@ func (r *BiDashboardRevisionRepo) List(ctx context.Context, dashboardId uint32, 
 	for _, row := range rows {
 		items = append(items, revisionEntityToDTO(row))
 	}
-	return items, uint32(total), nil
+	return items, uint64(total), nil
 }
 
 // Get 取单个快照（恢复时校验归属）。
-func (r *BiDashboardRevisionRepo) Get(ctx context.Context, id uint32) (*biV1.BiDashboardRevision, error) {
+func (r *BiDashboardRevisionRepo) Get(ctx context.Context, id uint64) (*biV1.BiDashboardRevision, error) {
 	row, err := r.entClient.Client().BiDashboardRevision.Get(ctx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {

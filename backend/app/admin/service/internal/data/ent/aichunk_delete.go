@@ -40,7 +40,7 @@ func (_d *AiChunkDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *AiChunkDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(aichunk.Table, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(aichunk.Table, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

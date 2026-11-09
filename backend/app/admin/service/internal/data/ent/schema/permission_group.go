@@ -42,13 +42,13 @@ func (PermissionGroup) Fields() []ent.Field {
 
 func (PermissionGroup) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
+		mixin.OperatorID64{},
 		mixin.Description{},
 		mixin.SwitchStatus{},
 		mixin.SortOrder{},
-		mixin.Tree[PermissionGroup]{},
+		mixin.Tree64[PermissionGroup]{},
 		mixin.TreePath{},
 	}
 }

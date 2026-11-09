@@ -41,7 +41,7 @@ func (r *PermissionMenuRepo) menuRepoForIndex(log *bLogger.Helper) *MenuRepo {
 
 // resolveFullPaths 把前端提交的菜单引用（id 列表）一次性解析成全路径身份快照。
 // 解析不到的 id 随 missing 返回，由调用方整体失败而非静默丢弃（不吞错铁律）。
-func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uint32) (fullPaths []string, missing []uint32, err error) {
+func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uint64) (fullPaths []string, missing []uint64, err error) {
 	if len(menuIDs) == 0 {
 		return nil, nil, nil
 	}
@@ -69,7 +69,7 @@ func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uin
 }
 
 // ListMenuFullPaths 列出权限关联的菜单全路径快照（绑定表即真相，不回查 sys_menus）。
-func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionIDs []uint32) ([]string, error) {
+func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionIDs []uint64) ([]string, error) {
 	if len(permissionIDs) == 0 {
 		return nil, nil
 	}
@@ -100,7 +100,7 @@ func (r *PermissionMenuRepo) ListMenuFullPaths(ctx context.Context, permissionID
 // ListMenuIDs 列出权限关联的菜单 ID 列表：全路径快照反解回当前 sys_menus 的 id，
 // 供管理页勾选框回显。路径已不存在的快照解析不出 id，防御性跳过（正常情况下
 // 菜单删除会级联清绑定；菜单同步 REPLACE 重建后同路径新行照常命中）。
-func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []uint64) ([]uint64, error) {
 	paths, err := r.ListMenuFullPaths(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -113,8 +113,8 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 // 空列表 = 清空该权限的全部菜单授权。
 func (r *PermissionMenuRepo) AssignMenus(
 	ctx context.Context,
-	permissionID uint32,
-	menuIDs []uint32,
+	permissionID uint64,
+	menuIDs []uint64,
 ) (err error) {
 	fullPaths, missing, err := r.resolveFullPaths(ctx, menuIDs)
 	if err != nil {
@@ -156,7 +156,7 @@ func (r *PermissionMenuRepo) AssignMenus(
 func (r *PermissionMenuRepo) AssignMenusWithTx(
 	ctx context.Context,
 	tx *ent.Tx,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	return r.assignFullPathsWithTx(ctx, tx, permissionID, fullPaths)
@@ -165,7 +165,7 @@ func (r *PermissionMenuRepo) AssignMenusWithTx(
 func (r *PermissionMenuRepo) assignFullPathsWithTx(
 	ctx context.Context,
 	tx *ent.Tx,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	if len(fullPaths) == 0 {
@@ -200,7 +200,7 @@ func (r *PermissionMenuRepo) assignFullPathsWithTx(
 func (r *PermissionMenuRepo) cleanNotExistMenusWithClient(
 	ctx context.Context,
 	client *ent.Client,
-	permissionID uint32,
+	permissionID uint64,
 	fullPaths []string,
 ) error {
 	builder := client.PermissionMenu.Delete().Where(permissionmenu.PermissionIDEQ(permissionID))
@@ -284,7 +284,7 @@ func (r *PermissionMenuRepo) DeleteByFullPaths(ctx context.Context, client *ent.
 
 // TruncateExcept 清空绑定表但保留指定权限（按 code 前缀解析出的系统种子权限）
 // 的绑定。keepPermissionIDs 为空 = 全清（权限表整体重建场景）。
-func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint32) error {
+func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint64) error {
 	builder := r.entClient.Client().PermissionMenu.Delete()
 	if len(keepPermissionIDs) > 0 {
 		builder = builder.Where(permissionmenu.PermissionIDNotIn(keepPermissionIDs...))
@@ -299,7 +299,7 @@ func (r *PermissionMenuRepo) TruncateExcept(ctx context.Context, keepPermissionI
 }
 
 // Delete 删除权限关联的菜单
-func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) error {
+func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint64) error {
 	if _, err := r.entClient.Client().PermissionMenu.Delete().
 		Where(
 			permissionmenu.PermissionIDEQ(permissionID),
@@ -312,13 +312,13 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 	return nil
 }
 
-func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
 	return r.DeleteByPermissionIDsOnClient(ctx, r.entClient.Client(), permissionIDs)
 }
 
 // DeleteByPermissionIDsOnClient DeleteByPermissionIDs 的 client 形参变体：
 // 权限行删除+级联清理同事务执行时传事务 client。
-func (r *PermissionMenuRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
+func (r *PermissionMenuRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}

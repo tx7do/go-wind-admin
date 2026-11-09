@@ -77,7 +77,7 @@ func TestAiKnowledgeRepoChunksRoundTrip(t *testing.T) {
 	ctx := context.Background()
 
 	// 造数：一库一文档（列全可空，走原始 SQL 最小造行），切片经 repo 写入。
-	var baseID, docID uint32
+	var baseID, docID uint64
 	err := db.QueryRowContext(ctx, "INSERT INTO sys_ai_knowledge_bases DEFAULT VALUES RETURNING id").Scan(&baseID)
 	require.NoError(t, err, "seed base row")
 	err = db.QueryRowContext(ctx, "INSERT INTO sys_ai_docs (base_id) VALUES ($1) RETURNING id", baseID).Scan(&docID)

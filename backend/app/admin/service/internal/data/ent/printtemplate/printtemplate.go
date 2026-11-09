@@ -92,11 +92,11 @@ var (
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID uint64
 	// DefaultIsBuiltIn holds the default value on creation for the "is_built_in" field.
 	DefaultIsBuiltIn bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(uint64) error
 )
 
 // OrderOption defines the ordering options for the PrintTemplate queries.

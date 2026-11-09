@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.BiDashboardRevision {
+func ID(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.BiDashboardRevision {
+func IDEQ(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.BiDashboardRevision {
+func IDNEQ(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.BiDashboardRevision {
+func IDIn(ids ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.BiDashboardRevision {
+func IDNotIn(ids ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.BiDashboardRevision {
+func IDGT(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.BiDashboardRevision {
+func IDGTE(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.BiDashboardRevision {
+func IDLT(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.BiDashboardRevision {
+func IDLTE(id uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,27 +71,27 @@ func DeletedAt(v time.Time) predicate.BiDashboardRevision {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.BiDashboardRevision {
+func CreatedBy(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.BiDashboardRevision {
+func UpdatedBy(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.BiDashboardRevision {
+func DeletedBy(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.BiDashboardRevision {
+func TenantID(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldTenantID, v))
 }
 
 // DashboardID applies equality check predicate on the "dashboard_id" field. It's identical to DashboardIDEQ.
-func DashboardID(v uint32) predicate.BiDashboardRevision {
+func DashboardID(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldDashboardID, v))
 }
 
@@ -261,42 +261,42 @@ func DeletedAtNotNil() predicate.BiDashboardRevision {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.BiDashboardRevision {
+func CreatedByEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.BiDashboardRevision {
+func CreatedByNEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.BiDashboardRevision {
+func CreatedByIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.BiDashboardRevision {
+func CreatedByNotIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.BiDashboardRevision {
+func CreatedByGT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.BiDashboardRevision {
+func CreatedByGTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.BiDashboardRevision {
+func CreatedByLT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.BiDashboardRevision {
+func CreatedByLTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -311,42 +311,42 @@ func CreatedByNotNil() predicate.BiDashboardRevision {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.BiDashboardRevision {
+func UpdatedByEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.BiDashboardRevision {
+func UpdatedByNEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.BiDashboardRevision {
+func UpdatedByIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.BiDashboardRevision {
+func UpdatedByNotIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.BiDashboardRevision {
+func UpdatedByGT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.BiDashboardRevision {
+func UpdatedByGTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.BiDashboardRevision {
+func UpdatedByLT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.BiDashboardRevision {
+func UpdatedByLTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -361,42 +361,42 @@ func UpdatedByNotNil() predicate.BiDashboardRevision {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.BiDashboardRevision {
+func DeletedByEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.BiDashboardRevision {
+func DeletedByNEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.BiDashboardRevision {
+func DeletedByIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.BiDashboardRevision {
+func DeletedByNotIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.BiDashboardRevision {
+func DeletedByGT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.BiDashboardRevision {
+func DeletedByGTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.BiDashboardRevision {
+func DeletedByLT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.BiDashboardRevision {
+func DeletedByLTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -411,42 +411,42 @@ func DeletedByNotNil() predicate.BiDashboardRevision {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.BiDashboardRevision {
+func TenantIDEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.BiDashboardRevision {
+func TenantIDNEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.BiDashboardRevision {
+func TenantIDIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.BiDashboardRevision {
+func TenantIDNotIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.BiDashboardRevision {
+func TenantIDGT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.BiDashboardRevision {
+func TenantIDGTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.BiDashboardRevision {
+func TenantIDLT(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.BiDashboardRevision {
+func TenantIDLTE(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -461,22 +461,22 @@ func TenantIDNotNil() predicate.BiDashboardRevision {
 }
 
 // DashboardIDEQ applies the EQ predicate on the "dashboard_id" field.
-func DashboardIDEQ(v uint32) predicate.BiDashboardRevision {
+func DashboardIDEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldEQ(FieldDashboardID, v))
 }
 
 // DashboardIDNEQ applies the NEQ predicate on the "dashboard_id" field.
-func DashboardIDNEQ(v uint32) predicate.BiDashboardRevision {
+func DashboardIDNEQ(v uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNEQ(FieldDashboardID, v))
 }
 
 // DashboardIDIn applies the In predicate on the "dashboard_id" field.
-func DashboardIDIn(vs ...uint32) predicate.BiDashboardRevision {
+func DashboardIDIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldIn(FieldDashboardID, vs...))
 }
 
 // DashboardIDNotIn applies the NotIn predicate on the "dashboard_id" field.
-func DashboardIDNotIn(vs ...uint32) predicate.BiDashboardRevision {
+func DashboardIDNotIn(vs ...uint64) predicate.BiDashboardRevision {
 	return predicate.BiDashboardRevision(sql.FieldNotIn(FieldDashboardID, vs...))
 }
 

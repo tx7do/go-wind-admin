@@ -70,14 +70,14 @@ func (_u *InternalMessageRecipientUpdate) ClearDeletedAt() *InternalMessageRecip
 }
 
 // SetMessageID sets the "message_id" field.
-func (_u *InternalMessageRecipientUpdate) SetMessageID(v uint32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) SetMessageID(v uint64) *InternalMessageRecipientUpdate {
 	_u.mutation.ResetMessageID()
 	_u.mutation.SetMessageID(v)
 	return _u
 }
 
 // SetNillableMessageID sets the "message_id" field if the given value is not nil.
-func (_u *InternalMessageRecipientUpdate) SetNillableMessageID(v *uint32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) SetNillableMessageID(v *uint64) *InternalMessageRecipientUpdate {
 	if v != nil {
 		_u.SetMessageID(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *InternalMessageRecipientUpdate) SetNillableMessageID(v *uint32) *Inter
 }
 
 // AddMessageID adds value to the "message_id" field.
-func (_u *InternalMessageRecipientUpdate) AddMessageID(v int32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) AddMessageID(v int64) *InternalMessageRecipientUpdate {
 	_u.mutation.AddMessageID(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *InternalMessageRecipientUpdate) ClearMessageID() *InternalMessageRecip
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (_u *InternalMessageRecipientUpdate) SetRecipientUserID(v uint32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) SetRecipientUserID(v uint64) *InternalMessageRecipientUpdate {
 	_u.mutation.ResetRecipientUserID()
 	_u.mutation.SetRecipientUserID(v)
 	return _u
 }
 
 // SetNillableRecipientUserID sets the "recipient_user_id" field if the given value is not nil.
-func (_u *InternalMessageRecipientUpdate) SetNillableRecipientUserID(v *uint32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) SetNillableRecipientUserID(v *uint64) *InternalMessageRecipientUpdate {
 	if v != nil {
 		_u.SetRecipientUserID(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *InternalMessageRecipientUpdate) SetNillableRecipientUserID(v *uint32) 
 }
 
 // AddRecipientUserID adds value to the "recipient_user_id" field.
-func (_u *InternalMessageRecipientUpdate) AddRecipientUserID(v int32) *InternalMessageRecipientUpdate {
+func (_u *InternalMessageRecipientUpdate) AddRecipientUserID(v int64) *InternalMessageRecipientUpdate {
 	_u.mutation.AddRecipientUserID(v)
 	return _u
 }
@@ -235,7 +235,7 @@ func (_u *InternalMessageRecipientUpdate) sqlSave(ctx context.Context) (_node in
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(internalmessagerecipient.Table, internalmessagerecipient.Columns, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(internalmessagerecipient.Table, internalmessagerecipient.Columns, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -259,25 +259,25 @@ func (_u *InternalMessageRecipientUpdate) sqlSave(ctx context.Context) (_node in
 		_spec.ClearField(internalmessagerecipient.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.MessageID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedMessageID(); ok {
-		_spec.AddField(internalmessagerecipient.FieldMessageID, field.TypeUint32, value)
+		_spec.AddField(internalmessagerecipient.FieldMessageID, field.TypeUint64, value)
 	}
 	if _u.mutation.MessageIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldMessageID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldMessageID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.RecipientUserID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRecipientUserID(); ok {
-		_spec.AddField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32, value)
+		_spec.AddField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.RecipientUserIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(internalmessagerecipient.FieldStatus, field.TypeEnum, value)
@@ -360,14 +360,14 @@ func (_u *InternalMessageRecipientUpdateOne) ClearDeletedAt() *InternalMessageRe
 }
 
 // SetMessageID sets the "message_id" field.
-func (_u *InternalMessageRecipientUpdateOne) SetMessageID(v uint32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) SetMessageID(v uint64) *InternalMessageRecipientUpdateOne {
 	_u.mutation.ResetMessageID()
 	_u.mutation.SetMessageID(v)
 	return _u
 }
 
 // SetNillableMessageID sets the "message_id" field if the given value is not nil.
-func (_u *InternalMessageRecipientUpdateOne) SetNillableMessageID(v *uint32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) SetNillableMessageID(v *uint64) *InternalMessageRecipientUpdateOne {
 	if v != nil {
 		_u.SetMessageID(*v)
 	}
@@ -375,7 +375,7 @@ func (_u *InternalMessageRecipientUpdateOne) SetNillableMessageID(v *uint32) *In
 }
 
 // AddMessageID adds value to the "message_id" field.
-func (_u *InternalMessageRecipientUpdateOne) AddMessageID(v int32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) AddMessageID(v int64) *InternalMessageRecipientUpdateOne {
 	_u.mutation.AddMessageID(v)
 	return _u
 }
@@ -387,14 +387,14 @@ func (_u *InternalMessageRecipientUpdateOne) ClearMessageID() *InternalMessageRe
 }
 
 // SetRecipientUserID sets the "recipient_user_id" field.
-func (_u *InternalMessageRecipientUpdateOne) SetRecipientUserID(v uint32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) SetRecipientUserID(v uint64) *InternalMessageRecipientUpdateOne {
 	_u.mutation.ResetRecipientUserID()
 	_u.mutation.SetRecipientUserID(v)
 	return _u
 }
 
 // SetNillableRecipientUserID sets the "recipient_user_id" field if the given value is not nil.
-func (_u *InternalMessageRecipientUpdateOne) SetNillableRecipientUserID(v *uint32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) SetNillableRecipientUserID(v *uint64) *InternalMessageRecipientUpdateOne {
 	if v != nil {
 		_u.SetRecipientUserID(*v)
 	}
@@ -402,7 +402,7 @@ func (_u *InternalMessageRecipientUpdateOne) SetNillableRecipientUserID(v *uint3
 }
 
 // AddRecipientUserID adds value to the "recipient_user_id" field.
-func (_u *InternalMessageRecipientUpdateOne) AddRecipientUserID(v int32) *InternalMessageRecipientUpdateOne {
+func (_u *InternalMessageRecipientUpdateOne) AddRecipientUserID(v int64) *InternalMessageRecipientUpdateOne {
 	_u.mutation.AddRecipientUserID(v)
 	return _u
 }
@@ -538,7 +538,7 @@ func (_u *InternalMessageRecipientUpdateOne) sqlSave(ctx context.Context) (_node
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(internalmessagerecipient.Table, internalmessagerecipient.Columns, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(internalmessagerecipient.Table, internalmessagerecipient.Columns, sqlgraph.NewFieldSpec(internalmessagerecipient.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "InternalMessageRecipient.id" for update`)}
@@ -579,25 +579,25 @@ func (_u *InternalMessageRecipientUpdateOne) sqlSave(ctx context.Context) (_node
 		_spec.ClearField(internalmessagerecipient.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldTenantID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.MessageID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldMessageID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedMessageID(); ok {
-		_spec.AddField(internalmessagerecipient.FieldMessageID, field.TypeUint32, value)
+		_spec.AddField(internalmessagerecipient.FieldMessageID, field.TypeUint64, value)
 	}
 	if _u.mutation.MessageIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldMessageID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldMessageID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.RecipientUserID(); ok {
-		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32, value)
+		_spec.SetField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedRecipientUserID(); ok {
-		_spec.AddField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32, value)
+		_spec.AddField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64, value)
 	}
 	if _u.mutation.RecipientUserIDCleared() {
-		_spec.ClearField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint32)
+		_spec.ClearField(internalmessagerecipient.FieldRecipientUserID, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(internalmessagerecipient.FieldStatus, field.TypeEnum, value)

@@ -94,7 +94,7 @@ func (e *ruleSvcEnv) seedViaInit(t *testing.T) {
 }
 
 // createWebhookChannel 落一条 WEBHOOK 渠道配置并返回主键。
-func (e *ruleSvcEnv) createWebhookChannel(t *testing.T, name, url string, enabled bool) uint32 {
+func (e *ruleSvcEnv) createWebhookChannel(t *testing.T, name, url string, enabled bool) uint64 {
 	t.Helper()
 
 	id, err := e.channel.Create(e.ctx, &notificationChannelV1.CreateNotificationChannelRequest{
@@ -110,7 +110,7 @@ func (e *ruleSvcEnv) createWebhookChannel(t *testing.T, name, url string, enable
 }
 
 // setEnabled 改一条渠道配置的启用状态（走渠道仓储的同一条掩码写路径）。
-func (e *ruleSvcEnv) setEnabled(t *testing.T, id uint32, enabled bool) {
+func (e *ruleSvcEnv) setEnabled(t *testing.T, id uint64, enabled bool) {
 	t.Helper()
 
 	require.NoError(t, e.channel.Update(e.ctx, &notificationChannelV1.UpdateNotificationChannelRequest{
@@ -286,7 +286,7 @@ func TestNotificationRuleServiceSqlite_TestDispatchDelegatesToRule(t *testing.T)
 		Content: trans.Ptr("手工正文"),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint32(777), resp.GetDeliveryId(), "台账 ID 要回传：报错时靠它去投递记录页定位")
+	require.Equal(t, uint64(777), resp.GetDeliveryId(), "台账 ID 要回传：报错时靠它去投递记录页定位")
 	require.Equal(t, notificationV1.DeliveryStatus_SENT, resp.GetStatus())
 
 	require.Len(t, e.notifier.calls, 1)
@@ -298,7 +298,7 @@ func TestNotificationRuleServiceSqlite_TestDispatchDelegatesToRule(t *testing.T)
 	require.Equal(t, "手工标题", sent.GetTitle())
 	require.Equal(t, "手工正文", sent.GetContent())
 	require.NotNil(t, sent.OperatorUserId)
-	require.Equal(t, uint32(88), *sent.OperatorUserId, "台账要能回答是谁点的这个按钮")
+	require.Equal(t, uint64(88), *sent.OperatorUserId, "台账要能回答是谁点的这个按钮")
 
 	// 标题/正文留空：服务端按事件类型渲染测试文案（渲染本体见 pkg/mailtext 的测试）
 	_, err = e.svc.TestDispatchNotification(e.opCtx, &notificationV1.TestDispatchNotificationRequest{
