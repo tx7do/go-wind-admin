@@ -8,6 +8,51 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-09
+
+### 新增
+
+- **AI Agent 编排 M2/M3 全收官（九种节点 + 版本化 + 定时触发 + 对外 API）**
+  （[docs/ai_agent_orchestration.md](./docs/ai_agent_orchestration.md)）：
+  - **script 节点**：图内嵌脚本（Lua/JS，`execute()` + `__get_ctx/__set_ctx` 契约，
+    一次性隔离沙箱执行，32KB 上限，script_log 审计）；
+  - **版本化**：`sys_ai_agent_revisions` 快照表，每次更新且 graph 变化留 SAVE 底、
+    恢复先 RESTORE 留底再写回（可逆），三端「版本历史」抽屉；
+  - **parallel 并行节点 + frontier 波次执行引擎**：每波全部节点并发执行（goroutine
+    栅栏后串行合并，无 map 并发写），parallel fan-out/波栅栏汇聚；环语义化——
+    Tarjan 分量校验（环必经 condition 否则 400）+ 50 步预算，画布补回边软警示与
+    condition branch 顺序赋值 bug 修复；
+  - **subflow 子图节点**：跨应用复用（递归执行 + 深度预算 3 层 + inputMapping 模板
+    映射），子图用量/trace 并入本跑；
+  - **工具市场**：脚本 `tool.register` 注册 LLM 工具，chat/agent 工具循环自动枚举
+    （required/optional → OpenAI schema），执行走引擎 execMu 串行 + script_log 审计；
+  - **定时触发**：任务管理建 PERIODIC 行 `agent_run` 定时执行应用图（机器身份，
+    结果可站内信回传）；
+  - **对外 API**：AK/SK 换机器 JWT 调 Run（AiAgentService 补登记 Module_AI 模块）。
+  三端画布/配置面板/i18n 全部对齐；画布/试运行打开时改用 Get 拉全量（不依赖列表行）。
+  **部署注意：重启 + 「接口同步」（revisions/restore 新端点）。**
+- **审计日志异步化**（[docs/audit-log-producer-design.md](./docs/audit-log-producer-design.md) §1）：
+  六类审计落库改经 asynq 队列（`audit_log_write` 任务，at-least-once + 3 次重试），
+  入队失败/asynq 未配置回退同步写（宁可慢不可丢）；api/login 两类保留事件时间
+  （OccurredAt 覆写 CreatedAt）；Hash/Signature 留在 producer 侧不经队列。
+- **通知归档集清理系统任务**：每小时清超保留期的 `notification_dispatch` 归档载荷
+  （含明文验证码，不能永久躺在 Redis）；保留期 env `NOTIFICATION_ARCHIVED_RETENTION_HOURS`
+  （缺省 24h、下限 1h）。
+- **任务系统跨租户同名 PERIODIC 并存（根治）**：entryID 按行账本 +
+  `RemovePeriodicTaskByID` 精准注销，同名任务各租户并存注册互不干扰；
+  Update 覆盖与 RestartAllTask 累积两类孤儿调度项泄漏同步消除。
+- **打印模板对租户开放 + 模板数配额**（[docs/print_template.md](./docs/print_template.md) §7）：
+  `Module` 新增 `PRINT=12`、`QuotaType` 新增 `TEMPLATE_COUNT=5`；
+  删租户管理员端点黑名单的 print-templates 行、菜单改双码授权；
+  `PrintTemplateService.Create` 入口按租户模板数配额拒绝（fail-open）。
+  **部署注意：重启 → 「接口同步」→ 「菜单/权限同步」→ 套餐白名单补 PRINT 行与配额行。**
+- **任务管理注册面扩展**：`agent_run`（定时执行 Agent 图）、`ai_query_run`（定时问数，
+  补注册此前缺失的订阅——原为死代码）两个类型入注册面。
+- **React 启动加载页**：React 挂载前空白窗口期占位 + bootstrap 失败兜底。
+- **偏好抽屉「复制偏好设置」**：react/ele 落地（复制与出厂默认的增量，对齐 vben）。
+- **ErrorFallback 可配置错误上报端点**：`VITE_ERROR_REPORT_ENDPOINT` 配置后生产环境
+  错误自动 POST 上报（留空仅控制台）。
+
 ### 修复
 
 - **「权限同步」MERGE 化（按 code 原位更新保 id）+ 权限删除级联补全——角色授权链漂移根治**：
@@ -20,7 +65,38 @@
   端点−平台专属 path 前缀黑名单，**新增平台专属端点须登记黑名单**），角色按权限 code 解析、
   分组按 GroupName 解析；启动播种时序显式化（菜单→接口→权限→角色）。proto 与三端前端零改动。
 - **菜单授权绑定改以全路径快照为准 + 种子引用全面语义化，授权体系对"删了再加"完全免疫**：
+  菜单绑定此前存 `menu_id` 外键，菜单同步 REPLACE（清空重建、全部换 id）曾让角色-菜单授权
+  整批漂没；现绑定存菜单全路径快照（与菜单同步 MERGE 的身份键同形），REPLACE 重建后同路径
+  新行照常命中、导航零漂移；菜单行被删除时按全路径级联清绑定；历史 menu_id 绑定由启动期一次性
+  迁移回填（含按父链拼接全路径与绝对路径子菜单的原样语义）。种子引用同步去除全部硬编码 id：
+  模板权限的菜单/端点集改为播种期动态解析（平台管理员=当前全量菜单+全部端点；租户管理员端点
+  =全部端点−平台专属 path 前缀黑名单 `TenantManagerDeniedApiPrefixes`，**新增平台专属端点须
+  登记黑名单**），角色按权限 code（`DefaultRolePermissionCodes`）解析，分组按 GroupName 解析
+  （默认权限组播种内聚进权限播种，消除"组晚于权限播种靠自增补位"的时序约定）；绑定表清理的
+  保留集从硬编码"种子权限 1/2/3"改为按权限 code 前缀解析。proto 与三端前端零改动。
+- **API 授权绑定改以端点身份为准，根治「接口同步」授权漂移**：权限点的接口绑定此前存
+  `api_id` 外键，而「接口同步」以 Truncate + 顺序重编号全量重建 Api 表且行序随机——每跑
+  一次同步全体 API id 洗牌，绑定随之漂移到无关端点（部分角色被静默授权从未勾选的接口、
+  原有接口反而失权），单删 API 亦不清绑定留下孤儿引用。现绑定落库时一次性解析为
+  `(path, method)` 端点快照（与 authorizer 策略、租户闸门的裁决键同形），接口同步改为按
+  自然键 `(path, method)` 单事务 MERGE 增量对齐（id 与绑定永不漂移；spec 移除的端点删行
+  并同事务级联清绑定；同步窗口不再全表清空，租户闸门 fail-closed 的全租户 403 窗口缩到
+  毫秒级）。API 的 `path`/`method` 为身份字段不再接受修改（要变更=删旧建新）；绑定提交了
+  已不存在的接口引用将整体拒绝并附缺失明细，不再静默丢弃。历史 `api_id` 绑定由启动期一次性
+  迁移回填（旧列旧索引随之摘除）；**历史绑定可能已被历次重编号漂污，升级后请在权限管理页
+  核对一遍（重新勾选保存即以当前端点为准自愈）**。模板权限种子的接口引用同步收敛为
+  「播种当下真实存在的端点」（平台管理员=全部端点，不再依赖硬编码 id 段）。proto 与三端
+  前端零改动。
 
+- **「权限同步」MERGE 化（按 code 原位更新保 id）+ 权限删除级联补全——角色授权链漂移根治**：
+  权限同步此前对业务权限行删除重建（换 id），挂在权限 id 上的角色授权（sys_role_permissions）、
+  策略联动行（sys_permission_policies）、租户管理员模板副本引用全部被打成孤儿——租户管理员
+  的业务权限授权在每次「权限同步」后静默清零。现按稳定键 `code` 增量对齐：已存在原位更新
+  （保 id、不触碰管理端手工停用的 status）、缺失才插入、派生集消失的删行并**级联清理角色授权/
+  端点/菜单绑定/策略行**；管理页单删权限同样补齐级联（此前角色绑定残留悬空）。种子引用全面
+  去硬编码 id：模板权限的菜单/端点集播种期动态解析（平台管理员=当前全量；租户管理员=全部
+  端点−平台专属 path 前缀黑名单，**新增平台专属端点须登记黑名单**），角色按权限 code 解析、
+  分组按 GroupName 解析；启动播种时序显式化（菜单→接口→权限→角色）。proto 与三端前端零改动。
 - **菜单授权绑定改以全路径快照为准 + 种子引用全面语义化，授权体系对"删了再加"完全免疫**：
   菜单绑定此前存 `menu_id` 外键，菜单同步 REPLACE（清空重建、全部换 id）曾让角色-菜单授权
   整批漂没；现绑定存菜单全路径快照（与菜单同步 MERGE 的身份键同形），REPLACE 重建后同路径
