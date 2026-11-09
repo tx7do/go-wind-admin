@@ -220,22 +220,22 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 
 - `sys_tasks` 带租户列：管理页的列表/详情查询按租户隔离（ent 隐私层，见 tenant_isolation 第 5 节）；
   `StartAllTask` 用 **SystemContext** 跨租户装载全部任务（调度装载必须全量）。
-- **typeName 全局命名空间限制**：调度器用 typeName 既做路由又做调度项去重键（`entryIDs[typeName]`
-  单条目）。跨租户同名 PERIODIC 任务会互相覆盖产生"无法注销的孤儿 entry"——`startAllTask`
-  按 typeName 去重、**只调度首个**并告警跳过。彻底隔离需调度器支持"路由类型/调度键分离"
-  （库层改造，TODO）。实务约束：**任务 typeName 需全局唯一**（含租户维度前缀）。
-  **缓解（2026-11-09）**：TaskService 维护 typeName→[]entryID 账本（`periodicEntryIDs`），
-  每次 `NewPeriodicTask` 成功即记账；Update/Delete/stopTask 改走"账本逐 entryID
-  `RemovePeriodicTaskByID` + typeName 兜底注销"，`stopAllTask` 在 RemoveAll 后对账本残留
-  逐 ID 补刀——**Update 覆盖与 RestartAllTask 累积两类孤儿泄漏已消除**；跨租户同名共存
-  （多 entry 并行触发）仍需库层改造。库 v1.3.14 起 `RemovePeriodicTaskByID` 不受 typeName
-  冲突影响，TaskScheduler 接口已暴露。
+- **typeName 路由键与多租户并存（2026-11-09 根治）**：调度器用 typeName 做 handler
+  路由键——同名 PERIODIC 各租户各行如今**并存注册**（各自 entry 各自 cron/payload，
+  到点各自触发，执行数据来自各自载荷，互不干扰）。历史限制（后注册覆盖 entryIDs 致
+  先注册项成孤儿、startAllTask 按 typeName 去重只调度首个）已根治：TaskService 维护
+  按**行**的 entryID 账本（ownerKey=`row:<sys_tasks.id>`，系统级任务用 `sys:<typeName>`），
+  注销走"账本逐 entryID `RemovePeriodicTaskByID` + typeName 兜底"，stopAllTask 后对
+  账本残留逐 ID 补刀——Update 覆盖与 RestartAllTask 累积两类孤儿泄漏已消除。
+  handler 侧按各自载荷执行（如 agent_run 载荷带 appId、脚本桥带 handler 名），多租户
+  自然隔离；handler 无租户语义的类型（如 script_task 的全局脚本）多行并存仍会各自
+  触发同一全局处理器，部署时需自行约定。
 
 ## 9. 运维与排障
 
 | 症状 | 核对顺序 |
 |---|---|
-| 任务没跑 | ① `enable` 位；② typeName 是否在注册面（ListTaskTypeName / 启动日志里三条 `…定时任务已注册（cron=…）`：三条前后缀并不一致，只有到期扫描那条带"系统级"字样，检索请用 `定时任务已注册` 而不是 `系统级`）；③ H8 拒绝创建的报错（未注册类型）；④ 调度器是否配置（`server.asynq.uri`，未配置整个子系统静默缺失）；⑤ 同名任务被 startAllTask 去重跳过的告警日志 |
+| 任务没跑 | ① `enable` 位；② typeName 是否在注册面（ListTaskTypeName / 启动日志里 `…定时任务已注册（cron=…）`：多条前后缀并不一致，只有到期扫描那条带"系统级"字样，检索请用 `定时任务已注册` 而不是 `系统级`）；③ H8 拒绝创建的报错（未注册类型）；④ 调度器是否配置（`server.asynq.uri`，未配置整个子系统静默缺失） |
 | StopAllTask 后系统任务还在 | 正常——StartAllTask 末尾自动重注册；要彻底停系统任务只能停服务或改代码 |
 | 备份对象 | 对象存储 `backups` 桶（SeaweedFS），日期分层对象名；恢复 = 下载 JSON 反序列化（当前无自动恢复流程） |
 | 归档目录/保留期 | `AUDIT_ARCHIVE_DIR` / `AUDIT_RETENTION_DAYS`（改后下个 03:30 周期生效） |
@@ -246,7 +246,7 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 
 | 项 | 现状 |
 |---|---|
-| typeName 路由/去重键合一 | 库层限制，跨租户同名互斥（第 8 节），库改造 TODO；Update 覆盖与 Restart 累积两类孤儿泄漏已由 entryID 账本缓解（2026-11-09，第 8 节"缓解"） |
+| ~~typeName 路由/去重键合一~~ | **已根治（2026-11-09）**：entryID 按行账本 + `RemovePeriodicTaskByID` 精准注销，同名 PERIODIC 各租户并存注册/按行注销（第 8 节）；Update 覆盖与 Restart 累积两类孤儿泄漏同步消除 |
 | 备份恢复流程 | 导出上传 + 桶生命周期清理已备；**恢复侧已补（2026-10-03）**：`BackupRepo.RestoreCoreTables`（备份 JSON data 段 → 8 张核心表，保留原 ID、单事务、仅允许空库非空即中止；动态 INSERT 表无关实现，逻辑名→sys_ 物理表映射）。**演练流程见 docs/backup-restore-drill.md**。restore 管理页/RPC 未做（演练走测试/一次性程序，避免活库误恢复入口） |~~桶内对象无生命周期清理~~ 已补（2026-10-03）：AsyncBackup 上传成功后顺手清理超过保留期的旧备份——`BACKUP_RETENTION_DAYS` 环境变量（默认 30 天；<=0 显式关闭）；清理为 best-effort，单个删除失败留日志并继续，不影响任务结论；列举/删除失败 Errorf 留痕 |
 | WAIT_RESULT 型 | 枚举与装载路径在，无内置消费方示范；语义同 asynq wait-result |
 | ~~系统级任务的可见性~~ | **已落地（方案 C'，asynq Inspector 只读视图，零新表）**：`TaskMonitorService`（`task_monitor_service.go`，平台管理员守卫）懒构造 Inspector（`server.asynq` 同一 Redis URI——队列无命名空间的坑自动自洽），`POST /admin/v1/system-tasks:inspect` 返回 `SchedulerEntries()`（各常驻任务 cron + Next/Prev 入队时间，Prev 零值=从未跑过）与各队列 active/retry/archived 状态及失败明细（TaskInfo.LastErr/LastFailedAt/Retried）；三端任务页「系统级任务」弹窗消费（react `SystemTasksModal.tsx` 先行，ele/vben 同构）。不入 sys_tasks、不可停的设计不变；asynq 给不了的持久执行历史仍按原评估：需要时配 asynq Retention（零表）或再立执行流水表 |

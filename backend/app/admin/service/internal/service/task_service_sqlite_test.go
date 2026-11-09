@@ -529,14 +529,20 @@ func TestTaskService_RestartAllTask(t *testing.T) {
 
 	resp, err := svc.RestartAllTask(taskPlatformOpCtx(sysCtx), &emptypb.Empty{})
 	require.NoError(t, err, "RestartAllTask 应成功")
-	require.Equal(t, int32(2), resp.GetCount(),
-		"成功计数应为 2（同名 PERIODIC 去重后 1 + DELAY 1；系统级常驻注册不计入返回值）")
+	require.Equal(t, int32(3), resp.GetCount(),
+		"成功计数应为 3（同名 PERIODIC 两行并存各注册 + DELAY 1；系统级常驻注册不计入返回值）")
 	require.Equal(t, 1, stub.removeAllCount, "RestartAllTask 应先全量注销")
 	require.Equal(t, []string{"tasksvc_delay_all_type"}, stub.newTask,
 		"DELAY 任务应经一次性投递入口")
-	require.Len(t, stub.newPeriodicTask, 8,
-		"周期注册应为 8 次：同名 PERIODIC 去重后 1 次 + 系统级常驻 7 次（到期扫描/审计归档/台账清扫/归档清理/监控告警扫描/AI 日报/配额水位扫描）")
-	require.Contains(t, stub.newPeriodicTask, "tasksvc_dup_type", "同名 PERIODIC 应恰好注册一次")
+	require.Len(t, stub.newPeriodicTask, 9,
+		"周期注册应为 9 次：同名 PERIODIC 两行各注册 + 系统级常驻 7 次（到期扫描/审计归档/台账清扫/归档清理/监控告警扫描/AI 日报/配额水位扫描）")
+	dupCount := 0
+	for _, tn := range stub.newPeriodicTask {
+		if tn == "tasksvc_dup_type" {
+			dupCount++
+		}
+	}
+	require.Equal(t, 2, dupCount, "两行同名 PERIODIC 应各注册一次（并存，不再去重）")
 	require.Contains(t, stub.newPeriodicTask, task.TenantExpiryScanTaskType, "系统级到期扫描应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.AuditLogArchiveTaskType, "系统级审计归档应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.NotificationDeliverySweepTaskType, "通知台账清扫应被注册")
@@ -583,7 +589,7 @@ func TestTaskService_PeriodicEntryLedger(t *testing.T) {
 
 	require.Equal(t, []string{"ledger_dup_type#1", "ledger_dup_type#2"}, stub.removedByID,
 		"第 2/3 轮重注册前应按 ID 注销上一轮 entryID")
-	entries := svc.periodicEntryIDs["ledger_dup_type"]
+	entries := svc.periodicEntryIDs["row:1"]
 	require.Len(t, entries, 1, "账本应只留最新 entryID")
 	require.Equal(t, "ledger_dup_type#3", entries[0])
 
@@ -593,6 +599,48 @@ func TestTaskService_PeriodicEntryLedger(t *testing.T) {
 	require.Len(t, stub.removedByID, 3, "账本残留的 entryID 应被逐 ID 补刀")
 	require.Equal(t, "ledger_dup_type#3", stub.removedByID[2])
 	require.Empty(t, svc.periodicEntryIDs, "全停后账本应清空")
+}
+
+// TestTaskService_MultiTenantSameTypeNameCoexist 跨租户同名 PERIODIC 并存（根治）：
+// entryID 账本按行记账后，两个租户的同名任务各自注册/各自触发，Update/Stop 按
+// 行 ownerKey 精准注销，不再互相覆盖或误伤他行。
+func TestTaskService_MultiTenantSameTypeNameCoexist(t *testing.T) {
+	stub := newTaskSchedulerStub("coexist_type")
+	svc, entClient := newTaskServiceForTest(t, stub, false)
+	sysCtx := enttest.NewSystemContext(context.Background())
+
+	// 两个租户各建一行同名任务（cron 不同以区分）
+	seedTaskRow(t, svc, sysCtx, 7, "coexist_type", taskV1.Task_PERIODIC, "0 */5 * * * *", true)
+	seedTaskRow(t, svc, sysCtx, 8, "coexist_type", taskV1.Task_PERIODIC, "0 */7 * * * *", true)
+
+	rows, err := entClient.Task.Query().Order(ent.Asc("id")).All(sysCtx)
+	require.NoError(t, err)
+	require.Len(t, rows, 2, "两行应各带各自 ID")
+	rowA, rowB := rows[0], rows[1]
+
+	// StartAllTask：两行都应注册（不再按 typeName 去重）
+	_, err = svc.RestartAllTask(taskPlatformOpCtx(sysCtx), &emptypb.Empty{})
+	require.NoError(t, err)
+	coexistRegistered := 0
+	for _, tn := range stub.newPeriodicTask {
+		if tn == "coexist_type" {
+			coexistRegistered++
+		}
+	}
+	require.Equal(t, 2, coexistRegistered, "两行同名任务都应注册（各自 entry，互不覆盖）")
+
+	// 停掉 A 租户行：只应注销 A 行的 entryID，B 行的 entry 保留
+	_, err = svc.ControlTask(taskPlatformTenantOpCtx(sysCtx, *rowA.TenantID), &taskV1.ControlTaskRequest{
+		TypeName:    "coexist_type",
+		ControlType: taskV1.ControlTaskRequest_Stop,
+	})
+	require.NoError(t, err)
+
+	// B 行的 entryID 仍在账本里（未被误伤）
+	ownerB := "row:" + strconv.FormatUint(uint64(rowB.ID), 10)
+	entriesB, ok := svc.periodicEntryIDs[ownerB]
+	require.True(t, ok, "B 行账本不应被误伤")
+	require.NotEmpty(t, entriesB)
 }
 
 // ── 纯函数 ────────────────────────────────────────────────────────────────

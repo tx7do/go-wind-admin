@@ -57,12 +57,12 @@ type TaskService struct {
 
 	taskScheduler TaskScheduler
 
-	// periodicEntries 定期任务 entryID 账本（typeName → 历次注册的 entryID，含被
-	// 库内 map 覆盖前的旧值）。库侧以 typeName 为去重/注销键、同名再注册直接覆盖
-	// entryIDs[typeName]，被覆盖的旧调度项仍在 asynq 里触发却从此注销不到（孤儿）。
-	// 本账本留住全部 entryID，注销/全停时逐 ID RemovePeriodicTaskByID，
-	// 消除 Update 覆盖与 RestartAllTask 累积两类孤儿泄漏（跨租户同名共存仍需库层
-	// 改造——见 startAllTask 的去重注释与 docs/task_system.md §8）。
+	// periodicEntryIDs 定期任务 entryID 账本（ownerKey → 历次注册的 entryID）。
+	// ownerKey：业务任务行用 "row:<sys_tasks.id>"，系统级常驻任务用 "sys:<typeName>"。
+	// 库侧以 typeName 为去重/注销键、同名再注册会覆盖库内 entryIDs[typeName]（被覆盖的
+	// 旧调度项仍在 asynq 里触发却从此注销不到，成孤儿）。本账本按行留住全部 entryID，
+	// 使 ① 同名 PERIODIC 各租户各行可并存触发（多租户互不干扰，根治原互斥限制）；
+	// ② stopTask/Update/Delete 按行精准注销；③ 全停时逐 ID 补刀，RestartAllTask 不再累积。
 	periodicMu       sync.Mutex
 	periodicEntryIDs map[string][]string
 
@@ -238,8 +238,9 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 	// 先移除调度器中旧的注册项（若存在），避免停用后仍运行、或启用时重复注册。
 	// 直接调用注销绕过 stopTask 内部的 enable 保护，
 	// 因为 oldTask 可能已是禁用状态，但其注册项可能仍残留在调度器中。
+	// 按行（ownerKey=row:<id>）精准注销：多租户同名任务只注销本行，不波及他行。
 	if s.hasScheduler() && oldTask != nil && oldTask.GetType() == taskV1.Task_PERIODIC && oldTask.GetTypeName() != "" {
-		s.removePeriodicEntries(oldTask.GetTypeName())
+		s.removePeriodicEntries(oldTask)
 	}
 
 	// 根据更新后的 enable 状态决定是否重新启动。
@@ -275,9 +276,9 @@ func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest)
 
 	// DB 删除成功后清理调度项。stopTask 在 enable=false 时会返回错误并跳过清理，
 	// 但 disabled 任务的调度项仍可能残留（经由直接改库或历史 Update 路径），
-	// 因此这里绕过 enable 保护，按账本逐 entryID + typeName 兜底注销。
+	// 因此这里绕过 enable 保护，按行（ownerKey）逐 entryID 精准注销。
 	if s.hasScheduler() && t.GetType() == taskV1.Task_PERIODIC && t.GetTypeName() != "" {
-		s.removePeriodicEntries(t.GetTypeName())
+		s.removePeriodicEntries(t)
 	}
 
 	return &emptypb.Empty{}, nil
@@ -384,21 +385,13 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 
 	// 重新启动任务
 	//
-	// 注意（调度器限制）：底层 asynq 调度器用 typeName 既做 handler 路由又做调度项去重键，
-	// entryIDs[typeName] 只能保留一个 entry。若多个租户持有相同 typeName 的 PERIODIC 任务，
-	// 后注册者会覆盖 entryIDs，使先注册的调度项成为无法注销的"孤儿"（永久触发）。
-	// 因此这里按 typeName 去重，每个 typeName 只注册一次（取首个）。
-	// 彻底的跨租户隔离需调度器支持"路由类型/调度键分离"，属库层改造（TODO）。
+	// 注意（调度器限制与根治）：底层 asynq 调度器用 typeName 做 handler 路由键，
+	// 同名多 entry 本身可并存触发（各 entry 各自的 cron/payload）；此前"后注册覆盖
+	// entryIDs 致先注册项成孤儿"的问题已由 entryID 账本根治（见 TaskService.periodicEntryIDs
+	// 与 removePeriodicEntries）——同名 PERIODIC 各租户各行独立注册、按行注销，互不影响。
+	// handler 路由仍按 typeName，执行数据来自各自 entry 的载荷，多租户互不干扰。
 	var count int32
-	registeredTypeNames := make(map[string]bool)
 	for _, t := range resp.GetItems() {
-		if t.GetType() == taskV1.Task_PERIODIC {
-			if registeredTypeNames[t.GetTypeName()] {
-				s.log.Warnf(ctx, "跳过重复 typeName[%s] 的定时任务注册（调度器以 typeName 去重，多租户同名会泄漏孤儿调度项）", t.GetTypeName())
-				continue
-			}
-			registeredTypeNames[t.GetTypeName()] = true
-		}
 		if s.startTask(t) != nil {
 			continue
 		} else {
@@ -408,7 +401,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 
 	s.log.Infof(ctx, "总共成功开启定时任务[%d]个", count)
 
-	// 注册系统级常驻任务：租户到期扫描（不依赖 sys_tasks 表，规避 typeName 去重问题）。
+	// 注册系统级常驻任务：租户到期扫描（不依赖 sys_tasks 表）。
 	// 放在 startAllTask 末尾，确保初始启动与 RestartAllTask（先 RemoveAllPeriodicTask 再
 	// startAllTask）后均能恢复调度项。handler 已在 NewAsynqServer 中通过 RegisterSubscriber 注册。
 	if s.hasScheduler() {
@@ -419,7 +412,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册系统级到期扫描定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.TenantExpiryScanTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.TenantExpiryScanTaskType, entryID)
 			s.log.Infof(ctx, "系统级到期扫描定时任务已注册（cron=%s）", task.TenantExpiryScanCronSpec)
 		}
 
@@ -432,7 +425,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册审计日志归档定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.AuditLogArchiveTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.AuditLogArchiveTaskType, entryID)
 			s.log.Infof(ctx, "审计日志归档定时任务已注册（cron=%s）", task.AuditLogArchiveCronSpec)
 		}
 
@@ -446,7 +439,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册通知台账清扫定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.NotificationDeliverySweepTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.NotificationDeliverySweepTaskType, entryID)
 			s.log.Infof(ctx, "通知台账清扫定时任务已注册（cron=%s）", task.NotificationDeliverySweepCronSpec)
 		}
 
@@ -458,7 +451,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册监控告警扫描定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.MonitorAlertScanTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.MonitorAlertScanTaskType, entryID)
 			s.log.Infof(ctx, "监控告警扫描定时任务已注册（cron=%s）", task.MonitorAlertScanCronSpec)
 		}
 
@@ -471,7 +464,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册审计日报 AI 摘要定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.AiAuditDigestTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.AiAuditDigestTaskType, entryID)
 			s.log.Infof(ctx, "审计日报 AI 摘要定时任务已注册（cron=%s）", task.AiAuditDigestCronSpec)
 		}
 
@@ -485,7 +478,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册套餐配额水位扫描定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.PlanQuotaWatermarkTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.PlanQuotaWatermarkTaskType, entryID)
 			s.log.Infof(ctx, "套餐配额水位扫描定时任务已注册（cron=%s）", task.PlanQuotaWatermarkCronSpec)
 		}
 
@@ -499,7 +492,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		); err != nil {
 			s.log.Errorf(ctx, "注册通知归档集清理定时任务失败: %s", err.Error())
 		} else {
-			s.recordPeriodicEntry(task.NotificationArchivedCleanupTaskType, entryID)
+			s.recordPeriodicEntry("sys:"+task.NotificationArchivedCleanupTaskType, entryID)
 			s.log.Infof(ctx, "通知归档集清理定时任务已注册（cron=%s）", task.NotificationArchivedCleanupCronSpec)
 		}
 	}
@@ -542,7 +535,7 @@ func (s *TaskService) stopTask(t *taskV1.Task) error {
 
 	switch t.GetType() {
 	case taskV1.Task_PERIODIC:
-		s.removePeriodicEntries(t.GetTypeName())
+		s.removePeriodicEntries(t)
 		return nil
 
 	// DELAY/WAIT_RESULT 是已投递到 asynq 队列的一次性任务，底层 transport
@@ -601,9 +594,9 @@ func (s *TaskService) convertTaskOption(t *taskV1.Task) (opts []asynq.Option, pa
 	return
 }
 
-// recordPeriodicEntry 把一次成功注册的调度项 entryID 记入账本（按 typeName 分桶）。
-// 见 TaskService.periodicEntryIDs 注释——账本是孤儿调度项缓解的核心。
-func (s *TaskService) recordPeriodicEntry(typeName, entryID string) {
+// recordPeriodicEntry 把一次成功注册的调度项 entryID 记入账本（按 ownerKey 分桶）。
+// 见 TaskService.periodicEntryIDs 注释——账本是多租户同名并存与孤儿根治的核心。
+func (s *TaskService) recordPeriodicEntry(ownerKey, entryID string) {
 	if entryID == "" {
 		return
 	}
@@ -612,28 +605,40 @@ func (s *TaskService) recordPeriodicEntry(typeName, entryID string) {
 	if s.periodicEntryIDs == nil {
 		s.periodicEntryIDs = make(map[string][]string)
 	}
-	s.periodicEntryIDs[typeName] = append(s.periodicEntryIDs[typeName], entryID)
+	s.periodicEntryIDs[ownerKey] = append(s.periodicEntryIDs[ownerKey], entryID)
 }
 
-// removePeriodicEntries 按 typeName 注销账本里的全部 entryID（含被库内 map 覆盖前的
-// 旧调度项），最后按 typeName 兜底注销一次（清理库内 entryIDs 映射的尾值）。
+// periodicOwnerKey 账本分桶键：业务任务行用 "row:<sys_tasks.id>"（每行独立记账，
+// 多租户同名互不影响）；无 ID 的场景回退 "type:<typeName>"（防御分支，正常路径不会走到）。
+func (s *TaskService) periodicOwnerKey(t *taskV1.Task) string {
+	if t != nil && t.GetId() > 0 {
+		return fmt.Sprintf("row:%d", t.GetId())
+	}
+	return "type:" + t.GetTypeName()
+}
+
+// removePeriodicEntries 按 ownerKey 注销账本里的全部 entryID，最后按 typeName 兜底
+// 注销一次（清理库内 entryIDs 映射的尾值，不影响账本里已按 ID 注销的其他行）。
 // 注销失败只告警不中断——留孤儿调度项（永久触发）必须可观测。
-func (s *TaskService) removePeriodicEntries(typeName string) {
-	if !s.hasScheduler() {
+func (s *TaskService) removePeriodicEntries(t *taskV1.Task) {
+	if !s.hasScheduler() || t == nil {
 		return
 	}
+	ownerKey := s.periodicOwnerKey(t)
+	typeName := t.GetTypeName()
+
 	s.periodicMu.Lock()
-	ids := s.periodicEntryIDs[typeName]
-	delete(s.periodicEntryIDs, typeName)
+	ids := s.periodicEntryIDs[ownerKey]
+	delete(s.periodicEntryIDs, ownerKey)
 	s.periodicMu.Unlock()
 
 	for _, id := range ids {
 		if err := s.taskScheduler.RemovePeriodicTaskByID(id); err != nil {
-			s.log.Warnf(context.Background(), "按 entryID 注销定时任务失败[%s/%s]: %v", typeName, id, err)
+			s.log.Warnf(context.Background(), "按 entryID 注销定时任务失败[%s/%s]: %v", ownerKey, id, err)
 		}
 	}
 	if err := s.taskScheduler.RemovePeriodicTask(typeName); err != nil {
-		s.log.Warnf(context.Background(), "按 typeName 注销定时任务失败[%s]: %v", typeName, err)
+		s.log.Warnf(context.Background(), "按 typeName 兜底注销定时任务失败[%s]: %v", typeName, err)
 	}
 }
 
@@ -647,10 +652,10 @@ func (s *TaskService) clearPeriodicEntries() {
 		s.periodicEntryIDs = make(map[string][]string)
 		return
 	}
-	for typeName, ids := range s.periodicEntryIDs {
+	for ownerKey, ids := range s.periodicEntryIDs {
 		for _, id := range ids {
 			if err := s.taskScheduler.RemovePeriodicTaskByID(id); err != nil {
-				s.log.Warnf(context.Background(), "全停清扫按 entryID 注销失败[%s/%s]: %v", typeName, id, err)
+				s.log.Warnf(context.Background(), "全停清扫按 entryID 注销失败[%s/%s]: %v", ownerKey, id, err)
 			}
 		}
 	}
@@ -684,7 +689,7 @@ func (s *TaskService) startTask(t *taskV1.Task) error {
 			s.log.Errorf(context.Background(), "[%s] 创建定时任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
-		s.recordPeriodicEntry(t.GetTypeName(), entryID)
+		s.recordPeriodicEntry(s.periodicOwnerKey(t), entryID)
 
 	case taskV1.Task_DELAY:
 		opts, payload = s.convertTaskOption(t)
