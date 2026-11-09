@@ -29,6 +29,8 @@ const NODE_META: Record<string, { color: string; icon: string }> = {
   llm: { color: "#1677ff", icon: "✦" },
   http: { color: "#4a8dff", icon: "⇋" },
   script: { color: "#9254de", icon: "📜" },
+  parallel: { color: "#13c2c2", icon: "⑂" },
+  subflow: { color: "#fa541c", icon: "⎇" },
   condition: { color: "#fa8c16", icon: "⑃" },
   end: { color: "#8c8c8c", icon: "■" },
 };
@@ -50,6 +52,10 @@ function configSummary(nodeType: string, config?: Record<string, any>): string {
       return config.url ? `${config.method ?? "GET"} ${String(config.url).slice(0, 36)}` : "";
     case "script":
       return config.language ? String(config.language).toUpperCase() : "";
+    case "parallel":
+      return "fan-out";
+    case "subflow":
+      return config.appId ? `app#${config.appId}` : "";
     case "condition":
       return config.expression || "";
     case "end":

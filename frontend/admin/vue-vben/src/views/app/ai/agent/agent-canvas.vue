@@ -15,6 +15,7 @@ import { VueFlow, useVueFlow } from '@vue-flow/core';
 
 import {
   fetchAiAgentApp,
+  fetchListAiAgentApps,
   fetchListAiKnowledgeBases,
   fetchListAiProviders,
   PaginationQuery,
@@ -33,7 +34,7 @@ import AgentFlowNode from './agent-flow-node.vue';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'parallel' | 'subflow' | 'condition' | 'end';
 
 const NODE_TYPE_ORDER: AgentNodeType[] = [
   'start',
@@ -41,6 +42,8 @@ const NODE_TYPE_ORDER: AgentNodeType[] = [
   'llm',
   'http',
   'script',
+  'parallel',
+  'subflow',
   'condition',
   'end',
 ];
@@ -90,6 +93,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
         .catch((error: any) => {
           console.error('[ai-agent-canvas] list providers failed', error);
         });
+      // 子图（subflow）目标应用下拉（排除自身防自引用）
+      loadSubflowAppOptions();
       // 行字段可能被裁剪/滞后：graph 的事实源是 Get，拉全量刷新画布
       if (app.value?.id) {
         fetchAiAgentApp(app.value.id)
@@ -126,6 +131,38 @@ const runResult = ref<any>();
 
 const knowledgeBases = ref<any[]>([]);
 const providers = ref<any[]>([]);
+const subflowAppOptions = ref<Array<{ value: number; label: string }>>([]);
+const subflowMappingRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.inputMapping ?? []));
+
+function addSubflowMapping() {
+  const node = selectedNode.value;
+  if (!node) return;
+  const config = node.data.config as any;
+  if (!Array.isArray(config.inputMapping)) config.inputMapping = [];
+  config.inputMapping.push({ name: '', value: '' });
+}
+
+function removeSubflowMapping(index: number) {
+  const node = selectedNode.value;
+  if (!node) return;
+  const config = node.data.config as any;
+  if (!Array.isArray(config.inputMapping)) return;
+  config.inputMapping.splice(index, 1);
+}
+
+/** 子图（subflow）目标应用下拉（排除自身防自引用）；画布打开时刷新一次 */
+function loadSubflowAppOptions() {
+  const selfId = app.value?.id;
+  fetchListAiAgentApps({ page: 1, pageSize: 100 })
+    .then((resp: any) => {
+      subflowAppOptions.value = (resp.items ?? [])
+        .filter((a: any) => a.id !== selfId)
+        .map((a: any) => ({ value: a.id, label: a.name }));
+    })
+    .catch((error: any) => {
+      console.error('[ai-agent-canvas] list agent apps failed', error);
+    });
+}
 
 const canvasTitle = computed(() =>
   `${$t('page.aiAgent.canvas.title')} · ${app.value?.name || ''}`,
@@ -230,6 +267,12 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     case 'script': {
       return { language: 'lua', source: '' };
     }
+    case 'parallel': {
+      return {};
+    }
+    case 'subflow': {
+      return { appId: undefined, inputMapping: [] };
+    }
     case 'condition': {
       return { expression: '' };
     }
@@ -290,6 +333,16 @@ function onConnect(connection: { source?: string | null; target?: string | null 
       label: branch,
       animated: branch === 'true',
     });
+    return;
+  }
+  // parallel 节点允许 N 条出边（fan-out），同一 target 只能连一条（后端拒重复边）
+  if (nodeType === 'parallel') {
+    const dupTarget = existing.some((e: any) => e.target === target);
+    if (dupTarget) {
+      message.error($t('page.aiAgent.canvas.error.duplicateTarget'));
+      return;
+    }
+    vueFlow.addEdges({ id: `edge_${source}_${target}_${Date.now()}`, source, target });
     return;
   }
   if (existing.length >= 1) {
@@ -604,6 +657,40 @@ end"
             />
           </div>
           <div class="pt-1 text-xs text-muted-foreground">{{ $t('page.aiAgent.canvas.scriptSandboxHint') }}</div>
+        </template>
+
+        <!-- subflow -->
+        <template v-if="selectedNode && selectedNode.data.nodeType === 'subflow'">
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.subflowApp') }}</div>
+            <a-select
+              v-model:value="selectedNode.data.config.appId"
+              :options="subflowAppOptions"
+              :placeholder="$t('page.aiAgent.canvas.subflowAppPlaceholder')"
+              show-search
+              option-filter-prop="label"
+              allow-clear
+              class="w-full"
+            />
+          </div>
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.subflowAddMapping') }}</div>
+            <div
+              v-for="(m, i) in subflowMappingRows"
+              :key="i"
+              class="mb-1.5 flex gap-1.5"
+            >
+              <a-input v-model:value="m.name" :placeholder="$t('page.aiAgent.canvas.subflowVarName')" class="w-[140px]" />
+              <a-input v-model:value="m.value" placeholder="{{start_1.question}}" class="flex-1" />
+              <a-button danger type="text" size="small" @click="removeSubflowMapping(i)">
+                {{ $t('page.aiAgent.canvas.remove') }}
+              </a-button>
+            </div>
+            <a-button dashed size="small" class="w-full" @click="addSubflowMapping">
+              {{ $t('page.aiAgent.canvas.subflowAddMapping') }}
+            </a-button>
+          </div>
+          <div class="pt-1 text-xs text-muted-foreground">{{ $t('page.aiAgent.canvas.subflowDepthHint') }}</div>
         </template>
 
         <!-- end -->

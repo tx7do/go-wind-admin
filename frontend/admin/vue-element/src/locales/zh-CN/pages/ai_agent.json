@@ -58,13 +58,16 @@
       "llm": "LLM",
       "http": "HTTP 请求",
       "script": "脚本",
+      "parallel": "并行分支",
+      "subflow": "子图",
       "condition": "条件分支",
       "end": "结束"
     },
     "error": {
       "endNoOut": "结束节点不能有出边",
       "conditionTwoOut": "条件节点最多两条出边（true/false 各一）",
-      "singleOut": "该节点已有一条出边（只有条件分支允许多出边）"
+      "singleOut": "该节点已有一条出边（只有条件/并行分支允许多出边）",
+      "duplicateTarget": "并行分支的同一目标只能连一条边"
     },
     "knowledgeBase": "知识库",
     "requiredKnowledgeBase": "请选择知识库",
@@ -99,6 +102,11 @@
     "scriptLanguage": "脚本语言",
     "scriptSource": "脚本源码",
     "scriptHint": "必须定义 execute()；上下文经 __get_ctx() 取（各节点 id 为命名的表），产出用 __set_ctx(k, v) 写回本节点命名空间（{'{{'}节点id.字段{'}'} 可引用）",
-    "scriptSandboxHint": "脚本在服务端沙箱内执行（超时 5 秒、受限模块）；源码不是模板，{'{{'}...{'}'} 按脚本语法原样执行"
+    "scriptSandboxHint": "脚本在服务端沙箱内执行（超时 5 秒、受限模块）；源码不是模板，{'{{'}...{'}'} 按脚本语法原样执行",
+    "subflowApp": "目标应用",
+    "subflowAppPlaceholder": "选择要嵌入执行的 Agent 应用",
+    "subflowVarName": "子图入参",
+    "subflowAddMapping": "添加输入映射",
+    "subflowDepthHint": "子图以独立运行执行（深度上限 3 层防递归）；引用停用/跨租户应用会被服务端拒绝"
   }
 }

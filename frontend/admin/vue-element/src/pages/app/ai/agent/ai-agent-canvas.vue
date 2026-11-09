@@ -250,6 +250,46 @@ end"
           <div class="config-tip">{{ t("pages.ai_agent.canvas.scriptSandboxHint") }}</div>
         </template>
 
+        <!-- subflow -->
+        <template v-if="selectedNode && selectedNode.data.nodeType === 'subflow'">
+          <ElFormItem :label="t('pages.ai_agent.canvas.subflowApp')" required>
+            <ElSelect
+              v-model="selectedNode.data.config.appId"
+              :loading="agentOptionsLoading"
+              filterable
+              clearable
+              style="width: 100%"
+              :placeholder="t('pages.ai_agent.canvas.subflowAppPlaceholder')"
+            >
+              <ElOption
+                v-for="a in subflowAppOptions"
+                :key="a.id"
+                :value="a.id"
+                :label="a.name"
+              />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem :label="t('pages.ai_agent.canvas.subflowAddMapping')">
+            <div style="width: 100%">
+              <div
+                v-for="(m, i) in subflowMappingRows"
+                :key="i"
+                style="display: flex; gap: 6px; margin-bottom: 6px"
+              >
+                <ElInput v-model="m.name" :placeholder="t('pages.ai_agent.canvas.subflowVarName')" style="width: 140px" />
+                <ElInput v-model="m.value" placeholder="{{start_1.question}}" style="flex: 1" />
+                <ElButton type="danger" text @click="removeSubflowMapping(i)">
+                  {{ t("pages.ai_agent.canvas.remove") }}
+                </ElButton>
+              </div>
+              <ElButton dashed style="width: 100%" @click="addSubflowMapping()">
+                {{ t("pages.ai_agent.canvas.subflowAddMapping") }}
+              </ElButton>
+            </div>
+          </ElFormItem>
+          <div class="config-tip">{{ t("pages.ai_agent.canvas.subflowDepthHint") }}</div>
+        </template>
+
         <!-- end -->
         <!-- v-if 显式非空：render 函数顺序收窄会因前面兄弟块内的表达式失效，
              补一层让本块重新成为收窄起点（语义等价，外层 div v-if 本就保证非空） -->
@@ -374,6 +414,7 @@ import { useI18n } from "@/core/i18n";
 import { PaginationQuery } from "@/core/transport/rest";
 import {
   fetchAiAgentApp,
+  fetchListAiAgentApps,
   fetchListAiKnowledgeBases,
   fetchListAiProviders,
   runAiAgentApp,
@@ -391,9 +432,9 @@ import AiAgentFlowNode from "./ai-agent-flow-node.vue";
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = "start" | "knowledge" | "llm" | "http" | "script" | "condition" | "end";
+type AgentNodeType = "start" | "knowledge" | "llm" | "http" | "script" | "parallel" | "subflow" | "condition" | "end";
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "http", "script", "condition", "end"];
+const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "http", "script", "parallel", "subflow", "condition", "end"];
 
 // markRaw 防 nodeTypes 进响应式 store 后对组件做深度响应式代理（Vue warn 且拖性能）；
 // NodeComponent 类型要求完整 NodeProps 形状，自定义节点只声明用到的字段，再断言收编
@@ -443,6 +484,25 @@ const selectedNode = computed(() => (selectedId.value ? nodes.value.find((n) => 
 
 /** http 节点 headers 行（模板深链收口到 computed，v-model 绑迭代变量） */
 const httpHeaderRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.headers ?? []));
+
+/** subflow 节点 inputMapping 行（同 headers 的收口形态） */
+const subflowMappingRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.inputMapping ?? []));
+
+const subflowAppOptions = ref<Array<{ id: number; name: string }>>([]);
+const agentOptionsLoading = ref(false);
+
+function addSubflowMapping() {
+  const config = selectedNode.value?.data.config as any;
+  if (!config) return;
+  if (!Array.isArray(config.inputMapping)) config.inputMapping = [];
+  config.inputMapping.push({ name: "", value: "" });
+}
+
+function removeSubflowMapping(index: number) {
+  const config = selectedNode.value?.data.config as any;
+  if (!config?.inputMapping) return;
+  config.inputMapping.splice(index, 1);
+}
 
 const configTitle = computed(() => `${t("pages.ai_agent.canvas.config")} · ${selectedId.value ?? ""}`);
 
@@ -515,6 +575,15 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     }
     case "http": {
       return { method: "GET", timeoutSeconds: 15 };
+    }
+    case "script": {
+      return { language: "lua", source: "" };
+    }
+    case "parallel": {
+      return {};
+    }
+    case "subflow": {
+      return { appId: undefined, inputMapping: [] };
     }
     case "condition": {
       return { expression: "" };
@@ -590,6 +659,16 @@ function onConnect(connection: { source?: string | null; target?: string | null 
     });
     return;
   }
+  // parallel 节点允许 N 条出边（fan-out），同一 target 只能连一条（后端拒重复边）
+  if (nodeType === "parallel") {
+    const dupTarget = existing.some((e: any) => e.target === target);
+    if (dupTarget) {
+      ElMessage.error(t("pages.ai_agent.canvas.error.duplicateTarget"));
+      return;
+    }
+    vueFlow.addEdges({ id: `edge_${source}_${target}_${Date.now()}`, source, target });
+    return;
+  }
   if (existing.length >= 1) {
     ElMessage.error(t("pages.ai_agent.canvas.error.singleOut"));
     return;
@@ -647,6 +726,16 @@ function open(row: any) {
     })
     .catch((error: any) => {
       console.error("[ai-agent-canvas] list providers failed:", error);
+    });
+  // 子图（subflow）目标应用下拉（排除自身防自引用）
+  fetchListAiAgentApps(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }))
+    .then((resp: any) => {
+      subflowAppOptions.value = (resp.items ?? [])
+        .filter((a: any) => a.id !== row?.id)
+        .map((a: any) => ({ id: a.id, name: a.name }));
+    })
+    .catch((error: any) => {
+      console.error("[ai-agent-canvas] list agent apps failed:", error);
     });
   // Get 全量刷新画布（graph 事实源）
   if (row?.id) {

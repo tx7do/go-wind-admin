@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiAgentApp as AiAgentApp } from '@/api/generated/admin/service/v1';
 import { useListAiKnowledgeBases } from '@/api/hooks/ai-knowledge';
 import { useListAiProviders } from '@/api/hooks/ai-provider';
-import { fetchGetAiAgentApp, useRunAiAgentApp, useUpdateAiAgentApp } from '@/api/hooks/ai-agent';
+import { fetchGetAiAgentApp, fetchListAiAgentApps, useRunAiAgentApp, useUpdateAiAgentApp } from '@/api/hooks/ai-agent';
 import { useAgentRunStream } from './agent-runs-drawer';
 import { PaginationQuery } from '@/core';
 
@@ -35,9 +35,9 @@ import { PaginationQuery } from '@/core';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量；运行台账浏览归 M2。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'parallel' | 'subflow' | 'condition' | 'end';
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'http', 'script', 'condition', 'end'];
+const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'http', 'script', 'parallel', 'subflow', 'condition', 'end'];
 
 // 节点色走 styles/semantic-text.css 的主题档：原先写死的 #52c41a/#1677ff/#8c8c8c
 // 是"填充档"，当图标文字用在暗色节点底上只有 2~3:1，且 #1677ff 是已退役的旧主色。
@@ -47,6 +47,8 @@ const NODE_META: Record<AgentNodeType, { color: string; icon: string }> = {
   llm: { color: 'var(--gowind-primary-text)', icon: '✦' },
   http: { color: 'var(--gowind-node-http, #4a8dff)', icon: '⇋' },
   script: { color: 'var(--gowind-node-script, #9254de)', icon: '📜' },
+  parallel: { color: 'var(--gowind-node-parallel, #13c2c2)', icon: '⑂' },
+  subflow: { color: 'var(--gowind-node-subflow, #fa541c)', icon: '⎇' },
   condition: { color: 'var(--gowind-node-condition)', icon: '⑃' },
   end: { color: 'var(--gowind-node-end)', icon: '■' },
 };
@@ -98,6 +100,10 @@ function configSummary(nodeType: AgentNodeType, config: Record<string, any> | un
       return config.url ? `${config.method ?? 'GET'} ${String(config.url).slice(0, 36)}` : '';
     case 'script':
       return config.language ? String(config.language).toUpperCase() : '';
+    case 'parallel':
+      return 'fan-out';
+    case 'subflow':
+      return config.appId ? `app#${config.appId}` : '';
     case 'condition':
       return config.expression || '';
     case 'end':
@@ -266,6 +272,18 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
 			);
 			return;
 		}
+      // parallel 节点允许 N 条出边（fan-out），但同一 target 只能连一条（后端拒重复边）
+      if (nodeType === 'parallel') {
+        const dupTarget = existing.some((e) => e.target === target);
+        if (dupTarget) {
+          message.error(t('canvas.error.duplicateTarget'));
+          return;
+        }
+        setEdges((es) =>
+          es.concat({ id: `edge_${source}_${target}_${Date.now()}`, source, target }),
+        );
+        return;
+      }
       if (existing.length >= 1) {
         message.error(t('canvas.error.singleOut'));
         return;
@@ -370,6 +388,7 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
         key={selectedId ?? 'none'}
         node={selectedNode}
         open={!!selectedNode}
+        excludeAppId={app?.id}
         onClose={() => setSelectedId(undefined)}
         onConfigChange={updateSelectedConfig}
         onDelete={() => {
@@ -402,6 +421,10 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
       return { temperature: 0.3 };
     case 'http':
       return { method: 'GET', timeoutSeconds: 15 };
+    case 'script':
+      return { language: 'lua', source: '' };
+    case 'subflow':
+      return { appId: undefined, inputMapping: [] };
     case 'condition':
       return { expression: '' };
     case 'end':
@@ -447,17 +470,41 @@ function NodeConfigDrawer({
   onClose,
   onConfigChange,
   onDelete,
+  excludeAppId,
 }: {
   node: Node | undefined;
   open: boolean;
   onClose: () => void;
   onConfigChange: (config: Record<string, any>) => void;
   onDelete: () => void;
+  excludeAppId?: number;
 }) {
   const { t } = useTranslation('ai-agent');
   const [form] = Form.useForm();
   const knowledgeQuery = useListAiKnowledgeBases(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }));
   const providerQuery = useListAiProviders(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }));
+  // 子图（subflow）目标应用下拉：排除当前应用自身（防自引用死循环）
+  const [agentOptions, setAgentOptions] = useState<Array<{ id: number; name: string }>>([]);
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    fetchListAiAgentApps(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }))
+      .then((resp) => {
+        if (cancelled) return;
+        setAgentOptions(
+          (resp.items ?? [])
+            .filter((a: any) => a.id !== excludeAppId)
+            .map((a: any) => ({ id: a.id, name: a.name })),
+        );
+      })
+      .catch((error: any) => {
+        console.error('[AgentCanvas] list agent apps failed:', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, excludeAppId]);
 
   const nodeType = node ? (node.data as CanvasNodeData).nodeType : 'llm';
   const config = node ? (node.data as CanvasNodeData).config : {};
@@ -628,6 +675,41 @@ function NodeConfigDrawer({
             </Form.Item>
             <Typography.Paragraph type="warning" style={{ fontSize: 12, marginBottom: 0 }}>
               {t('canvas.scriptSandboxHint')}
+            </Typography.Paragraph>
+          </>
+        )}
+
+        {nodeType === 'subflow' && (
+          <>
+            <Form.Item name="appId" label={t('canvas.subflowApp')} rules={[{ required: true, message: t('canvas.requiredSubflowApp') }]}>
+              <Select
+                options={agentOptions.map((a) => ({ value: a.id, label: a.name }))}
+                placeholder={t('canvas.subflowAppPlaceholder')}
+                allowClear
+              />
+            </Form.Item>
+            <Form.List name="inputMapping" initialValue={[]}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map((field) => (
+                    <Space key={field.key} align="baseline" style={{ display: 'flex' }}>
+                      <Form.Item name={[field.name, 'name']} style={{ marginBottom: 0 }}>
+                        <Input placeholder={t('canvas.subflowVarName')} style={{ width: 120 }} />
+                      </Form.Item>
+                      <Form.Item name={[field.name, 'value']} style={{ marginBottom: 0 }}>
+                        <Input placeholder="{{start_1.question}}" style={{ width: 160 }} />
+                      </Form.Item>
+                      <Button type="text" danger onClick={() => remove(field.name)}>{t('canvas.remove')}</Button>
+                    </Space>
+                  ))}
+                  <Button type="dashed" block icon={<PlusOutlined />} onClick={() => add({ name: '', value: '' })}>
+                    {t('canvas.subflowAddMapping')}
+                  </Button>
+                </>
+              )}
+            </Form.List>
+            <Typography.Paragraph type="warning" style={{ fontSize: 12, marginTop: 8, marginBottom: 0 }}>
+              {t('canvas.subflowDepthHint')}
             </Typography.Paragraph>
           </>
         )}

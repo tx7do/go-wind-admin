@@ -271,10 +271,11 @@ func (s *AiAgentService) Run(ctx context.Context, req *aiV1.RunAiAgentAppRequest
 	}
 
 	output, trace, usage, execErr := executeAgentGraph(ctx, g, req.GetInput(), &agentEngineDeps{
-		searchKnowledge: s.searchKnowledgeForAgent(operator),
-		runLLM:          s.runLLMForAgent(operator),
-		runScript:       s.runScriptForAgent,
-		onStep:          publishFrame,
+		searchKnowledge:  s.searchKnowledgeForAgent(operator),
+		runLLM:           s.runLLMForAgent(operator),
+		runScript:        s.runScriptForAgent,
+		loadSubflowGraph: s.loadSubflowGraph,
+		onStep:           publishFrame,
 	})
 	durationMs := uint32(time.Since(start).Milliseconds())
 
@@ -305,6 +306,26 @@ func (s *AiAgentService) Run(ctx context.Context, req *aiV1.RunAiAgentAppRequest
 
 func (s *AiAgentService) ListRuns(ctx context.Context, req *paginationV1.PagingRequest) (*aiV1.ListAiAgentRunsResponse, error) {
 	return s.runRepo.List(ctx, req)
+}
+
+// loadSubflowGraph subflow 节点的真实现：加载目标应用（enabled 校验）并解析其图。
+// 同租户隔离（ent viewer 租户谓词）：跨租户引用查不到即报错，不越权。
+func (s *AiAgentService) loadSubflowGraph(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+	app, err := s.appRepo.GetEntityByID(ctx, appID)
+	if err != nil {
+		return "", nil, err
+	}
+	if !app.Enabled {
+		return "", nil, fmt.Errorf("subflow target app [%d] is disabled", appID)
+	}
+	g, perr := parseAgentGraph(ptrStrOr(app.Graph, ""))
+	if perr != nil {
+		return "", nil, fmt.Errorf("subflow target app [%d] has invalid graph: %w", appID, perr)
+	}
+	if err = validateAgentGraph(g); err != nil {
+		return "", nil, fmt.Errorf("subflow target app [%d] graph failed validation: %w", appID, err)
+	}
+	return app.Name, g, nil
 }
 
 func (s *AiAgentService) GetRun(ctx context.Context, req *aiV1.GetAiAgentRunRequest) (*aiV1.AiAgentRun, error) {

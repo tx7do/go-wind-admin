@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/expr-lang/expr"
@@ -28,8 +30,11 @@ const agentMaxSteps = 50
 // agentNodeTypes 合法节点类型集。
 var agentNodeTypes = map[string]bool{
 	"start": true, "knowledge": true, "llm": true, "condition": true, "end": true,
-	"http": true, "script": true,
+	"http": true, "script": true, "parallel": true, "subflow": true,
 }
+
+// agentMaxSubflowDepth 子图引用深度上限（防递归爆炸——A 引 B、B 引 A 的图对）。
+const agentMaxSubflowDepth = 3
 
 // agentGraphNode 图节点。data 保持无类型 map：五种节点各自的键在执行处按需取，
 // 画布演进加键不必改这份结构（校验只关心 type 与 id）。
@@ -141,6 +146,8 @@ func validateAgentGraph(g *agentGraph) error {
 			if err := validateAgentScriptNode(n); err != nil {
 				return err
 			}
+		case "parallel":
+			// parallel 节点允许 N 条出边（并发分支），但每条必须指向存在的节点（通用校验已覆盖）
 		}
 	}
 	if startCount != 1 {
@@ -189,6 +196,11 @@ func validateAgentGraph(g *agentGraph) error {
 			}
 			if !branches["true"] || !branches["false"] {
 				return fmt.Errorf("condition node %q must have one true and one false branch", n.ID)
+			}
+		case "parallel":
+			// parallel 节点允许 N 条出边（并发分支）；每条出边在下游汇聚即可
+			if len(edges) == 0 {
+				return fmt.Errorf("parallel node %q must have at least one outgoing edge", n.ID)
 			}
 		default:
 			if len(edges) > 1 {
@@ -369,18 +381,214 @@ type agentEngineDeps struct {
 	// runScript 执行 script 节点：一次性隔离沙箱跑完返回上下文数据（真实现 =
 	// ScriptRuntime.TestRun，见 runScriptForAgent）；引擎本体不触沙箱，测试注桩。
 	runScript func(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string) (map[string]any, error)
+	// loadSubflowGraph 加载子图（subflow 节点引用的目标应用图）：
+	// 返回目标应用名与解析后的图；目标不存在/停用返回错误。
+	// 真实现 = appRepo.GetEntityByID + parseAgentGraph；测试注桩。
+	loadSubflowGraph func(ctx context.Context, appID uint32) (appName string, graph *agentGraph, err error)
 	// onStep 节点执行阶段回调（node_start / node_end），SSE 流式观感用；nil = 不推。
 	// 推帧失败（订阅端慢）不影响执行——回调实现方自己保证尽力而为语义。
 	onStep func(phase, nodeID, summary, status string)
 }
 
-// executeAgentGraph 从 start 走图到 end，返回产出、轨迹与累计用量。
-// 任一节点执行失败即返回错误（trace 保留到失败步为止，由调用方落 FAILED 运行行）。
+// agentNodeOutcome 单节点在一个执行波次内的完整结果。
+// 波内并发执行时各 goroutine 只写本地 outcome，合并阶段统一落账（vars/trace/usage），
+// 避免 Go map 并发写。
+type agentNodeOutcome struct {
+	step      agentTraceStep
+	usage     agentUsage
+	outputs   map[string]string   // 写回 vars[node.ID] 的命名空间（nil = 不写）
+	nextEdges []*agentGraphEdge   // 选定的后续边（end = nil；parallel = 全部出边）
+	endOutput *string             // end 节点的产出（非 end = nil；并行多 end 按序首个胜出）
+	branch    string              // condition 的分支判定（"true"/"false"）
+	err       error
+}
+
+// executeAgentNodeInWave 执行单个节点并产出本地结果。
+// 波内并发安全：只读共享 vars（渲染模板/条件求值），一切产出写本地 outcome，
+// 由合并阶段统一写回。
+func executeAgentNodeInWave(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string, deps *agentEngineDeps, inputCount int) *agentNodeOutcome {
+	return executeAgentNodeWithDepth(ctx, node, vars, deps, inputCount, agentMaxSubflowDepth)
+}
+
+// executeAgentNodeWithDepth 带 subflow 深度预算的节点执行本体。
+func executeAgentNodeWithDepth(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string, deps *agentEngineDeps, inputCount, subflowDepthRemaining int) *agentNodeOutcome {
+	stepStart := time.Now()
+	oc := &agentNodeOutcome{}
+	fail := func(err error) *agentNodeOutcome {
+		oc.err = err
+		return oc
+	}
+
+	var summary string
+
+	switch node.Type {
+	case "start":
+		summary = fmt.Sprintf("%d input variable(s)", inputCount)
+
+	case "knowledge":
+		query, rerr := renderAgentTemplate(agentDataString(node.Data, "query"), vars)
+		if rerr != nil {
+			return fail(rerr)
+		}
+		contextText, hits, kerr := deps.searchKnowledge(ctx, node, query)
+		if kerr != nil {
+			return fail(kerr)
+		}
+		oc.outputs = map[string]string{"context": contextText, "hits": strconv.Itoa(hits)}
+		summary = fmt.Sprintf("hits=%d, %d chars", hits, len(contextText))
+
+	case "llm":
+		system, rerr := renderAgentTemplate(agentDataString(node.Data, "systemPrompt"), vars)
+		if rerr != nil {
+			return fail(rerr)
+		}
+		user, rerr := renderAgentTemplate(agentDataString(node.Data, "userPrompt"), vars)
+		if rerr != nil {
+			return fail(rerr)
+		}
+		if strings.TrimSpace(user) == "" {
+			return fail(fmt.Errorf("llm node %q has empty userPrompt after rendering", node.ID))
+		}
+		answer, llmUsage, lerr := deps.runLLM(ctx, node, system, user)
+		if lerr != nil {
+			return fail(lerr)
+		}
+		oc.usage = llmUsage
+		oc.outputs = map[string]string{"output": answer}
+		summary = truncateRunes(answer, 120)
+
+	case "http":
+		status, body, contentType, herr := runAgentHTTPNode(ctx, node, vars)
+		if herr != nil {
+			return fail(herr)
+		}
+		oc.outputs = map[string]string{
+			"status":      status,
+			"body":        body,
+			"contentType": contentType,
+		}
+		summary = fmt.Sprintf("status=%s, %d bytes", status, len(body))
+
+	case "condition":
+		approved, cerr := evalAgentCondition(agentDataString(node.Data, "expression"), vars)
+		if cerr != nil {
+			return fail(cerr)
+		}
+		if approved {
+			oc.branch = "true"
+		} else {
+			oc.branch = "false"
+		}
+		summary = fmt.Sprintf("branch=%t", approved)
+
+	case "script":
+		if deps.runScript == nil {
+			return fail(fmt.Errorf("script node %q unavailable: script runtime not wired", node.ID))
+		}
+		data, serr := deps.runScript(ctx, node, vars)
+		if serr != nil {
+			return fail(serr)
+		}
+		oc.outputs = agentScriptOutputs(data)
+		summary = agentScriptSummary(oc.outputs)
+
+	case "parallel":
+		summary = "pass-through (fan-out via outgoing edges)"
+
+	case "subflow":
+		if deps.loadSubflowGraph == nil {
+			return fail(fmt.Errorf("subflow node %q unavailable: subflow loader not wired", node.ID))
+		}
+		if subflowDepthRemaining <= 0 {
+			return fail(fmt.Errorf("subflow node %q exceeds max subflow depth %d (recursive reference?)", node.ID, agentMaxSubflowDepth))
+		}
+		subAppID := agentDataUint32(node.Data, "appId")
+		if subAppID == 0 {
+			return fail(fmt.Errorf("subflow node %q has no appId configured", node.ID))
+		}
+		subName, subGraph, lerr := deps.loadSubflowGraph(ctx, subAppID)
+		if lerr != nil {
+			return fail(lerr)
+		}
+		// 递归执行子图：输入 = inputMapping 渲染后的键值（键 = 子 start 变量名，值 = 父模板）；
+		// 深度预算逐层递减（防 A 引 B、B 引 A 的递归爆炸）。
+		subInput := map[string]string{}
+		for _, raw := range agentDataSlice(node.Data, "inputMapping") {
+			pair, _ := raw.(map[string]any)
+			key, _ := pair["name"].(string)
+			if key == "" {
+				continue
+			}
+			val, rerr := renderAgentTemplate(agentDataString(pair, "value"), vars)
+			if rerr != nil {
+				return fail(rerr)
+			}
+			subInput[key] = val
+		}
+		subOutput, subTrace, subUsage, subErr := executeAgentGraphInner(ctx, subGraph, subInput, deps, subflowDepthRemaining-1)
+		if subErr != nil {
+			return fail(fmt.Errorf("subflow %q (%s): %w", node.ID, subName, subErr))
+		}
+		oc.usage = subUsage
+		oc.outputs = map[string]string{"output": subOutput}
+		summary = fmt.Sprintf("subflow %q done, %d steps", subName, len(subTrace))
+
+	case "end":
+		outText, rerr := renderAgentTemplate(agentDataString(node.Data, "output"), vars)
+		if rerr != nil {
+			return fail(rerr)
+		}
+		s := outText
+		oc.endOutput = &s
+		summary = "done"
+
+	default:
+		return fail(fmt.Errorf("unknown type %q", node.Type))
+	}
+
+	oc.step = agentTraceStep{
+		NodeID: node.ID, Type: node.Type, Status: "ok",
+		Ms: time.Since(stepStart).Milliseconds(), Summary: summary,
+		Usage: func() *agentUsage {
+			u := oc.usage
+			if u.Total == 0 {
+				return nil
+			}
+			return &u
+		}(),
+	}
+	return oc
+}
+
+// executeAgentGraph 从 start 走图到 end（frontier 波次模型），返回产出、轨迹与累计用量。
+// 对外入口（子图深度默认 agentMaxSubflowDepth）。
 func executeAgentGraph(
 	ctx context.Context,
 	g *agentGraph,
 	input map[string]string,
 	deps *agentEngineDeps,
+) (output string, trace []agentTraceStep, usage agentUsage, err error) {
+	return executeAgentGraphInner(ctx, g, input, deps, agentMaxSubflowDepth)
+}
+
+// executeAgentGraphInner frontier 波次执行（可递归）：维护一个待执行节点集合
+// （frontier），每轮波次把集合内全部节点并发执行（各 goroutine 只读共享 vars、写本地
+// outcome，WaitGroup 栅栏后统一合并落账——vars 写入只发生在栅栏后的串行合并段，无
+// Go map 并发写）。节点产出后选后继：condition 按 branch 取一条、parallel 取全部出边
+// （fan-out）、其余取唯一出边；下一波按 id 排序去重后继续（同波次多上游汇聚到同一节点
+// 时只入队一次——波栅栏即汇合点）。
+//
+// 失败语义：波内任一节点失败即整跑失败（一票失败，v1 不做部分失败聚合）；end 到达
+// 即终止（并行多 end 按 frontier 排序首个胜出，其余分支同波产出仍落 trace）。
+// 步数预算：agentMaxSteps 按节点执行次数计（波内每个节点各计 1），并发 LLM 调用
+// 的墙钟收益与预算语义解耦。
+// subflowDepthRemaining 子图递归深度预算（每进一层减一，0 = 拒绝继续下钻）。
+func executeAgentGraphInner(
+	ctx context.Context,
+	g *agentGraph,
+	input map[string]string,
+	deps *agentEngineDeps,
+	subflowDepthRemaining int,
 ) (output string, trace []agentTraceStep, usage agentUsage, err error) {
 	byID := make(map[string]*agentGraphNode, len(g.Nodes))
 	out := make(map[string][]*agentGraphEdge)
@@ -415,145 +623,91 @@ func executeAgentGraph(
 	}
 	vars[start.ID] = startVars
 
-	current := start
-	for step := 0; step < agentMaxSteps; step++ {
-		stepStart := time.Now()
-		node := current
-		stepUsage := agentUsage{}
-		summary := ""
-		branchTaken := "" // condition 节点的分支判定（"true"/"false"），选边用
+	frontier := []*agentGraphNode{start}
+	totalSteps := 0
+
+	for len(frontier) > 0 && totalSteps < agentMaxSteps {
+		// 确定性顺序：按节点 id 排序（trace/SSE 帧序可复现，并行多 end 首个胜出也可预期）
+		sort.Slice(frontier, func(i, j int) bool { return frontier[i].ID < frontier[j].ID })
 
 		if deps.onStep != nil {
-			deps.onStep("node_start", node.ID, "", "")
+			for _, node := range frontier {
+				deps.onStep("node_start", node.ID, "", "")
+			}
 		}
 
-		switch node.Type {
-		case "start":
-			summary = fmt.Sprintf("%d input variable(s)", len(startVars))
+		// 波内并发执行：各 goroutine 只读 vars、写本地 outcome。
+		// deps 的实现须并发安全（entClient/openai 客户端线程安全；脚本工具走
+		// 引擎 execMu 串行；TestRun 沙箱一次性隔离）。
+		outcomes := make([]*agentNodeOutcome, len(frontier))
+		var wg sync.WaitGroup
+		for i := range frontier {
+			wg.Add(1)
+			go func(i int, node *agentGraphNode) {
+				defer wg.Done()
+				outcomes[i] = executeAgentNodeWithDepth(ctx, node, vars, deps, len(input), subflowDepthRemaining)
+			}(i, frontier[i])
+		}
+		wg.Wait()
 
-		case "knowledge":
-			query, rerr := renderAgentTemplate(agentDataString(node.Data, "query"), vars)
-			if rerr != nil {
-				return "", trace, usage, agentStepError(node, rerr)
+		// 合并阶段（串行）：写 vars / 累计 usage / 追加 trace / 推 SSE / 选后继。
+		nextSet := map[string]*agentGraphNode{}
+		nextOrder := []string{}
+		for i, node := range frontier {
+			oc := outcomes[i]
+			if oc.err != nil {
+				trace = append(trace, agentTraceStep{
+					NodeID: node.ID, Type: node.Type, Status: "error",
+					Ms: oc.step.Ms, Error: oc.err.Error(),
+				})
+				return "", trace, usage, agentStepError(node, oc.err)
 			}
-			contextText, hits, kerr := deps.searchKnowledge(ctx, node, query)
-			if kerr != nil {
-				return "", trace, usage, agentStepError(node, kerr)
+			totalSteps++
+			if oc.outputs != nil {
+				vars[node.ID] = oc.outputs
 			}
-			vars[node.ID] = map[string]string{"context": contextText, "hits": strconv.Itoa(hits)}
-			summary = fmt.Sprintf("hits=%d, %d chars", hits, len(contextText))
-
-		case "llm":
-			system, rerr := renderAgentTemplate(agentDataString(node.Data, "systemPrompt"), vars)
-			if rerr != nil {
-				return "", trace, usage, agentStepError(node, rerr)
-			}
-			user, rerr := renderAgentTemplate(agentDataString(node.Data, "userPrompt"), vars)
-			if rerr != nil {
-				return "", trace, usage, agentStepError(node, rerr)
-			}
-			if strings.TrimSpace(user) == "" {
-				return "", trace, usage, agentStepError(node, fmt.Errorf("llm node %q has empty userPrompt after rendering", node.ID))
-			}
-			answer, llmUsage, lerr := deps.runLLM(ctx, node, system, user)
-			if lerr != nil {
-				return "", trace, usage, agentStepError(node, lerr)
-			}
-			stepUsage = llmUsage
-			usage.add(llmUsage)
-			vars[node.ID] = map[string]string{"output": answer}
-			summary = truncateRunes(answer, 120)
-
-		case "http":
-			status, body, contentType, herr := runAgentHTTPNode(ctx, node, vars)
-			if herr != nil {
-				return "", trace, usage, agentStepError(node, herr)
-			}
-			vars[node.ID] = map[string]string{
-				"status":      status,
-				"body":        body,
-				"contentType": contentType,
-			}
-			summary = fmt.Sprintf("status=%s, %d bytes", status, len(body))
-
-		case "condition":
-			approved, cerr := evalAgentCondition(agentDataString(node.Data, "expression"), vars)
-			if cerr != nil {
-				return "", trace, usage, agentStepError(node, cerr)
-			}
-			if approved {
-				branchTaken = "true"
-			} else {
-				branchTaken = "false"
-			}
-			summary = fmt.Sprintf("branch=%t", approved)
-
-		case "script":
-			if deps.runScript == nil {
-				return "", trace, usage, agentStepError(node, fmt.Errorf("script node %q unavailable: script runtime not wired", node.ID))
-			}
-			data, serr := deps.runScript(ctx, node, vars)
-			if serr != nil {
-				return "", trace, usage, agentStepError(node, serr)
-			}
-			vars[node.ID] = agentScriptOutputs(data)
-			summary = agentScriptSummary(vars[node.ID])
-
-		case "end":
-			outText, rerr := renderAgentTemplate(agentDataString(node.Data, "output"), vars)
-			if rerr != nil {
-				return "", trace, usage, agentStepError(node, rerr)
-			}
-			trace = append(trace, agentTraceStep{
-				NodeID: node.ID, Type: node.Type, Status: "ok",
-				Ms: time.Since(stepStart).Milliseconds(), Summary: "done",
-			})
+			usage.add(oc.usage)
+			trace = append(trace, oc.step)
 			if deps.onStep != nil {
-				deps.onStep("node_end", node.ID, "done", "ok")
+				deps.onStep("node_end", node.ID, oc.step.Summary, "ok")
 			}
-			return outText, trace, usage, nil
 
-		default:
-			return "", trace, usage, fmt.Errorf("node %q has unknown type %q", node.ID, node.Type)
-		}
+			if oc.endOutput != nil {
+				// 首个 end 到达即终止（同波其他分支的产出已落 trace，但后继不再执行）
+				return *oc.endOutput, trace, usage, nil
+			}
 
-		trace = append(trace, agentTraceStep{
-			NodeID: node.ID, Type: node.Type, Status: "ok",
-			Ms: time.Since(stepStart).Milliseconds(), Summary: summary,
-			Usage: func() *agentUsage {
-				u := stepUsage
-				if u.Total == 0 {
-					return nil
+			// 选后继：condition 按 branch 取；parallel/其余取全部出边
+			for _, e := range out[node.ID] {
+				if node.Type == "condition" && e.Branch != oc.branch {
+					continue
 				}
-				return &u
-			}(),
-		})
-		if deps.onStep != nil {
-			deps.onStep("node_end", node.ID, summary, "ok")
-		}
-
-		// 选下一条边：condition 按 true/false 分支取，其余取唯一出边。
-		var next *agentGraphEdge
-		for _, e := range out[node.ID] {
-			if node.Type == "condition" {
-				if e.Branch == branchTaken {
-					next = e
-					break
+				target := byID[e.Target]
+				if target == nil {
+					return "", trace, usage, fmt.Errorf("edge target %q vanished", e.Target)
 				}
-			} else {
-				next = e
-				break
+				if _, queued := nextSet[target.ID]; !queued {
+					nextSet[target.ID] = target
+					nextOrder = append(nextOrder, target.ID)
+				}
 			}
 		}
-		if next == nil {
-			return "", trace, usage, fmt.Errorf("node %q has no outgoing edge to continue", node.ID)
-		}
-		current = byID[next.Target]
-		if current == nil {
-			return "", trace, usage, fmt.Errorf("edge target %q vanished", next.Target)
+
+		// 组装下一波（按 id 排序保持确定性）
+		frontier = frontier[:0]
+		sort.Strings(nextOrder)
+		for _, id := range nextOrder {
+			frontier = append(frontier, nextSet[id])
 		}
 	}
-	return "", trace, usage, fmt.Errorf("execution exceeded %d steps", agentMaxSteps)
+
+	if len(frontier) > 0 {
+		return "", trace, usage, fmt.Errorf(
+			"execution exceeded %d node steps (loop budget; reduce cycle iterations or simplify the graph)",
+			agentMaxSteps)
+	}
+	// frontier 清空但未触 end：某非 end 节点无出边（校验应已拦，防御分支）
+	return "", trace, usage, fmt.Errorf("all branches terminated without reaching an end node")
 }
 
 func agentStepError(node *agentGraphNode, err error) error {

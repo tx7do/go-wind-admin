@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -426,11 +427,242 @@ func TestExecuteAgentGraphScriptNotWired(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "script runtime not wired") {
 		t.Fatalf("err = %v, want script runtime not wired", err)
 	}
-	// 引擎既有语义：失败步不追加 trace（错误进运行行 error 列），trace 只留失败前的 ok 步
-	if err == nil || !strings.Contains(err.Error(), "node scr_1[script]") {
+	// 波次模型：失败节点也落 trace（error 步骤含错误详情），比旧行为更可观测
+	if !strings.Contains(err.Error(), "node scr_1[script]") {
 		t.Fatalf("err should locate the failing node: %v", err)
 	}
-	if len(trace) != 1 || trace[0].NodeID != "start_1" || trace[0].Status != "ok" {
-		t.Fatalf("trace = %+v, want only prior ok steps", trace)
+	if len(trace) != 2 {
+		t.Fatalf("trace = %+v, want start ok + script error steps", trace)
 	}
+	if trace[0].NodeID != "start_1" || trace[0].Status != "ok" {
+		t.Fatalf("trace[0] = %+v, want start_1 ok", trace[0])
+	}
+	if trace[1].NodeID != "scr_1" || trace[1].Status != "error" {
+		t.Fatalf("trace[1] = %+v, want scr_1 error", trace[1])
+	}
+}
+
+// ── parallel 并行节点（frontier 波次模型）────────────────────────────────
+
+// TestValidateAgentGraph_ParallelOutDegree parallel 节点校验：允许 N 条出边（fan-out），
+// 零出边拒绝；其余类型仍受 ≤1 出度约束。
+func TestValidateAgentGraph_ParallelOutDegree(t *testing.T) {
+	// parallel 多出边合法（出边目标必须不同——重复边会被 duplicate edge 拦截）
+	ok := `{"nodes":[{"id":"a","type":"start","data":{}},{"id":"p","type":"parallel","data":{}},{"id":"l1","type":"llm","data":{}},{"id":"l2","type":"llm","data":{}},{"id":"e","type":"end","data":{}}],
+		"edges":[{"id":"x","source":"a","target":"p"},{"id":"b1","source":"p","target":"l1"},{"id":"b2","source":"p","target":"l2"},{"id":"c1","source":"l1","target":"e"},{"id":"c2","source":"l2","target":"e"}]}`
+	if err := validateAgentGraph(agentTestGraph(t, ok)); err != nil {
+		t.Fatalf("parallel fan-out rejected: %v", err)
+	}
+
+	// parallel 零出边拒绝
+	bad := `{"nodes":[{"id":"a","type":"start","data":{}},{"id":"p","type":"parallel","data":{}},{"id":"e","type":"end","data":{}}],
+		"edges":[{"id":"x","source":"a","target":"p"}]}`
+	if err := validateAgentGraph(agentTestGraph(t, bad)); err == nil || !strings.Contains(err.Error(), "at least one outgoing edge") {
+		t.Fatalf("parallel zero-out err = %v", err)
+	}
+
+	// 普通节点仍限单出边（test 断言放在同型已有用例覆盖）
+}
+
+// TestExecuteAgentGraph_ParallelFanOut 并行执行：parallel 节点把波次分裂为两个并发
+// 分支，各自执行后都到达 end——按排序首个 end 胜出，两个分支的 trace 都保留。
+func TestExecuteAgentGraph_ParallelFanOut(t *testing.T) {
+	raw := `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "position": {"x":0,"y":0}, "data": {"inputVars": []}},
+	    {"id": "p", "type": "parallel", "position": {"x":0,"y":0}, "data": {}},
+	    {"id": "http_a", "type": "http", "position": {"x":0,"y":0}, "data": {"url": "http://a.example.com/x"}},
+	    {"id": "http_b", "type": "http", "position": {"x":0,"y":0}, "data": {"url": "http://b.example.com/y"}},
+	    {"id": "end_a", "type": "end", "position": {"x":0,"y":0}, "data": {"output": "A"}},
+	    {"id": "end_b", "type": "end", "position": {"x":0,"y":0}, "data": {"output": "B"}}
+	  ],
+	  "edges": [
+	    {"id": "e0", "source": "start_1", "target": "p"},
+	    {"id": "e1", "source": "p", "target": "http_a"},
+	    {"id": "e2", "source": "p", "target": "http_b"},
+	    {"id": "e3", "source": "http_a", "target": "end_a"},
+	    {"id": "e4", "source": "http_b", "target": "end_b"}
+	  ]
+	}`
+	g := agentTestGraph(t, raw)
+
+	if err := validateAgentGraph(g); err != nil {
+		t.Fatalf("parallel graph rejected: %v", err)
+	}
+
+	httpCalls := make(map[string]int)
+	deps := &agentEngineDeps{
+		searchKnowledge: func(ctx context.Context, node *agentGraphNode, query string) (string, int, error) {
+			return "", 0, fmt.Errorf("should not be called")
+		},
+		runLLM: func(ctx context.Context, node *agentGraphNode, system, user string) (string, agentUsage, error) {
+			return "", agentUsage{}, fmt.Errorf("should not be called")
+		},
+	}
+
+	// 用桩替换 http 执行不可行（runAgentHTTPNode 是直接调用），改用 script 节点并行：
+	// 两个 script 节点经 deps.runScript 桩计数，验证波内并发都执行了。
+	rawScript := `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "position": {"x":0,"y":0}, "data": {"inputVars": []}},
+	    {"id": "p", "type": "parallel", "position": {"x":0,"y":0}, "data": {}},
+	    {"id": "s_a", "type": "script", "position": {"x":0,"y":0}, "data": {"language": "lua", "source": "function execute() __set_ctx(\"r\", \"A\") return true end"}},
+	    {"id": "s_b", "type": "script", "position": {"x":0,"y":0}, "data": {"language": "lua", "source": "function execute() __set_ctx(\"r\", \"B\") return true end"}},
+	    {"id": "end_a", "type": "end", "position": {"x":0,"y":0}, "data": {"output": "A done"}},
+	    {"id": "end_b", "type": "end", "position": {"x":0,"y":0}, "data": {"output": "B done"}}
+	  ],
+	  "edges": [
+	    {"id": "e0", "source": "start_1", "target": "p"},
+	    {"id": "e1", "source": "p", "target": "s_a"},
+	    {"id": "e2", "source": "p", "target": "s_b"},
+	    {"id": "e3", "source": "s_a", "target": "end_a"},
+	    {"id": "e4", "source": "s_b", "target": "end_b"}
+	  ]
+	}`
+	gs := agentTestGraph(t, rawScript)
+	if err := validateAgentGraph(gs); err != nil {
+		t.Fatalf("parallel script graph rejected: %v", err)
+	}
+
+	var mu sync.Mutex
+	scriptCalls := map[string]bool{}
+	scriptDeps := &agentEngineDeps{
+		runScript: func(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string) (map[string]any, error) {
+			mu.Lock()
+			scriptCalls[node.ID] = true
+			mu.Unlock()
+			return map[string]any{"r": node.ID}, nil
+		},
+	}
+
+	output, trace, _, err := executeAgentGraph(context.Background(), gs, nil, scriptDeps)
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+
+	mu.Lock()
+	callsA := scriptCalls["s_a"]
+	callsB := scriptCalls["s_b"]
+	mu.Unlock()
+	if !callsA || !callsB {
+		t.Fatalf("both parallel branches should execute (a=%v b=%v)", callsA, callsB)
+	}
+
+	// 首 end 胜出：frontier 按 id 排序，end_a < end_b，故产出为 A 分支
+	if output != "A done" {
+		t.Fatalf("output = %q, want A done (first end wins)", output)
+	}
+
+	// 两个分支的节点都进 trace
+	traceNodes := map[string]bool{}
+	for _, s := range trace {
+		traceNodes[s.NodeID] = true
+	}
+	if !traceNodes["s_a"] || !traceNodes["s_b"] || !traceNodes["end_a"] {
+		t.Fatalf("trace missing parallel branch nodes: %+v", trace)
+	}
+	_ = httpCalls
+	_ = deps
+}
+
+// TestExecuteAgentGraph_Subflow 子图递归执行：subflow 节点加载目标图、
+// inputMapping 渲染后作为子 start 入参、子 end 产出写回父命名空间 output 变量。
+func TestExecuteAgentGraph_Subflow(t *testing.T) {
+	subGraph := agentTestGraph(t, `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "data": {"inputVars": [{"name": "topic", "required": true}]}},
+	    {"id": "end_1", "type": "end", "data": {"output": "子图输出:{{start_1.topic}}"}}
+	  ],
+	  "edges": [
+	    {"id": "e1", "source": "start_1", "target": "end_1"}
+	  ]
+	}`)
+
+	parentRaw := `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "data": {"inputVars": [{"name": "question", "required": true}]}},
+	    {"id": "sub_1", "type": "subflow", "data": {"appId": 7, "inputMapping": [{"name": "topic", "value": "{{start_1.question}}"}]}},
+	    {"id": "end_1", "type": "end", "data": {"output": "父层收到:{{sub_1.output}}"}}
+	  ],
+	  "edges": [
+	    {"id": "e1", "source": "start_1", "target": "sub_1"},
+	    {"id": "e2", "source": "sub_1", "target": "end_1"}
+	  ]
+	}`
+	g := agentTestGraph(t, parentRaw)
+	if err := validateAgentGraph(g); err != nil {
+		t.Fatalf("subflow graph rejected: %v", err)
+	}
+
+	deps := &agentEngineDeps{
+		loadSubflowGraph: func(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+			if appID != 7 {
+				return "", nil, fmt.Errorf("unexpected app %d", appID)
+			}
+			return "子图应用", subGraph, nil
+		},
+	}
+
+	output, trace, _, err := executeAgentGraph(context.Background(), g,
+		map[string]string{"question": "退款"}, deps)
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	if output != "父层收到:子图输出:退款" {
+		t.Fatalf("output = %q", output)
+	}
+	// 子图 trace 拍平追加到父 trace（对前端零改动）
+	traceNodes := map[string]int{}
+	for _, s := range trace {
+		traceNodes[s.NodeID]++
+	}
+	if traceNodes["end_1"] == 0 || traceNodes["sub_1"] == 0 {
+		t.Fatalf("subflow inner steps should appear in parent trace, got %+v", trace)
+	}
+}
+
+// TestExecuteAgentGraph_SubflowDepthLimit 递归深度限制：自引用图在深度耗尽后报错
+// （不无限递归）。
+func TestExecuteAgentGraph_SubflowDepthLimit(t *testing.T) {
+	selfGraph := agentTestGraph(t, `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "data": {"inputVars": []}},
+	    {"id": "sub_1", "type": "subflow", "data": {"appId": 9}},
+	    {"id": "end_1", "type": "end", "data": {"output": "done"}}
+	  ],
+	  "edges": [
+	    {"id": "e1", "source": "start_1", "target": "sub_1"},
+	    {"id": "e2", "source": "sub_1", "target": "end_1"}
+	  ]
+	}`)
+
+	calls := 0
+	deps := &agentEngineDeps{
+		loadSubflowGraph: func(ctx context.Context, appID uint32) (string, *agentGraph, error) {
+			calls++
+			return "自引用", selfGraph, nil
+		},
+	}
+
+	_, _, _, err := executeAgentGraphInner(context.Background(), selfGraph, nil, deps, 3)
+	if err == nil {
+		t.Fatal("self-referencing subflow should fail at depth limit")
+	}
+	if !strings.Contains(err.Error(), "max subflow depth") && !containsStr(err.Error(), "subflow") {
+		t.Fatalf("err = %v, want subflow depth error", err)
+	}
+	if calls < 3 {
+		t.Fatalf("calls = %d, want >= 3 (recursion should hit the limit)", calls)
+	}
+}
+
+func containsStr(s, substr string) bool {
+	return len(substr) > 0 && len(s) >= len(substr) && (func() bool {
+		for i := 0; i+len(substr) <= len(s); i++ {
+			if s[i:i+len(substr)] == substr {
+				return true
+			}
+		}
+		return false
+	})()
 }

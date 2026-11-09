@@ -58,13 +58,16 @@
       "llm": "LLM",
       "http": "HTTP Request",
       "script": "Script",
+      "parallel": "Parallel",
+      "subflow": "Subflow",
       "condition": "Condition",
       "end": "End"
     },
     "error": {
       "endNoOut": "End nodes cannot have outgoing edges",
       "conditionTwoOut": "Condition nodes may have at most two outgoing edges (one true, one false)",
-      "singleOut": "This node already has an outgoing edge (only condition nodes branch)"
+      "singleOut": "This node already has an outgoing edge (only condition/parallel nodes branch)",
+      "duplicateTarget": "Each parallel branch can connect to a target only once"
     },
     "knowledgeBase": "Knowledge Base",
     "requiredKnowledgeBase": "Select a knowledge base",
@@ -99,6 +102,11 @@
     "scriptLanguage": "Language",
     "scriptSource": "Script Source",
     "scriptHint": "Define execute(); read the context via __get_ctx() (tables keyed by node id) and write outputs via __set_ctx(k, v) (refer as {'{{'}nodeId.field{'}'})",
-    "scriptSandboxHint": "Runs in a server-side sandbox (5s timeout, restricted modules); source is NOT a template — {'{{'}...{'}'} executes as script syntax"
+    "scriptSandboxHint": "Runs in a server-side sandbox (5s timeout, restricted modules); source is NOT a template — {'{{'}...{'}'} executes as script syntax",
+    "subflowApp": "Target App",
+    "subflowAppPlaceholder": "Choose the Agent app to embed",
+    "subflowVarName": "Sub input",
+    "subflowAddMapping": "Add input mapping",
+    "subflowDepthHint": "Subflows execute as standalone runs (max depth 3, recursion rejected); disabled or cross-tenant targets are rejected server-side"
   }
 }
