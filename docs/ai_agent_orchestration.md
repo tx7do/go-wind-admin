@@ -7,7 +7,9 @@
 > **（2026-11-09）脚本节点已落地**（后端引擎 + 三端画布，见 §2.1 script 行）；
 > **版本化已落地**：revision 留底/恢复（BI 同款口径，非 draft/published，见 §4 版本化）。
 > M2 至此收官。**M3 首批同日落地**：定时触发（agent_run 任务桥）与对外 API（AK/SK，见 §5）。
-> 剩余（工具市场、循环/子图/并行）未排期，需求驱动。
+> **（2026-11-09）M3 后续批次落地**：工具市场（脚本工具→LLM，见 §2.1 tool 行）、
+> 并行（parallel 节点 + frontier 执行模型，见 §2.1/§3）、循环（环语义化，见 §2.3）、
+> 子图（subflow 节点，见 §2.1 subflow 行）。M3 至此全部收官，仅剩输出链 v2（另立）。
 >
 > 立项依据：JeecgBoot 对标时"AI 应用平台（编排）"按品类边界归档，触发条件为需求驱动；
 > 2026-10-15 用户明确立项，归档项按条款重开。**这是 AI 模块内的编排能力，不是 OA 工作流**——
@@ -63,7 +65,7 @@
 }
 ```
 
-### 2.1 节点集（M1 五种 + M2 http/script）
+### 2.1 节点集（M1 五种 + M2 http/script + M3 parallel/subflow）
 
 | type | data 键 | 写入上下文 |
 | --- | --- | --- |
@@ -72,8 +74,34 @@
 | `llm` | `providerId, model, systemPrompt?(模板), userPrompt(模板), temperature?` | `output`（最终答案文本） |
 | `http` **（M2，2026-11-08）** | `url`(必填,模板), `method`(白名单 GET/POST/PUT/DELETE/PATCH/HEAD, 默认 GET), `headers`(`[{key,value}]` 或 map，键值均可模板), `body`(模板，非 GET/HEAD), `timeoutSeconds`(1-60, 默认 15) | `status`（状态码）、`body`（响应体，读上限 64KB、入上下文截断 8KB）、`contentType` |
 | `script` **（M2，2026-11-09）** | `language`(白名单 lua/javascript), `source`(脚本源码，**非模板**——代码里的 `{{...}}` 是脚本自身语法)。脚本**必须定义 `execute()`**（引擎哨兵探测该入口）：上下文经 `__get_ctx()` 取——返回带 `get/set/stop` 方法的表，`c.get("节点id")` 读上游命名空间、`__set_ctx(k, v)` 写产出、`__stop(reason)` 中止；`return false` = 中止 | 脚本新写入的键收口为字符串命名空间（字符串直通、标量转写、嵌套值 JSON 编码；**输入键回声剔除**——注入的输入命名空间不出现在产出里） |
+| `parallel` **（M3，2026-11-09）** | 无配置键（纯结构节点） | 无（fan-out 语义由出边承接——见 §3 执行模型） |
+| `subflow` **（M3，2026-11-09）** | `appId`(目标应用), `inputMapping: [{name,value(模板)}]`（子 start 变量 → 父模板值） | `output`（子 end 产出）——子图用量/trace 并入本跑 |
 | `condition` | `expression`（[expr-lang](https://expr-lang.org) 语法，变量即节点命名空间） | 无（分流由带 `branch` 的出边承接） |
 | `end` | `output`(模板，可空) | 运行产出 = 到达的 end 节点渲染值 |
+
+**parallel 节点与 frontier 执行模型（M3，2026-11-09）**：执行引擎从"单游标线性走图"
+重构为 **frontier 波次调度**——维护待执行节点集合（按 id 排序保证 trace/SSE 帧序
+可复现），每轮把集合内全部节点并发执行（各 goroutine 只读共享 vars、写本地 outcome，
+WaitGroup 栅栏后串行合并落账——无 Go map 并发写）；parallel 节点执行为直通，其全部
+出边在下一波同时入队。失败语义：波内任一节点失败即整跑失败（一票失败）；end 到达
+即终止（并行多 end 按排序首个胜出，其余分支同波产出仍落 trace）。步数预算
+agentMaxSteps=50 按**节点执行次数**计（波内各节点各计 1）。汇聚语义：同波多上游指向
+同一节点时该节点只入队一次（波栅栏即汇合点），执行时读到全部上游命名空间。
+
+**subflow 节点（M3，2026-11-09）**：跨应用复用——节点引用另一 Agent 应用（appId），
+运行时加载目标图**递归执行**（`executeAgentGraphInner`，深度预算 agentMaxSubflowDepth=3
+逐层递减，防 A 引 B/B 引 A 递归爆炸）。inputMapping 渲染后作为子 start 入参；子 end
+产出写回本节点 `output` 命名空间；子图用量/trace 并入本跑（trace 拍平追加，对前端
+零改动）。目标应用校验：存在、enabled、同租户（ent viewer 谓词）、图合法——全部在
+`loadSubflowGraph`（`ai_agent_service.go`）把关。
+
+**工具市场（M3，2026-11-09）**：脚本经 `tool.register(name, description, fn(args), opts)`
+注册 LLM 工具（opts 带 required/optional 参数表 + timeout_secs，钳 300s），AI 工具循环
+的 defs 自动枚举全部脚本工具（required/optional 机械翻译成 OpenAI parameters schema），
+exec 按工具名转发 `ScriptRuntime.ExecuteScriptTool`（引擎 execMu 串行 + script_log
+审计行 `tool:<名>`）。chat 与 agent 的 LLM 节点同时获得。口径：脚本全局（平台管理员
+维护）、租户图/对话经工具间接执行、用量记调用方租户流水；未装配 ScriptRuntime 时
+脚本工具不出现在 defs。
 
 **http 节点的 SSRF 防线（2026-11-08）**：与 RenderPdf（`print_template_sanitize.go`）同源——
 scheme 白名单（http/https）、主机字面量/后缀判定（localhost/.local/.internal）、解析后逐 IP
@@ -105,8 +133,11 @@ end 模板渲染 `{{script_1.answer}}` 全链 SUCCEEDED；Save/Restore 快照链
 ### 2.3 校验（Run 前静态校验，不过则 400、不建运行行）
 
 唯一 start；≥1 个 end；节点 id 唯一且匹配 `[a-zA-Z_][a-zA-Z0-9_]{0,63}`；边引用存在的节点；
-condition 恰有两条出边且 `branch` 恰为 true/false 各一；其余节点出度 ≤1、end 出度 0；
-从 start 可达所有节点；无环（可达性即隐式覆盖——出度受限的图里环必然可达）。
+condition 恰有两条出边且 `branch` 恰为 true/false 各一；parallel ≥1 条出边（N 路分支合法）；
+其余节点出度 ≤1、end 出度 0；从 start 可达所有节点。
+**环合法性（M2 循环，2026-11-09）**：Tarjan 强连通分量分解——size>1 的分量必须至少含一个
+condition 节点（所有环都经过条件分流保证可终止），否则 400 "cycle without condition"；
+含 condition 分量内的普通节点允许（v1 按分量粒度近似判定）。
 按节点类型的字面校验：http（url 必填/method 白名单/timeout 钳制）、script（language 白名单/
 source 非空 ≤32KB）。
 

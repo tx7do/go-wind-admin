@@ -21,7 +21,23 @@ GoWind Admin 内置一套以 **Lua / JavaScript** 为载体的脚本级插件系
 明确不支持：UI / 页面扩展、复杂工作流编排、高 QPS 请求热路径、租户自写脚本
 （当前仅平台管理员可管理脚本）。
 
-## 五类扩展点
+## 六类扩展点
+
+### 0. LLM 工具注册（tool.register，2026-11-09 工具市场）
+
+脚本顶层调用 `tool.register(name, description, fn(args), opts)` 把自身暴露为 **LLM 可调用的工具**
+（工具市场）：AI 对话与 Agent 编排的 LLM 节点工具循环自动枚举全部已注册脚本工具，模型按
+description 与参数 schema 决定调用，调用经 `ScriptRuntime.ExecuteScriptTool`（引擎 execMu
+串行）转发执行，产出回给模型。
+
+- `opts`（可选）：`required`（必填参数名数组）、`optional`（可选参数 → 类型描述表，
+  机械翻译成 OpenAI parameters JSON Schema）、`timeout_secs`（默认 30，钳 300）
+- 执行留 `sys_script_logs` 审计行（`trigger=tool`，script 名带 `tool:<名>` 定位）
+- 口径：脚本全局（平台管理员维护），租户对话/Agent 图经工具间接执行，用量记调用方租户流水
+- ScriptRuntime 未装配时工具不出现在 LLM 工具清单（不静默报错）
+
+仅 Lua 侧可实现（JS 的 `tool` 模块为空占位，同 task 先例）。Agent 编排侧的 tool 循环
+语义见 [ai_agent_orchestration.md](./ai_agent_orchestration.md) §M3。
 
 ### 1. 实体生命周期钩子（before / after）
 

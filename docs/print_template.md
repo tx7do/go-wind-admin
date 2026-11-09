@@ -196,11 +196,15 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
    （数据本就来自列表页，前端加工无需脚本）。**成立条件**：批量/服务端渲染演进为"行数据 + 模板
    code 上送 → 服务端 bindData/generateHtml（内核 Go 移植或 headless 预处理）"的输出链 v2，
    printData 届时经过后端，钩子才有正确挂点；需求驱动再立项。
-3. **套餐配额**：模板数纳入套餐配额四类体系（若运营上值得）。**2026-11-09 评估裁决：暂缓**——
-   前置是"租户可用打印模板"的产品决策：print 端点现无 Module 归类（`ServiceTagToBusinessModule`
-   未登记 PrintTemplateService，租户闸门对 UNSPECIFIED 一律 403），菜单亦挂平台管理员专属
-   （`sys:platform_admin`）；做配额须先决定 PRINT 模块枚举（新枚举值需联动已部署租户数据）
-   并开放租户菜单/权限，属独立立项。
+3. **套餐配额 + 租户开放** —— **已落地（2026-11-09）**：`Module` 枚举新增 `PRINT=12`
+   （proto + ent 三 schema + 租户闸门双映射），`ServiceTagToBusinessModule` 登记
+   `PrintTemplateService → PRINT`（消除既有租户 403）；`QuotaType` 新增 `TEMPLATE_COUNT=5`，
+   `PrintTemplateService.Create` 入口照 USER_LIMIT 资源计数形态接线（fail-open：仅租户上下文
+   且套餐已配 TEMPLATE_COUNT 时生效；计数失败 fail-closed；builtin 行 tenant_id=0 不计入租户）。
+   租户开放：删 `TenantManagerDeniedApiPrefixes` 的 print-templates 黑名单行，菜单 id 87
+   Authority 改双码 `["sys:platform_admin","sys:tenant_manager"]`，ele/vben 路由同步。
+   **已部署实例升级序**：重启 → 「接口同步」（回填 business_module=PRINT）→ 「菜单/权限同步」
+   → 套餐白名单补 PRINT 行 + 配额行补 TEMPLATE_COUNT。
 4. 云打印队列 / 多门店远程打印（openprint 点子，仅存目）。**2026-11-09 评估裁决：暂缓**；
    静默打印自研客户端（§6 的 worm 协议替代）同为独立大工程，暂不启动。
 
