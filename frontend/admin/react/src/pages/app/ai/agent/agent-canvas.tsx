@@ -247,23 +247,25 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
         message.error(t('canvas.error.endNoOut'));
         return;
       }
-      if (nodeType === 'condition') {
-        if (existing.length >= 2) {
-          message.error(t('canvas.error.conditionTwoOut'));
-          return;
-        }
-        const branch = existing.length === 0 ? 'true' : 'false';
-        setEdges((es) =>
-          es.concat({
-            id: `edge_${source}_${target}_${branch}_${Date.now()}`,
-            source,
-            target,
-            label: branch,
-            animated: branch === 'true',
-          }),
-        );
-        return;
-      }
+		if (nodeType === 'condition') {
+			if (existing.length >= 2) {
+				message.error(t('canvas.error.conditionTwoOut'));
+				return;
+			}
+			// branch 按已占用的槽位补缺失的那个（不再按顺序赋值——删 true 后重连会双 false）
+			const usedBranches = new Set(existing.map((e) => e.label as string));
+			const branch = usedBranches.has('true') ? 'false' : 'true';
+			setEdges((es) =>
+				es.concat({
+					id: `edge_${source}_${target}_${branch}_${Date.now()}`,
+					source,
+					target,
+					label: branch,
+					animated: branch === 'true',
+				}),
+			);
+			return;
+		}
       if (existing.length >= 1) {
         message.error(t('canvas.error.singleOut'));
         return;

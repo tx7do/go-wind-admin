@@ -153,6 +153,15 @@ func (r *PrintTemplateRepo) Create(ctx context.Context, req *printV1.CreatePrint
 	return nil
 }
 
+// CountByTenant 统计指定租户的打印模板数（builtin 行 tenant_id=0 不计入）。
+// 模板数配额（TEMPLATE_COUNT）的资源计数 accessor。
+func (r *PrintTemplateRepo) CountByTenant(ctx context.Context, tenantID uint32) (int64, error) {
+	n, err := r.entClient.Client().PrintTemplate.Query().
+		Where(printtemplate.TenantIDEQ(tenantID)).
+		Count(ctx)
+	return int64(n), err
+}
+
 func (r *PrintTemplateRepo) newPrintTemplateCreate(dto *printV1.PrintTemplate) *ent.PrintTemplateCreate {
 	builder := r.entClient.Client().PrintTemplate.Create().
 		SetNillableName(dto.Name).

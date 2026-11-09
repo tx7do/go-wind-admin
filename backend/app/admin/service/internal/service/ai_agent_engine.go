@@ -218,6 +218,81 @@ func validateAgentGraph(g *agentGraph) error {
 			return fmt.Errorf("node %q is not reachable from start", g.Nodes[i].ID)
 		}
 	}
+
+	// 环合法性（M2「循环」）：强连通分量 size>1 必须至少含一个 condition 节点
+	// （即所有环都经过条件分流保证可终止）；单节点自环禁止。
+	if err := validateCycleConditions(g, byID, out); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateCycleConditions 环合法性：Tarjan 强连通分量分解——
+// size>1 的分量（即含环）必须至少含一个 condition 节点，否则 400。
+// 近似白名单：分量内可能同时含 condition 环与非 condition 环，v1 按分量粒度判定（文档注明）。
+func validateCycleConditions(g *agentGraph, byID map[string]*agentGraphNode, out map[string][]*agentGraphEdge) error {
+	index, low := map[string]int{}, map[string]int{}
+	onStack := map[string]bool{}
+	stack := []string{}
+	curr := 0
+	var sccs [][]string
+
+	var strongconnect func(id string)
+	strongconnect = func(id string) {
+		index[id], low[id] = curr, curr
+		curr++
+		stack = append(stack, id)
+		onStack[id] = true
+
+		for _, e := range out[id] {
+			if _, seen := index[e.Target]; !seen {
+				strongconnect(e.Target)
+				if low[e.Target] < low[id] {
+					low[id] = low[e.Target]
+				}
+			} else if onStack[e.Target] {
+				if index[e.Target] < low[id] {
+					low[id] = index[e.Target]
+				}
+			}
+		}
+
+		if low[id] == index[id] {
+			var component []string
+			for {
+				top := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				onStack[top] = false
+				component = append(component, top)
+				if top == id {
+					break
+				}
+			}
+			if len(component) > 1 {
+				sccs = append(sccs, component)
+			}
+		}
+	}
+
+	for i := range g.Nodes {
+		if _, seen := index[g.Nodes[i].ID]; !seen {
+			strongconnect(g.Nodes[i].ID)
+		}
+	}
+
+	for _, scc := range sccs {
+		hasCondition := false
+		for _, id := range scc {
+			if byID[id].Type == "condition" {
+				hasCondition = true
+				break
+			}
+		}
+		if !hasCondition {
+			return fmt.Errorf("cycle through nodes %v has no condition node (loops must pass through a condition to guarantee termination)", scc)
+		}
+	}
 	return nil
 }
 

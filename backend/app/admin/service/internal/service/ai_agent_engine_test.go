@@ -97,6 +97,12 @@ func TestValidateAgentGraph(t *testing.T) {
 			raw:     `{"nodes":[{"id":"1a","type":"start","data":{}},{"id":"e","type":"end","data":{}}],"edges":[{"id":"x","source":"1a","target":"e"}]}`,
 			wantErr: "invalid",
 		},
+		{
+			name: "cycle without condition rejected",
+			raw: `{"nodes":[{"id":"a","type":"start","data":{}},{"id":"c","type":"condition","data":{}},{"id":"l1","type":"llm","data":{}},{"id":"l2","type":"llm","data":{}},{"id":"e","type":"end","data":{}}],
+			"edges":[{"id":"x","source":"a","target":"c"},{"id":"b1","source":"c","target":"e","branch":"true"},{"id":"b2","source":"c","target":"l1","branch":"false"},{"id":"y","source":"l1","target":"l2"},{"id":"z","source":"l2","target":"l1"}]}`,
+			wantErr: "cycle",
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -105,6 +111,13 @@ func TestValidateAgentGraph(t *testing.T) {
 				t.Fatalf("validate error = %v, want contains %q", err, tc.wantErr)
 			}
 		})
+	}
+
+	// 合法 condition 回边：强连通分量含 condition，不触发环拒绝（M2「循环」）
+	validCycle := `{"nodes":[{"id":"a","type":"start","data":{}},{"id":"l1","type":"llm","data":{}},{"id":"c","type":"condition","data":{}},{"id":"e","type":"end","data":{}}],
+		"edges":[{"id":"x","source":"a","target":"l1"},{"id":"y","source":"l1","target":"c"},{"id":"b1","source":"c","target":"e","branch":"true"},{"id":"b2","source":"c","target":"l1","branch":"false"}]}`
+	if err := validateAgentGraph(agentTestGraph(t, validCycle)); err != nil {
+		t.Fatalf("valid cycle through condition rejected: %v", err)
 	}
 }
 

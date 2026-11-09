@@ -37,10 +37,11 @@ message PlanQuota {
   enum QuotaType {
     PLAN_QUOTA_TYPE_UNSPECIFIED = 0; // 未指定
 
-    USER_LIMIT = 1;  // 用户上限
-    STORAGE = 2;     // 存储空间
-    API_CALL = 3;    // API 调用量
-    AI_TOKENS = 4;   // AI token 用量
+    USER_LIMIT = 1;       // 用户上限
+    STORAGE = 2;          // 存储空间
+    API_CALL = 3;         // API 调用量
+    AI_TOKENS = 4;        // AI token 用量
+    TEMPLATE_COUNT = 5;   // 打印模板数
   }
 
   optional uint32 id = 1 [

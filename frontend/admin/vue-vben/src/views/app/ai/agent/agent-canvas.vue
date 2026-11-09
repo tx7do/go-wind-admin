@@ -280,7 +280,9 @@ function onConnect(connection: { source?: string | null; target?: string | null 
       message.error($t('page.aiAgent.canvas.error.conditionTwoOut'));
       return;
     }
-    const branch = existing.length === 0 ? 'true' : 'false';
+    // branch 按已占用的槽位补缺失的那个（不再按顺序赋值——删 true 后重连会双 false）
+    const usedBranches = new Set(existing.map((e: any) => e.label as string));
+    const branch = usedBranches.has('true') ? 'false' : 'true';
     vueFlow.addEdges({
       id: `edge_${source}_${target}_${branch}_${Date.now()}`,
       source,

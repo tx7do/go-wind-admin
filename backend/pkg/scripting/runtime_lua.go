@@ -128,6 +128,12 @@ func (b *LuaBinder) Bind(eng gsEngine.Engine, deps *RuntimeDeps) error {
 		builder lua.LGFunction
 	}{"task", api.LoaderTask(luaVMManagerAdapter{}, deps.Logger)})
 
+	// tool 模块（工具市场：脚本注册 LLM 工具，AI 工具循环消费）
+	registrations = append(registrations, struct {
+		name    string
+		builder lua.LGFunction
+	}{"tool", api.LoaderTool(luaVMManagerAdapter{}, deps.Logger)})
+
 	for _, reg := range registrations {
 		if err := eng.RegisterModule(reg.name, luaPreloadAdapter(reg.builder)); err != nil {
 			return err

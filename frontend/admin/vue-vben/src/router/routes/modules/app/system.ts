@@ -157,7 +157,7 @@ const system: RouteRecordRaw[] = [
           order: 12,
           icon: 'lucide:printer',
           title: $t('menu.system.printTemplates'),
-          authority: ['sys:platform_admin'],
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
         component: () => import('#/views/app/system/print_template/index.vue'),
       },

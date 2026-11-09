@@ -12,6 +12,17 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
+// execAiTool 执行一个内置工具调用，返回回传给模型的结果文本。
+// 未知工具/参数非法返回错误文本（回传模型让它自行纠正，而非中断整轮）。
+func execAiTool(_ context.Context, name, args string) (string, error) {
+	switch name {
+	case "get_current_time":
+		return time.Now().Format("2006-01-02 15:04:05"), nil
+	default:
+		return "", fmt.Errorf("unknown tool: %s", name)
+	}
+}
+
 // AI Function Call（协议层）：
 //   - aiBuiltinToolDefs：暴露给模型的工具清单（OpenAI function 格式）；
 //   - aiToolLoop：多轮工具调用循环——模型请求工具（finish_reason=tool_calls）→
@@ -39,14 +50,79 @@ func aiBuiltinToolDefs() []openai.Tool {
 	}
 }
 
-// execAiTool 执行一个工具调用，返回回传给模型的结果文本。
-// 未知工具/参数非法返回错误文本（回传模型让它自行纠正，而非中断整轮）。
-func execAiTool(_ context.Context, name, args string) (string, error) {
-	switch name {
-	case "get_current_time":
-		return time.Now().Format("2006-01-02 15:04:05"), nil
+// aiScriptToolDefs 把脚本工具注册表（工具市场，tool.register）翻成 OpenAI 工具定义。
+// rt 为 nil 或无注册工具时返回空——脚本工具不出现在 defs 里（不静默报错的纪律
+// 与 notify seam 一致）。
+func aiScriptToolDefs(rt *ScriptRuntime) []openai.Tool {
+	if rt == nil {
+		return nil
+	}
+	handlers := rt.ScriptTools()
+	if len(handlers) == 0 {
+		return nil
+	}
+	defs := make([]openai.Tool, 0, len(handlers))
+	for _, h := range handlers {
+		props := map[string]any{}
+		required := make([]string, 0, len(h.Required))
+		for _, name := range h.Required {
+			props[name] = map[string]any{"type": "string"}
+			required = append(required, name)
+		}
+		for name, typ := range h.Optional {
+			t := "string"
+			switch typ.(type) {
+			case float64, int:
+				t = "number"
+			case bool:
+				t = "boolean"
+			}
+			props[name] = map[string]any{"type": t}
+		}
+		schema, _ := json.Marshal(map[string]any{
+			"type":       "object",
+			"properties": props,
+			"required":   required,
+		})
+		defs = append(defs, openai.Tool{
+			Type: openai.ToolTypeFunction,
+			Function: &openai.FunctionDefinition{
+				Name:        h.Name,
+				Description: h.Description,
+				Parameters:  schema,
+			},
+		})
+	}
+	return defs
+}
+
+// aiIsScriptTool 报告工具名是否为脚本工具（路由 exec 用：脚本工具优先走脚本引擎）。
+func aiIsScriptTool(rt *ScriptRuntime, name string) bool {
+	return rt != nil && rt.HasScriptTool(name)
+}
+
+// execAiScriptTool 执行脚本工具并把产出收口为文本回给模型。
+func execAiScriptTool(rt *ScriptRuntime, ctx context.Context, name, args string) (string, error) {
+	argsMap := map[string]any{}
+	if args != "" {
+		if err := json.Unmarshal([]byte(args), &argsMap); err != nil {
+			return "", fmt.Errorf("invalid tool arguments: %w", err)
+		}
+	}
+	result, err := rt.ExecuteScriptTool(ctx, name, argsMap)
+	if err != nil {
+		return "", err
+	}
+	switch v := result.(type) {
+	case string:
+		return v, nil
+	case nil:
+		return "", nil
 	default:
-		return "", fmt.Errorf("unknown tool: %s", name)
+		if b, mErr := json.Marshal(v); mErr == nil {
+			return string(b), nil
+		}
+		return fmt.Sprintf("%v", v), nil
 	}
 }
 

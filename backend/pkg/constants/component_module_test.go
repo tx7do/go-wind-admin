@@ -47,6 +47,9 @@ func TestComponentToModule(t *testing.T) {
 		{"system file page hits system first", "app/system/file/index.vue", identityV1.Module_SYSTEM},
 		{"system task page hits system first", "app/system/task/index.vue", identityV1.Module_SYSTEM},
 
+		// print_template 在 app/system/ 下但有独立归类（PRINT 模块，2026-11-09）
+		{"print template page", "app/system/print_template/index.vue", identityV1.Module_PRINT},
+
 		// 未登记的前缀 / 前缀变体一律 UNSPECIFIED
 		{"unknown top dir", "app/unknown/thing/index.vue", identityV1.Module_MODULE_UNSPECIFIED},
 		{"prefix without slash", "app/opm", identityV1.Module_MODULE_UNSPECIFIED},

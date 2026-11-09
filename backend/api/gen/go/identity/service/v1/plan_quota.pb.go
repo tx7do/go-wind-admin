@@ -35,6 +35,7 @@ const (
 	PlanQuota_STORAGE                     PlanQuota_QuotaType = 2 // 存储空间
 	PlanQuota_API_CALL                    PlanQuota_QuotaType = 3 // API 调用量
 	PlanQuota_AI_TOKENS                   PlanQuota_QuotaType = 4 // AI token 用量
+	PlanQuota_TEMPLATE_COUNT              PlanQuota_QuotaType = 5 // 打印模板数
 )
 
 // Enum value maps for PlanQuota_QuotaType.
@@ -45,6 +46,7 @@ var (
 		2: "STORAGE",
 		3: "API_CALL",
 		4: "AI_TOKENS",
+		5: "TEMPLATE_COUNT",
 	}
 	PlanQuota_QuotaType_value = map[string]int32{
 		"PLAN_QUOTA_TYPE_UNSPECIFIED": 0,
@@ -52,6 +54,7 @@ var (
 		"STORAGE":                     2,
 		"API_CALL":                    3,
 		"AI_TOKENS":                   4,
+		"TEMPLATE_COUNT":              5,
 	}
 )
 
@@ -556,7 +559,7 @@ var File_identity_service_v1_plan_quota_proto protoreflect.FileDescriptor
 
 const file_identity_service_v1_plan_quota_proto_rawDesc = "" +
 	"\n" +
-	"$identity/service/v1/plan_quota.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xaa\a\n" +
+	"$identity/service/v1/plan_quota.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xbe\a\n" +
 	"\tPlanQuota\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v配额项IDH\x00R\x02id\x88\x01\x01\x122\n" +
 	"\aplan_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e所属套餐IDH\x01R\x06planId\x88\x01\x01\x12`\n" +
@@ -575,14 +578,15 @@ const file_identity_service_v1_plan_quota_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\bR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\tR\tdeletedAt\x88\x01\x01\"f\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\tR\tdeletedAt\x88\x01\x01\"z\n" +
 	"\tQuotaType\x12\x1f\n" +
 	"\x1bPLAN_QUOTA_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"USER_LIMIT\x10\x01\x12\v\n" +
 	"\aSTORAGE\x10\x02\x12\f\n" +
 	"\bAPI_CALL\x10\x03\x12\r\n" +
-	"\tAI_TOKENS\x10\x04B\x05\n" +
+	"\tAI_TOKENS\x10\x04\x12\x12\n" +
+	"\x0eTEMPLATE_COUNT\x10\x05B\x05\n" +
 	"\x03_idB\n" +
 	"\n" +
 	"\b_plan_idB\r\n" +

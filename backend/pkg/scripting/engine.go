@@ -375,6 +375,15 @@ func (e *Engine) ExecuteTaskHandler(ctx context.Context, name string, params map
 	return api.InvokeHandler(ctx, name, params)
 }
 
+// ExecuteToolHandler 在引擎锁保护下执行脚本注册的 LLM 工具（工具市场消费入口：
+// AI 工具循环的 execAiTool 转发到此；与钩子/任务/脚本执行互斥）。
+// 返回工具产出（经 convert.ToGoValue 收口），由调用方转换为文本回给模型。
+func (e *Engine) ExecuteToolHandler(ctx context.Context, name string, args map[string]any) (any, error) {
+	e.execMu.Lock()
+	defer e.execMu.Unlock()
+	return api.InvokeToolHandler(ctx, name, args)
+}
+
 // registerCallback 注册语言无关的脚本回调到 hook（供 hook.register 经适配器调用）。
 //
 // 幂等语义：回调实现若提供 CallbackOwner()（非空），同 hook 下同归属的旧回调

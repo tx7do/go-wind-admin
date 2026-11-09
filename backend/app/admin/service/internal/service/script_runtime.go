@@ -53,6 +53,9 @@ type ScriptRuntime struct {
 	taskRegistrar    func(taskType string, fn func(taskType string, data *task.ScriptTaskData) error) error
 	taskHandlerOwner map[string]gsEngine.Type
 
+	// 工具市场：toolHandlerOwner 记录工具名 → 注册它的引擎（AI 工具循环消费）。
+	toolHandlerOwner map[string]gsEngine.Type
+
 	// scriptLog 脚本执行日志（可选：nil 时不落审计）
 	scriptLog *data.ScriptLogRepo
 
@@ -105,6 +108,7 @@ func NewScriptRuntime(ctx *bootstrap.Context, repo *data.ScriptRepo, redisClient
 		log:              ctx.NewLoggerHelper("script/runtime"),
 		logger:           ctx.GetLogger(),
 		taskHandlerOwner: make(map[string]gsEngine.Type),
+		toolHandlerOwner: make(map[string]gsEngine.Type),
 		scriptLog:        scriptLog,
 		redisClient:      redisClient,
 		aiProviderRepo:   aiProviderRepo,
@@ -190,6 +194,45 @@ func (r *ScriptRuntime) ScriptTaskHandlers() []api.LuaTaskHandler {
 		out = append(out, *h)
 	}
 	return out
+}
+
+// ScriptTools 返回当前注册的全部脚本 LLM 工具（供 AI 工具循环的 defs 枚举）。
+func (r *ScriptRuntime) ScriptTools() []api.LuaToolHandler {
+	handlers := api.GetRegisteredTools()
+	out := make([]api.LuaToolHandler, 0, len(handlers))
+	for _, h := range handlers {
+		out = append(out, *h)
+	}
+	return out
+}
+
+// HasScriptTool 报告工具名是否为脚本工具（AI 工具循环 exec 路由用）。
+func (r *ScriptRuntime) HasScriptTool(name string) bool {
+	_, ok := api.GetTool(name)
+	return ok
+}
+
+// ExecuteScriptTool 在工具所属引擎的锁保护下执行脚本工具，返回工具产出
+// （AI 工具循环 execAiTool 的转发入口）。
+func (r *ScriptRuntime) ExecuteScriptTool(ctx context.Context, name string, args map[string]any) (any, error) {
+	r.mu.RLock()
+	owner, ok := r.toolHandlerOwner[name]
+	r.mu.RUnlock()
+	if !ok {
+		return nil, scriptV1.ErrorNotFound("script tool not found: %s", name)
+	}
+
+	eng := r.EngineFor(string(owner))
+	if eng == nil {
+		return nil, scriptV1.ErrorInternalServerError("engine %s unavailable", owner)
+	}
+
+	r.log.Infof(ctx, "execute script tool %q (engine: %s)", name, owner)
+
+	started := time.Now()
+	result, err := eng.ExecuteToolHandler(ctx, name, args)
+	r.logExecution("tool", "", "tool:"+name, string(owner), 0, started, err)
+	return result, err
 }
 
 // AttachScriptTaskRegistrar 注入 asynq 订阅注册回调（asynq 的 mux 拒绝 Start 后注册，
@@ -371,13 +414,20 @@ func (r *ScriptRuntime) Resync(ctx context.Context) error {
 				r.taskHandlerOwner[name] = gsEngine.Type(lang)
 			}
 		}
+		// 归属本轮新注册的脚本工具到对应引擎（AI 工具循环消费）
+		for name, h := range api.GetRegisteredTools() {
+			if h.Generation >= generation {
+				r.toolHandlerOwner[name] = gsEngine.Type(lang)
+			}
+		}
 		loaded++
 	}
 
 	pruned := api.PruneStaleTaskHandlers(generation)
+	prunedTools := api.PruneStaleToolHandlers(generation)
 
-	r.log.Infof(ctx, "script resync done: %d loaded, %d failed, %d total enabled, %d task handlers pruned",
-		loaded, failed, len(rows), pruned)
+	r.log.Infof(ctx, "script resync done: %d loaded, %d failed, %d total enabled, %d task handlers pruned, %d script tools pruned",
+		loaded, failed, len(rows), pruned, prunedTools)
 	return nil
 }
 

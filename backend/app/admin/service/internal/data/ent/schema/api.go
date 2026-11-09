@@ -58,6 +58,7 @@ func (Api) Fields() []ent.Field {
 				"File", "FILE",
 				"Task", "TASK",
 				"Ai", "AI",
+				"Print", "PRINT",
 			).
 			Optional().
 			Nillable(),

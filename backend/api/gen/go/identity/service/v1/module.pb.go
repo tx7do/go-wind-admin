@@ -38,6 +38,7 @@ const (
 	Module_FILE               Module = 9  // 文件管理
 	Module_TASK               Module = 10 // 任务管理
 	Module_AI                 Module = 11 // AI 助手（对话/知识库/提供商）
+	Module_PRINT              Module = 12 // 打印模板
 )
 
 // Enum value maps for Module.
@@ -55,6 +56,7 @@ var (
 		9:  "FILE",
 		10: "TASK",
 		11: "AI",
+		12: "PRINT",
 	}
 	Module_value = map[string]int32{
 		"MODULE_UNSPECIFIED": 0,
@@ -69,6 +71,7 @@ var (
 		"FILE":               9,
 		"TASK":               10,
 		"AI":                 11,
+		"PRINT":              12,
 	}
 )
 
@@ -103,7 +106,7 @@ var File_identity_service_v1_module_proto protoreflect.FileDescriptor
 
 const file_identity_service_v1_module_proto_rawDesc = "" +
 	"\n" +
-	" identity/service/v1/module.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto*\xa5\x01\n" +
+	" identity/service/v1/module.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto*\xb0\x01\n" +
 	"\x06Module\x12\x16\n" +
 	"\x12MODULE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tDASHBOARD\x10\x01\x12\a\n" +
@@ -120,7 +123,8 @@ const file_identity_service_v1_module_proto_rawDesc = "" +
 	"\x04FILE\x10\t\x12\b\n" +
 	"\x04TASK\x10\n" +
 	"\x12\x06\n" +
-	"\x02AI\x10\vB\xcd\x01\n" +
+	"\x02AI\x10\v\x12\t\n" +
+	"\x05PRINT\x10\fB\xcd\x01\n" +
 	"\x17com.identity.service.v1B\vModuleProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
 
 var (

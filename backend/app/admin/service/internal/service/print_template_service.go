@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"math"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
@@ -12,6 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	printV1 "go-wind-admin/api/gen/go/print/service/v1"
 
 	"github.com/tx7do/go-crud/viewer"
@@ -87,6 +89,7 @@ type PrintTemplateService struct {
 	printTemplateRepo *data.PrintTemplateRepo
 	aiProviderRepo    *data.AiProviderRepo
 	aiUsageRepo       *data.AiUsageLogRepo
+	tenantUsageRepo   *data.TenantUsageRepo
 }
 
 func NewPrintTemplateService(
@@ -94,12 +97,14 @@ func NewPrintTemplateService(
 	printTemplateRepo *data.PrintTemplateRepo,
 	aiProviderRepo *data.AiProviderRepo,
 	aiUsageRepo *data.AiUsageLogRepo,
+	tenantUsageRepo *data.TenantUsageRepo,
 ) *PrintTemplateService {
 	svc := &PrintTemplateService{
 		log:               ctx.NewLoggerHelper("print-template/service/admin-service"),
 		printTemplateRepo: printTemplateRepo,
 		aiProviderRepo:    aiProviderRepo,
 		aiUsageRepo:       aiUsageRepo,
+		tenantUsageRepo:   tenantUsageRepo,
 	}
 
 	svc.init()
@@ -135,6 +140,21 @@ func (s *PrintTemplateService) Create(ctx context.Context, req *printV1.CreatePr
 		return nil, err
 	}
 
+	// 模板数配额检查（资源计数类，fail-open：仅租户上下文且配额已配置时生效）
+	targetTenantID := operator.GetTenantId()
+	if s.tenantUsageRepo != nil && targetTenantID > 0 {
+		usage, guErr := s.tenantUsageRepo.GetUsage(ctx, targetTenantID)
+		if guErr == nil {
+			if limit, ok := quotaLimitFromUsages(usage.GetQuotas(), identityV1.PlanQuota_TEMPLATE_COUNT); ok {
+				current := s.countTemplatesInTenant(ctx, targetTenantID)
+				if uint64(current) >= limit {
+					return nil, quotaExceededError("TEMPLATE_COUNT", limit, uint64(current))
+				}
+			}
+		}
+		// GetUsage 失败 → fail-open 放行
+	}
+
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
 	if err = s.printTemplateRepo.Create(ctx, req); err != nil {
@@ -142,6 +162,18 @@ func (s *PrintTemplateService) Create(ctx context.Context, req *printV1.CreatePr
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// countTemplatesInTenant 统计指定租户的打印模板数（builtin 行 tenant_id=0 不计入）。
+// 计数失败返回 math.MaxInt64 → 触发配额拒绝（fail-closed），但调用方只在 limit>0
+// 时才走计数路径——未配置配额的场景不会调到这里。
+func (s *PrintTemplateService) countTemplatesInTenant(ctx context.Context, tenantID uint32) int64 {
+	n, err := s.printTemplateRepo.CountByTenant(ctx, tenantID)
+	if err != nil {
+		s.log.Errorf(ctx, "count print templates for tenant [%d] failed: %s", tenantID, err.Error())
+		return math.MaxInt64
+	}
+	return n
 }
 
 func (s *PrintTemplateService) Update(ctx context.Context, req *printV1.UpdatePrintTemplateRequest) (*emptypb.Empty, error) {

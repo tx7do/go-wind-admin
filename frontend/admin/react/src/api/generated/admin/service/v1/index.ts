@@ -2535,6 +2535,7 @@ export type identityservicev1_Module =
   | 'MODULE_UNSPECIFIED'
   | 'OPM'
   | 'PERMISSION'
+  | 'PRINT'
   | 'SYSTEM'
   | 'TASK'
   | 'TENANT';
@@ -6771,6 +6772,7 @@ export type identityservicev1_PlanQuota_QuotaType =
   | 'API_CALL'
   | 'PLAN_QUOTA_TYPE_UNSPECIFIED'
   | 'STORAGE'
+  | 'TEMPLATE_COUNT'
   | 'USER_LIMIT';
 // 通知投递台账管理服务（平台级只读视图）。
 //

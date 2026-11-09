@@ -125,7 +125,6 @@ var TenantManagerDeniedApiPrefixes = []string{
 	"/admin/v1/server-monitor",              // 服务器监控
 	"/admin/v1/monitor-alert-rules",         // 监控告警规则（含 :evaluate）
 	"/admin/v1/redis-cache-monitor",         // Redis 缓存监控
-	"/admin/v1/print-templates",             // 打印模板（含 :generate/:render-pdf）
 	"/admin/v1/system-tasks",                // 系统级常驻任务巡检
 	"/admin/v1/ai/providers",                // AI 模型提供商
 	"/admin/v1/ai/query",                    // 智能问数（SQL 直触全平台原生表）
@@ -339,6 +338,8 @@ func ComponentToModule(component string) identityV1.Module {
 		return identityV1.Module_DASHBOARD
 	case len(component) >= 8 && component[:8] == "app/opm/":
 		return identityV1.Module_OPM
+	case len(component) >= 26 && component[:26] == "app/system/print_template/":
+		return identityV1.Module_PRINT
 	case len(component) >= 11 && component[:11] == "app/system/":
 		return identityV1.Module_SYSTEM
 	case len(component) >= 9 && component[:9] == "app/dict/":
@@ -1233,7 +1234,7 @@ var DefaultMenus = []*permissionV1.Menu{
 			Title:     trans.Ptr("menu.system.printTemplates"),
 			Icon:      trans.Ptr("lucide:printer"),
 			Order:     trans.Ptr(int32(12)),
-			Authority: []string{"sys:platform_admin"},
+			Authority: []string{"sys:platform_admin", "sys:tenant_manager"},
 		},
 	},
 }

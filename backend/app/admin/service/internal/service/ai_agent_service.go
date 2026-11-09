@@ -448,11 +448,22 @@ func (s *AiAgentService) runLLMForAgent(operator *authenticationV1.UserTokenPayl
 		callCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 		defer cancel()
 
+		// 工具清单 = 内置 + 脚本工具（工具市场：脚本经 tool.register 注册的 LLM 工具）；
+		// exec 按工具名路由：脚本工具走脚本引擎（hasScriptTool 优先），内置走 execAiTool。
+		tools := aiBuiltinToolDefs()
+		tools = append(tools, aiScriptToolDefs(s.scriptRuntime)...)
+		exec := func(ctx context.Context, name, args string) (string, error) {
+			if aiIsScriptTool(s.scriptRuntime, name) {
+				return execAiScriptTool(s.scriptRuntime, ctx, name, args)
+			}
+			return execAiTool(ctx, name, args)
+		}
+
 		loop := &aiToolLoop{
 			client:      client,
 			model:       model,
-			tools:       aiBuiltinToolDefs(),
-			exec:        execAiTool,
+			tools:       tools,
+			exec:        exec,
 			maxRounds:   aiToolMaxRounds,
 			temperature: temperature,
 		}

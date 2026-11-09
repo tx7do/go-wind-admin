@@ -9051,6 +9051,7 @@ components:
                         - FILE
                         - TASK
                         - AI
+                        - PRINT
                     type: string
                     description: 所属业务功能模块（用于套餐白名单过滤）
                     format: enum
@@ -12110,6 +12111,7 @@ components:
                         - FILE
                         - TASK
                         - AI
+                        - PRINT
                     type: string
                     description: 所属业务功能模块
                     format: enum
@@ -13340,6 +13342,7 @@ components:
                         - FILE
                         - TASK
                         - AI
+                        - PRINT
                     type: string
                     description: 功能模块
                     format: enum
@@ -13386,6 +13389,7 @@ components:
                         - STORAGE
                         - API_CALL
                         - AI_TOKENS
+                        - TEMPLATE_COUNT
                     type: string
                     description: 配额类型
                     format: enum
@@ -13690,6 +13694,7 @@ components:
                         - STORAGE
                         - API_CALL
                         - AI_TOKENS
+                        - TEMPLATE_COUNT
                     type: string
                     description: 配额类型
                     format: enum

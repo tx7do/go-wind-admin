@@ -317,7 +317,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 
 	// ── register:service ── 新模块服务在此行后注册(make register 工具锚点,勿删)
 	biDashboardService := service.NewBiDashboardService(ctx, biDashboardRepo, biDashboardRevisionRepo)
-	printTemplateService := service.NewPrintTemplateService(ctx, printTemplateRepo, aiProviderRepo, aiUsageLogRepo)
+	printTemplateService := service.NewPrintTemplateService(ctx, printTemplateRepo, aiProviderRepo, aiUsageLogRepo, tenantUsageRepo)
 	notificationRuleService := service.NewNotificationRuleService(ctx, notificationRuleRepo, notificationChannelRepo, notificationService)
 	accessKeyService := service.NewAccessKeyService(ctx, accessKeyRepo, authenticator, loginRateLimiter)
 	configService := service.NewConfigService(ctx, configRepo)

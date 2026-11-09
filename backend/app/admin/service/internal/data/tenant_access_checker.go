@@ -182,6 +182,8 @@ func mapProtoModuleToEnt(m identityV1.Module) planmodule.Module {
 		return planmodule.ModuleTask
 	case identityV1.Module_AI:
 		return planmodule.ModuleAi
+	case identityV1.Module_PRINT:
+		return planmodule.ModulePrint
 	default:
 		return ""
 	}
@@ -213,6 +215,8 @@ func mapApiBusinessModuleToProto(m api.BusinessModule) identityV1.Module {
 		return identityV1.Module_TASK
 	case api.BusinessModuleAi:
 		return identityV1.Module_AI
+	case api.BusinessModulePrint:
+		return identityV1.Module_PRINT
 	default:
 		return identityV1.Module_MODULE_UNSPECIFIED
 	}
