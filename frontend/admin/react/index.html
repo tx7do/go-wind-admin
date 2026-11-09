@@ -50,13 +50,97 @@
         }
         var bg = mode === 'dark' ? DARK_BG : LIGHT_BG;
         var root = document.documentElement;
-        root.setAttribute('data-theme', mode);
-        root.style.backgroundColor = bg;
-      })();
+      root.setAttribute('data-theme', mode);
+      root.style.backgroundColor = bg;
+    })();
     </script>
+    <!--
+      启动加载页样式：覆盖 React 挂载前的窗口期（bundle 下载/执行 + main.tsx 顶层
+      await + bootstrap() 的 i18n 初始化与会话恢复），否则这段期间页面只有一块纯色。
+      React createRoot 首帧渲染会整体替换 #root 内容，加载节点随之消失，无需手动清理
+      （与 vue-element / vue-vben 的 index.html 静态加载页同一手法）。
+      底色保持透明——html 底色已由上方预绘制脚本按主题铺好；
+      加载条主色与 src/core/preferences/config/default.ts 的 colorPrimary（hsl(212 100% 45%)）一致。
+    -->
+    <style>
+      .app-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+      }
+
+      .app-loading-title {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      html[data-theme='light'] .app-loading-title {
+        color: rgba(0, 0, 0, 0.85);
+      }
+
+      .app-loading-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 40px;
+      }
+
+      .app-loading-bar {
+        width: 4px;
+        height: 24px;
+        background-color: hsl(212 100% 45%);
+        border-radius: 2px;
+        animation: app-loading-bar-ani 1.2s ease-in-out infinite;
+      }
+
+      .app-loading-bar:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .app-loading-bar:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .app-loading-bar:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes app-loading-bar-ani {
+        0% {
+          opacity: 0.3;
+          transform: scaleY(0.5);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scaleY(1.2);
+        }
+
+        100% {
+          opacity: 0.3;
+          transform: scaleY(0.5);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-loading" role="status">
+        <div class="app-loading-spinner">
+          <div class="app-loading-bar"></div>
+          <div class="app-loading-bar"></div>
+          <div class="app-loading-bar"></div>
+        </div>
+        <div class="app-loading-title">%VITE_APP_TITLE%</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
