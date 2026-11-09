@@ -115,6 +115,31 @@ function configSummary(nodeType: AgentNodeType, config: Record<string, any> | un
 
 const nodeTypes = { agent: AgentFlowNode };
 
+/** 回边检测：from 沿既有出边走，判断能否到达 to（BFS）。回边 = target 已能到达 source。 */
+function targetReaches(
+  edges: Edge[],
+  from: string,
+  to: string,
+): boolean {
+  const adjacency = new Map<string, string[]>();
+  for (const e of edges) {
+    adjacency.set(e.source, [...(adjacency.get(e.source) ?? []), e.target]);
+  }
+  const visited = new Set<string>([from]);
+  const queue = [from];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    if (cur === to) return true;
+    for (const next of adjacency.get(cur) ?? []) {
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push(next);
+      }
+    }
+  }
+  return false;
+}
+
 /** 图 DSL ↔ ReactFlow 状态的互转（唯一两处，别处不得各写一份）。 */
 function graphToFlow(graphJson: string): { nodes: Node[]; edges: Edge[] } {
   if (!graphJson) return { nodes: [], edges: [] };
@@ -169,7 +194,7 @@ export interface AgentCanvasProps {
 
 export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
   const { t } = useTranslation('ai-agent');
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -261,15 +286,26 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
 			// branch 按已占用的槽位补缺失的那个（不再按顺序赋值——删 true 后重连会双 false）
 			const usedBranches = new Set(existing.map((e) => e.label as string));
 			const branch = usedBranches.has('true') ? 'false' : 'true';
-			setEdges((es) =>
-				es.concat({
-					id: `edge_${source}_${target}_${branch}_${Date.now()}`,
-					source,
-					target,
-					label: branch,
-					animated: branch === 'true',
-				}),
-			);
+			const addEdge = () =>
+				setEdges((es) =>
+					es.concat({
+						id: `edge_${source}_${target}_${branch}_${Date.now()}`,
+						source,
+						target,
+						label: branch,
+						animated: branch === 'true',
+					}),
+				);
+			// 回边软警示：target 已能到达 source 时这条边构成环（合法但受步数预算约束）
+			if (targetReaches(edges, target, source)) {
+				modal.confirm({
+					title: t('canvas.error.cycleWarning'),
+					content: t('canvas.error.cycleWarningDetail'),
+					onOk: addEdge,
+				});
+				return;
+			}
+			addEdge();
 			return;
 		}
       // parallel 节点允许 N 条出边（fan-out），但同一 target 只能连一条（后端拒重复边）

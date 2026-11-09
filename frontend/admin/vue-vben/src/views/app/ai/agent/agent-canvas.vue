@@ -4,7 +4,7 @@ import { computed, markRaw, reactive, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 // vue-flow 样式必须引入：handle/controls/minimap 全靠它——漏引时 handle 塌成 0 高、连线命中永远失败
 import '@vue-flow/core/dist/style.css';
 import '@vue-flow/core/dist/theme-default.css';
@@ -174,6 +174,27 @@ const selectedNode = computed(() =>
 
 const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].map((m) => ({ value: m, label: m }));
 
+/** 回边检测：from 沿既有出边走，判断能否到达 to（BFS）。回边 = target 已能到达 source。 */
+function targetReaches(edges: any[], from: string, to: string): boolean {
+  const adjacency = new Map<string, string[]>();
+  for (const e of edges) {
+    adjacency.set(e.source, [...(adjacency.get(e.source) ?? []), e.target]);
+  }
+  const visited = new Set<string>([from]);
+  const queue = [from];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    if (cur === to) return true;
+    for (const next of adjacency.get(cur) ?? []) {
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push(next);
+      }
+    }
+  }
+  return false;
+}
+
 /** http 节点 headers 行（模板深链收口到 computed，v-model 绑迭代变量） */
 const httpHeaderRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.headers ?? []));
 
@@ -326,13 +347,26 @@ function onConnect(connection: { source?: string | null; target?: string | null 
     // branch 按已占用的槽位补缺失的那个（不再按顺序赋值——删 true 后重连会双 false）
     const usedBranches = new Set(existing.map((e: any) => e.label as string));
     const branch = usedBranches.has('true') ? 'false' : 'true';
-    vueFlow.addEdges({
-      id: `edge_${source}_${target}_${branch}_${Date.now()}`,
-      source,
-      target,
-      label: branch,
-      animated: branch === 'true',
-    });
+    const addEdge = () =>
+      vueFlow.addEdges({
+        id: `edge_${source}_${target}_${branch}_${Date.now()}`,
+        source,
+        target,
+        label: branch,
+        animated: branch === 'true',
+      });
+    // 回边软警示：target 已能到达 source 时这条边构成环（合法但受步数预算约束）
+    if (targetReaches(existing, target, source)) {
+      Modal.confirm({
+        title: $t('page.aiAgent.canvas.error.cycleWarning'),
+        content: $t('page.aiAgent.canvas.error.cycleWarningDetail'),
+        okText: $t('ui.button.ok'),
+        cancelText: $t('ui.button.cancel'),
+        onOk: addEdge,
+      });
+      return;
+    }
+    addEdge();
     return;
   }
   // parallel 节点允许 N 条出边（fan-out），同一 target 只能连一条（后端拒重复边）

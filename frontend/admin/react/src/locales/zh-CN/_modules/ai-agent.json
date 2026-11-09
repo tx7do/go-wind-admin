@@ -42,7 +42,9 @@
       "endNoOut": "结束节点不能有出边",
       "conditionTwoOut": "条件节点最多两条出边（true/false 各一）",
       "singleOut": "该节点已有一条出边（只有条件/并行分支允许多出边）",
-      "duplicateTarget": "并行分支的同一目标只能连一条边"
+      "duplicateTarget": "并行分支的同一目标只能连一条边",
+      "cycleWarning": "创建循环分支？",
+      "cycleWarningDetail": "该连线将形成循环。循环合法但受运行步数预算（50 步）约束，请确保条件分支能正常退出。"
     },
     "knowledgeBase": "知识库",
     "requiredKnowledgeBase": "请选择知识库",
