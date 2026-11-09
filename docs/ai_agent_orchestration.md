@@ -6,7 +6,8 @@
 > **HTTP 节点已落地**（后端 + 三端画布，见 §2.1）。
 > **（2026-11-09）脚本节点已落地**（后端引擎 + 三端画布，见 §2.1 script 行）；
 > **版本化已落地**：revision 留底/恢复（BI 同款口径，非 draft/published，见 §4 版本化）。
-> M2 至此收官。剩余（对外 API、循环/子图/并行）未排期，需求驱动。
+> M2 至此收官。**M3 首批同日落地**：定时触发（agent_run 任务桥）与对外 API（AK/SK，见 §5）。
+> 剩余（工具市场、循环/子图/并行）未排期，需求驱动。
 >
 > 立项依据：JeecgBoot 对标时"AI 应用平台（编排）"按品类边界归档，触发条件为需求驱动；
 > 2026-10-15 用户明确立项，归档项按条款重开。**这是 AI 模块内的编排能力，不是 OA 工作流**——
@@ -163,8 +164,22 @@ created_at 排序即可（与 BI 的 version 列形态刻意不同）。端点�
   （列表页 + 全屏画布编辑器 + 试运行面板，@xyflow/react）。门禁全绿。
 - **M2（✅ 2026-11-09 收官）**：SSE 流式（§3.1）；ele/vben 画布移植（vue-flow，c6504f7a）；
   http 节点（§2.1，2026-11-08）；script 节点（§2.1，2026-11-09）；版本化留底/恢复（§4，2026-11-09）。
-- **M3（设想）**：对外 OpenAPI（AK/SK 调用 Agent）、定时触发（任务桥）、工具市场
-  （把脚本引擎的钩子暴露为 LLM 工具）、循环/子图/并行。
+- **M3（2026-11-09 首批落地）**：
+  - **定时触发（agent_run 任务桥）已落地**：「任务管理」建 PERIODIC 行
+    （`type_name="agent_run"`，`task_payload={"appId":1,"input":{"question":"…"},"notifyUserId":1}`），
+    cron 到点执行应用图。执行身份 UserId=0（机器，台账 created_by=0、SSE 流 ID="0"），
+    租户取应用归属租户——LLM/RAG 用量记该租户流水、配额按该租户闸；graph 执行失败已落
+    FAILED 台账（确定性结论不重试），仅基础设施错误交 asynq 重试；`notifyUserId>0` 时
+    结果站内信回传（发送失败仅记日志）。enabled=false 的应用本轮跳过（不落台账不重试）。
+    handler `AiAgentService.AsyncAgentRun`（ai_agent_task.go），sqlite 回归测试在位。
+  - **对外 API（AK/SK 调用 Agent）已打通**：`AiAgentService` 补登记 Module_AI
+    （module_mapping.go，原缺失使租户/AK 令牌过租户闸门即 403 "module not allowed"）。
+    用法：管理页建 AK（ak-*/sk-*）→ `POST /admin/v1/access-keys/token` 换机器 JWT
+    （uid=0、tid=AK 归属租户、roles=["machine"]）→ `POST /admin/v1/ai/agents/{id}/run`
+    带 `Authorization: Bearer`。平台侧 AK（tid=0）开箱可用（租户闸门跳过、配额不限）；
+    租户 AK 需套餐白名单含 AI 模块且 API_CALL 未超限。authz 切 casbin 时需给 machine
+    角色显式配策略（docs/authentication.md §6 既有口径）。顺带补登记 AiContentService。
+  - **未排期（需求驱动）**：工具市场（把脚本引擎的钩子暴露为 LLM 工具）、循环/子图/并行。
 
 ## 6. 相关文档
 

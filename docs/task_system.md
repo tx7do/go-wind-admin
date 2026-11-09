@@ -14,7 +14,8 @@
 启动链    NewAsynqServer（internal/server/asynq_server.go）
           ├─ 固定类型订阅注册（handler 路由表）：backup / tenant_expiry_scan /
           │  audit_log_archive / broadcast_message / notification_dispatch /
-          │  notification_delivery_sweep / notification_archived_cleanup + script_task（桥，见第 6 节）
+          │  notification_delivery_sweep / notification_archived_cleanup /
+          │  agent_run / ai_query_run + script_task（桥，见第 6 节）
           ├─ RegisterTaskScheduler：把调度器句柄注入 TaskService（后续所有调度动作经它）
           ├─ RegisterTaskEnqueuer：站内信服务（广播 fan-out）与通知域服务（异步派发）
           │  各自获得一次性任务入队能力；未注入时两处都退回同步路径
@@ -41,6 +42,8 @@
 | `notification_dispatch` | `NotificationService.AsyncNotificationDispatch` | 一次性、幂等（见 5.5） |
 | `notification_delivery_sweep` | `NotificationService.AsyncDeliverySweep` | 系统级 cron，每 5 分钟（见 5.6） |
 | `notification_archived_cleanup` | `NotificationService.AsyncArchivedCleanup` | 系统级 cron，每小时（见 5.8） |
+| `agent_run` | `AiAgentService.AsyncAgentRun` | 任务管理建 PERIODIC 行定时执行 Agent 图（2026-11-09，见 [ai_agent_orchestration.md](./ai_agent_orchestration.md) §M3） |
+| `ai_query_run` | `AiQueryService.AsyncAiQueryRun` | 任务管理建 PERIODIC 行定时问数 + 站内信推送（2026-11-09 补注册，见 [ai_module.md](./ai_module.md)） |
 | `monitor_alert_scan` | `MonitorAlertService.AsyncMonitorAlertScan` | 系统级 cron，每 5 分钟（评估启用的告警规则；handler 在监控告警域） |
 | `ai_audit_digest` | `AiDigestService.AsyncAiAuditDigest` | 系统级 cron，每日 08:00（见 [ai_module.md](./ai_module.md)「审计日报」） |
 | `plan_quota_watermark_scan` | `PlanQuotaWatermarkService.AsyncPlanQuotaWatermarkScan` | 系统级 cron，每日 09:00（见 5.7、[plan_billing.md](./plan_billing.md) §7.3） |
@@ -220,6 +223,12 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
   单条目）。跨租户同名 PERIODIC 任务会互相覆盖产生"无法注销的孤儿 entry"——`startAllTask`
   按 typeName 去重、**只调度首个**并告警跳过。彻底隔离需调度器支持"路由类型/调度键分离"
   （库层改造，TODO）。实务约束：**任务 typeName 需全局唯一**（含租户维度前缀）。
+  **缓解（2026-11-09）**：TaskService 维护 typeName→[]entryID 账本（`periodicEntryIDs`），
+  每次 `NewPeriodicTask` 成功即记账；Update/Delete/stopTask 改走"账本逐 entryID
+  `RemovePeriodicTaskByID` + typeName 兜底注销"，`stopAllTask` 在 RemoveAll 后对账本残留
+  逐 ID 补刀——**Update 覆盖与 RestartAllTask 累积两类孤儿泄漏已消除**；跨租户同名共存
+  （多 entry 并行触发）仍需库层改造。库 v1.3.14 起 `RemovePeriodicTaskByID` 不受 typeName
+  冲突影响，TaskScheduler 接口已暴露。
 
 ## 9. 运维与排障
 
@@ -236,7 +245,7 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 
 | 项 | 现状 |
 |---|---|
-| typeName 路由/去重键合一 | 库层限制，跨租户同名互斥（第 8 节），库改造 TODO |
+| typeName 路由/去重键合一 | 库层限制，跨租户同名互斥（第 8 节），库改造 TODO；Update 覆盖与 Restart 累积两类孤儿泄漏已由 entryID 账本缓解（2026-11-09，第 8 节"缓解"） |
 | 备份恢复流程 | 导出上传 + 桶生命周期清理已备；**恢复侧已补（2026-10-03）**：`BackupRepo.RestoreCoreTables`（备份 JSON data 段 → 8 张核心表，保留原 ID、单事务、仅允许空库非空即中止；动态 INSERT 表无关实现，逻辑名→sys_ 物理表映射）。**演练流程见 docs/backup-restore-drill.md**。restore 管理页/RPC 未做（演练走测试/一次性程序，避免活库误恢复入口） |~~桶内对象无生命周期清理~~ 已补（2026-10-03）：AsyncBackup 上传成功后顺手清理超过保留期的旧备份——`BACKUP_RETENTION_DAYS` 环境变量（默认 30 天；<=0 显式关闭）；清理为 best-effort，单个删除失败留日志并继续，不影响任务结论；列举/删除失败 Errorf 留痕 |
 | WAIT_RESULT 型 | 枚举与装载路径在，无内置消费方示范；语义同 asynq wait-result |
 | ~~系统级任务的可见性~~ | **已落地（方案 C'，asynq Inspector 只读视图，零新表）**：`TaskMonitorService`（`task_monitor_service.go`，平台管理员守卫）懒构造 Inspector（`server.asynq` 同一 Redis URI——队列无命名空间的坑自动自洽），`POST /admin/v1/system-tasks:inspect` 返回 `SchedulerEntries()`（各常驻任务 cron + Next/Prev 入队时间，Prev 零值=从未跑过）与各队列 active/retry/archived 状态及失败明细（TaskInfo.LastErr/LastFailedAt/Retried）；三端任务页「系统级任务」弹窗消费（react `SystemTasksModal.tsx` 先行，ele/vben 同构）。不入 sys_tasks、不可停的设计不变；asynq 给不了的持久执行历史仍按原评估：需要时配 asynq Retention（零表）或再立执行流水表 |
