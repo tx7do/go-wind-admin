@@ -7,7 +7,7 @@ import { $t } from '@vben/locales';
 import { message } from 'ant-design-vue';
 
 import { globalSSEClient, SSE_EVENT } from '#/transport/sse';
-import { runAiAgentApp } from '#/api';
+import { fetchAiAgentApp, runAiAgentApp } from '#/api';
 
 const emit = defineEmits<{ success: [] }>();
 
@@ -55,12 +55,26 @@ const [Drawer, drawerApi] = useVbenDrawer({
     globalSSEClient.on(SSE_EVENT.AgentRun, onFrame);
     offFrame = () => globalSSEClient.off(SSE_EVENT.AgentRun, onFrame);
     // start 节点 inputVars 声明解析（graph JSON 里取）
-    try {
-      const g = app.value.graph ? JSON.parse(app.value.graph) : {};
-      const start = (g.nodes ?? []).find((n: any) => n.type === 'start');
-      inputVars.value = start?.data?.inputVars ?? [];
-    } catch {
-      inputVars.value = [];
+    const parseInputVars = (graph?: string) => {
+      try {
+        const g = graph ? JSON.parse(graph) : {};
+        const start = (g.nodes ?? []).find((n: any) => n.type === 'start');
+        inputVars.value = start?.data?.inputVars ?? [];
+      } catch {
+        inputVars.value = [];
+      }
+    };
+    // 先以列表行占位，再经 Get 拉全量（行字段可能被裁剪/滞后，graph 的事实源是 Get）
+    parseInputVars(app.value.graph);
+    if (app.value?.id) {
+      fetchAiAgentApp(app.value.id)
+        .then((resp: any) => {
+          app.value = resp;
+          parseInputVars(resp?.graph);
+        })
+        .catch((error: any) => {
+          console.error('[ai-agent-run-drawer] load app detail failed', error);
+        });
     }
   },
 });

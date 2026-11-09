@@ -16,13 +16,13 @@ import {
   useEdgesState,
   useNodesState,
 } from '@xyflow/react';
-import { Drawer, Button, Space, Form, Input, InputNumber, Select, Switch, App, Tag, Timeline, Descriptions, Popconfirm, Typography } from 'antd';
+import { Drawer, Button, Space, Form, Input, InputNumber, Select, Switch, App, Tag, Timeline, Descriptions, Popconfirm, Typography, Spin } from 'antd';
 import { SaveOutlined, PlayCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiAgentApp as AiAgentApp } from '@/api/generated/admin/service/v1';
 import { useListAiKnowledgeBases } from '@/api/hooks/ai-knowledge';
 import { useListAiProviders } from '@/api/hooks/ai-provider';
-import { useRunAiAgentApp, useUpdateAiAgentApp } from '@/api/hooks/ai-agent';
+import { fetchGetAiAgentApp, useRunAiAgentApp, useUpdateAiAgentApp } from '@/api/hooks/ai-agent';
 import { useAgentRunStream } from './agent-runs-drawer';
 import { PaginationQuery } from '@/core';
 
@@ -170,14 +170,35 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
   const [selectedId, setSelectedId] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
+  // 打开时经 Get 拉全量详情：列表行字段可能被裁剪/滞后（行数据不可作为图的事实源）
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open && app) {
-      const { nodes: n, edges: e } = graphToFlow(app.graph ?? '');
-      setNodes(n);
-      setEdges(e);
-      setSelectedId(undefined);
-    }
+    if (!open || !app?.id) return;
+    let cancelled = false;
+    setLoading(true);
+    fetchGetAiAgentApp(app.id)
+      .then((fresh) => {
+        if (cancelled) return;
+        const { nodes: n, edges: e } = graphToFlow(fresh.graph ?? '');
+        setNodes(n);
+        setEdges(e);
+        setSelectedId(undefined);
+      })
+      .catch((error: any) => {
+        if (cancelled) return;
+        // Get 失败回退列表行数据（若行里带了 graph），并明确告警
+        const { nodes: n, edges: e } = graphToFlow(app.graph ?? '');
+        setNodes(n);
+        setEdges(e);
+        message.error(error?.message || t('canvas.loadFailed'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, app?.id]);
 
@@ -306,20 +327,25 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
       <div style={{ padding: '8px 16px', borderBottom: '1px solid var(--ant-color-border-secondary, #f0f0f0)' }}>
         <Space wrap>
           {NODE_TYPE_ORDER.map((nodeType) => (
-            <Button key={nodeType} size="small" icon={<PlusOutlined />} onClick={() => addNode(nodeType)}>
+            <Button key={nodeType} size="small" icon={<PlusOutlined />} disabled={loading} onClick={() => addNode(nodeType)}>
               {t(`canvas.nodeType.${nodeType}`)}
             </Button>
           ))}
-          <Button type="primary" size="small" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>
+          <Button type="primary" size="small" icon={<SaveOutlined />} loading={saving} disabled={loading} onClick={handleSave}>
             {t('canvas.save')}
           </Button>
-          <Button size="small" icon={<PlayCircleOutlined />} onClick={() => setTestOpen(true)}>
+          <Button size="small" icon={<PlayCircleOutlined />} disabled={loading} onClick={() => setTestOpen(true)}>
             {t('canvas.testRun')}
           </Button>
         </Space>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+            <Spin tip={t('canvas.loading')} />
+          </div>
+        )}
         <ReactFlow
           nodes={nodes}
           edges={edges}

@@ -42,7 +42,7 @@ import { ElButton, ElForm, ElFormItem, ElInput, ElMessage } from "element-plus";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useI18n } from "@/core/i18n";
 import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
-import { runAiAgentApp } from "@/api/composables";
+import { fetchAiAgentApp, runAiAgentApp } from "@/api/composables";
 
 const emit = defineEmits<{
   success: [];
@@ -88,6 +88,16 @@ function open(row: any) {
   // 本用户流上的 ai_agent_run 帧（appId 过滤在 handler 内）；尽力而为，同步响应为准。
   // 注销用同一回调引用（组件重挂载反复 on 会累加）；unmount 兜底
   globalSSEClient.on(SSE_EVENT.AgentRun, onFrame);
+  // 行字段可能被裁剪/滞后：graph 的事实源是 Get，拉全量刷新 inputVars
+  if (row?.id) {
+    fetchAiAgentApp(row.id)
+      .then((resp: any) => {
+        app.value = resp;
+      })
+      .catch((error: any) => {
+        console.error("[ai-agent-run-drawer] load app detail failed:", error);
+      });
+  }
 }
 
 onUnmounted(() => {

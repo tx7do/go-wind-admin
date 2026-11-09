@@ -373,6 +373,7 @@ import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { useI18n } from "@/core/i18n";
 import { PaginationQuery } from "@/core/transport/rest";
 import {
+  fetchAiAgentApp,
   fetchListAiKnowledgeBases,
   fetchListAiProviders,
   runAiAgentApp,
@@ -621,6 +622,7 @@ function removeInputVar(index: number) {
 
 function open(row: any) {
   app.value = row;
+  // 先以列表行占位、再经 Get 拉全量详情：行字段可能被裁剪/滞后，graph 的事实源是 Get
   const flow = graphToFlow(row?.graph);
   vueFlow.setNodes(flow.nodes);
   vueFlow.setEdges(flow.edges);
@@ -644,6 +646,21 @@ function open(row: any) {
     .catch((error: any) => {
       console.error("[ai-agent-canvas] list providers failed:", error);
     });
+  // Get 全量刷新画布（graph 事实源）
+  if (row?.id) {
+    fetchAiAgentApp(row.id)
+      .then((resp: any) => {
+        app.value = resp;
+        const fresh = graphToFlow(resp?.graph);
+        vueFlow.setNodes(fresh.nodes);
+        vueFlow.setEdges(fresh.edges);
+        selectedId.value = undefined;
+      })
+      .catch((error: any) => {
+        console.error("[ai-agent-canvas] load app detail failed:", error);
+        ElMessage.error(t("pages.ai_agent.canvas.loadFailed"));
+      });
+  }
 }
 
 async function handleSave() {

@@ -63,6 +63,8 @@
     "addVar": "添加输入变量",
     "remove": "删除",
     "configAutoSaved": "配置修改即时写入画布，点「保存画布」才落库",
+    "loading": "正在加载应用详情…",
+    "loadFailed": "应用详情加载失败",
     "httpUrl": "请求 URL",
     "requiredHttpUrl": "请填写请求 URL",
     "httpMethod": "方法",

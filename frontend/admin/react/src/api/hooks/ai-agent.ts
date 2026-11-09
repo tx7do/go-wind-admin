@@ -42,6 +42,17 @@ export async function fetchListAiAgentApps(query: PaginationQuery) {
   });
 }
 
+/** 查询应用详情（Get 全量，graph 字段完整）——画布/试运行打开时用它，
+ * 不把列表行当图的事实源（行字段可能被裁剪或滞后）。 */
+export async function fetchGetAiAgentApp(id: number) {
+  return queryClient.fetchQuery({
+    queryKey: ['getAiAgentApp', id],
+    queryFn: () => apiClient.aiAgentService.Get({ id }),
+    retry: 0,
+    staleTime: 0,
+  });
+}
+
 export function useCreateAiAgentApp(
   options?: UseMutationOptions<aiservicev1_AiAgentApp, Error, aiservicev1_CreateAiAgentAppRequest>,
 ) {

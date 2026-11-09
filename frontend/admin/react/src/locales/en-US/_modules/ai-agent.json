@@ -63,6 +63,8 @@
     "addVar": "Add Input Variable",
     "remove": "Remove",
     "configAutoSaved": "Edits apply to the canvas immediately; click \"Save Canvas\" to persist",
+    "loading": "Loading app details…",
+    "loadFailed": "Failed to load app details",
     "httpUrl": "Request URL",
     "requiredHttpUrl": "URL is required",
     "httpMethod": "Method",

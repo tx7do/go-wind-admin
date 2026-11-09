@@ -14,6 +14,7 @@ import { MiniMap } from '@vue-flow/minimap';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 
 import {
+  fetchAiAgentApp,
   fetchListAiKnowledgeBases,
   fetchListAiProviders,
   PaginationQuery,
@@ -89,6 +90,20 @@ const [Drawer, drawerApi] = useVbenDrawer({
         .catch((error: any) => {
           console.error('[ai-agent-canvas] list providers failed', error);
         });
+      // 行字段可能被裁剪/滞后：graph 的事实源是 Get，拉全量刷新画布
+      if (app.value?.id) {
+        fetchAiAgentApp(app.value.id)
+          .then((resp: any) => {
+            app.value = resp;
+            const fresh = graphToFlow(resp?.graph);
+            vueFlow.setNodes(fresh.nodes);
+            vueFlow.setEdges(fresh.edges);
+            selectedId.value = undefined;
+          })
+          .catch((error: any) => {
+            console.error('[ai-agent-canvas] load app detail failed', error);
+          });
+      }
     } else {
       flowReady.value = false;
     }

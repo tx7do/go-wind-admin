@@ -10,6 +10,12 @@ export async function fetchListAiAgentApps(query: PaginationQuery) {
   return apiClient.aiAgentService.List(query.toRawParams());
 }
 
+/** 查询应用详情（Get 全量，graph 字段完整）——画布/试运行打开时用它，
+ * 不把列表行当图的事实源（行字段可能被裁剪或滞后）。 */
+export async function fetchAiAgentApp(id: number) {
+  return apiClient.aiAgentService.Get({ id });
+}
+
 /** 创建 Agent 应用（graph 允许空串=先建壳后画图） */
 export async function createAiAgentApp(data: Record<string, any>) {
   return apiClient.aiAgentService.Create({ data: data as any });
