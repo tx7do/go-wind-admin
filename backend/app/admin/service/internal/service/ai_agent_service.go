@@ -58,6 +58,18 @@ type AiAgentService struct {
 
 	// scriptRuntime script 节点的沙箱执行能力（wiring 装配；nil = script 节点不可用并报错）。
 	scriptRuntime *ScriptRuntime
+
+	// 定时触发任务桥（agent_run）的结果回传：站内信创建与投递内核。
+	// internalMessages 经 setter 装配（wiring 内构造顺序晚于本服务）；未装配时 NotifyUserId 不通知。
+	internalMessages *InternalMessageService
+	internalMsgRepo  *data.InternalMessageRepo
+}
+
+// RegisterInternalMessageNotifier 注入站内信服务（定时触发结果回传用；幂等覆盖）。
+func (s *AiAgentService) RegisterInternalMessageNotifier(im *InternalMessageService) {
+	if im != nil {
+		s.internalMessages = im
+	}
 }
 
 // RegisterAiAgentRunPublisher 接线 SSE 发布者（sse_server 装配期调用；幂等覆盖）。
@@ -76,16 +88,18 @@ func NewAiAgentService(
 	usageLogRepo *data.AiUsageLogRepo,
 	scriptRuntime *ScriptRuntime,
 	revisionRepo *data.AiAgentRevisionRepo,
+	internalMsgRepo *data.InternalMessageRepo,
 ) *AiAgentService {
 	return &AiAgentService{
-		log:           ctx.NewLoggerHelper("ai-agent/service/admin-service"),
-		appRepo:       appRepo,
-		runRepo:       runRepo,
-		providerRepo:  providerRepo,
-		knowledgeRepo: knowledgeRepo,
-		usageLogRepo:  usageLogRepo,
-		scriptRuntime: scriptRuntime,
-		revisionRepo:  revisionRepo,
+		log:            ctx.NewLoggerHelper("ai-agent/service/admin-service"),
+		appRepo:        appRepo,
+		runRepo:        runRepo,
+		providerRepo:   providerRepo,
+		knowledgeRepo:  knowledgeRepo,
+		usageLogRepo:   usageLogRepo,
+		scriptRuntime:  scriptRuntime,
+		revisionRepo:   revisionRepo,
+		internalMsgRepo: internalMsgRepo,
 	}
 }
 

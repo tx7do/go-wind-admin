@@ -47,6 +47,8 @@ var ServiceTagToBusinessModule = map[string]identityV1.Module{
 	"AiUsageLogService":      identityV1.Module_AI,
 	"AiKnowledgeBaseService": identityV1.Module_AI,
 	"AiQueryService":         identityV1.Module_AI,
+	"AiAgentService":         identityV1.Module_AI,
+	"AiContentService":       identityV1.Module_AI,
 
 	"TenantService":    identityV1.Module_TENANT,
 	"PlanService":      identityV1.Module_TENANT,

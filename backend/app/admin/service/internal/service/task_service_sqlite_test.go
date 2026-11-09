@@ -30,6 +30,7 @@ import (
 	"compress/gzip"
 	"context"
 	"io"
+	"strconv"
 	"testing"
 	"time"
 
@@ -61,7 +62,9 @@ type taskSchedulerStub struct {
 	newWaitResultTask []string
 	newPeriodicTask   []string
 	removedPeriodic   []string
+	removedByID       []string // 按 entryID 注销（孤儿缓解的账本补刀路径）
 	removeAllCount    int
+	entrySeq          int // 每次注册递增，entryID 全局唯一（模拟库侧真实 entryID）
 }
 
 func newTaskSchedulerStub(types ...string) *taskSchedulerStub {
@@ -89,11 +92,17 @@ func (s *taskSchedulerStub) NewWaitResultTask(typeName string, _ any, _ ...asynq
 	return nil
 }
 func (s *taskSchedulerStub) NewPeriodicTask(_ string, typeName string, _ any, _ ...asynq.Option) (string, error) {
+	s.entrySeq++
 	s.newPeriodicTask = append(s.newPeriodicTask, typeName)
-	return typeName, nil
+	entryID := typeName + "#" + strconv.Itoa(s.entrySeq)
+	return entryID, nil
 }
 func (s *taskSchedulerStub) RemovePeriodicTask(id string) error {
 	s.removedPeriodic = append(s.removedPeriodic, id)
+	return nil
+}
+func (s *taskSchedulerStub) RemovePeriodicTaskByID(entryID string) error {
+	s.removedByID = append(s.removedByID, entryID)
 	return nil
 }
 func (s *taskSchedulerStub) RemoveAllPeriodicTask() { s.removeAllCount++ }
@@ -545,6 +554,45 @@ func TestTaskService_StopAllTask(t *testing.T) {
 	_, err := svc.StopAllTask(taskPlatformOpCtx(ctx), &emptypb.Empty{})
 	require.NoError(t, err)
 	require.Equal(t, 1, stub.removeAllCount, "StopAllTask 应调用全量注销")
+}
+
+// TestTaskService_PeriodicEntryLedger 孤儿调度项缓解（entryID 账本 + 按 ID 注销）：
+// 库侧以 typeName 为注销键、同名再注册直接覆盖 entryIDs[typeName]，被覆盖的旧
+// 调度项从此注销不到（永久触发的孤儿）。账本留住全部 entryID 后——
+// ① 同一 PERIODIC 行反复 Restart，每轮重注册前旧 entryID 被按 ID 注销（不再泄漏）；
+// ② StopAllTask 对账本残留逐 ID 补刀并清空账本。
+func TestTaskService_PeriodicEntryLedger(t *testing.T) {
+	stub := newTaskSchedulerStub("ledger_dup_type")
+	svc, _ := newTaskServiceForTest(t, stub, false)
+	sysCtx := enttest.NewSystemContext(context.Background())
+	ctx := taskPlatformOpCtx(sysCtx)
+
+	seedTaskRow(t, svc, sysCtx, 7, "ledger_dup_type", taskV1.Task_PERIODIC, "0 */5 * * * *", true)
+
+	// 三轮 Restart：首轮 stopTask 时账本为空（行是直插的、从未注册），只走 typeName
+	// 兜底；此后每轮重注册前，上一轮 entryID 都按 ID 注销。
+	// ControlTask 按 type_name 取行要求具名租户（tid>0）viewer（平台闸门另需操作者
+	// 旗标），用 taskPlatformTenantOpCtx 组合上下文。
+	for i := 0; i < 3; i++ {
+		_, err := svc.ControlTask(taskPlatformTenantOpCtx(sysCtx, 7), &taskV1.ControlTaskRequest{
+			TypeName:    "ledger_dup_type",
+			ControlType: taskV1.ControlTaskRequest_Restart,
+		})
+		require.NoError(t, err)
+	}
+
+	require.Equal(t, []string{"ledger_dup_type#1", "ledger_dup_type#2"}, stub.removedByID,
+		"第 2/3 轮重注册前应按 ID 注销上一轮 entryID")
+	entries := svc.periodicEntryIDs["ledger_dup_type"]
+	require.Len(t, entries, 1, "账本应只留最新 entryID")
+	require.Equal(t, "ledger_dup_type#3", entries[0])
+
+	// StopAllTask：RemoveAllPeriodicTask 后对账本残留逐 ID 补刀并清空
+	_, err := svc.StopAllTask(ctx, &emptypb.Empty{})
+	require.NoError(t, err)
+	require.Len(t, stub.removedByID, 3, "账本残留的 entryID 应被逐 ID 补刀")
+	require.Equal(t, "ledger_dup_type#3", stub.removedByID[2])
+	require.Empty(t, svc.periodicEntryIDs, "全停后账本应清空")
 }
 
 // ── 纯函数 ────────────────────────────────────────────────────────────────

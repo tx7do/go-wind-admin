@@ -16,7 +16,7 @@ import (
 )
 
 // NewAsynqServer creates a new asynq server.
-func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, internalMessageService *service.InternalMessageService, notificationService *service.NotificationService, monitorAlertService *service.MonitorAlertService, scriptRuntime *service.ScriptRuntime, aiKnowledgeService *service.AiKnowledgeService, aiDigestService *service.AiDigestService, planQuotaWatermarkService *service.PlanQuotaWatermarkService) (*asynqServer.Server, error) {
+func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, internalMessageService *service.InternalMessageService, notificationService *service.NotificationService, monitorAlertService *service.MonitorAlertService, scriptRuntime *service.ScriptRuntime, aiKnowledgeService *service.AiKnowledgeService, aiDigestService *service.AiDigestService, planQuotaWatermarkService *service.PlanQuotaWatermarkService, aiAgentService *service.AiAgentService, aiQueryService *service.AiQueryService) (*asynqServer.Server, error) {
 	cfg := ctx.GetConfig()
 
 	if cfg == nil || cfg.Server == nil || cfg.Server.Asynq == nil {
@@ -153,6 +153,27 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 	if err = asynqServer.RegisterSubscriber(srv, task.NotificationArchivedCleanupTaskType, notificationService.AsyncArchivedCleanup); err != nil {
 		log.Error(err)
 		return nil, err
+	}
+
+	// Agent 定时触发任务桥 handler（M3「定时触发」：经「任务管理」建 PERIODIC 行
+	// type_name="agent_run"，cron 到点执行应用图，结果可按 payload.notifyUserId 回传站内信；
+	// 机器身份执行，租户取应用归属租户）。H8 守卫要求 typeName 已注册，故必须在此登记。
+	if aiAgentService != nil {
+		if err = asynqServer.RegisterSubscriber(srv, task.AgentRunTaskType, aiAgentService.AsyncAgentRun); err != nil {
+			log.Error(err)
+			return nil, err
+		}
+	}
+
+	// 定时问数 handler（经「任务管理」建 PERIODIC 行 type_name="ai_query_run"，
+	// cron 执行 NL→SQL 并经站内信推送结果）。
+	// 注意：提交 3e141120 声称注册过本类型但实际漏改本文件，使其成为死代码
+	// （类型未注册 → H8 必 400）——此处为补齐该缺口，勿再移除。
+	if aiQueryService != nil {
+		if err = asynqServer.RegisterSubscriber(srv, task.AiQueryRunTaskType, aiQueryService.AsyncAiQueryRun); err != nil {
+			log.Error(err)
+			return nil, err
+		}
 	}
 
 	// 启动所有的任务：启动期无操作者上下文，走内部入口，
