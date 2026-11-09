@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/jinzhu/copier"
@@ -181,7 +180,7 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 		SetNillableResponse(req.Data.Response).
 		SetNillableLogHash(req.Data.LogHash).
 		SetSignature(req.Data.Signature).
-		SetCreatedAt(time.Now())
+		SetCreatedAt(auditCreatedAt(req.Data.CreatedAt))
 
 	err := builder.Exec(ctx)
 	if err != nil {

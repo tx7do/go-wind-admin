@@ -83,13 +83,13 @@ func (t *fakeServerTransporter) ReplyHeader() transport.Header   { return t.hdr 
 func TestNewEvalLoggingEngine_NilGuards(t *testing.T) {
 	inner := &stubAuthzEngine{name: "stub"}
 
-	assert.Nil(t, newEvalLoggingEngine(nil, nil))
-	assert.Nil(t, newEvalLoggingEngine(nil, &data.PolicyEvaluationLogRepo{}))
+	assert.Nil(t, newEvalLoggingEngine(nil, nil, nil))
+	assert.Nil(t, newEvalLoggingEngine(nil, &data.PolicyEvaluationLogRepo{}, nil))
 
-	same := newEvalLoggingEngine(inner, nil)
+	same := newEvalLoggingEngine(inner, nil, nil)
 	assert.Same(t, inner, same, "repo 为 nil 时必须原样返回 inner")
 
-	wrapped := newEvalLoggingEngine(inner, &data.PolicyEvaluationLogRepo{})
+	wrapped := newEvalLoggingEngine(inner, &data.PolicyEvaluationLogRepo{}, nil)
 	_, ok := wrapped.(*evalLoggingEngine)
 	assert.True(t, ok, "inner 与 repo 齐备时应产出包装引擎")
 }

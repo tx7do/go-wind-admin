@@ -4,6 +4,7 @@ import (
 	"context"
 	nethttp "net/http"
 	"strings"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -34,6 +35,7 @@ import (
 	"github.com/tx7do/go-utils/ossutil"
 	"go-wind-admin/pkg/middleware/auth"
 	applogging "go-wind-admin/pkg/middleware/logging"
+	"go-wind-admin/pkg/task"
 )
 
 // NewRestMiddleware 创建中间件
@@ -48,6 +50,7 @@ func NewRestMiddleware(
 	permissionAuditLogRepo *data.PermissionAuditLogRepo,
 	dataAccessAuditLogRepo *data.DataAccessAuditLogRepo,
 	policyEvaluationLogRepo *data.PolicyEvaluationLogRepo,
+	taskService *service.TaskService,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
@@ -60,23 +63,56 @@ func NewRestMiddleware(
 	ms = append(ms, securityHeaders())
 	ms = append(ms, logging.Server(bLogger.AsKratosLogger(ctx.GetLogger())))
 
+	// 审计日志异步化（docs/audit-log-producer-design.md）：五个审计回调先经 asynq
+	// 入队（at-least-once），入队失败或 asynq 未配置时回退同步落库——宁可慢不可丢。
+	var auditEnqueuer auditLogEnqueuer
+	var auditProducerLog *bLogger.Helper
+	if taskService != nil {
+		auditEnqueuer = taskService
+		auditProducerLog = ctx.NewLoggerHelper("audit/async-producer")
+	}
+
 	ms = append(ms, applogging.Server(
 		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *auditV1.ApiAuditLog) error {
-			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
-			return apiAuditLogRepo.Create(ctx, &auditV1.CreateApiAuditLogRequest{Data: data})
+			occurredAt := time.Now()
+			if err := enqueueAuditLog(ctx, auditEnqueuer, task.AuditLogKindApi, data, occurredAt); err != nil {
+				auditLogSyncFallback(ctx, auditProducerLog, task.AuditLogKindApi, err)
+				// 回退同步落库（宁可慢不可丢）；Hash/Signature 在 middleware 侧已生成，原样保留
+				return apiAuditLogRepo.Create(ctx, &auditV1.CreateApiAuditLogRequest{Data: data})
+			}
+			return nil
 		}),
 		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *auditV1.LoginAuditLog) error {
-			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
-			return loginLogRepo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{Data: data})
+			occurredAt := time.Now()
+			if err := enqueueAuditLog(ctx, auditEnqueuer, task.AuditLogKindLogin, data, occurredAt); err != nil {
+				auditLogSyncFallback(ctx, auditProducerLog, task.AuditLogKindLogin, err)
+				return loginLogRepo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{Data: data})
+			}
+			return nil
 		}),
 		applogging.WithWriteOperationAuditLogFunc(func(ctx context.Context, data *auditV1.OperationAuditLog) error {
-			return operationAuditLogRepo.Create(ctx, &auditV1.CreateOperationAuditLogRequest{Data: data})
+			occurredAt := time.Now()
+			if err := enqueueAuditLog(ctx, auditEnqueuer, task.AuditLogKindOperation, data, occurredAt); err != nil {
+				auditLogSyncFallback(ctx, auditProducerLog, task.AuditLogKindOperation, err)
+				return operationAuditLogRepo.Create(ctx, &auditV1.CreateOperationAuditLogRequest{Data: data})
+			}
+			return nil
 		}),
 		applogging.WithWritePermissionAuditLogFunc(func(ctx context.Context, data *auditV1.PermissionAuditLog) error {
-			return permissionAuditLogRepo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{Data: data})
+			occurredAt := time.Now()
+			if err := enqueueAuditLog(ctx, auditEnqueuer, task.AuditLogKindPermission, data, occurredAt); err != nil {
+				auditLogSyncFallback(ctx, auditProducerLog, task.AuditLogKindPermission, err)
+				return permissionAuditLogRepo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{Data: data})
+			}
+			return nil
 		}),
 		applogging.WithWriteDataAccessAuditLogFunc(func(ctx context.Context, data *auditV1.DataAccessAuditLog) error {
-			return dataAccessAuditLogRepo.Create(ctx, &auditV1.CreateDataAccessAuditLogRequest{Data: data})
+			occurredAt := time.Now()
+			if err := enqueueAuditLog(ctx, auditEnqueuer, task.AuditLogKindDataAccess, data, occurredAt); err != nil {
+				auditLogSyncFallback(ctx, auditProducerLog, task.AuditLogKindDataAccess, err)
+				return dataAccessAuditLogRepo.Create(ctx, &auditV1.CreateDataAccessAuditLogRequest{Data: data})
+			}
+			return nil
 		}),
 	))
 
@@ -121,7 +157,7 @@ func NewRestMiddleware(
 			auth.WithInjectMetadata(false),
 			auth.WithInjectEnt(true),
 		),
-		authz.Server(newEvalLoggingEngine(authorizer.Engine(), policyEvaluationLogRepo)),
+		authz.Server(newEvalLoggingEngine(authorizer.Engine(), policyEvaluationLogRepo, auditEnqueuer)),
 	).
 		Match(rpc.NewRestWhiteListMatcher()).
 		Build(),

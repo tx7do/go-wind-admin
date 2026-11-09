@@ -44,6 +44,7 @@
 | `notification_archived_cleanup` | `NotificationService.AsyncArchivedCleanup` | 系统级 cron，每小时（见 5.8） |
 | `agent_run` | `AiAgentService.AsyncAgentRun` | 任务管理建 PERIODIC 行定时执行 Agent 图（2026-11-09，见 [ai_agent_orchestration.md](./ai_agent_orchestration.md) §M3） |
 | `ai_query_run` | `AiQueryService.AsyncAiQueryRun` | 任务管理建 PERIODIC 行定时问数 + 站内信推送（2026-11-09 补注册，见 [ai_module.md](./ai_module.md)） |
+| `audit_log_write` | `AuditLogWriteHandler.HandleAuditLogWrite` | 一次性，rest 审计回调按需入队（2026-11-09 审计异步化，见 [audit-log-producer-design.md](./audit-log-producer-design.md) §1「写入形态」） |
 | `monitor_alert_scan` | `MonitorAlertService.AsyncMonitorAlertScan` | 系统级 cron，每 5 分钟（评估启用的告警规则；handler 在监控告警域） |
 | `ai_audit_digest` | `AiDigestService.AsyncAiAuditDigest` | 系统级 cron，每日 08:00（见 [ai_module.md](./ai_module.md)「审计日报」） |
 | `plan_quota_watermark_scan` | `PlanQuotaWatermarkService.AsyncPlanQuotaWatermarkScan` | 系统级 cron，每日 09:00（见 5.7、[plan_billing.md](./plan_billing.md) §7.3） |

@@ -336,7 +336,8 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	// ═══════════════════════ 五、传输层(internal/server) ═══════════════════════
 
 	restMiddlewares := server.NewRestMiddleware(ctx, accessTokenChecker, tenantAccessChecker, authz,
-		apiAuditLogRepo, loginAuditLogRepo, operationAuditLogRepo, permissionAuditLogRepo, dataAccessAuditLogRepo, policyEvaluationLogRepo)
+		apiAuditLogRepo, loginAuditLogRepo, operationAuditLogRepo, permissionAuditLogRepo, dataAccessAuditLogRepo, policyEvaluationLogRepo,
+		taskService)
 
 	restServer, err := server.NewRestServer(ctx, restMiddlewares, authz,
 		authenticationService, mfaService, loginPolicyService,
@@ -380,7 +381,8 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		return nil, nil, err
 	}
 
-	asynqServer, err := server.NewAsynqServer(ctx, taskService, internalMessageService, notificationService, monitorAlertService, scriptRuntime, aiKnowledgeService, auditDigestService, planQuotaWatermarkService, aaAiAgentService, aiQueryService)
+	auditLogWriteHandler := server.NewAuditLogWriteHandler(ctx, apiAuditLogRepo, loginAuditLogRepo, operationAuditLogRepo, permissionAuditLogRepo, dataAccessAuditLogRepo, policyEvaluationLogRepo)
+	asynqServer, err := server.NewAsynqServer(ctx, taskService, internalMessageService, notificationService, monitorAlertService, scriptRuntime, aiKnowledgeService, auditDigestService, planQuotaWatermarkService, aaAiAgentService, aiQueryService, auditLogWriteHandler)
 	if err != nil {
 		rollback()
 		return nil, nil, err

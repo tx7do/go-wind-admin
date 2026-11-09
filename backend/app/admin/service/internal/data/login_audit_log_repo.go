@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -180,7 +179,7 @@ func (r *LoginAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateLogin
 		SetRiskFactors(req.Data.RiskFactors).
 		SetNillableLogHash(req.Data.LogHash).
 		SetSignature(req.Data.Signature).
-		SetCreatedAt(time.Now())
+		SetCreatedAt(auditCreatedAt(req.Data.CreatedAt))
 
 	if err := builder.Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "insert login audit log failed: %s", err.Error())

@@ -8,6 +8,9 @@
 > **状态**：设计定稿于 2026-08-28，三类型补全（操作 / 数据访问 / 权限变更）连同策略评估
 > 包装均已实施并通过 e2e（各节内注日期）。本文档已由设计稿重组为参考形态；
 > 方案比选过程保留于第 7 节设计沿革。
+> **写入异步化已落地（2026-11-09，见 §1「写入形态」）**：六类审计落库改为
+> asynq 队列化 producer（at-least-once + 入队失败回退同步），审计链路最后一块
+> 代码级 TODO（rest_server.go:65/69）就此收口。
 
 ## 1. 机制总览
 
@@ -27,13 +30,21 @@ repo `Create` 全字段落库。全部采集在 **post-handler** 阶段执行（
 审计写入只能由进程内组件（中间件/driver 包装器回调）触发，不经 HTTP 暴露；
 audit 域 proto 有 Create RPC 但同样无 HTTP 绑定。
 
-**写入是同步形态（已知待办，2026-11-08 复核登记）**：六类的落库都发生在采集回调内——
-请求/SQL 路径上直写数据库（如 `api_audit_log.go:162-164`），无队列、无 producer，
-DB 抖动会直接放大进接口延迟。异步化（asynq 队列化 producer）仅在
-`rest_server.go:65/69` 留有 TODO 注释，从未实施、也未立项；核心待决是丢失窗口语义
-（至少一次投递 + 幂等键去重，还是接受有损换延迟上限，按等保留存要求裁决）。
-立项时从 [task_system.md](./task_system.md) 的队列形态与通知域 P2 的异步化先例
-（[notification_domain_design.md](./notification_domain_design.md) §4）起步。
+**写入形态（2026-11-09 异步化落地）**：六类的落库回调改为先经 asynq 入队
+（`audit_log_write` 任务，at-least-once——`asynq.MaxRetry(3)`，落库失败交重试；
+极小概率的 ack 失败重复被接受，审计场景宁可重复不可丢失），消费侧
+（`AuditLogWriteHandler`，注册于 asynq_server.go）以 SystemContext + audit.SinkKey
+不变量解 DTO 落对应审计表。回退双保险：入队失败或 asynq 未配置（enqueuer 为 nil，
+小负载部署不配 asynq）时回退同步落库——宁可慢不可丢，行为与改造前完全一致。
+事件时间：payload 携带 producer 侧 `OccurredAt`，api/login 两类消费时覆写
+DTO.CreatedAt（两个 repo honor 非空 CreatedAt；同步路径中间件不设该字段，行为不变），
+其余四类保持落库时间语义。Hash/Signature 仍留在 producer 侧（middleware 内 EC 私钥
+与写入时刻语义），不经队列。残余窗口：消费落库成功但 ack 失败时可能重复一行，
+不另加幂等键（audit 行无自然唯一键，等保要"不丢"优先于"不重"）。
+策略评估（第 6 类）同批接入：`newEvalLoggingEngine` 加 enqueuer 形参，
+入队失败回退同步。producer：`internal/server/audit_log_async.go` 的
+`enqueueAuditLog`（protojson→map 装载，kratos json codec 对 proto DTO 自动
+protojson 往返）；消费：`internal/server/audit_log_write_handler.go`。
 
 ## 2. 采集层机制
 

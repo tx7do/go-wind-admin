@@ -19,6 +19,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/task"
 )
 
 // evalLoggingEngine 包装 authz 引擎，把每次 IsAuthorized 评估判定落
@@ -28,6 +29,9 @@ import (
 type evalLoggingEngine struct {
 	authzEngine.Authorizer
 	repo *data.PolicyEvaluationLogRepo
+
+	// enqueuer 审计异步化：非 nil 时评估记录先经 asynq 入队（失败回退同步落库）。
+	enqueuer auditLogEnqueuer
 
 	// resolveCache 缓存 (subject|path|method)→(权限点ID,策略ID) 反查结果，
 	// 避免每次评估（每角色每请求）都打 DB；权限数据变更最多 60s 延迟可见。
@@ -44,13 +48,15 @@ type resolveResult struct {
 const resolveTTL = 60 * time.Second
 
 // newEvalLoggingEngine 包装引擎；inner 或 repo 为 nil 时原样返回（不埋点）。
-func newEvalLoggingEngine(inner authzEngine.Authorizer, repo *data.PolicyEvaluationLogRepo) authzEngine.Authorizer {
+// enqueuer 可为 nil（回退同步落库）。
+func newEvalLoggingEngine(inner authzEngine.Authorizer, repo *data.PolicyEvaluationLogRepo, enqueuer auditLogEnqueuer) authzEngine.Authorizer {
 	if inner == nil || repo == nil {
 		return inner
 	}
 	return &evalLoggingEngine{
 		Authorizer:   inner,
 		repo:         repo,
+		enqueuer:     enqueuer,
 		resolveCache: make(map[string]resolveResult),
 	}
 }
@@ -91,6 +97,15 @@ func (e *evalLoggingEngine) IsAuthorized(ctx context.Context, subject authzEngin
 	}
 
 	// SystemContext：评估发生在 authz 阶段，无租户 viewer 上下文，落库需系统视角。
+	// 异步化：先经 asynq 入队（消费侧同样以 SystemContext 落库），失败回退同步写。
+	if e.enqueuer != nil {
+		if enqErr := enqueueAuditLog(viewer.WithSystemContext(ctx), e.enqueuer,
+			task.AuditLogKindPolicyEvaluation, rec, time.Now()); enqErr == nil {
+			return allowed, err
+		}
+		// 入队失败回退到下面的同步落库（宁可慢不可丢），此处不再告警——
+		// enqueueAuditLog 的错误信息已足够定位，同步路径本身吞错保持既有语义。
+	}
 	_ = e.repo.Create(viewer.WithSystemContext(ctx), &permissionV1.CreatePolicyEvaluationLogRequest{Data: rec})
 
 	return allowed, err

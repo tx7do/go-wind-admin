@@ -16,7 +16,7 @@ import (
 )
 
 // NewAsynqServer creates a new asynq server.
-func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, internalMessageService *service.InternalMessageService, notificationService *service.NotificationService, monitorAlertService *service.MonitorAlertService, scriptRuntime *service.ScriptRuntime, aiKnowledgeService *service.AiKnowledgeService, aiDigestService *service.AiDigestService, planQuotaWatermarkService *service.PlanQuotaWatermarkService, aiAgentService *service.AiAgentService, aiQueryService *service.AiQueryService) (*asynqServer.Server, error) {
+func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, internalMessageService *service.InternalMessageService, notificationService *service.NotificationService, monitorAlertService *service.MonitorAlertService, scriptRuntime *service.ScriptRuntime, aiKnowledgeService *service.AiKnowledgeService, aiDigestService *service.AiDigestService, planQuotaWatermarkService *service.PlanQuotaWatermarkService, aiAgentService *service.AiAgentService, aiQueryService *service.AiQueryService, auditLogWriteHandler *AuditLogWriteHandler) (*asynqServer.Server, error) {
 	cfg := ctx.GetConfig()
 
 	if cfg == nil || cfg.Server == nil || cfg.Server.Asynq == nil {
@@ -171,6 +171,16 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 	// （类型未注册 → H8 必 400）——此处为补齐该缺口，勿再移除。
 	if aiQueryService != nil {
 		if err = asynqServer.RegisterSubscriber(srv, task.AiQueryRunTaskType, aiQueryService.AsyncAiQueryRun); err != nil {
+			log.Error(err)
+			return nil, err
+		}
+	}
+
+	// 审计日志异步写 handler（审计异步化的消费侧）：rest 中间件审计回调把 DTO 入队
+	// （入队失败/asynq 未配置回退同步落库），本 handler 解回 DTO 后落对应审计表。
+	// at-least-once：落库失败交 asynq 重试。
+	if auditLogWriteHandler != nil {
+		if err = asynqServer.RegisterSubscriber(srv, task.AuditLogWriteTaskType, auditLogWriteHandler.HandleAuditLogWrite); err != nil {
 			log.Error(err)
 			return nil, err
 		}
