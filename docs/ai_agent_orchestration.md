@@ -7,7 +7,7 @@
 > **（2026-11-09）脚本节点已落地**（后端引擎 + 三端画布，见 §2.1 script 行）；
 > **版本化已落地**：revision 留底/恢复（BI 同款口径，非 draft/published，见 §4 版本化）。
 > M2 至此收官。**M3 首批同日落地**：定时触发（agent_run 任务桥）与对外 API（AK/SK，见 §5）。
-> **（2026-11-09）M3 后续批次落地**：工具市场（脚本工具→LLM，见 §2.1 tool 行）、
+> **（2026-11-09）M3 后续批次落地**：工具市场（脚本工具→LLM，见 §2.1「工具市场」段）、
 > 并行（parallel 节点 + frontier 执行模型，见 §2.1/§3）、循环（环语义化，见 §2.3）、
 > 子图（subflow 节点，见 §2.1 subflow 行）。M3 至此全部收官，仅剩输出链 v2（另立）。
 >
@@ -32,7 +32,7 @@
 | 不做 | 原因 |
 | --- | --- |
 | OA 语义节点（审批/会签/抄送/人工任务） | 品类边界，见文件头；工作流归独立业务模块 |
-| 循环/子图/并行分支 | M1 图是"确定性分流 DAG"，循环是编排器复杂度的大头，需求驱动再上 |
+| ~~循环/子图/并行分支~~ | **M3 已全部落地（2026-11-09）**：循环（condition 回边 + 分量校验 + 步数预算）、并行（parallel 节点 + frontier 波次执行）、子图（subflow 节点递归 + 深度预算 3 层），见 §2.1/§2.3/§3 |
 | ~~SSE 流式执行~~ | **M2 已落地**（§3.1） |
 | ~~应用版本与发布流（draft/published）~~ | **版本化已落地（2026-11-09，§4）**：revision 留底/恢复；draft/published 双态仍不做 |
 | 对外 API（AK/SK 调用 Agent） | M1 只在管理台内运行；开放 API 等 M3 |
@@ -139,7 +139,8 @@ condition 恰有两条出边且 `branch` 恰为 true/false 各一；parallel ≥
 condition 节点（所有环都经过条件分流保证可终止），否则 400 "cycle without condition"；
 含 condition 分量内的普通节点允许（v1 按分量粒度近似判定）。
 按节点类型的字面校验：http（url 必填/method 白名单/timeout 钳制）、script（language 白名单/
-source 非空 ≤32KB）。
+source 非空 ≤32KB）。画布侧：condition 回边（target 已能到达 source）弹软警示确认框
+（合法、可取消，运行受 50 步预算约束）——三端 onConnect 均已接入。
 
 ## 3. 执行语义（M1 同步）
 
@@ -210,7 +211,11 @@ created_at 排序即可（与 BI 的 version 列形态刻意不同）。端点�
     带 `Authorization: Bearer`。平台侧 AK（tid=0）开箱可用（租户闸门跳过、配额不限）；
     租户 AK 需套餐白名单含 AI 模块且 API_CALL 未超限。authz 切 casbin 时需给 machine
     角色显式配策略（docs/authentication.md §6 既有口径）。顺带补登记 AiContentService。
-  - **未排期（需求驱动）**：工具市场（把脚本引擎的钩子暴露为 LLM 工具）、循环/子图/并行。
+  - **工具市场/循环/子图/并行（✅ 2026-11-09 后续批次全部落地）**：
+    工具市场（脚本 `tool.register` → LLM 工具循环，见 §2.1「工具市场」段）、
+    并行（parallel 节点 + frontier 波次执行模型，见 §2.1/§2.3）、
+    循环（环语义化：condition 回边合法 + 分量校验 + 50 步预算，画布补回边软警示）、
+    子图（subflow 节点递归执行 + 深度预算 3 层 + inputMapping，见 §2.1 subflow 行）。
 
 ## 6. 相关文档
 
