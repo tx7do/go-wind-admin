@@ -20,10 +20,14 @@ export const queryClient = new QueryClient({
   },
 });
 
-/** Vue Query Devtools 组件（动态导入，生产构建不打包） */
-export const TanstackQueryDevtools = defineAsyncComponent(() =>
-  import("@tanstack/vue-query-devtools").then((m) => m.VueQueryDevtools)
-);
+/** Vue Query Devtools 组件（动态导入，生产构建不打包；
+ *  另设 VITE_QUERY_DEVTOOLS=false 可在 dev 下关闭——悬浮球会遮挡右下角弹层按钮） */
+export const TanstackQueryDevtools =
+  import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS !== "false"
+    ? defineAsyncComponent(() =>
+        import("@tanstack/vue-query-devtools").then((m) => m.VueQueryDevtools)
+      )
+    : defineAsyncComponent(() => Promise.resolve({ render: () => null }));
 
 export function setupVueQuery(app: App) {
   app.use(VueQueryPlugin, {

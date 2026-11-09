@@ -28,9 +28,10 @@ export const useAppUserStore = defineStore("app-user", () => {
 
   /**
    * @zh_CN 判断当前用户是否为租户用户
+   * tenantId 已是字符串（uint64 → protojson 字符串），"0"/''/null 都视为非租户用户
    */
   function isTenantUser(): boolean {
-    return tenantId.value !== null && tenantId.value !== undefined && tenantId.value > 0;
+    return tenantId.value !== null && tenantId.value !== undefined && tenantId.value !== "" && tenantId.value !== "0";
   }
 
   function $reset() {

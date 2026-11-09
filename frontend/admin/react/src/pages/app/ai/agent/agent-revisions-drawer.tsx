@@ -22,13 +22,13 @@ export default function AgentRevisionsDrawer({
   onClose: () => void;
 }) {
   const { t } = useTranslation('ai-agent');
-  const [expandedId, setExpandedId] = useState<number | undefined>();
+  const [expandedId, setExpandedId] = useState<string | undefined>();
 
   const revisionsQuery = useListAiAgentRevisions(open ? app?.id : undefined);
   const restoreMutation = useRestoreAiAgentRevision(app?.id);
 
   const revisions = revisionsQuery.data?.items ?? [];
-  const total = revisionsQuery.data?.total ?? 0;
+  const total = Number(revisionsQuery.data?.total ?? 0); // uint64 → string，转回 number 供比较/展示
 
   const sourceTag = (source?: string) => {
     if (source === 'RESTORE') return <Tag color="processing">{t('revisions.sourceRestore')}</Tag>;

@@ -184,7 +184,7 @@ const AiAgentAppManagement = () => {
               ),
             });
             const response = await fetchListAiAgentApps(query);
-            return { data: response.items || [], total: response.total || 0, success: true };
+            return { data: response.items || [], total: Number(response.total ?? 0), success: true };
           }}
           rowKey="id"
           search={false}

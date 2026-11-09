@@ -141,23 +141,23 @@ const visible = ref(false);
 const loading = ref(false);
 const formRef = ref<FormInstance>();
 const isCreate = ref(true);
-const currentId = ref<number | undefined>();
+const currentId = ref<string | undefined>();
 
 // 分类树数据
 const categoryTreeData = ref<any[]>([]);
 
 // 接收用户选项（切换到指定用户时懒加载）
-const userOptions = ref<{ label: string; value: number }[]>([]);
+const userOptions = ref<{ label: string; value: string }[]>([]);
 
 // 表单数据
 const formData = reactive({
   status: "DRAFT",
   type: "NOTIFICATION",
-  categoryId: undefined as number | undefined,
+  categoryId: undefined as string | undefined,
   title: "",
   content: "",
   sendScope: "ALL" as "ALL" | "USERS",
-  targetUserIds: [] as number[],
+  targetUserIds: [] as string[],
 });
 
 // 表单验证规则
@@ -170,7 +170,7 @@ const formRules: FormRules = {
   title: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   targetUserIds: [
     {
-      validator: (_rule, value: number[], callback) => {
+      validator: (_rule, value: string[], callback) => {
         if (formData.sendScope === "USERS" && (!value || value.length === 0)) {
           callback(new Error($t("pages.internal_message.requiredTargetUsers")));
         } else {
@@ -189,7 +189,7 @@ async function loadUserOptions() {
     const result = await fetchListUsers(new PaginationQuery({}));
     userOptions.value = (result.items || []).map((u: any) => ({
       label: u.nickname ? `${u.nickname}(${u.username})` : String(u.username),
-      value: Number(u.id),
+      value: u.id,
     }));
   } catch (error) {
     console.error("加载用户列表失败", error);

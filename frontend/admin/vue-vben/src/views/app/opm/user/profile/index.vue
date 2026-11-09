@@ -50,10 +50,10 @@ const settingList: { component: Component; key: string; name: string }[] = [
 
 const activeKey = ref('1');
 
-// 套餐用量：仅租户用户可见（平台账号 tenantId=0 无套餐语义）
+// 套餐用量：仅租户用户可见（平台账号 tenantId 空 无套餐语义；ID 已是字符串）
 const userStore = useUserStore();
 const visibleSettingList = computed(() =>
-  (userStore.userInfo?.tenantId ?? 0) > 0
+  !!userStore.userInfo?.tenantId
     ? [
         ...settingList,
         {

@@ -331,7 +331,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
 
 async function handleView(row: any) {
   try {
-    const messageId = Number(row.messageId);
+    const messageId = String(row.messageId);
     detailReadAt.value = row.readAt ? String(row.readAt) : "";
     detailReceivedAt.value = row.receivedAt || row.createdAt || "";
     detailStatus.value = row.status || "";
@@ -341,7 +341,7 @@ async function handleView(row: any) {
     const userId = userStore.userInfo?.id;
     if (userId && row.status !== "READ") {
       try {
-        await markNotificationAsRead({ userId, recipientIds: [Number(row.id)] });
+        await markNotificationAsRead({ userId, recipientIds: [String(row.id)] });
         pageRef.value?.refresh();
       } catch {
         ElMessage.error($t("common.message.operationFailed"));
@@ -357,7 +357,7 @@ async function handleMarkRead(row: any) {
   const userId = userStore.userInfo?.id;
   if (!userId) return;
   try {
-    await markNotificationAsRead({ userId, recipientIds: [Number(row.id)] });
+    await markNotificationAsRead({ userId, recipientIds: [String(row.id)] });
     ElMessage.success($t("common.notice.markedRead"));
     pageRef.value?.refresh();
   } catch {
@@ -390,7 +390,7 @@ async function handleDelete(row: any) {  try {
   const userId = userStore.userInfo?.id;
   if (!userId) return;
   try {
-    await deleteNotificationFromInbox({ userId, recipientIds: [Number(row.id)] });
+    await deleteNotificationFromInbox({ userId, recipientIds: [String(row.id)] });
     ElMessage.success($t("common.notification.deleteSuccess"));
     pageRef.value?.refresh();
   } catch {

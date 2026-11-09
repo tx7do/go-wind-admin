@@ -65,9 +65,13 @@ const route = useRoute();
 const router = useRouter();
 const { locale: appLocale } = usePreferences();
 
-const dashboardId = computed(() =>
-  Number(route.query.id) > 0 ? Number(route.query.id) : undefined,
-);
+// 路由 id 本就是字符串（uint64 ID → proto3 JSON 为字符串）；空/0 视为无 id
+const dashboardId = computed(() => {
+  const raw = route.query.id;
+  return typeof raw === 'string' && raw !== '' && raw !== '0'
+    ? raw
+    : undefined;
+});
 
 // 全屏：进入时补页面底色（fullscreen 元素透出 UA 黑底）
 const rootRef = ref<HTMLElement | null>(null);
@@ -100,8 +104,8 @@ let resizeObserver: ResizeObserver | null = null;
 
 // schema 来源优先级：?id= 后端行 > localStorage 草稿 > 内置演示
 async function loadSchema() {
-  const id = Number(route.query.id);
-  if (id > 0) {
+  const id = dashboardId.value;
+  if (id) {
     try {
       const row = await fetchBiDashboard(id);
       if (row.payload) {

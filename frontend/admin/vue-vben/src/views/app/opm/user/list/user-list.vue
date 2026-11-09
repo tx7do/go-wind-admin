@@ -117,7 +117,7 @@ const formOptions: VbenFormProps = {
               formValues: {
                 status: 'ON',
                 type__not: 'TEMPLATE',
-                tenant_id: userViewStore.currentTenantId ?? 0,
+                tenant_id: userViewStore.currentTenantId ?? '',
               },
             }),
           );
@@ -149,7 +149,7 @@ const formOptions: VbenFormProps = {
               formValues: {
                 status: 'ON',
                 org_unit_id: userViewStore.currentOrgUnitId,
-                tenant_id: userViewStore.currentTenantId ?? 0,
+                tenant_id: userViewStore.currentTenantId ?? '',
               },
             }),
           );
@@ -324,8 +324,8 @@ function handleEdit(row: any) {
 }
 
 /* 删除 */
-// 仅平台侧操作者（tenantId=0）显示救援重置；非平台用户由后端 403 兜底
-const isPlatformSide = computed(() => Number(useUserStore().userInfo?.tenantId ?? 0) === 0);
+// 仅平台侧操作者（tenantId 空）显示救援重置；非平台用户由后端 403 兜底
+const isPlatformSide = computed(() => !useUserStore().userInfo?.tenantId);
 
 // 管理端救援重置：清空目标用户 TOTP 因子（仅平台管理员生效，后端强制校验）
 async function handleResetMfa(row: any) {

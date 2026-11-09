@@ -20,7 +20,7 @@ export interface ToolsButton {
 
 export type ListAction<TItem = any, TQuery = any> = (
   queryParams: TQuery & { page?: number; limit?: number }
-) => Promise<{ items: TItem[]; total: number } | TItem[]>;
+) => Promise<{ items: TItem[]; total: number | string } | TItem[]>;
 
 // 全局 ProPage 配置
 export interface ProPageGlobalConfig {

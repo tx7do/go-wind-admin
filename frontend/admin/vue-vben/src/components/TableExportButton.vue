@@ -19,7 +19,7 @@ const props = withDefaults(
     fetcher: (
       page: number,
       pageSize: number,
-    ) => Promise<{ items?: any[]; total?: number }>;
+    ) => Promise<{ items?: any[]; total?: number | string }>;
     filename?: string;
     maxRows?: number;
   }>(),

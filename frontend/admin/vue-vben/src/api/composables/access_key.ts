@@ -28,10 +28,10 @@ export function useCreateAccessKey(
 }
 
 export function useUpdateAccessKey(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.accessKeyService.Update({
         id,
         data: { ...values } as any,
@@ -42,10 +42,10 @@ export function useUpdateAccessKey(
 }
 
 export function useDeleteAccessKey(
-  options?: UseMutationOptions<{}, Error, { id: number }>,
+  options?: UseMutationOptions<{}, Error, { id: string }>,
 ) {
   return useMutation({
-    mutationFn: (req: { id: number }) => apiClient.accessKeyService.Delete(req),
+    mutationFn: (req: { id: string }) => apiClient.accessKeyService.Delete(req),
     ...options,
   });
 }

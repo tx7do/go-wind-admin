@@ -14,7 +14,7 @@ declare global {
     /**
      * 用户id
      */
-    id: number;
+    id: string;
 
     /**
      * 用户昵称
@@ -31,7 +31,7 @@ declare global {
     /**
      * 租户id
      */
-    tenantId: number;
+    tenantId: string;
     /**
      * 用户名
      */
@@ -58,7 +58,7 @@ declare global {
     /**
      * 租户id
      */
-    tenantId: number;
+    tenantId: string;
   }
 }
 

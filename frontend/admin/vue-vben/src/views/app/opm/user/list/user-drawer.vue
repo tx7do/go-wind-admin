@@ -104,7 +104,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
             new PaginationQuery({
               formValues: {
                 status: 'ON',
-                tenant_id: userViewStore.currentTenantId ?? 0,
+                tenant_id: userViewStore.currentTenantId ?? '',
                 type__not: 'TEMPLATE',
               },
             }),
@@ -134,7 +134,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
             new PaginationQuery({
               formValues: {
                 status: 'ON',
-                tenant_id: userViewStore.currentTenantId ?? 0,
+                tenant_id: userViewStore.currentTenantId ?? '',
               },
             }),
           );

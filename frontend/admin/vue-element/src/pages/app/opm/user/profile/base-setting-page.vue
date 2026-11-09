@@ -208,7 +208,7 @@ const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
 const { mutateAsync: uploadAvatar } = useUploadAvatar();
 const { mutateAsync: deleteAvatar } = useDeleteAvatar();
 
-const currentUserId = ref<number>();
+const currentUserId = ref<string>();
 const submitLoading = ref(false);
 const pageLoading = ref(true);
 const formRef = ref();

@@ -289,7 +289,7 @@ const NotificationRulePage = () => {
               ),
             });
             const response = await fetchListNotificationRules(query);
-            return { data: response.items || [], total: response.total || 0, success: true };
+            return { data: response.items || [], total: Number(response.total ?? 0), success: true };
           }}
           rowKey="id"
           search={{ optionRender: searchOptionRender, labelWidth: 'auto', defaultCollapsed: false }}

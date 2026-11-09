@@ -64,7 +64,7 @@ const loading = ref(false);
 const app = ref<any>();
 const revisions = ref<any[]>([]);
 const total = ref(0);
-const expandedId = ref<number | undefined>();
+const expandedId = ref<string | undefined>();
 
 const refreshIcon = RefreshLeft;
 
@@ -90,7 +90,7 @@ function open(row: any) {
     });
 }
 
-function handleRestore(id: number) {
+function handleRestore(id: string) {
   restoreAiAgentRevision(id)
     .then(() => {
       ElMessage.success(t("pages.ai_agent.revisions.restored"));

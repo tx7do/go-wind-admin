@@ -114,7 +114,7 @@ const drawer = useDrawerForm({
     secretVisible.value = true;
     return resp;
   },
-  updateFn: (id: number, values: Record<string, any>) => updateAccessKey(id, values),
+  updateFn: (id: string, values: Record<string, any>) => updateAccessKey(id, values),
 });
 
 const formRules = {

@@ -202,9 +202,9 @@ export function useCreateXxx(options?: UseMutationOptions<object, Error, { data:
 }
 
 // 更新（自动生成 updateMask）
-export function useUpdateXxx(options?: UseMutationOptions<object, Error, { id: number; values: Record<string, any> }>) {
+export function useUpdateXxx(options?: UseMutationOptions<object, Error, { id: string; values: Record<string, any> }>) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.xxxService.Update({ id, data: { ...values } as any, updateMask: makeUpdateMask(Object.keys(values ?? {})) }),
     ...options,
   });

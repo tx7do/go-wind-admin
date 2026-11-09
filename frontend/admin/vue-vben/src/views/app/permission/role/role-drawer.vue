@@ -23,7 +23,7 @@ import {
   useCreateRole,
   useUpdateRole,
 } from '#/api';
-import { deepClone, filterNumbers } from '#/utils';
+import { deepClone, filterIds, isIdString } from '#/utils';
 import PermissionCheckTree from '../permission/permission-check-tree.vue';
 import RoleFieldPermCard from './role-field-perm-card.vue';
 
@@ -43,23 +43,23 @@ const permTreeLoading = ref(false);
 // 父角色候选树（排除自身及后代防环，后端另有环检测兜底）
 const roleTreeOptions = ref<any[]>([]);
 
-// 父角色权限上限集（null=无父角色，不收窄）
-const permCapIds = ref<null | number[]>(null);
+// 父角色权限上限集（null=无父角色，不收窄）；ID 已是字符串（uint64 → proto3 JSON）
+const permCapIds = ref<null | string[]>(null);
 
 // 权限树全量数据源，父角色切换时按 cap 过滤重建
 const permTreeSource = ref<{ groups: any[]; permissions: any[] } | null>(null);
 
 /** 收集自身及全部后代角色 ID（按 parentId 嵌套） */
-function collectSelfAndDescendantIds(items: any[], selfId?: number): number[] {
+function collectSelfAndDescendantIds(items: any[], selfId?: string): string[] {
   if (!selfId) return [];
-  const byParent = new Map<number, number[]>();
+  const byParent = new Map<string, string[]>();
   for (const it of items || []) {
-    const pid = Number(it.parentId || 0);
+    const pid = it.parentId || '';
     if (!byParent.has(pid)) byParent.set(pid, []);
-    byParent.get(pid)!.push(Number(it.id));
+    byParent.get(pid)!.push(it.id);
   }
-  const result = new Set<number>([Number(selfId)]);
-  const stack = [Number(selfId)];
+  const result = new Set<string>([selfId]);
+  const stack = [selfId];
   while (stack.length > 0) {
     const cur = stack.pop()!;
     for (const child of byParent.get(cur) || []) {
@@ -73,22 +73,22 @@ function collectSelfAndDescendantIds(items: any[], selfId?: number): number[] {
 }
 
 /** 角色列表按 parentId 嵌套为 TreeSelect 数据（森林，缺父孤行落为根），排除 excludeIds */
-function buildRoleTreeOptions(items: any[], excludeIds: number[]): any[] {
-  const excluded = new Set(excludeIds.map(Number));
-  const nodes = new Map<number, any>();
+function buildRoleTreeOptions(items: any[], excludeIds: string[]): any[] {
+  const excluded = new Set(excludeIds);
+  const nodes = new Map<string, any>();
   for (const it of items || []) {
-    const id = Number(it.id);
+    const id = it.id;
     if (excluded.has(id)) continue;
     nodes.set(id, {
       value: id,
       label: it.name || it.code || String(id),
-      pid: Number(it.parentId || 0),
+      pid: it.parentId || '',
       children: [] as any[],
     });
   }
   const roots: any[] = [];
   for (const node of nodes.values()) {
-    const parent = node.pid > 0 ? nodes.get(node.pid) : undefined;
+    const parent = node.pid ? nodes.get(node.pid) : undefined;
     if (parent) {
       parent.children.push(node);
     } else {
@@ -96,7 +96,7 @@ function buildRoleTreeOptions(items: any[], excludeIds: number[]): any[] {
     }
   }
   const strip = (list: any[]): any[] =>
-    list.map((n) => {
+    list.map((n: any) => {
       const { pid: _pid, ...rest } = n;
       if (rest.children.length > 0) {
         rest.children = strip(rest.children);
@@ -116,11 +116,11 @@ function buildRoleTreeOptions(items: any[], excludeIds: number[]): any[] {
 function filterPermissionSourceByCap(
   permsGroups: any[],
   permissions: any[],
-  capIds: null | number[] | undefined,
+  capIds: null | string[] | undefined,
 ): { groups: any[]; permissions: any[] } {
   if (!capIds || capIds.length === 0) return { groups: permsGroups, permissions };
-  const cap = new Set(capIds.map(Number));
-  const kept = (permissions || []).filter((p) => cap.has(Number(p.id)));
+  const cap = new Set(capIds);
+  const kept = (permissions || []).filter((p) => cap.has(String(p.id)));
   const filterGroups = (list: any[]): any[] =>
     (list || [])
       .map((g) => ({ ...g, children: filterGroups(g.children || []) }))
@@ -131,16 +131,14 @@ function filterPermissionSourceByCap(
 }
 
 /** 按父角色上限集重建权限树；返回本次生效的 cap（拉取失败按全量展示，后端保存兜底） */
-async function rebuildPermTree(parentId: null | number): Promise<null | number[]> {
+async function rebuildPermTree(parentId: null | string): Promise<null | string[]> {
   const src = permTreeSource.value;
   if (!src) return null;
-  let cap: null | number[] = null;
+  let cap: null | string[] = null;
   if (parentId) {
     try {
       const parent = await fetchGetRole({ id: parentId });
-      cap = ((parent as any)?.permissions ?? [])
-        .map((v: any) => Number(v))
-        .filter((v: any) => Number.isFinite(v));
+      cap = ((parent as any)?.permissions ?? []) as string[];
     } catch (error) {
       console.error('load parent role permission cap failed', error);
     }
@@ -150,7 +148,7 @@ async function rebuildPermTree(parentId: null | number): Promise<null | number[]
   permTreeData.value =
     filtered.groups.length === 0 && filtered.permissions.length > 0
       ? filtered.permissions.map((p) => ({
-          key: Number(p.id),
+          key: p.id,
           title: p.name || p.code || String(p.id),
         }))
       : buildPermissionTree(filtered.groups, filtered.permissions);
@@ -158,14 +156,14 @@ async function rebuildPermTree(parentId: null | number): Promise<null | number[]
 }
 
 /** 切换父角色：重建权限树并把已勾权限收敛到新 cap 内 */
-async function handleParentChange(pid: number) {
+async function handleParentChange(pid: string) {
   const cap = await rebuildPermTree(pid || null);
   if (pid && cap) {
     const cur = await baseFormApi.getValues();
     if (Array.isArray(cur?.permissions)) {
       await baseFormApi.setFieldValue(
         'permissions',
-        cur.permissions.filter((k: any) => typeof k === 'number' && cap!.includes(Number(k))),
+        cur.permissions.filter((k: any) => isIdString(k) && cap!.includes(k)),
       );
     }
   }
@@ -317,7 +315,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
         treeData: roleTreeOptions.value,
         fieldNames: { children: 'children', label: 'label', value: 'value' },
         onChange: (value: any) => {
-          handleParentChange(typeof value === 'number' ? value : 0);
+          handleParentChange(value || '');
         },
       }),
     },
@@ -427,10 +425,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
     // 先向操作者确认（编辑时校验语义的前端引导；后端亦有子集校验兜底）。
     if (!data.value?.create && permCapIds.value) {
       const stored = Array.isArray(data.value.row?.permissions)
-        ? data.value.row.permissions.filter((v: any) => typeof v === 'number')
+        ? data.value.row.permissions.filter((v: any) => isIdString(v))
         : [];
       const outOfCap = stored.filter(
-        (id: number) => !permCapIds.value!.includes(Number(id)),
+        (id: string) => !permCapIds.value!.includes(id),
       );
       if (outOfCap.length > 0) {
         const confirmed = await new Promise<boolean>((resolve) => {
@@ -467,18 +465,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
       Array.isArray(finalValues.permissions) &&
       finalValues.permissions.length > 0
     ) {
-      finalValues.permissions = filterNumbers(values.permissions);
+      finalValues.permissions = filterIds(values.permissions);
     }
 
-    // 父角色始终随表单提交：0=根角色（清空父角色须显式 0 进 updateMask，
-    // 否则后端三态语义会把它当"未声明"静默跳过）。
-    finalValues.parentId = finalValues.parentId || 0;
+    // 父角色始终随表单提交：'0'=根角色（清空父角色须显式 0 进 updateMask，
+    // 否则后端三态语义会把它当"未声明"静默跳过）。uint64 经 proto3 JSON 是字符串。
+    finalValues.parentId = finalValues.parentId || '0';
 
     // 仅 SELECTED_UNITS 档提交授权单元集（含清空场景）；
     // 其余档位不携带该字段，后端维持既有集不替换。
     if (finalValues.dataScope === 'SELECTED_UNITS') {
       finalValues.orgUnits = Array.isArray(values.orgUnits)
-        ? filterNumbers(values.orgUnits)
+        ? filterIds(values.orgUnits)
         : [];
     } else {
       delete finalValues.orgUnits;
@@ -552,11 +550,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // 分配权限勾选树（打开抽屉时拉取，对齐权限点抽屉），随后按初始父角色
       // （编辑回填值）收窄，并把超出上限的存量勾选收敛为提交所见即所得。
       await Promise.all([loadPermTree(), loadRoleTreeOptions()]);
-      const initialParentId = data.value?.create ? 0 : Number(row?.parentId || 0);
+      const initialParentId = data.value?.create ? '' : String(row?.parentId || '');
       await rebuildPermTree(initialParentId || null);
       if (!data.value?.create && permCapIds.value && Array.isArray(row?.permissions)) {
         const eff = row.permissions.filter(
-          (id: any) => typeof id === 'number' && permCapIds.value!.includes(Number(id)),
+          (id: any) => isIdString(id) && permCapIds.value!.includes(id),
         );
         await baseFormApi.setFieldValue('permissions', eff);
       }

@@ -437,7 +437,7 @@ const drawer = useDrawerForm({
       splitSmsComposite(values);
     return createNotificationChannel(data, password, webhookSecret, smsAccessSecret);
   },
-  updateFn: (id: number, values: Record<string, any>) => {
+  updateFn: (id: string, values: Record<string, any>) => {
     const { password, webhookSecret, smsAccessSecret, ...data } =
       splitSmsComposite(values);
     return updateNotificationChannel(

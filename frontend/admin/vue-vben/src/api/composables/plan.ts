@@ -77,11 +77,11 @@ export function useUpdatePlan(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.planService.Update({
         id,
         data: {
@@ -144,11 +144,11 @@ export function useUpdatePlanQuota(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.planQuotaService.Update({
         id,
         data: {

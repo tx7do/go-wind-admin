@@ -70,7 +70,7 @@ const [sysTasksOpen, setSysTasksOpen] = useState(false);
 
   // 记录当前正在切换启用/禁用的任务 id，使该行的 Switch 显示 loading，
   // 而不是所有行共享 updateMutation.isPending 导致全部开关同时转圈。
-  const [loadingTaskId, setLoadingTaskId] = useState<number | undefined>(undefined);
+  const [loadingTaskId, setLoadingTaskId] = useState<string | undefined>(undefined);
 
   // 控制单个任务
   const controlMutation = useControlTask({
@@ -116,12 +116,12 @@ const [sysTasksOpen, setSysTasksOpen] = useState(false);
     },
   });
 
-  // 启用/禁用切换
+  // 启用/禁用切换（id 为 uint64 字符串，直接透传）
   const handleEnableChange = async (record: Task, checked: boolean) => {
-    setLoadingTaskId(record.id as number);
+    setLoadingTaskId(record.id);
     try {
       await updateMutation.mutateAsync({
-        id: record.id as number,
+        id: record.id!,
         values: { enable: checked },
       });
       await controlMutation.mutateAsync({
@@ -309,7 +309,7 @@ const [sysTasksOpen, setSysTasksOpen] = useState(false);
 
               return {
                 data: response.items || [],
-                total: response.total || 0,
+                total: Number(response.total ?? 0),
                 success: true,
               };
             }}

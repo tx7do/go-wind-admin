@@ -43,7 +43,7 @@ function renderMarkdown(content: string): string {
 
 // ── 会话 ──────────────────────────────────────────────────────────
 const conversations = ref<AiConversation[]>([]);
-const activeId = ref<number | undefined>(undefined);
+const activeId = ref<string | undefined>(undefined);
 
 // 仅在首次拉到列表时自动选中最近会话：写在 loadConversations 里会让「新建对话」
 // 立刻被重新选中顶回去，空态与"新会话"标题都渲染不出来
@@ -120,13 +120,13 @@ function scrollToBottom() {
 }
 
 interface ChatChunk {
-  conversationId?: number;
+  conversationId?: string;
   seq?: number;
   delta?: string;
 }
 
 interface ChatToolEvent {
-  conversationId?: number;
+  conversationId?: string;
   name?: string;
   arguments?: string;
   result?: string;
@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
 });
 
 // ── 会话重命名（内联编辑） ────────────────────────────────────────
-const renamingId = ref<number | undefined>(undefined);
+const renamingId = ref<string | undefined>(undefined);
 const renameText = ref('');
 
 function startRename(conv: AiConversation) {
@@ -185,7 +185,7 @@ function commitRename(conv: AiConversation) {
 
 // ── 知识库选择（RAG：发送时携带 knowledgeBaseId） ─────────────────
 const knowledgeBases = ref<AiKnowledgeBase[]>([]);
-const knowledgeBaseId = ref<number | undefined>(undefined);
+const knowledgeBaseId = ref<string | undefined>(undefined);
 
 const activeKbName = computed(() => {
   if (knowledgeBaseId.value === undefined) return '';
@@ -216,9 +216,9 @@ async function handleSend() {
   scrollToBottom();
   try {
     const resp = await sendAiChat({
-      conversationId: activeId.value ?? 0,
+      conversationId: activeId.value ?? '',
       content,
-      knowledgeBaseId: knowledgeBaseId.value ?? 0,
+      knowledgeBaseId: knowledgeBaseId.value ?? '',
     });
     input.value = '';
     streamingText.value = '';

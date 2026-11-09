@@ -91,7 +91,8 @@ const unreadQuery = useListUserInbox(
   }),
   { enabled: hasUserId },
 );
-const unreadCount = computed(() => unreadQuery.data.value?.total ?? 0);
+// total（uint64）经 protojson 是字符串：转数字供计数比较/展示
+const unreadCount = computed(() => Number(unreadQuery.data.value?.total ?? 0));
 
 const inboxRecentQuery = useListUserInbox(
   new PaginationQuery({

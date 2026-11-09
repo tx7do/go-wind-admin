@@ -44,8 +44,8 @@ export function useDrawerForm<T extends Record<string, any>>(options: {
   defaults: T;
   /** 新增接口 */
   createFn: (values: T) => Promise<any>;
-  /** 更新接口 */
-  updateFn: (id: number, values: T) => Promise<any>;
+  /** 更新接口（ID 已是字符串：uint64 经 protojson 序列化为字符串） */
+  updateFn: (id: string, values: T) => Promise<any>;
   /** 打开时的异步准备函数（加载树、下拉等），自动管理 pageLoading */
   asyncSetup?: () => Promise<void>;
   /** Drawer 宽度，默认 DRAWER_WIDTH */
@@ -54,7 +54,7 @@ export function useDrawerForm<T extends Record<string, any>>(options: {
   // === 状态 ===
   const visible = ref(false);
   const isCreate = ref(true);
-  const currentId = ref<number | undefined>();
+  const currentId = ref<string | undefined>();
   const pageLoading = ref(false);
   const submitLoading = ref(false);
 

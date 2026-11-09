@@ -10,9 +10,9 @@ interface BasicUserInfo {
    */
   avatar: string;
   /**
-   * 用户id
+   * 用户id（后端 uint64 → proto3 JSON 为字符串）
    */
-  id: number;
+  id: string;
 
   /**
    * 用户昵称
@@ -27,9 +27,9 @@ interface BasicUserInfo {
    */
   roles?: string[];
   /**
-   * 租户id
+   * 租户id（后端 uint64 → proto3 JSON 为字符串）
    */
-  tenantId: number;
+  tenantId: string;
   /**
    * 用户名
    */
@@ -67,7 +67,7 @@ export const useUserStore = defineStore('core-user', () => {
     return (
       tenantId.value !== null &&
       tenantId.value !== undefined &&
-      tenantId.value > 0
+      tenantId.value !== ''
     );
   }
 

@@ -71,7 +71,7 @@ const visible = ref(false);
 const loading = ref(false);
 const formRef = ref<FormInstance>();
 const isCreate = ref(true);
-const currentId = ref<number | undefined>();
+const currentId = ref<string | undefined>();
 
 // 表单数据
 const formData = reactive({

@@ -36,10 +36,10 @@ export async function fetchListAiConversations(params: PaginationQuery) {
 
 // useUpdateAiConversation — 改标题
 export function useUpdateAiConversation(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.aiConversationService.Update({
         id,
         data: { ...values } as any,
@@ -51,10 +51,10 @@ export function useUpdateAiConversation(
 
 // useDeleteAiConversation — 后端级联删除会话内全部消息
 export function useDeleteAiConversation(
-  options?: UseMutationOptions<{}, Error, { id: number }>,
+  options?: UseMutationOptions<{}, Error, { id: string }>,
 ) {
   return useMutation({
-    mutationFn: ({ id }: { id: number }) => apiClient.aiConversationService.Delete({ id }),
+    mutationFn: ({ id }: { id: string }) => apiClient.aiConversationService.Delete({ id }),
     ...options,
   });
 }

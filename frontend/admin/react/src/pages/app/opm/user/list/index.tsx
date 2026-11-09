@@ -10,8 +10,9 @@ import UserList from './UserList';
  * 使用 Splitter 实现左右分栏布局：左侧组织树，右侧用户列表
  */
 const UserManagement = () => {
-  const [currentTenantId, setCurrentTenantId] = useState<number | undefined>(undefined);
-  const [currentOrgUnitId, setCurrentOrgUnitId] = useState<number | undefined>(undefined);
+  // 选中租户/组织 id（uint64 字符串；undefined=未选）
+  const [currentTenantId, setCurrentTenantId] = useState<string | undefined>(undefined);
+  const [currentOrgUnitId, setCurrentOrgUnitId] = useState<string | undefined>(undefined);
 
   return (
     <ContentContainer heightMode="fixed" padding="16px" bottomMargin={0}>

@@ -84,7 +84,7 @@
             v-for="item in planOptions"
             :key="item.id"
             :label="item.name"
-            :value="item.id as number"
+            :value="item.id"
           />
         </ElSelect>
       </ElFormItem>
@@ -283,15 +283,17 @@ function getQuotaLabel(qt: any): string {
 function getQuotaCurrent(qt: any): number {
   const ud = usageData.value as any;
   if (!ud) return 0;
-  if (qt === 1) return ud.userCount ?? 0;
-  if (qt === 2) return ud.storageUsedBytes ?? 0;
-  if (qt === 3) return ud.apiCallCount ?? 0;
+  // 64-bit 计数经 protojson 是字符串，参与算术前统一转数字
+  if (qt === 1) return Number(ud.userCount ?? 0);
+  if (qt === 2) return Number(ud.storageUsedBytes ?? 0);
+  if (qt === 3) return Number(ud.apiCallCount ?? 0);
   return 0;
 }
-function getQuotaPercent(qt: any, limit: number): number {
+function getQuotaPercent(qt: any, limit: number | string): number {
   const current = getQuotaCurrent(qt);
-  if (limit <= 0) return 0;
-  return Math.min(100, (current / limit) * 100);
+  const numLimit = Number(limit ?? 0);
+  if (numLimit <= 0) return 0;
+  return Math.min(100, (current / numLimit) * 100);
 }
 
 async function handleCleanup() {
@@ -312,7 +314,7 @@ async function handleCleanup() {
 const loading = ref(false);
 
 // 套餐下拉选项（订阅套餐）
-const planOptions = ref<(Plan & { id?: number; name?: string })[]>([]);
+const planOptions = ref<(Plan & { id: string; name?: string })[]>([]);
 
 // 表单数据
 const formData = ref({
@@ -322,7 +324,7 @@ const formData = ref({
   auditStatus: "APPROVED",
   status: "ON",
   remark: "",
-  subscriptionPlan: undefined as number | undefined,
+  subscriptionPlan: undefined as string | undefined,
   expiredAt: "" as string,
   user: {
     username: "",
@@ -423,7 +425,7 @@ watch(visible, async (val) => {
     // 加载套餐下拉选项（订阅套餐）
     try {
       const res = await fetchListPlans(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }));
-      planOptions.value = (res.items || []) as (Plan & { id?: number; name?: string })[];
+      planOptions.value = (res.items || []) as (Plan & { id: string; name?: string })[];
     } catch (err) {
       console.error("Failed to load plan options:", err);
       planOptions.value = [];

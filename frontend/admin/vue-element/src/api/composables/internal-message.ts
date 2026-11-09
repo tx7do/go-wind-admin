@@ -80,10 +80,10 @@ export async function fetchGetInternalMessage(
 }
 
 export function useUpdateInternalMessage(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.internalMessageService.UpdateMessage({
         id,
         data: { ...values },
@@ -172,10 +172,10 @@ export function useCreateMessageCategory(
 }
 
 export function useUpdateMessageCategory(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.internalMessageCategoryService.Update({
         id,
         data: { ...values },

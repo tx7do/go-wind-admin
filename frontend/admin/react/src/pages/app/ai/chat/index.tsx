@@ -33,13 +33,14 @@ import ContentContainer from '@/layouts/components/PageContainer/ContentContaine
 import './chat-page.css';
 
 interface ChatChunk {
-  conversationId?: number;
+  // conversationId 为 uint64（protojson/SSE 帧下是字符串）
+  conversationId?: string;
   seq?: number;
   delta?: string;
 }
 
 interface ChatToolEvent {
-  conversationId?: number;
+  conversationId?: string;
   name?: string;
   arguments?: string;
   result?: string;
@@ -59,7 +60,7 @@ export default function AiChatPage() {
     [conversationsQuery.data],
   );
 
-  const [activeId, setActiveId] = useState<number | undefined>(undefined);
+  const [activeId, setActiveId] = useState<string | undefined>(undefined);
 
   // 仅在首次拉到列表时自动选中最近会话：放在 loadConversations 里会让「新建对话」
   // 立刻被重新选中顶回去，空态与"新会话"标题都渲染不出来
@@ -93,7 +94,7 @@ export default function AiChatPage() {
   );
 
   // ── 会话重命名（内联编辑） ────────────────────────────────────────
-  const [renamingId, setRenamingId] = useState<number | undefined>(undefined);
+  const [renamingId, setRenamingId] = useState<string | undefined>(undefined);
   const [renameText, setRenameText] = useState('');
   const updateConvMutation = useUpdateAiConversation();
 
@@ -119,7 +120,7 @@ export default function AiChatPage() {
 
   // ── 知识库选择（RAG：发送时携带 knowledgeBaseId） ─────────────────
   const [knowledgeBases, setKnowledgeBases] = useState<AiKnowledgeBase[]>([]);
-  const [knowledgeBaseId, setKnowledgeBaseId] = useState<number | undefined>(undefined);
+  const [knowledgeBaseId, setKnowledgeBaseId] = useState<string | undefined>(undefined);
 
   // 头部知识库标签：未选则为空串（不渲染标签）
   const selectedKb = knowledgeBases.find((k) => k.id === knowledgeBaseId);
@@ -199,7 +200,8 @@ export default function AiChatPage() {
     if (!content || sendMutation.isPending) return;
     // 先本地渲染用户气泡与占位：响应到达后由列表刷新接管
     setStreamingText('');
-    sendMutation.mutate({ conversationId: activeId ?? 0, providerId: 0, content, knowledgeBaseId: knowledgeBaseId ?? 0 });
+    // conversationId/knowledgeBaseId/providerId 均为 uint64（字符串），未选传 undefined（后端按 0 处理）
+    sendMutation.mutate({ conversationId: activeId, providerId: undefined, content, knowledgeBaseId });
   };
 
   // ── 删除会话 ──────────────────────────────────────────────────────
@@ -214,7 +216,7 @@ export default function AiChatPage() {
     onError: (error: Error) => antdMessage.error(error.message || t('fetchFailed')),
   });
 
-  const handleDeleteConversation = (id: number) => {
+  const handleDeleteConversation = (id: string) => {
     deleteConversationMutation.mutate({ id });
     if (activeId === id) {
       setActiveId(undefined);

@@ -19,8 +19,8 @@ const userStore = useUserStore();
 interface UserViewState {
   loading: boolean; // 加载状态
 
-  currentTenantId: number | undefined; // 当前选中的租户ID
-  currentOrgUnitId: number | undefined; // 当前选中的组织ID
+  currentTenantId: string | undefined; // 当前选中的租户ID
+  currentOrgUnitId: string | undefined; // 当前选中的组织ID
 
   userList: ListUserResponse; // 用户列表
   tenantList: ListTenantResponse; // 租户列表
@@ -35,9 +35,9 @@ export const useUserViewStore = defineStore('user-view', {
     currentTenantId: undefined,
     currentOrgUnitId: undefined,
     loading: false,
-    userList: { items: [], total: 0 },
-    tenantList: { items: [], total: 0 },
-    orgUnitList: { items: [], total: 0 },
+    userList: { items: [], total: '0' },
+    tenantList: { items: [], total: '0' },
+    orgUnitList: { items: [], total: '0' },
   }),
 
   actions: {
@@ -73,7 +73,7 @@ export const useUserViewStore = defineStore('user-view', {
           new PaginationQuery({
             formValues: {
               ...formValues,
-              tenant_id: this.currentTenantId ?? 0,
+              tenant_id: this.currentTenantId ?? '',
               status: 'ON',
             },
           }),
@@ -103,7 +103,7 @@ export const useUserViewStore = defineStore('user-view', {
             paging: { page: currentPage, pageSize },
             formValues: {
               ...formValues,
-              tenant_id: this.currentTenantId ?? 0,
+              tenant_id: this.currentTenantId ?? '',
               org_unit_id: this.currentOrgUnitId,
             },
           }),
@@ -122,31 +122,31 @@ export const useUserViewStore = defineStore('user-view', {
     },
 
     resetTenantList() {
-      this.tenantList = { items: [], total: 0 };
+      this.tenantList = { items: [], total: '0' };
     },
 
     resetOrgUnitList() {
-      this.orgUnitList = { items: [], total: 0 };
+      this.orgUnitList = { items: [], total: '0' };
     },
 
     resetUserList() {
-      this.userList = { items: [], total: 0 };
+      this.userList = { items: [], total: '0' };
     },
 
-    setCurrentTenantId(tenantId: number | undefined) {
+    setCurrentTenantId(tenantId: string | undefined) {
       this.currentTenantId = tenantId;
       this.currentOrgUnitId = undefined;
     },
 
-    setCurrentOrgUnitId(orgUnitId: number | undefined) {
+    setCurrentOrgUnitId(orgUnitId: string | undefined) {
       this.currentOrgUnitId = orgUnitId;
     },
 
-    getCurrentTenantId(): number {
+    getCurrentTenantId(): string {
       if (userStore.isTenantUser()) {
-        return userStore.tenantId as number;
+        return userStore.tenantId ?? '';
       }
-      return this.currentTenantId ?? 0;
+      return this.currentTenantId ?? '';
     },
 
     /**

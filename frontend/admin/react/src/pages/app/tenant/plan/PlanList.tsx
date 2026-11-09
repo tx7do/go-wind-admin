@@ -176,7 +176,7 @@ const PlanList: React.FC<PlanListProps> = ({ currentPlanId, onPlanSelect }) => {
 
             return {
               data: response.items || [],
-              total: response.total || 0,
+              total: Number(response.total ?? 0),
               success: true,
             };
           }}

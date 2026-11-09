@@ -47,20 +47,20 @@ function filterMenusByTitle(
 ): Menu[] {
   const kw = (keyword ?? '').trim().toLowerCase();
   if (!kw) return items;
-  const byId = new Map<number, Menu>(items.map((item) => [item.id as number, item]));
-  const keep = new Set<number>();
+  const byId = new Map<string, Menu>(items.map((item) => [item.id ?? '', item]));
+  const keep = new Set<string>();
   for (const item of items) {
     const title = (item.meta?.title as string) ?? '';
     const haystack = [translate(title), title, item.name ?? ''].join('\n').toLowerCase();
     if (!haystack.includes(kw)) continue;
-    keep.add(item.id as number);
+    keep.add(item.id ?? '');
     let parentId = item.parentId;
     while (parentId != null && !keep.has(parentId)) {
       keep.add(parentId);
       parentId = byId.get(parentId)?.parentId;
     }
   }
-  return items.filter((item) => keep.has(item.id as number));
+  return items.filter((item) => keep.has(item.id ?? ''));
 }
 
 /**
@@ -139,18 +139,18 @@ const MenuManagement = () => {
 
   // 构建菜单树
   const buildMenuTree = (items: Menu[]): Menu[] => {
-    const map = new Map<number, Menu & { children?: Menu[] }>();
+    const map = new Map<string, Menu & { children?: Menu[] }>();
     const roots: (Menu & { children?: Menu[] })[] = [];
 
     // 先创建所有节点的映射
     items.forEach((item) => {
-      map.set(item.id as number, { ...item, children: [] });
+      map.set(item.id ?? '', { ...item, children: [] });
     });
 
     // 构建树
     map.forEach((node) => {
-      if (node.parentId && map.has(node.parentId as number)) {
-        const parent = map.get(node.parentId as number)!;
+      if (node.parentId && map.has(node.parentId)) {
+        const parent = map.get(node.parentId)!;
         if (!parent.children) parent.children = [];
         parent.children.push(node);
       } else {
@@ -180,7 +180,7 @@ const MenuManagement = () => {
     const keys: React.Key[] = [];
     const collectKeys = (items: Menu[]) => {
       items.forEach((item) => {
-        keys.push(item.id as number);
+        keys.push(item.id ?? '');
         if ((item as any).children?.length) {
           collectKeys((item as any).children);
         }

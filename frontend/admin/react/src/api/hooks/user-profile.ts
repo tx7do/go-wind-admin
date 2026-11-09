@@ -43,10 +43,10 @@ export async function fetchUserProfile() {
 }
 
 export function useUpdateUserProfile(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.userProfileService.UpdateUser({
         id,
         data: { ...values } as any,

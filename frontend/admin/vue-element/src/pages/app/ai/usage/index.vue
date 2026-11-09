@@ -63,7 +63,8 @@ async function loadSummary() {
     monthTokens.value = resp.monthTokens ?? 0;
     monthCalls.value = resp.monthCalls ?? 0;
     quotaConfigured.value = resp.quotaConfigured ?? false;
-    quotaLimit.value = resp.quotaLimit ?? 0;
+    // uint64 经 protojson 是字符串，参与算术前转回数字
+    quotaLimit.value = Number(resp.quotaLimit ?? 0);
   } catch (error: any) {
     console.error("load usage summary failed:", error);
   }

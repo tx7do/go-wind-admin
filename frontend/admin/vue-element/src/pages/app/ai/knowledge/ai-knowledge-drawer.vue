@@ -70,7 +70,7 @@ const emit = defineEmits<{ success: [] }>();
 const { t } = useI18n();
 const formRef = ref<FormInstance>();
 
-const providerOptions = ref<{ label: string; value: number }[]>([]);
+const providerOptions = ref<{ label: string; value: string }[]>([]);
 
 const drawer = useDrawerForm({
   moduleKey: "pages.ai_knowledge.moduleName",
@@ -83,7 +83,7 @@ const drawer = useDrawerForm({
   createFn: async (values: Record<string, any>) => {
     return createAiKnowledgeBase(values);
   },
-  updateFn: (id: number, values: Record<string, any>) => {
+  updateFn: (id: string, values: Record<string, any>) => {
     return updateAiKnowledgeBase(id, values);
   },
   asyncSetup: async () => {

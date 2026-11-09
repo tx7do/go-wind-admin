@@ -65,11 +65,11 @@ export function useUpdateDictType(
   options?: UseMutationOptions<
     dictservicev1_DictType,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.dictTypeService.Update({
         id,
         data: { ...values },
@@ -121,10 +121,10 @@ export function useCreateDictEntry(
 }
 
 export function useUpdateDictEntry(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.dictEntryService.Update({
         id,
         data: { ...values } as any,

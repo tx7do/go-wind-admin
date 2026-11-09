@@ -41,7 +41,7 @@ import { PaginationQuery } from "@/core/transport/rest";
  */
 const props = withDefaults(
   defineProps<{
-    fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number }>;
+    fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number | string }>;
     columns: { prop?: string; label?: string; type?: string; cellType?: string }[];
     /** 当前搜索条件（不含分页字段），与服务端导出透传同源 */
     params?: Record<string, any>;

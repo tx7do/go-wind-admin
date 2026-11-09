@@ -45,10 +45,10 @@ export function useCreateAiKnowledgeBase(
 
 // useUpdateAiKnowledgeBase — 固定签名 { id, values }
 export function useUpdateAiKnowledgeBase(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.aiKnowledgeBaseService.Update({
         id,
         data: { ...values } as any,
@@ -71,7 +71,7 @@ export function useDeleteAiKnowledgeBase(
 // ── 文档 ────────────────────────────────────────────────────────────
 
 // fetchListAiDocs — 文档管理抽屉
-export async function fetchListAiDocs(baseId: number) {
+export async function fetchListAiDocs(baseId: string) {
   return queryClient.fetchQuery({
     queryKey: ['listAiDocs', baseId],
     queryFn: () =>
@@ -85,7 +85,7 @@ export function useUploadAiDoc(
   options?: UseMutationOptions<
     { doc?: aiservicev1_AiDoc; chunkCount?: number },
     Error,
-    { baseId: number; name: string; content: string }
+    { baseId: string; name: string; content: string }
   >,
 ) {
   return useMutation({
@@ -101,7 +101,7 @@ export function useUploadDocFile(
   options?: UseMutationOptions<
     { doc?: aiservicev1_AiDoc; chunkCount?: number },
     Error,
-    { baseId: number; fileName: string; contentBase64: string }
+    { baseId: string; fileName: string; contentBase64: string }
   >,
 ) {
   return useMutation({
@@ -113,7 +113,7 @@ export function useUploadDocFile(
 
 // useDeleteAiDoc — 级联删除切片
 export function useDeleteAiDoc(
-  options?: UseMutationOptions<{}, Error, { baseId: number; id: number }>,
+  options?: UseMutationOptions<{}, Error, { baseId: string; id: string }>,
 ) {
   return useMutation({
     mutationFn: ({ baseId, id }) =>

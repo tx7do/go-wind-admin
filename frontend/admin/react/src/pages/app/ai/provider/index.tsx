@@ -142,7 +142,7 @@ export default function AiProviderPage() {
             formValues: rest,
           });
           const res = await fetchListAiProviders(query);
-          return { data: res.items || [], total: res.total || 0, success: true };
+          return { data: res.items || [], total: Number(res.total ?? 0), success: true };
         }}
         toolBarRender={() => [
           <TableExportButton key="export" fetcher={fetchListAiProviders} columns={columns} filename="ai-providers" />,

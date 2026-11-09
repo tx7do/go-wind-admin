@@ -86,10 +86,11 @@ const ServerMonitor = () => {
           <Descriptions column={2} size="small" bordered colon>
             {renderRow(t('goVersion'), go.version)}
             {renderRow(t('numGoroutine'), String(go.numGoroutine ?? '-'))}
-            {renderRow(t('memAlloc'), fmtBytes(go.memAllocBytes))}
-            {renderRow(t('memSys'), fmtBytes(go.memSysBytes))}
+            {/* memAllocBytes/memSysBytes/uptimeSeconds 为 int64（proto3 JSON 下是字符串），先转回 number */}
+            {renderRow(t('memAlloc'), fmtBytes(Number(go.memAllocBytes ?? 0)))}
+            {renderRow(t('memSys'), fmtBytes(Number(go.memSysBytes ?? 0)))}
             {renderRow(t('gcCycles'), String(go.gcCycles ?? '-'))}
-            {renderRow(t('uptime'), `${fmtUptime(go.uptimeSeconds)} (${formatDateTime(go.startedAt as any)})`)}
+            {renderRow(t('uptime'), `${fmtUptime(Number(go.uptimeSeconds ?? 0))} (${formatDateTime(go.startedAt as any)})`)}
           </Descriptions>
         ) : (
           <Empty description={t('noData')} />

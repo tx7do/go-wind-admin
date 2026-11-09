@@ -58,10 +58,10 @@ export function useCreateApi(options?: UseMutationOptions<{}, Error, Record<stri
 }
 
 export function useUpdateApi(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.apiService.Update({
         id,
         data: {
@@ -93,16 +93,19 @@ export function useSyncApisApi(options?: UseMutationOptions<{}, Error>) {
 // API 枚举与工具函数
 // ==============================
 
+/** 根 API 的 parentId 形态：undefined / '' / "0"（ID 已是字符串，uint64 零值序列化为 "0"） */
+const isRootParentId = (parentId?: string) => !parentId || parentId === "0";
+
 export function convertApiToTree(apis: any[]): any[] {
   const tree: any[] = [];
   for (const api of apis) {
     if (!api) continue;
-    if (api.parentId !== 0 && api.parentId !== undefined) continue;
+    if (!isRootParentId(api.parentId)) continue;
     tree.push(api);
   }
   for (const api of apis) {
     if (!api) continue;
-    if (api.parentId === 0 || api.parentId === undefined) continue;
+    if (isRootParentId(api.parentId)) continue;
     function findParent(nodes: any[]): boolean {
       for (const node of nodes) {
         if (node.id === api.parentId) {

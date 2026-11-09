@@ -125,7 +125,7 @@ const { mutateAsync: updateScript } = useUpdateScript();
 const visible = ref(false);
 const submitLoading = ref(false);
 const isCreate = ref(true);
-const currentId = ref<number>();
+const currentId = ref<string>();
 const formRef = ref<FormInstance>();
 const source = ref("");
 

@@ -18,13 +18,15 @@ export const queryClient = new QueryClient({
   },
 });
 
-/** Vue Query Devtools 组件（仅开发环境加载，生产环境为 null） */
-export const TanstackQueryDevtools = import.meta.env.DEV
-  ? defineAsyncComponent(async () => {
-      const m = await import('@tanstack/vue-query-devtools');
-      return m.VueQueryDevtools;
-    })
-  : null;
+/** Vue Query Devtools 组件（仅开发环境加载，生产环境为 null；
+ *  另设 VITE_QUERY_DEVTOOLS=false 可在 dev 下关闭——悬浮球会遮挡右下角弹层按钮） */
+export const TanstackQueryDevtools =
+  import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS !== 'false'
+    ? defineAsyncComponent(async () => {
+        const m = await import('@tanstack/vue-query-devtools');
+        return m.VueQueryDevtools;
+      })
+    : null;
 
 export function setupVueQuery(app: App) {
   app.use(VueQueryPlugin, {

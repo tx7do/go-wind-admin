@@ -23,7 +23,7 @@ export async function createAiProvider(values: Record<string, any>) {
  * （空值→摘 mask 清 DTO、保留已存 key；非空→加密落库并刷新 hint），
  * 前端不做预处理，按传入键统一构建 updateMask。
  */
-export async function updateAiProvider(id: number, values: Record<string, any>) {
+export async function updateAiProvider(id: string, values: Record<string, any>) {
   return apiClient.aiProviderService.Update({
     id,
     data: { ...values } as any,
@@ -32,6 +32,6 @@ export async function updateAiProvider(id: number, values: Record<string, any>) 
 }
 
 /** 删除 AI 提供商 */
-export async function deleteAiProvider(id: number) {
+export async function deleteAiProvider(id: string) {
   return apiClient.aiProviderService.Delete({ id });
 }

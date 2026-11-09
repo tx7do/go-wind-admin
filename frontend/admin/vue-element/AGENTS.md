@@ -147,9 +147,9 @@ export function useCreateXxx(options?: UseMutationOptions<{}, Error, Record<stri
 }
 
 // 更新 — 必须使用 makeUpdateMask 生成字段掩码
-export function useUpdateXxx(options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>) {
+export function useUpdateXxx(options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.xxxService.Update({
         id,
         data: { ...values },

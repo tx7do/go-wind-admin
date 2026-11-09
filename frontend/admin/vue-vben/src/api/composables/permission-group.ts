@@ -74,11 +74,11 @@ export function useUpdatePermissionGroup(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.permissionGroupService.Update({
         id,
         data: { ...values } as any,
@@ -110,7 +110,7 @@ export function travelPermissionGroupChild(
   parent: PermissionGroup,
 ): boolean {
   if (nodes === undefined) return false;
-  if (parent.parentId === 0 || parent.parentId === undefined) {
+  if (parent.parentId === '0' || parent.parentId === undefined) {
     if (parent?.name) parent.name = t(parent?.name ?? '');
     nodes.push(parent);
     return true;
@@ -133,13 +133,13 @@ export function buildPermissionGroupTree(
   const tree: PermissionGroup[] = [];
   for (const group of groups) {
     if (!group) continue;
-    if (group.parentId !== 0 && group.parentId !== undefined) continue;
+    if (group.parentId !== '0' && group.parentId !== undefined) continue;
     if (group?.name) group.name = t(group?.name ?? '');
     tree.push(group);
   }
   for (const group of groups) {
     if (!group) continue;
-    if (group.parentId === 0 || group.parentId === undefined) continue;
+    if (group.parentId === '0' || group.parentId === undefined) continue;
     if (travelPermissionGroupChild(tree, group)) continue;
     if (group?.name) group.name = t(group?.name ?? '');
     tree.push(group);

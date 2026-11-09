@@ -20,7 +20,7 @@ const visible = ref(false);
 const loading = ref(false);
 const rendering = ref(false);
 const templates = ref<any[]>([]);
-const selectedId = ref<number>();
+const selectedId = ref<string>();
 const frameRef = ref<HTMLIFrameElement | null>(null);
 const printData = ref<any>({});
 const lastHtml = ref('');
@@ -86,7 +86,8 @@ async function print(resourceKey: string, rowData: Record<string, unknown> | Rec
 }
 
 function handleSelect(value: unknown) {
-  const id = Number(value);
+  // 模板 id 已是字符串（uint64 → proto3 JSON），直接字符串透传
+  const id = String(value);
   selectedId.value = id;
   const tpl = templates.value.find((item) => item.id === id);
   if (tpl) renderPreview(tpl);

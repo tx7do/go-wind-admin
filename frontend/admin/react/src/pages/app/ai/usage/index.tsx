@@ -12,7 +12,7 @@ import ContentContainer from '@/layouts/components/PageContainer/ContentContaine
 import { TABLE } from '@/config/constants';
 
 interface UsageRow {
-  id?: number;
+  id?: string; // uint64 → proto3 JSON 下为字符串
   modelName?: string;
   promptTokens?: number;
   completionTokens?: number;
@@ -60,9 +60,11 @@ export default function AiUsagePage() {
   ];
 
   const summaryData = summary.data;
+  // quotaLimit 为 uint64（字符串），参与比较/运算前转回 number
+  const quotaLimitNum = Number(summaryData?.quotaLimit ?? 0);
   const quotaPct =
-    summaryData?.quotaConfigured && (summaryData.quotaLimit ?? 0) > 0
-      ? Math.min(100, Math.round(((summaryData.monthTokens ?? 0) * 100) / (summaryData.quotaLimit || 1)))
+    summaryData?.quotaConfigured && quotaLimitNum > 0
+      ? Math.min(100, Math.round(((summaryData.monthTokens ?? 0) * 100) / (quotaLimitNum || 1)))
       : 0;
 
   // 汇总卡数值是"文字"，取值随主题走 --metric-* 档（定义在 styles/semantic-text.css，
@@ -141,7 +143,7 @@ export default function AiUsagePage() {
               paging: { page: current || 1, pageSize: pageSize || TABLE.DEFAULT_PAGE_SIZE },
             });
             const res = await fetchListAiUsageLogs(query);
-            return { data: res.items || [], total: res.total || 0, success: true };
+            return { data: res.items || [], total: Number(res.total ?? 0), success: true };
           }}
           columns={columns}
         />

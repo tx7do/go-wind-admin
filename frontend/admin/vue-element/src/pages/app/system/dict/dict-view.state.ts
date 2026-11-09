@@ -18,7 +18,7 @@ interface DictViewState {
   loading: boolean; // 加载状态
   needReloadEntryList: boolean; // 是否需要重新加载字典项列表
 
-  currentTypeId: null | number; // 当前选中的字典类型ID
+  currentTypeId: null | string; // 当前选中的字典类型ID
   typeList: ListDictTypeResponse; // 字典类型列表
   entryList: ListDictEntryResponse; // 字典项列表
   languageList: ListLanguageResponse; // 语言列表
@@ -32,9 +32,9 @@ export const useDictViewStore = defineStore("dict-view", {
     currentTypeId: null,
     loading: false,
     needReloadEntryList: false,
-    typeList: { items: [], total: 0 },
-    entryList: { items: [], total: 0 },
-    languageList: { items: [], total: 0 },
+    typeList: { items: [], total: "0" },
+    entryList: { items: [], total: "0" },
+    languageList: { items: [], total: "0" },
   }),
 
   actions: {
@@ -98,7 +98,7 @@ export const useDictViewStore = defineStore("dict-view", {
      * @param formValues
      */
     async fetchEntryList(
-      typeId: null | number,
+      typeId: null | string,
       currentPage: number,
       pageSize: number,
       formValues: any
@@ -115,7 +115,7 @@ export const useDictViewStore = defineStore("dict-view", {
             paging: { page: currentPage, pageSize },
             formValues: {
               ...formValues,
-              type_id: typeId.toString(),
+              type_id: typeId,
             },
           })
         );
@@ -142,17 +142,17 @@ export const useDictViewStore = defineStore("dict-view", {
      * 点击字典类型时触发：设置当前字典类型ID + 刷新字典项列表
      * @param typeId 字典类型ID
      */
-    async setCurrentTypeId(typeId: null | number) {
+    async setCurrentTypeId(typeId: null | string) {
       this.currentTypeId = typeId; // 更新当前选中的字典类型ID
       this.needReloadEntryList = true; // 触发字典项列表刷新
     },
 
     resetTypeList() {
-      this.typeList = { items: [], total: 0 };
+      this.typeList = { items: [], total: "0" };
     },
 
     resetEntryList() {
-      this.entryList = { items: [], total: 0 };
+      this.entryList = { items: [], total: "0" };
     },
   },
 });

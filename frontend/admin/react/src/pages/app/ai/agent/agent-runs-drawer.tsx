@@ -33,7 +33,7 @@ export default function AgentRunsDrawer({
   // 抽屉关闭时不发查询（enabled 由 hook 的 appId 参数控制，这里叠加 open 状态）
 
   const runs = runsQuery.data?.items ?? [];
-  const total = runsQuery.data?.total ?? 0;
+  const total = Number(runsQuery.data?.total ?? 0); // uint64 → string，转回 number 供比较/展示
 
   const statusTag = (status?: string) => {
     if (status === 'SUCCEEDED') return <Tag color="success">{t('runs.succeeded')}</Tag>;
@@ -152,11 +152,12 @@ import { globalSSEClient, SSE_EVENT } from '@/core';
  * 丢帧可容忍：Run 同步响应携带完整 trace，以响应为准。
  */
 export function useAgentRunStream(
-  appId: number | undefined,
+  appId: string | undefined,
   onFrame: (frame: {
-    runId: number;
-    appId: number;
-    seq: number;
+    // runId/appId 为 uint64（protojson 下是字符串），seq 为 int64 同理
+    runId: string;
+    appId: string;
+    seq: string | number;
     phase: string;
     nodeId?: string;
     summary?: string;
@@ -167,7 +168,7 @@ export function useAgentRunStream(
   useEffect(() => {
     if (!enabled || !appId) return;
     const handler = (data: unknown) => {
-      const frame = data as { appId?: number };
+      const frame = data as { appId?: string };
       if (!frame || typeof frame !== 'object' || frame.appId !== appId) return;
       onFrame(frame as Parameters<typeof onFrame>[0]);
     };

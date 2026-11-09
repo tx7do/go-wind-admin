@@ -174,7 +174,7 @@ export default function AccessKeyPage() {
             const res = await fetchListAccessKeys(query);
             return {
               data: res.items || [],
-              total: res.total || 0,
+              total: Number(res.total ?? 0),
               success: true,
             };
           }}

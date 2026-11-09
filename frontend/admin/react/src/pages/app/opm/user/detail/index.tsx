@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button, Tabs, Popconfirm, App, theme } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,10 +21,8 @@ const UserDetail = () => {
   const { message } = App.useApp();
 
   const { id } = useParams<{ id: string }>();
-  const userId = useMemo(() => {
-    const num = Number(id);
-    return isNaN(num) ? undefined : num;
-  }, [id]);
+  // 路由参数本就是字符串，ID 为 uint64 字符串直接透传，无需数值转换
+  const userId = id || undefined;
 
   const [activeTab, setActiveTab] = useState<string>(TabEnum.BASIC_INFO);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);

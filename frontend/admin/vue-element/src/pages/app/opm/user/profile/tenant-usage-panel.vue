@@ -56,9 +56,9 @@ const currentOf = (quotaType?: string): number => {
   }
 };
 
-const limitOf = (quotaValue?: number): number => num(quotaValue);
+const limitOf = (quotaValue?: number | string): number => num(quotaValue);
 
-const pctOf = (quotaType?: string, quotaValue?: number): number => {
+const pctOf = (quotaType?: string, quotaValue?: number | string): number => {
   const limit = limitOf(quotaValue);
   if (limit <= 0) return 0;
   return Math.min(100, Math.round((currentOf(quotaType) / limit) * 100));

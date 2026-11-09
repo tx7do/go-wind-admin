@@ -12,7 +12,7 @@ export async function fetchListAiConversations(query: any) {
 }
 
 /** 更新会话（改标题） */
-export async function updateAiConversation(id: number, values: Record<string, any>) {
+export async function updateAiConversation(id: string, values: Record<string, any>) {
   return apiClient.aiConversationService.Update({
     id,
     data: values as any,
@@ -21,7 +21,7 @@ export async function updateAiConversation(id: number, values: Record<string, an
 }
 
 /** 删除会话（后端级联删除会话内全部消息） */
-export async function deleteAiConversation(id: number) {
+export async function deleteAiConversation(id: string) {
   return apiClient.aiConversationService.Delete({ id });
 }
 
@@ -38,15 +38,15 @@ export async function fetchListAiMessages(query: any) {
  * （订阅见聊天页），chunk 尽力而为，以本响应为最终事实。
  */
 export async function sendAiChat(req: {
-  conversationId?: number;
-  providerId?: number;
+  conversationId?: string;
+  providerId?: string;
   content: string;
-  knowledgeBaseId?: number;
+  knowledgeBaseId?: string;
 }) {
   return apiClient.aiChatService.Chat({
-    conversationId: req.conversationId || 0,
-    providerId: req.providerId || 0,
+    conversationId: req.conversationId || '',
+    providerId: req.providerId || '',
     content: req.content,
-    knowledgeBaseId: req.knowledgeBaseId || 0,
+    knowledgeBaseId: req.knowledgeBaseId || '',
   } as any);
 }

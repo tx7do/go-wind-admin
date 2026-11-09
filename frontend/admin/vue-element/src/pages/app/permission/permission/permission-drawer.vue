@@ -160,7 +160,7 @@ const visible = ref(false);
 const submitLoading = ref(false);
 const pageLoading = ref(false);
 const isCreate = ref(true);
-const currentId = ref<number>();
+const currentId = ref<string>();
 const formRef = ref();
 const menuTreeRef = ref();
 const apiTreeRef = ref();
@@ -227,10 +227,10 @@ function collectLeafKeys(data: any[]): (string | number)[] {
   return keys;
 }
 
-// 过滤数字 ID（排除模块分组等非数字 key）
-function filterNumbers(values: any[]): number[] {
+// 过滤出 API 叶子 ID（排除 module_ 前缀的模块分组 key；API ID 已是字符串）
+function filterApiIds(values: any[]): string[] {
   if (!Array.isArray(values)) return [];
-  return values.filter((v) => typeof v === "number" && !isNaN(v)).map((v) => Number(v));
+  return values.filter((v) => typeof v === "string" && !v.startsWith("module_"));
 }
 
 // === 树构建函数（参考 React buildMenuTree / buildApiTree） ===
@@ -250,7 +250,7 @@ function buildMenuCheckTree(
   items.forEach((item) => {
     if (item.id == null) return;
     map.set(item.id, {
-      key: Number(item.id),
+      key: item.id,
       title: item.meta?.title || item.name || "",
       children: [],
       parentId: item.parentId,
@@ -304,7 +304,7 @@ function buildApiCheckTree(
     key: `module_${mod}`,
     title: mod,
     children: apis.map((api) => ({
-      key: Number(api.id),
+      key: api.id,
       title: `${api.method || ""} ${api.path || ""}${
         api.description || api.name ? ` - ${api.description || api.name}` : ""
       }`,
@@ -467,10 +467,10 @@ async function handleSubmit() {
     const submitData = {
       ...formData,
       // 菜单树用叶子交集剥离父菜单 ID（即便 check-strictly 下用户手动勾父菜单，
-      // 其 ID 也会混入 checkedKeys，filterNumbers 无法过滤数字父 key）。
-      // API 树父节点 key 是 'module_${mod}' 字符串，filterNumbers 能正确剥离。
+      // 其 ID 也会混入 checkedKeys，须按叶子集合求交剥离）。
+      // API 树父节点 key 是 'module_${mod}' 前缀字符串，filterApiIds 按前缀剥离。
       menuIds: extractLeafIds(menuTreeRef.value?.getCheckedKeys() || [], menuTreeData.value),
-      apiIds: filterNumbers(apiTreeRef.value?.getCheckedKeys() || []),
+      apiIds: filterApiIds(apiTreeRef.value?.getCheckedKeys() || []),
     };
 
     if (isCreate.value) {

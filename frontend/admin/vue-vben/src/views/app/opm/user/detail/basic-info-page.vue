@@ -14,7 +14,7 @@ import { getRandomColor } from '#/utils/color';
 import { useAccessStore } from '@vben/stores';
 
 const props = defineProps({
-  userId: { type: Number, default: undefined },
+  userId: { type: String, default: undefined },
 });
 
 const data = ref<User>();

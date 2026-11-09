@@ -254,7 +254,7 @@ function handleView(row: any) {
 
 /* 标记为已读 */
 async function handleMarkAsRead(row: any) {
-  const userId = userStore.userInfo?.id ?? 0;
+  const userId = userStore.userInfo?.id ?? '';
 
   try {
     await markNotificationAsRead({
@@ -276,7 +276,7 @@ async function handleMarkAsRead(row: any) {
 
 /* 删除消息 */
 async function handleDelete(row: any) {
-  const userId = userStore.userInfo?.id ?? 0;
+  const userId = userStore.userInfo?.id ?? '';
 
   try {
     await deleteNotificationFromInbox({

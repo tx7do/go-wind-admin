@@ -25,8 +25,8 @@ import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 
 interface UserListProps {
-  tenantId: number | undefined;
-  orgUnitId: number | undefined;
+  tenantId: string | undefined; // id 均为 uint64，proto3 JSON 下是字符串
+  orgUnitId: string | undefined;
 }
 
 /**
@@ -75,8 +75,8 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
 
   // 列配置
   // 管理端救援重置：清空目标用户 TOTP 因子（认证器丢失解锁用，仅平台管理员生效）
-  // 仅平台侧操作者（tenantId=0）显示救援重置；非平台用户由后端 403 兜底
-  const isPlatformSide = Number(useAuthStore((s) => s.userInfo?.tenantId ?? 0)) === 0;
+  // 仅平台侧操作者（tenantId 为空/'0'）显示救援重置；非平台用户由后端 403 兜底
+  const isPlatformSide = ['0', ''].includes(useAuthStore((s) => s.userInfo?.tenantId ?? ''));
   const adminResetMfa = useAdminResetMfa({
     onSuccess: () => {
       message.success(t('resetMfaSuccess'));
@@ -297,7 +297,7 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
 
             return {
               data: response.items || [],
-              total: response.total || 0,
+              total: Number(response.total ?? 0),
               success: true,
             };
           }}

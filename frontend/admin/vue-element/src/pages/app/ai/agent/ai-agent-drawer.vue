@@ -95,7 +95,7 @@ const drawer = useDrawerForm({
   createFn: async (values: Record<string, any>) => {
     return createAiAgentApp(values);
   },
-  updateFn: (id: number, values: Record<string, any>) => {
+  updateFn: (id: string, values: Record<string, any>) => {
     return updateAiAgentApp(id, values, "name,description,graph,enabled");
   },
 });

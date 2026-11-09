@@ -6,7 +6,7 @@ import { queryClient } from '@/core';
 
 interface EditPasswordModalProps {
   open: boolean;
-  userId: number | undefined;
+  userId: string | undefined; // uint64 → proto3 JSON 下为字符串
   onClose: () => void;
 }
 

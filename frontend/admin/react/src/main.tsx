@@ -4,10 +4,12 @@ import { App as AntdApp } from 'antd';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 
-// Devtools 仅在开发环境导入，生产构建时自动 tree-shake
-const ReactQueryDevtools = import.meta.env.DEV
-  ? await import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools)
-  : () => null;
+// Devtools 仅在开发环境导入，生产构建时自动 tree-shake；
+// 另设 VITE_QUERY_DEVTOOLS=false 可在 dev 下关闭（其悬浮球会遮挡右下角弹层按钮，自动化走查/录屏时可关）。
+const ReactQueryDevtools =
+  import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS !== 'false'
+    ? await import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools)
+    : () => null;
 
 import { ThemeProvider } from '@/core/preferences/components/ThemeProvider';
 import { queryClient } from './core';

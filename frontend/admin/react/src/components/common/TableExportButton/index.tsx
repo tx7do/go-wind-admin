@@ -23,7 +23,7 @@ export interface TableExportServerExport {
 }
 
 export interface TableExportButtonProps {
-  fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number }>;
+  fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number | string }>;
   /** ProColumns[]（或 {title, dataIndex}[]），自动过滤出可导出列 */
   columns: any[];
   filename?: string;

@@ -14,10 +14,10 @@ import { fetchListTenants } from '@/api/hooks/tenant';
 import { useUserStore } from '@/stores/user';
 
 interface OrgListProps {
-  currentOrgUnitId: number | undefined;
-  currentTenantId: number | undefined;
-  onTenantSelect: (tenantId: number | undefined) => void;
-  onOrgSelect: (orgUnitId: number | undefined) => void;
+  currentOrgUnitId: string | undefined; // id 均为 uint64，proto3 JSON 下是字符串
+  currentTenantId: string | undefined;
+  onTenantSelect: (tenantId: string | undefined) => void;
+  onOrgSelect: (orgUnitId: string | undefined) => void;
 }
 
 /**
@@ -35,7 +35,7 @@ const OrgList: React.FC<OrgListProps> = ({
   const isTenantUser = useUserStore((s) => s.isTenantUser());
 
   // 租户下拉
-  const [tenantOptions, setTenantOptions] = useState<{ label: string; value: number }[]>([]);
+  const [tenantOptions, setTenantOptions] = useState<{ label: string; value: string }[]>([]);
 
   // 组织树
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -54,13 +54,13 @@ const OrgList: React.FC<OrgListProps> = ({
   const treeDataRef = useRef(treeData);
   treeDataRef.current = treeData;
 
-  // 获取有效租户 ID
+  // 获取有效租户 ID（uint64 字符串，空串表示未指定）
   const effectiveTenantId = useMemo(() => {
     if (isTenantUser) {
       const userStore = useUserStore.getState();
-      return (userStore as any).tenantId ?? 0;
+      return (userStore as any).tenantId ?? '';
     }
-    return currentTenantId ?? 0;
+    return currentTenantId ?? '';
   }, [isTenantUser, currentTenantId]);
 
   // 加载租户列表（非租户用户）
@@ -106,7 +106,7 @@ const OrgList: React.FC<OrgListProps> = ({
   }, [fetchOrgUnits]);
 
   // 租户切换
-  const handleTenantChanged = (value: number | undefined) => {
+  const handleTenantChanged = (value: string | undefined) => {
     onTenantSelect(value);
     // 清除选中
     setSelectedKeys([]);
@@ -224,7 +224,7 @@ const OrgList: React.FC<OrgListProps> = ({
             placeholder={t('tenantIdPlaceholder')}
             value={currentTenantId ?? undefined}
             options={tenantOptions}
-            onChange={(value) => handleTenantChanged(value != null ? Number(value) : undefined)}
+            onChange={(value) => handleTenantChanged(value != null ? String(value) : undefined)}
           />
         )}
 

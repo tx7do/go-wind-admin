@@ -104,7 +104,7 @@ export default function AiKnowledgePage() {
               paging: { page: current || 1, pageSize: pageSize || TABLE.DEFAULT_PAGE_SIZE },
             });
             const res = await fetchListAiKnowledgeBases(query);
-            return { data: res.items || [], total: res.total || 0, success: true };
+            return { data: res.items || [], total: Number(res.total ?? 0), success: true };
           }}
           toolBarRender={() => [
             <TableExportButton key="export" fetcher={fetchListAiKnowledgeBases} columns={columns} filename="ai-knowledge-bases" />,

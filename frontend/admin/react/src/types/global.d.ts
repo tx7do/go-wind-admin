@@ -29,9 +29,9 @@ declare global {
          */
         avatar: string;
         /**
-         * 用户id
+         * 用户id（后端 uint64，proto3 JSON 下为字符串）
          */
-        id: number;
+        id: string;
 
         /**
          * 用户昵称
@@ -46,9 +46,9 @@ declare global {
          */
         roles?: string[];
         /**
-         * 租户id
+         * 租户id（后端 uint64，proto3 JSON 下为字符串）
          */
-        tenantId: number;
+        tenantId: string;
         /**
          * 用户名
          */
@@ -73,9 +73,9 @@ declare global {
         token: string;
 
         /**
-         * 租户id
+         * 租户id（后端 uint64，proto3 JSON 下为字符串）
          */
-        tenantId: number;
+        tenantId: string;
     }
 }
 

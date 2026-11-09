@@ -77,8 +77,8 @@ const settingList = [
     name: $t("pages.user.profile.tab.notification"),
     component: NotificationPreferencePage,
   },
-  // 套餐用量：仅租户用户展示（平台用户 tenantId=0 无套餐语义）
-  ...((useAppUserStore().userInfo?.tenantId ?? 0) > 0
+  // 套餐用量：仅租户用户展示（平台用户 tenantId 为 "0"/空，无套餐语义）
+  ...(!!useAppUserStore().userInfo?.tenantId && useAppUserStore().userInfo?.tenantId !== "0"
     ? [{
         key: "7",
         name: $t("pages.user.profile.tab.tenantUsage"),

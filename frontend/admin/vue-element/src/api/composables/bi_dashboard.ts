@@ -29,7 +29,7 @@ export async function fetchListBiDashboards(params: PaginationQuery) {
 }
 
 /** 按 id 取详情（仪表盘页渲染 payload 用） */
-export function fetchBiDashboard(id: number) {
+export function fetchBiDashboard(id: string) {
   return queryClient.fetchQuery({
     queryKey: ["biDashboard", id],
     queryFn: () => apiClient.biDashboardService.Get({ id }),
@@ -50,11 +50,11 @@ export function useUpdateBiDashboard(
   options?: UseMutationOptions<
     {},
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.biDashboardService.Update({
         id,
         data: { ...values } as any,
@@ -72,7 +72,7 @@ export function useSaveBiDashboardPayload(
   options?: UseMutationOptions<
     {},
     Error,
-    { id: number; version: number; payload: string; chartCount: number; themeKey?: string }
+    { id: string; version: number; payload: string; chartCount: number; themeKey?: string }
   >
 ) {
   return useMutation({

@@ -118,7 +118,7 @@ const Workspace = () => {
 
   const sessionsQuery = useListMyOnlineSessions();
 
-  const unreadCount = inboxUnread?.total ?? 0;
+  const unreadCount = Number(inboxUnread?.total ?? 0); // uint64 → string，转回 number 供比较/展示
   const inboxItems = inboxRecentQuery.data?.items ?? [];
 
   return (

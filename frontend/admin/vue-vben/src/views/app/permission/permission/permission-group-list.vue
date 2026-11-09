@@ -139,7 +139,7 @@ const gridOptions: VxeGridProps<PermissionGroup> = {
 const gridEvents: VxeGridListeners<PermissionGroup> = {
   cellClick: ({ row }) => {
     permissionViewStore.setCurrentGroupId(
-      typeof row.id === 'number' ? row.id : 0,
+      typeof row.id === 'string' && row.id !== '' ? row.id : '',
     );
   },
 };

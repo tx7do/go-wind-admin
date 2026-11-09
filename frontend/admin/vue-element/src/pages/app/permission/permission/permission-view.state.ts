@@ -15,7 +15,7 @@ interface PermissionViewState {
   needReloadGroupList: boolean; // 是否需要重新加载分组列表
   needReloadPermissionList: boolean; // 是否需要重新加载权限列表
 
-  currentGroupId: null | number; // 当前选中的分组ID
+  currentGroupId: null | string; // 当前选中的分组ID
   groupList: ListPermissionGroupResponse; // 权限分组列表
   permList: ListPermissionResponse; // 权限列表
 }
@@ -29,8 +29,8 @@ export const usePermissionViewStore = defineStore("permission-view", {
     loading: false,
     needReloadGroupList: false,
     needReloadPermissionList: false,
-    groupList: { items: [], total: 0 },
-    permList: { items: [], total: 0 },
+    groupList: { items: [], total: "0" },
+    permList: { items: [], total: "0" },
   }),
 
   actions: {
@@ -65,7 +65,7 @@ export const usePermissionViewStore = defineStore("permission-view", {
      * @param formValues
      */
     async fetchPermissionList(
-      groupId: null | number,
+      groupId: null | string,
       currentPage: number,
       pageSize: number,
       formValues: any
@@ -82,7 +82,7 @@ export const usePermissionViewStore = defineStore("permission-view", {
             paging: { page: currentPage, pageSize },
             formValues: {
               ...formValues,
-              group_id: groupId.toString(),
+              group_id: groupId,
             },
           })
         );
@@ -100,23 +100,23 @@ export const usePermissionViewStore = defineStore("permission-view", {
      * 设置当前选中的分组ID，并联动刷新权限列表
      * @param groupId 分组ID
      */
-    async setCurrentGroupId(groupId: number) {
+    async setCurrentGroupId(groupId: string) {
       this.currentGroupId = groupId; // 更新当前选中的分组ID
       this.needReloadPermissionList = true;
     },
 
     resetGroupList() {
-      this.groupList = { items: [], total: 0 };
+      this.groupList = { items: [], total: "0" };
     },
 
     resetPermissionList() {
-      this.permList = { items: [], total: 0 };
+      this.permList = { items: [], total: "0" };
     },
 
     reloadGroupList() {
-      this.groupList = { items: [], total: 0 };
-      this.permList = { items: [], total: 0 };
-      this.currentGroupId = 0;
+      this.groupList = { items: [], total: "0" };
+      this.permList = { items: [], total: "0" };
+      this.currentGroupId = null;
       this.needReloadGroupList = true;
       this.needReloadPermissionList = true;
     },

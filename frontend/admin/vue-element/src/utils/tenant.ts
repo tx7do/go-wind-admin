@@ -7,4 +7,4 @@ import { PLATFORM_TENANT_ID } from "@/constants";
  * 平台租户不参与套餐与菜单配置
  */
 export const isPlatformTenantId = (tenantId?: string | number) =>
-  Number(tenantId) === PLATFORM_TENANT_ID;
+  tenantId != null && tenantId !== "" && String(tenantId) === String(PLATFORM_TENANT_ID);

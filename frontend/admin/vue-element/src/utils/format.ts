@@ -153,24 +153,21 @@ export function filterNumbers(arr: unknown[]): number[] {
  * 递归收集树中所有「叶子节点」（无 children）的 key。
  * 用于提交勾选值时剥离父节点 key：
  * 菜单树即便设了 check-strictly，用户手动勾选父菜单时其 key（父菜单 ID）
- * 仍会进入 checkedKeys；filterNumbers 只能过滤非数字 key，而父菜单 key 是
- * Number(id)（数字）无法被过滤，会被后端当作菜单 ID 处理。
- * 这里用叶子集合对 checkedKeys 求交集，只保留真正的叶子菜单 ID。
+ * 仍会进入 checkedKeys。这里用叶子集合对 checkedKeys 求交集，
+ * 只保留真正的叶子菜单 ID（ID 已是字符串：uint64 经 protojson 序列化为字符串）。
  */
-export function extractLeafIds(checkedKeys: unknown[], treeData: any[]): number[] {
+export function extractLeafIds(checkedKeys: unknown[], treeData: any[]): string[] {
   if (!Array.isArray(checkedKeys) || !Array.isArray(treeData)) return [];
-  const leafIds = new Set<number>();
+  const leafIds = new Set<string>();
   const collect = (nodes: any[]) => {
     for (const node of nodes) {
       if (node.children && node.children.length > 0) {
         collect(node.children);
-      } else if (typeof node.key === "number" && !isNaN(node.key)) {
+      } else if (typeof node.key === "string" && node.key !== "") {
         leafIds.add(node.key);
       }
     }
   };
   collect(treeData);
-  return checkedKeys
-    .filter((v): v is number => typeof v === "number" && !isNaN(v) && leafIds.has(v))
-    .map((v) => Number(v));
+  return checkedKeys.filter((v): v is string => typeof v === "string" && leafIds.has(v));
 }

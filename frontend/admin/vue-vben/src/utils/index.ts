@@ -97,24 +97,24 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
 }
 
 /**
- * 从数组或对象中提取所有有效数字（原始 number 类型，排除 NaN/Infinity）
- * @returns 仅包含有效数字的数组
+ * 是否为合法 ID 字符串：后端 ID 类字段升级为 uint64 后经 proto3 JSON 是字符串，
+ * 形如十进制数字串；勾选树里的合成 key（权限分组 `group-*`、缺 id 兜底
+ * `idx-*`/`perm-*`）不是合法 ID，与旧版「过滤非数字 key」同语义。
  */
-export function filterNumbers(arr: unknown[]): number[] {
+export function isIdString(value: unknown): value is string {
+  return typeof value === 'string' && /^\d+$/.test(value);
+}
+
+/**
+ * 从数组中提取所有合法 ID（十进制数字字符串，排除空串/合成 key）
+ * @returns 仅包含合法 ID 字符串的数组
+ */
+export function filterIds(arr: unknown[]): string[] {
   if (!Array.isArray(arr)) {
     throw new TypeError('输入必须是 Array 类型');
   }
 
-  const is_valid_number = (value: unknown): value is number => {
-    return (
-      typeof value === 'number' && // 必须是原始 number 类型
-      Object.prototype.toString.call(value) === '[object Number]' && // 排除数字包装对象（new Number()）
-      !Number.isNaN(value) && // 排除 NaN
-      Number.isFinite(value) // 排除 Infinity
-    );
-  };
-
-  return arr.filter((element) => is_valid_number(element));
+  return arr.filter((element) => isIdString(element));
 }
 
 /**
@@ -122,26 +122,26 @@ export function filterNumbers(arr: unknown[]): number[] {
  * 用于提交勾选值时剥离父节点 key：
  * 菜单/API 树默认开启父子联动（checkStrictly=false），勾选某父节点下全部子节点时
  * 父节点会被自动勾选，其 key（父菜单/父 API 分组的 ID）混入 checkedKeys。
- * filterNumbers 只能过滤非数字 key，而父节点 key 是 Number(id)（数字）无法被过滤，
- * 会被后端当作菜单/API ID 处理，可能造成越权绑定。
+ * 合成 key（分组 `group-*` 等）不是合法 ID 字符串，无法通过 isIdString 校验，
+ * 否则会被后端当作菜单/API ID 处理，可能造成越权绑定。
  * 这里用叶子集合对 checkedKeys 求交集，只保留真正的叶子 ID。
  */
-export function extractLeafIds(checkedKeys: unknown[], treeData: any[]): number[] {
+export function extractLeafIds(checkedKeys: unknown[], treeData: any[]): string[] {
   if (!Array.isArray(checkedKeys) || !Array.isArray(treeData)) return [];
-  const leafIds = new Set<number>();
+  const leafIds = new Set<string>();
   const collect = (nodes: any[]) => {
     for (const node of nodes) {
       if (node.children && node.children.length > 0) {
         collect(node.children);
-      } else if (typeof node.key === 'number' && !isNaN(node.key)) {
+      } else if (isIdString(node.key)) {
         leafIds.add(node.key);
       }
     }
   };
   collect(treeData);
-  return checkedKeys
-    .filter((v): v is number => typeof v === 'number' && !isNaN(v) && leafIds.has(v))
-    .map((v) => Number(v));
+  return checkedKeys.filter(
+    (v): v is string => typeof v === 'string' && leafIds.has(v),
+  );
 }
 
 export * from './crypto';

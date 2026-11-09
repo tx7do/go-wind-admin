@@ -16,7 +16,7 @@ import {
 interface PlanViewState {
   loading: boolean; // 加载状态
 
-  currentPlanId: null | number; // 当前选中的套餐ID
+  currentPlanId: null | string; // 当前选中的套餐ID
   planList: ListPlanResponse; // 套餐列表
   planQuotaList: ListPlanQuotaResponse; // 套餐配额列表
 }
@@ -28,8 +28,8 @@ export const usePlanViewStore = defineStore('plan-view', {
   state: (): PlanViewState => ({
     currentPlanId: null,
     loading: false,
-    planList: { items: [], total: 0 },
-    planQuotaList: { items: [], total: 0 },
+    planList: { items: [], total: '0' },
+    planQuotaList: { items: [], total: '0' },
   }),
 
   actions: {
@@ -74,7 +74,7 @@ export const usePlanViewStore = defineStore('plan-view', {
      * @param formValues
      */
     async fetchPlanQuotaList(
-      planId: null | number,
+      planId: null | string,
       currentPage: number,
       pageSize: number,
       formValues: any,
@@ -116,16 +116,16 @@ export const usePlanViewStore = defineStore('plan-view', {
      * 点击套餐时触发：设置当前套餐ID
      * @param planId 套餐ID
      */
-    async setCurrentPlanId(planId: null | number) {
+    async setCurrentPlanId(planId: null | string) {
       this.currentPlanId = planId; // 更新当前选中的套餐ID
     },
 
     resetPlanList() {
-      this.planList = { items: [], total: 0 };
+      this.planList = { items: [], total: '0' };
     },
 
     resetPlanQuotaList() {
-      this.planQuotaList = { items: [], total: 0 };
+      this.planQuotaList = { items: [], total: '0' };
     },
   },
 });

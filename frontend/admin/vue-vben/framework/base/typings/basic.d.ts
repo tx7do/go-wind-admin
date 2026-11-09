@@ -13,9 +13,9 @@ interface BasicUserInfo {
    */
   avatar: string;
   /**
-   * 用户id
+   * 用户id（后端 uint64 → proto3 JSON 为字符串）
    */
-  id: number;
+  id: string;
   /**
    * 用户昵称
    */

@@ -21,9 +21,10 @@ const activeTab = ref<TabEnum>(TabEnum.BASIC_INFO);
 
 const route = useRoute();
 
+// 路由参数本就是字符串（uint64 ID → proto3 JSON 为字符串），直接透传
 const userId = computed(() => {
-  const id = route.params.id ?? -1;
-  return Number(id);
+  const id = route.params.id ?? '';
+  return Array.isArray(id) ? id[0]! : id;
 });
 
 const { mutateAsync: updateUser } = useUpdateUser();

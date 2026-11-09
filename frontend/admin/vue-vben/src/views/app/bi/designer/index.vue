@@ -101,7 +101,12 @@ provideBiEnv({});
 const rootRef = ref<HTMLElement | null>(null);
 const { isFullscreen, toggle: toggleFs } = useFullscreen(rootRef);
 
-const dashboardId = Number(route.query.id) > 0 ? Number(route.query.id) : undefined;
+// 路由 id 本就是字符串（uint64 ID → proto3 JSON 为字符串）；空/0 视为无 id（本地草稿模式）
+const rawId = route.query.id;
+const dashboardId =
+  typeof rawId === 'string' && rawId !== '' && rawId !== '0'
+    ? rawId
+    : undefined;
 
 const initialSchema = ref<Partial<BiDashboardSchema> | undefined>(undefined);
 const targetName = ref('');

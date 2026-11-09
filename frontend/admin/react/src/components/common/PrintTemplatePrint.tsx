@@ -24,7 +24,7 @@ export function usePrintTemplateDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [templates, setTemplates] = useState<PrintTemplate[]>([]);
-  const [selectedId, setSelectedId] = useState<number | undefined>();
+  const [selectedId, setSelectedId] = useState<string | undefined>();
   const [rendering, setRendering] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const lastHtmlRef = useRef<string>('');
@@ -96,7 +96,7 @@ export function usePrintTemplateDialog() {
     }
   };
 
-  const handleSelect = async (id: number) => {
+  const handleSelect = async (id: string) => {
     setSelectedId(id);
     const tpl = templates.find((item) => item.id === id);
     if (tpl) await renderPreview(tpl);
@@ -158,7 +158,7 @@ export function usePrintTemplateDialog() {
               onChange={handleSelect}
               style={{ minWidth: 220 }}
               options={templates.map((item) => ({
-                value: item.id as number,
+                value: item.id,
                 label: item.name || item.code || String(item.id),
               }))}
             />

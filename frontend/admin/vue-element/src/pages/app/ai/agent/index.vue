@@ -73,7 +73,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       return { items: result.items || [], total: result.total || 0 };
     },
     deleteAction: async (ids: string) => {
-      await deleteAiAgentApp(Number(ids));
+      await deleteAiAgentApp(ids);
     },
     toolbar: [],
     toolbarRight: ["add"],

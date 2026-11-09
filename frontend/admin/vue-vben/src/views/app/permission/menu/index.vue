@@ -47,24 +47,24 @@ const { mutateAsync: syncMenus, isPending: isSyncing } = useSyncMenus();
 function filterMenusByTitle(items: Menu[], keyword?: string): Menu[] {
   const kw = (keyword ?? '').trim().toLowerCase();
   if (!kw) return items;
-  const byId = new Map<number, Menu>(
-    items.map((item) => [item.id as number, item]),
+  const byId = new Map<string, Menu>(
+    items.map((item) => [item.id as string, item]),
   );
-  const keep = new Set<number>();
+  const keep = new Set<string>();
   for (const item of items) {
     const title = item.meta?.title ?? '';
     const haystack = [$t(title), title, item.name ?? '']
       .join('\n')
       .toLowerCase();
     if (!haystack.includes(kw)) continue;
-    keep.add(item.id as number);
+    keep.add(item.id as string);
     let parentId = item.parentId;
-    while (parentId != null && !keep.has(parentId)) {
+    while (parentId != null && parentId !== '0' && !keep.has(parentId)) {
       keep.add(parentId);
       parentId = byId.get(parentId)?.parentId;
     }
   }
-  return items.filter((item) => keep.has(item.id as number));
+  return items.filter((item) => keep.has(item.id as string));
 }
 
 const formOptions: VbenFormProps = {

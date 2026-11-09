@@ -42,7 +42,7 @@ import dayjs from "dayjs";
 
 const props = defineProps({
   userId: {
-    type: Number,
+    type: String,
     default: undefined,
   },
 });

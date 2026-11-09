@@ -177,7 +177,7 @@ function filterSelectOption(input: string, option: any) {
 const editOpen = ref(false);
 const editMode = ref<'create' | 'edit'>('create');
 const editSaving = ref(false);
-const editingId = ref<number>();
+const editingId = ref<string>();
 
 const form = reactive<{
   channel?: RuleChannel;

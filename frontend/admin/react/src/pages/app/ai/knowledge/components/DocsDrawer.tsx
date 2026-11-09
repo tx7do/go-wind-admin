@@ -38,7 +38,7 @@ export default function DocsDrawer({ open, data, onClose }: DocsDrawerProps) {
   const uploadFileMutation = useUploadDocFile();
   const deleteMutation = useDeleteAiDoc();
 
-  const loadDocs = (baseId: number) => {
+  const loadDocs = (baseId: string) => {
     setLoading(true);
     fetchListAiDocs(baseId)
       .then((res) => setDocs((res.items ?? []) as AiDoc[]))

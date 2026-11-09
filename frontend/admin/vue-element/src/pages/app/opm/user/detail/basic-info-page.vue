@@ -118,7 +118,7 @@ import { genderToType, genderToName, fetchUser } from "@/api/composables";
 import { getCharColor, getRandomColor } from "@/utils/color";
 
 const props = defineProps({
-  userId: { type: Number, default: undefined },
+  userId: { type: String, default: undefined },
 });
 
 const data = ref<User>();

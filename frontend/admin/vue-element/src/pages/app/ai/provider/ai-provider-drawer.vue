@@ -149,7 +149,7 @@ const drawer = useDrawerForm({
     const { apiKeyHint: _hint, ...data } = values;
     return createAiProvider(data);
   },
-  updateFn: (id: number, values: Record<string, any>) => {
+  updateFn: (id: string, values: Record<string, any>) => {
     const { apiKeyHint: _hint, ...data } = values;
     return updateAiProvider(id, data);
   },

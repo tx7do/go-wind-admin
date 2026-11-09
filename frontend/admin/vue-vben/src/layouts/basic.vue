@@ -147,8 +147,8 @@ function convertInternalMessageRecipient(item: InternalMessageRecipient) {
   const created = item.createdAt ? dateUtil(item.createdAt as string) : null;
   const date = created?.isValid() ? created.fromNow() : '-';
   return {
-    id: item.id ?? 0,
-    messageId: item.messageId ?? 0,
+    id: item.id ?? '',
+    messageId: item.messageId ?? '',
     date,
     isRead: item.status === 'READ',
     // item.content 是不可信富文本 HTML，通知面板只需纯文本摘要。

@@ -262,7 +262,7 @@ const hasExportAllDropdown = computed(() =>
 const exportFetcher = async (query: PaginationQuery) => {
   const listAction = props.config.table.listAction as unknown as (
     q: Record<string, any>
-  ) => Promise<{ items?: any[]; total?: number }>;
+  ) => Promise<{ items?: any[]; total?: number | string }>;
   return await listAction({
     page: query.paging?.page ?? 1,
     pageSize: query.paging?.pageSize ?? 1000,

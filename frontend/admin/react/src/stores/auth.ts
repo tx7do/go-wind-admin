@@ -92,7 +92,8 @@ async function applySuccessfulLogin(
   // 保存 Token
   const accessTokenPayload: TokenPayload = {
     value: response.access_token || '',
-    expiresAt: now + (response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
+    // expires_in 为 int64（proto3 JSON 下是字符串），参与运算前转回 number
+    expiresAt: now + Number(response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
   };
 
   set({
@@ -261,7 +262,7 @@ export const useAuthStore = create<AuthState>()(
           const now = Date.now();
           set({
             accessToken: response.access_token,
-            accessTokenExpireAt: now + (response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
+            accessTokenExpireAt: now + Number(response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
           });
 
           return response.access_token || '';

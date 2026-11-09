@@ -34,7 +34,7 @@ function copyResetSecret() {
 const resetMutation = useResetAccessKeySecret();
 const resetSecretVisible = ref(false);
 const resetSecretValue = ref('');
-const resettingId = ref(0);
+const resettingId = ref('');
 
 const formOptions: VbenFormProps = {
   collapsed: false,

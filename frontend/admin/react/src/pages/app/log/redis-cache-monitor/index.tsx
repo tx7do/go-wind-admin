@@ -36,7 +36,7 @@ const RedisCacheMonitor = () => {
 
   const info = data as redis_cacheservicev1_RedisCacheMonitorInfo | undefined;
   const sections = info?.sections ?? [];
-  const dbSize = info?.dbSize ?? 0;
+  const dbSize = Number(info?.dbSize ?? 0); // uint64 → string，转回 number 供比较/展示
   const slowlog = info?.slowlog ?? [];
 
   return (

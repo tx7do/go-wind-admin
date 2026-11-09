@@ -14,7 +14,7 @@ interface PlanViewState {
   loading: boolean; // 加载状态
   needReloadQuotaList: boolean; // 是否需要重新加载套餐配额列表
 
-  currentPlanId: null | number; // 当前选中的套餐ID
+  currentPlanId: null | string; // 当前选中的套餐ID
   planList: identityservicev1_ListPlanResponse; // 套餐列表
   planQuotaList: ListPlanQuotaResponse; // 套餐配额列表
 }
@@ -27,8 +27,8 @@ export const usePlanViewStore = defineStore("plan-view", {
     currentPlanId: null,
     loading: false,
     needReloadQuotaList: false,
-    planList: { items: [], total: 0 },
-    planQuotaList: { items: [], total: 0 },
+    planList: { items: [], total: "0" },
+    planQuotaList: { items: [], total: "0" },
   }),
 
   actions: {
@@ -64,7 +64,7 @@ export const usePlanViewStore = defineStore("plan-view", {
      * @param formValues
      */
     async fetchPlanQuotaList(
-      planId: null | number,
+      planId: null | string,
       currentPage: number,
       pageSize: number,
       formValues: any
@@ -81,7 +81,7 @@ export const usePlanViewStore = defineStore("plan-view", {
             paging: { page: currentPage, pageSize },
             formValues: {
               ...formValues,
-              plan_id: planId.toString(),
+              plan_id: planId,
             },
           })
         );
@@ -108,17 +108,17 @@ export const usePlanViewStore = defineStore("plan-view", {
      * 点击套餐时触发：设置当前套餐ID + 刷新套餐配额列表
      * @param planId 套餐ID
      */
-    async setCurrentPlanId(planId: null | number) {
+    async setCurrentPlanId(planId: null | string) {
       this.currentPlanId = planId; // 更新当前选中的套餐ID
       this.needReloadQuotaList = true; // 触发套餐配额列表刷新
     },
 
     resetPlanList() {
-      this.planList = { items: [], total: 0 };
+      this.planList = { items: [], total: "0" };
     },
 
     resetPlanQuotaList() {
-      this.planQuotaList = { items: [], total: 0 };
+      this.planQuotaList = { items: [], total: "0" };
     },
   },
 });

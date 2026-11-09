@@ -18,9 +18,9 @@ interface UserInfo extends BasicUserInfo {
   token: string;
 
   /**
-   * 租户id
+   * 租户id（后端 uint64 → proto3 JSON 为字符串）
    */
-  tenantId: number;
+  tenantId: string;
 }
 
 export type { UserInfo };

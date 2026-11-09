@@ -193,5 +193,6 @@ export class PaginationQuery {
  */
 export type PaginationResult<T> = {
   items: T[]; // 数据项
-  total: number; // 总数
+  // proto3 JSON 下 uint64 序列化为字符串；消费侧统一 Number(total ?? 0) 转回数字
+  total: number | string; // 总数
 };

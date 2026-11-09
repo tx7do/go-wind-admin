@@ -63,7 +63,7 @@ const emit = defineEmits<{
 const visible = ref(false);
 const submitLoading = ref(false);
 const formRef = ref();
-const userId = ref<number>();
+const userId = ref<string>();
 
 // 表单数据
 const formData = reactive({
@@ -87,7 +87,7 @@ function resetForm() {
 }
 
 // 打开弹窗
-function open(data: { userId: number }) {
+function open(data: { userId: string }) {
   visible.value = true;
   userId.value = data.userId;
 

@@ -30,7 +30,7 @@ const quietEnabled = ref(false);
 // 起/止各自独立绑定（"HH:mm" 字符串）：跨零点窗口（start>end）是合法配置
 const quietStart = ref<string>('22:00');
 const quietEnd = ref<string>('08:00');
-const mutedCategoryIds = ref<number[]>([]);
+const mutedCategoryIds = ref<string[]>([]);
 const saving = ref(false);
 
 const { data: prefData } = useMyNotificationPreference();
@@ -41,7 +41,7 @@ const updateMutation = useUpdateMyNotificationPreference();
 const categoryOptions = computed(() =>
   (categoriesData.value?.items ?? []).map((c) => ({
     label: c.name ?? '',
-    value: c.id ?? 0,
+    value: c.id ?? '',
   })),
 );
 

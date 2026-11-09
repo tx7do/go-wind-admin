@@ -16,7 +16,7 @@ import { type internal_messageservicev1_InternalMessageRecipient as InternalMess
 import { $t } from '#/locales';
 
 const props = defineProps({
-  userId: { type: Number, default: undefined },
+  userId: { type: String, default: undefined },
 });
 
 const formOptions: VbenFormProps = {

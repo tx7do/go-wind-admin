@@ -75,7 +75,11 @@ provideBiEnv({});
 const rootRef = ref<HTMLElement | null>(null);
 const { isFullscreen, toggle: toggleFs } = useFullscreen(rootRef);
 
-const dashboardId = Number(route.query.id) > 0 ? Number(route.query.id) : undefined;
+// 仪表盘 ID 已是字符串（uint64 → protojson 字符串），路由 query 直接透传
+const dashboardId =
+  typeof route.query.id === "string" && route.query.id !== "" && route.query.id !== "0"
+    ? route.query.id
+    : undefined;
 
 const initialSchema = ref<Partial<BiDashboardSchema> | undefined>(undefined);
 const targetName = ref("");
@@ -210,7 +214,7 @@ async function saveToServer(schema: BiDashboardSchema, payloadStr: string) {
 }
 
 function goPreview() {
-  void router.push({ path: "/bi/dashboard", query: { id: String(dashboardId) } });
+  void router.push({ path: "/bi/dashboard", query: { id: dashboardId } });
 }
 
 onBeforeUnmount(() => {

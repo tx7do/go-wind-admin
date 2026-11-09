@@ -128,7 +128,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
       return { items: result.items || [], total: Number(result.total || 0) };
     },
     deleteAction: async (ids: string) => {
-      await deleteScript({ ids: ids.split(",").map((id) => Number(id)) });
+      // ID 已是字符串：split 得到的就是 string[]，不再 Number() 互转
+      await deleteScript({ ids: ids.split(",") });
     },
     toolbar: [
       {

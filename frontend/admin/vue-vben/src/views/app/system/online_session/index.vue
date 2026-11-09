@@ -166,7 +166,8 @@ function buildRowActions(row: OnlineSession): TableAction[] {
       </template>
 
       <template #tenant="{ row }">
-        <a-tag v-if="(row.tenantId ?? 0) === 0">
+        <!-- tenantId 已是字符串（uint64 → proto3 JSON）：空/'0' 即平台侧 -->
+        <a-tag v-if="!row.tenantId || row.tenantId === '0'">
           {{ $t('page.onlineSession.platform') }}
         </a-tag>
         <span v-else>#{{ row.tenantId }}</span>

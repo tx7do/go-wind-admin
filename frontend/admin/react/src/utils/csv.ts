@@ -14,7 +14,7 @@ export interface ExportColumn {
 }
 
 export interface ExportAuditOptions {
-  fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number }>;
+  fetcher: (query: PaginationQuery) => Promise<{ items?: any[]; total?: number | string }>;
   filename: string;
   columns: ExportColumn[];
   /** 当前 ProTable 搜索参数（不含分页字段） */
@@ -99,7 +99,8 @@ async function fetchAllRows(options: ExportAuditOptions): Promise<Record<string,
     });
     const resp = await fetcher(query);
     const items = resp.items ?? [];
-    total = resp.total ?? allRows.length + items.length;
+    // total 为 uint64（proto3 JSON 下是字符串），参与分页运算前转回 number
+    total = Number(resp.total ?? allRows.length + items.length);
     allRows.push(...items);
     if (items.length === 0) break; // 防御：空页避免死循环
     page += 1;

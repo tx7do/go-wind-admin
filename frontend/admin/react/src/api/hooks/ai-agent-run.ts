@@ -14,7 +14,7 @@ import { apiClient } from '@/api/client';
 const RUNS_KEY = 'listAiAgentRuns';
 
 export function useListAiAgentRuns(
-  appId: number | undefined,
+  appId: string | undefined,
   query: PaginationQuery,
   options?: UseQueryOptions<aiservicev1_ListAiAgentRunsResponse, Error>,
 ) {

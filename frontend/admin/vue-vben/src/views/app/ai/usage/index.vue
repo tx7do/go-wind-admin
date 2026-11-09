@@ -48,7 +48,7 @@ async function loadSummary() {
     monthTokens.value = resp.monthTokens ?? 0;
     monthCalls.value = resp.monthCalls ?? 0;
     quotaConfigured.value = resp.quotaConfigured ?? false;
-    quotaLimit.value = resp.quotaLimit ?? 0;
+    quotaLimit.value = Number(resp.quotaLimit ?? 0);
   } catch (error) {
     console.error('load usage summary failed:', error);
   }

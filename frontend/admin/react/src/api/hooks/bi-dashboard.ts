@@ -25,7 +25,7 @@ export async function fetchListBiDashboards(params: PaginationQuery) {
 }
 
 /** 按 id 取详情（命令式；独立设计器页加载用） */
-export async function fetchBiDashboard(id: number) {
+export async function fetchBiDashboard(id: string) {
   return queryClient.fetchQuery({
     queryKey: ['biDashboard', id],
     queryFn: () => apiClient.biDashboardService.Get({ id }),
@@ -34,7 +34,7 @@ export async function fetchBiDashboard(id: number) {
 }
 
 /** 按 id 取详情（仪表盘页/设计器抽屉打开时拉 payload） */
-export function useBiDashboard(id: number | undefined, enabled = true) {
+export function useBiDashboard(id: string | undefined, enabled = true) {
   return useQuery({
     queryKey: ['biDashboard', id],
     queryFn: () => apiClient.biDashboardService.Get({ id }),
@@ -53,10 +53,10 @@ export function useCreateBiDashboard(
 }
 
 export function useUpdateBiDashboard(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.biDashboardService.Update({
         id,
         data: { ...values } as any,
@@ -71,7 +71,7 @@ export function useUpdateBiDashboard(
  * 后端对 stale 写返回 409（提示刷新重试）。
  */
 export function useSaveBiDashboardPayload(
-  options?: UseMutationOptions<{}, Error, { id: number; version: number; payload: string; chartCount: number; themeKey?: string }>,
+  options?: UseMutationOptions<{}, Error, { id: string; version: number; payload: string; chartCount: number; themeKey?: string }>,
 ) {
   return useMutation({
     mutationFn: ({ id, version, payload, chartCount, themeKey }) =>
@@ -107,7 +107,7 @@ export function useCopyBiDashboard(
 // ==============================
 
 export function useBiDashboardRevisions(
-  dashboardId: number | undefined,
+  dashboardId: string | undefined,
   enabled = true,
 ) {
   return useQuery({

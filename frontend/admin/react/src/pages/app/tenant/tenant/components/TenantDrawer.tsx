@@ -52,13 +52,13 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
 
   // 编辑模式下加载租户用量与配额对比数据。
   const usageQuery = useGetTenantUsage(
-    { id: data?.id ?? 0 },
+    { id: data?.id },
     { enabled: open && mode === 'edit' && !!data?.id },
   );
   const cleanupMutation = useCleanupTenantData();
 
   // 套餐下拉数据
-  const [planOptions, setPlanOptions] = useState<{ label: string; value: number }[]>([]);
+  const [planOptions, setPlanOptions] = useState<{ label: string; value: string }[]>([]);
 
   // 打开抽屉时加载套餐目录下拉
   useEffect(() => {
@@ -307,17 +307,18 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             <div style={{ marginTop: 16 }}>
               {usageQuery.data.quotas.map((q, idx) => {
                 let label = q.quotaType?.toString() ?? '';
+                // 计数/字节数为 uint64（proto3 JSON 下是字符串），运算前转回 number
                 let current = 0;
-                let limit = q.quotaValue ?? 0;
+                let limit = Number(q.quotaValue ?? 0);
                 if (q.quotaType === 'USER_LIMIT') {
                   label = t('usageUserCount');
-                  current = usageQuery.data.userCount ?? 0;
+                  current = Number(usageQuery.data.userCount ?? 0);
                 } else if (q.quotaType === 'STORAGE') {
                   label = t('usageStorage');
-                  current = usageQuery.data.storageUsedBytes ?? 0;
+                  current = Number(usageQuery.data.storageUsedBytes ?? 0);
                 } else if (q.quotaType === 'API_CALL') {
                   label = t('usageApiCalls');
-                  current = usageQuery.data.apiCallCount ?? 0;
+                  current = Number(usageQuery.data.apiCallCount ?? 0);
                 }
                 const pct = limit > 0 ? Math.min(100, (current / limit) * 100) : 0;
                 return (
@@ -340,7 +341,7 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
               cancelText={t('common:button.cancel')}
               onConfirm={async () => {
                 try {
-                  await cleanupMutation.mutateAsync({ id: data?.id ?? 0 });
+                  await cleanupMutation.mutateAsync({ id: data?.id });
                   message.success(t('cleanupSuccess'));
                   queryClient.invalidateQueries({ queryKey: ['listTenants'] });
                   onClose();

@@ -72,11 +72,11 @@ export function useUpdateFile(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.fileService.Update({
         id,
         data: { ...values },

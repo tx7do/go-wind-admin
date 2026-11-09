@@ -13,7 +13,7 @@ export async function createAccessKey(data: Partial<AccessKey>) {
 }
 
 /** 更新凭证（名称/状态/过期时间）；服务端黑名单保护 access_key/secret_hash/tenant_id */
-export async function updateAccessKey(id: number, values: Record<string, any>) {
+export async function updateAccessKey(id: string, values: Record<string, any>) {
   return apiClient.accessKeyService.Update({
     id,
     data: { ...values } as any,
@@ -23,10 +23,10 @@ export async function updateAccessKey(id: number, values: Record<string, any>) {
 
 /** 重置密钥：生成新 SK 明文返回一次（旧 SK 立即失效于交换） */
 export async function resetAccessKeySecret(id: string) {
-  return apiClient.accessKeyService.ResetSecret({ id: id as any });
+  return apiClient.accessKeyService.ResetSecret({ id });
 }
 
 /** 删除凭证 */
 export async function deleteAccessKey(id: string) {
-  return apiClient.accessKeyService.Delete({ id: id as any });
+  return apiClient.accessKeyService.Delete({ id });
 }

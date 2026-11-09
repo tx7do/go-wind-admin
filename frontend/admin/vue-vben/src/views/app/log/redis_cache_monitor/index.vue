@@ -45,7 +45,7 @@ const sections = computed(() => {
     name: string;
   }[];
 });
-const dbSize = computed(() => info.value?.dbSize ?? 0);
+const dbSize = computed(() => Number(info.value?.dbSize ?? 0));
 const slowlog = computed(
   () => (info.value?.slowlog ?? []) as redis_cacheservicev1_SlowLogEntry[],
 );

@@ -72,11 +72,11 @@ export function useUpdateOrgUnit(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.orgUnitService.Update({
         id,
         data: { ...values } as any,
@@ -216,7 +216,7 @@ export function orgUnitTypeToColor(
 
 export const findOrgUnit = (
   list: OrgUnit[],
-  id: number,
+  id: string,
 ): null | OrgUnit | undefined => {
   for (const item of list) {
     if (item.id === id) return item;

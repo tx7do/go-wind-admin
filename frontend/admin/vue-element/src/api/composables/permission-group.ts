@@ -65,10 +65,10 @@ export function useCreatePermissionGroup(
 }
 
 export function useUpdatePermissionGroup(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.permissionGroupService.Update({
         id,
         data: { ...values } as any,
@@ -91,12 +91,15 @@ export function useDeletePermissionGroup(
 // 权限分组枚举与工具函数
 // ==============================
 
+/** 根分组的 parentId 形态：undefined / '' / "0"（ID 已是字符串，uint64 零值序列化为 "0"） */
+const isRootParentId = (parentId?: string) => !parentId || parentId === "0";
+
 export function travelPermissionGroupChild(
   nodes: PermissionGroup[] | undefined,
   parent: PermissionGroup
 ): boolean {
   if (nodes === undefined) return false;
-  if (parent.parentId === 0 || parent.parentId === undefined) {
+  if (isRootParentId(parent.parentId)) {
     if (parent?.name) parent.name = t(parent?.name ?? "");
     nodes.push(parent);
     return true;
@@ -115,7 +118,7 @@ export function travelPermissionGroupChild(
 
 export function buildPermissionGroupTree(
   groups: PermissionGroup[],
-  excludeId?: number
+  excludeId?: string
 ): PermissionGroup[] {
   // 深拷贝后再构建树，避免就地修改 group.name = t(...) 污染传入的
   // vue-query 缓存（否则翻译值会被永久写回缓存，后续读取拿到已翻译的 name）。
@@ -128,14 +131,14 @@ export function buildPermissionGroupTree(
     if (!group) continue;
     // 排除指定节点（防自环：编辑某分组时不让它出现在自己的父级候选里）
     if (excludeId !== undefined && group.id === excludeId) continue;
-    if (group.parentId !== 0 && group.parentId !== undefined) continue;
+    if (!isRootParentId(group.parentId)) continue;
     if (group?.name) group.name = t(group?.name ?? "");
     tree.push(group);
   }
   for (const group of cloned) {
     if (!group) continue;
     if (excludeId !== undefined && group.id === excludeId) continue;
-    if (group.parentId === 0 || group.parentId === undefined) continue;
+    if (isRootParentId(group.parentId)) continue;
     if (travelPermissionGroupChild(tree, group)) continue;
     if (group?.name) group.name = t(group?.name ?? "");
     tree.push(group);

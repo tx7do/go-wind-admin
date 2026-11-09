@@ -28,7 +28,7 @@ export default function KnowledgeDrawer({ open, mode, data, onClose, onSuccess }
   const { message } = App.useApp();
   const queryClient = useQueryClient();
   const formRef = useRef<ProFormInstance>(null);
-  const [providerOptions, setProviderOptions] = useState<{ label: string; value: number }[]>([]);
+  const [providerOptions, setProviderOptions] = useState<{ label: string; value: string }[]>([]);
 
   // 关闭守卫：遮罩/ESC/X/取消统一，脏数据先确认（docs/form_drawer_close_guard.md）
   const { guardClose, handleValuesChange } = useDrawerCloseGuard(open, onClose);

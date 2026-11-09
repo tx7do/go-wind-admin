@@ -100,7 +100,7 @@ async function loadDetail() {
 
     // 打开详情即标记为已读（仅当当前未读）。
     // 注意：用收件记录 id（recipientId），而非 messageId。
-    const userId = userStore.userInfo?.id ?? 0;
+    const userId = userStore.userInfo?.id ?? '';
     const recipientId = row.value?.id;
     if (userId && recipientId != null && row.value?.status !== 'READ') {
       try {

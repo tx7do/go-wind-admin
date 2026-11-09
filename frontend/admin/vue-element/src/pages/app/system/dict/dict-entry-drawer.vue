@@ -165,12 +165,12 @@ const dictViewStore = useDictViewStore();
 const visible = ref(false);
 const submitLoading = ref(false);
 const isCreate = ref(true);
-const currentId = ref<number>();
+const currentId = ref<string>();
 const formRef = ref();
 
 // 表单数据
 const formData = reactive({
-  typeId: undefined as number | undefined,
+  typeId: undefined as string | undefined,
   entryValue: "",
   numericValue: undefined as number | undefined,
   sortOrder: 1,
@@ -182,7 +182,7 @@ const i18nTableData = ref<any[]>([]);
 const i18nDataMap = ref<Record<string, { entryLabel?: string; description?: string }>>({});
 
 // 字典类型列表
-const dictTypeList = ref<(DictType & { id: number })[]>([]);
+const dictTypeList = ref<(DictType & { id: string })[]>([]);
 
 // 表单验证规则
 const formRules = {

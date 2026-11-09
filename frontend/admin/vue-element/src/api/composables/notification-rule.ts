@@ -81,11 +81,11 @@ export function useUpdateNotificationRule(
   options?: UseMutationOptions<
     {},
     Error,
-    { id: number; data: notificationservicev1_NotificationRule }
+    { id: string; data: notificationservicev1_NotificationRule }
   >
 ) {
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: notificationservicev1_NotificationRule }) =>
+    mutationFn: ({ id, data }: { id: string; data: notificationservicev1_NotificationRule }) =>
       apiClient.notificationRuleService.UpdateNotificationRule({
         id,
         data,

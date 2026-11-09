@@ -100,10 +100,12 @@ const gridOptions: VxeGridProps<DictType> = {
 
 const gridEvents: VxeGridListeners<DictType> = {
   // cellDblclick: ({ row }) => {
-  //   dictViewStore.setCurrentMain(typeof row.id === 'number' ? row.id : 0);
+  //   dictViewStore.setCurrentMain(typeof row.id === 'string' && row.id !== '' ? row.id : '');
   // },
   cellClick: ({ row }) => {
-    dictViewStore.setCurrentTypeId(typeof row.id === 'number' ? row.id : 0);
+    dictViewStore.setCurrentTypeId(
+      typeof row.id === 'string' && row.id !== '' ? row.id : '',
+    );
   },
 };
 

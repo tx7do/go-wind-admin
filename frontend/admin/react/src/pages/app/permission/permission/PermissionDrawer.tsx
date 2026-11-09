@@ -64,14 +64,14 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
 
   // 菜单树数据 + 勾选 + 展开
   const [menuTreeData, setMenuTreeData] = useState<any[]>([]);
-  const [menuCheckedKeys, setMenuCheckedKeys] = useState<number[]>([]);
-  const [menuHalfCheckedKeys, setMenuHalfCheckedKeys] = useState<number[]>([]);
+  const [menuCheckedKeys, setMenuCheckedKeys] = useState<string[]>([]);
+  const [menuHalfCheckedKeys, setMenuHalfCheckedKeys] = useState<string[]>([]);
   const [menuExpandedKeys, setMenuExpandedKeys] = useState<React.Key[]>([]);
   const [menuTreeLoading, setMenuTreeLoading] = useState(false);
 
   // API 树数据 + 勾选 + 展开
   const [apiTreeData, setApiTreeData] = useState<any[]>([]);
-  const [apiCheckedKeys, setApiCheckedKeys] = useState<number[]>([]);
+  const [apiCheckedKeys, setApiCheckedKeys] = useState<string[]>([]);
   const [apiExpandedKeys, setApiExpandedKeys] = useState<React.Key[]>([]);
   const [apiTreeLoading, setApiTreeLoading] = useState(false);
 
@@ -135,12 +135,12 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
         });
       }, 0);
 
-      // 设置菜单和 API 的勾选
+      // 设置菜单和 API 的勾选（ID 为 uint64 字符串，直接按字符串勾选）
       if (Array.isArray(data.menuIds)) {
-        setMenuCheckedKeys(data.menuIds.filter((v: any) => typeof v === 'number'));
+        setMenuCheckedKeys(data.menuIds.map((v: any) => String(v)));
       }
       if (Array.isArray(data.apiIds)) {
-        setApiCheckedKeys(data.apiIds.filter((v: any) => typeof v === 'number'));
+        setApiCheckedKeys(data.apiIds.map((v: any) => String(v)));
       }
     }
   }, [open, mode, data, groupId]);
@@ -256,7 +256,8 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
         // 播种语义为含目录的全量绑定；父子联动下目录呈半选，只提交
         // checkedKeys 会把目录级绑定剥掉（保存后导航目录层级塌陷，实测
         // 53→42 正好丢了 11 个目录绑定）。API 树父节点 key 是
-        // 'module_${mod}' 字符串，filterNumbers 能正确剥离，无需半选合并。
+        // 'module_${mod}' 前缀字符串，filterNumbers 按 'module_' 前缀剥离，
+        // 无需半选合并。
         menuIds: filterNumbers([
           ...menuCheckedKeys,
           ...menuHalfCheckedKeys,
@@ -355,14 +356,14 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
                 menuExpandedKeys,
                 menuCheckedKeys,
                 (keys) => setMenuExpandedKeys(keys),
-                (keys) => setMenuCheckedKeys(keys as number[]),
+                (keys) => setMenuCheckedKeys(keys as string[]),
               )}
               <Tree
                 checkable
                 checkedKeys={menuCheckedKeys}
                 onCheck={(checked, info) => {
-                  setMenuCheckedKeys(checked as number[]);
-                  setMenuHalfCheckedKeys((info.halfCheckedKeys ?? []) as number[]);
+                  setMenuCheckedKeys(checked as string[]);
+                  setMenuHalfCheckedKeys((info.halfCheckedKeys ?? []) as string[]);
                 }}
                 expandedKeys={menuExpandedKeys}
                 onExpand={(keys) => setMenuExpandedKeys(keys as React.Key[])}
@@ -405,13 +406,13 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
                 apiExpandedKeys,
                 apiCheckedKeys,
                 (keys) => setApiExpandedKeys(keys),
-                (keys) => setApiCheckedKeys(keys as number[]),
+                (keys) => setApiCheckedKeys(keys as string[]),
               )}
               <Tree
                 checkable
                 checkedKeys={apiCheckedKeys}
                 onCheck={(checked) => {
-                  setApiCheckedKeys(checked as number[]);
+                  setApiCheckedKeys(checked as string[]);
                 }}
                 expandedKeys={apiExpandedKeys}
                 onExpand={(keys) => setApiExpandedKeys(keys as React.Key[])}

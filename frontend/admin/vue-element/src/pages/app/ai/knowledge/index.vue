@@ -53,7 +53,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       return { items: result.items || [], total: result.total || 0 };
     },
     deleteAction: async (ids: string) => {
-      await deleteAiKnowledgeBase(Number(ids));
+      await deleteAiKnowledgeBase(ids);
     },
     toolbar: [],
     toolbarRight: ["add"],

@@ -50,7 +50,11 @@ const route = useRoute();
 const router = useRouter();
 const { t, locale } = useI18n();
 
-const dashboardId = computed(() => (Number(route.query.id) > 0 ? Number(route.query.id) : undefined));
+// 仪表盘 ID 已是字符串（uint64 → protojson 字符串），路由 query 直接透传
+const dashboardId = computed(() => {
+  const id = route.query.id;
+  return typeof id === "string" && id !== "" && id !== "0" ? id : undefined;
+});
 
 // 全屏：进入时补页面底色（fullscreen 元素透出 UA 黑底）
 const rootRef = ref<HTMLElement | null>(null);
@@ -67,7 +71,7 @@ function toggleFullscreen() {
 }
 
 function goDesigner() {
-  void router.push({ path: "/bi/designer", query: { id: String(dashboardId.value) } });
+  void router.push({ path: "/bi/designer", query: { id: dashboardId.value } });
 }
 const dashboardRef = ref<InstanceType<typeof BiDashboard>>();
 
@@ -89,8 +93,8 @@ onMounted(() => {
 
 // schema 来源优先级：?id= 后端行 > localStorage 草稿 > 内置演示
 async function loadSchema() {
-  const id = Number(route.query.id);
-  if (id > 0) {
+  const id = dashboardId.value;
+  if (id) {
     try {
       const row = await fetchBiDashboard(id);
       if (row.payload) {

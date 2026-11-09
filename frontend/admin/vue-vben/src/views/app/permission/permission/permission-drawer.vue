@@ -19,7 +19,7 @@ import {
   useCreatePermission,
   useUpdatePermission,
 } from '#/api';
-import { deepClone, extractLeafIds, filterNumbers } from '#/utils';
+import { deepClone, extractLeafIds, filterIds } from '#/utils';
 
 import PermissionCheckTree from './permission-check-tree.vue';
 
@@ -41,10 +41,10 @@ const getTitle = computed(() =>
     : $t('ui.modal.update', { moduleName: $t('page.permission.moduleName') }),
 );
 
-/** 菜单树 → 勾选树节点（key=菜单 ID，title=meta.title 兜底 name） */
+/** 菜单树 → 勾选树节点（key=菜单 ID 字符串，title=meta.title 兜底 name） */
 function toMenuCheckTree(menus: any[]): any[] {
   return (menus ?? []).map((menu) => ({
-    key: Number(menu.id),
+    key: menu.id,
     title: menu.meta?.title || menu.name || '',
     ...(Array.isArray(menu.children) && menu.children.length > 0
       ? { children: toMenuCheckTree(menu.children) }
@@ -52,7 +52,7 @@ function toMenuCheckTree(menus: any[]): any[] {
   }));
 }
 
-/** API 列表 → 按模块分组的勾选树（父节点 key=`module_${mod}` 非数字，提交时被过滤） */
+/** API 列表 → 按模块分组的勾选树（父节点 key=`module_${mod}` 非法 ID，提交时被过滤） */
 function toApiCheckTree(apis: any[]): any[] {
   const moduleMap = new Map<string, any[]>();
   for (const item of apis ?? []) {
@@ -63,7 +63,7 @@ function toApiCheckTree(apis: any[]): any[] {
     }
     const title = [item.method, item.path].filter(Boolean).join(' ');
     moduleMap.get(mod)!.push({
-      key: Number(item.id),
+      key: item.id,
       title: item.description ? `${title} - ${item.description}` : title,
     });
   }
@@ -236,14 +236,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
     // @ts-ignore JSON.stringify
     const finalValues = deepClone(values);
 
-    // 菜单树父子联动会自动勾选父菜单，其数字 key 会混入 checkedKeys，
-    // 用叶子交集剥离；API 树父节点 key 是 `module_${mod}` 非数字字符串，
-    // filterNumbers 即可剥离。两字段始终随表单提交（含清空场景）。
+    // 菜单树父子联动会自动勾选父菜单，其父节点 key 会混入 checkedKeys，
+    // 用叶子交集剥离；API 树父节点 key 是 `module_${mod}` 非法 ID 字符串，
+    // filterIds 即可剥离。两字段始终随表单提交（含清空场景）。
     finalValues.menuIds = extractLeafIds(
       Array.isArray(finalValues.menuIds) ? finalValues.menuIds : [],
       menuTreeData.value,
     );
-    finalValues.apiIds = filterNumbers(
+    finalValues.apiIds = filterIds(
       Array.isArray(finalValues.apiIds) ? finalValues.apiIds : [],
     );
 

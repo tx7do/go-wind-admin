@@ -219,7 +219,7 @@ const visible = ref(false);
 const submitLoading = ref(false);
 const pageLoading = ref(false);
 const isCreate = ref(true);
-const currentId = ref<number>();
+const currentId = ref<string>();
 const formRef = ref();
 const menuTreeData = ref<any[]>([]);
 const titleSuffix = ref("");
@@ -227,7 +227,8 @@ const titleSuffix = ref("");
 // 表单数据
 const formData = reactive({
   type: "MENU",
-  parentId: 0,
+  // 父菜单 ID（字符串）；''=根菜单，提交时归一为 "0"
+  parentId: "",
   path: "",
   component: "BasicLayout",
   meta: {
@@ -289,7 +290,8 @@ async function open(row?: any) {
       currentId.value = row.id;
       // 仅回填表单声明的顶层字段，避免把 id/createdAt 等不可变字段灌入 formData
       formData.type = row.type ?? "MENU";
-      formData.parentId = row.parentId ?? 0;
+      // 根菜单的 parentId 形态：undefined / '' / "0" → 归一为 ''
+      formData.parentId = row.parentId && row.parentId !== "0" ? row.parentId : "";
       formData.path = row.path ?? "";
       formData.component = row.component ?? "BasicLayout";
       formData.status = row.status ?? "ON";
@@ -335,7 +337,7 @@ function handleClose() {
 // 重置表单
 function resetForm() {
   formData.type = "MENU";
-  formData.parentId = 0;
+  formData.parentId = "";
   formData.path = "";
   formData.component = "BasicLayout";
   formData.meta = {
@@ -357,7 +359,7 @@ function resetForm() {
 }
 
 // 加载菜单树
-async function loadMenuTree(excludeId?: number) {
+async function loadMenuTree(excludeId?: string) {
   try {
     const result = await fetchListMenus(new PaginationQuery({ formValues: { status: "ON" } }));
     // 编辑模式下排除自身，防止把菜单设为自己的父级（自环）
@@ -376,6 +378,8 @@ async function handleSubmit() {
     submitLoading.value = true;
 
     const values = { ...formData };
+    // 根菜单提交显式 "0"（proto uint64 零值的字符串形态），与原 number 0 等价
+    values.parentId = formData.parentId || "0";
 
     if (isCreate.value) {
       await createMenu(values);

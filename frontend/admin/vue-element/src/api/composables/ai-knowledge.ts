@@ -16,7 +16,7 @@ export async function createAiKnowledgeBase(values: Record<string, any>) {
 }
 
 /** 更新知识库 */
-export async function updateAiKnowledgeBase(id: number, values: Record<string, any>) {
+export async function updateAiKnowledgeBase(id: string, values: Record<string, any>) {
   return apiClient.aiKnowledgeBaseService.Update({
     id,
     data: { ...values } as any,
@@ -25,21 +25,21 @@ export async function updateAiKnowledgeBase(id: number, values: Record<string, a
 }
 
 /** 删除知识库（级联删除文档与切片） */
-export async function deleteAiKnowledgeBase(id: number) {
+export async function deleteAiKnowledgeBase(id: string) {
   return apiClient.aiKnowledgeBaseService.Delete({ id });
 }
 
 /** 查询知识库下的文档 */
-export async function fetchListAiDocs(baseId: number) {
+export async function fetchListAiDocs(baseId: string) {
   return apiClient.aiKnowledgeBaseService.ListDocs({ baseId });
 }
 
 /** 上传文档（纯文本：切片 → 向量化 → 落库） */
-export async function uploadAiDoc(baseId: number, name: string, content: string) {
+export async function uploadAiDoc(baseId: string, name: string, content: string) {
   return apiClient.aiKnowledgeBaseService.UploadDoc({ baseId, name, content });
 }
 
 /** 删除文档（级联删除切片） */
-export async function deleteAiDoc(baseId: number, id: number) {
+export async function deleteAiDoc(baseId: string, id: string) {
   return apiClient.aiKnowledgeBaseService.DeleteDoc({ baseId, id });
 }

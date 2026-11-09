@@ -69,7 +69,7 @@
           check-strictly
           default-expand-all
           style="width: 100%"
-          @change="(v: any) => handleParentChange(typeof v === 'number' ? v : 0)"
+          @change="(v: any) => handleParentChange(v || '')"
         />
       </ElFormItem>
 
@@ -194,7 +194,7 @@ const visible = ref(false);
 const submitLoading = ref(false);
 const pageLoading = ref(false);
 const isCreate = ref(true);
-const currentId = ref<number>();
+const currentId = ref<string>();
 // 编辑模式的行数据快照（提交时的越权收敛确认需要比对此处保存的存量权限）
 const editRow = ref<any>(undefined);
 const formRef = ref();
@@ -209,9 +209,9 @@ const formData = reactive({
   status: "ON",
   dataScope: "ALL",
   description: "",
-  // 父角色ID，0=根角色。清空选择时 @change 归一为 0，保证显式 0 进 updateMask
-  parentId: 0,
-  permissions: [] as number[],
+  // 父角色ID，''=根角色。清空选择时 @change 归一为 ''，提交时显式 "0" 进 updateMask
+  parentId: "",
+  permissions: [] as string[],
 });
 
 // ========== 权限继承（父子角色） ==========
@@ -220,22 +220,26 @@ const formData = reactive({
 const roleTreeOptions = ref<any[]>([]);
 
 // 父角色权限上限集（null=无父角色，不收窄）
-const permCapIds = ref<number[] | null>(null);
+const permCapIds = ref<string[] | null>(null);
 
 // 权限树全量数据源，父角色切换时按 cap 过滤重建
 const permissionTreeSource = ref<{ groups: any[]; permissions: any[] } | null>(null);
 
+/** 权限树勾选键 → 权限 ID：叶子键是权限 ID（字符串），分组键带 "group-" 前缀须排除 */
+const isPermissionKey = (key: unknown): key is string =>
+  typeof key === "string" && !key.startsWith("group-");
+
 /** 收集自身及全部后代角色 ID（按 parentId 嵌套） */
-function collectSelfAndDescendantIds(items: any[], selfId?: number): number[] {
+function collectSelfAndDescendantIds(items: any[], selfId?: string): string[] {
   if (!selfId) return [];
-  const byParent = new Map<number, number[]>();
+  const byParent = new Map<string, string[]>();
   for (const it of items || []) {
-    const pid = Number(it.parentId || 0);
+    const pid = it.parentId || "0";
     if (!byParent.has(pid)) byParent.set(pid, []);
-    byParent.get(pid)!.push(Number(it.id));
+    byParent.get(pid)!.push(it.id);
   }
-  const result = new Set<number>([Number(selfId)]);
-  const stack = [Number(selfId)];
+  const result = new Set<string>([selfId]);
+  const stack = [selfId];
   while (stack.length > 0) {
     const cur = stack.pop()!;
     for (const child of byParent.get(cur) || []) {
@@ -249,22 +253,22 @@ function collectSelfAndDescendantIds(items: any[], selfId?: number): number[] {
 }
 
 /** 角色列表按 parentId 嵌套为 TreeSelect 数据（森林，缺父孤行落为根），排除 excludeIds */
-function buildRoleTreeOptions(items: any[], excludeIds: number[]): any[] {
-  const excluded = new Set(excludeIds.map(Number));
-  const nodes = new Map<number, any>();
+function buildRoleTreeOptions(items: any[], excludeIds: string[]): any[] {
+  const excluded = new Set(excludeIds);
+  const nodes = new Map<string, any>();
   for (const it of items || []) {
-    const id = Number(it.id);
+    const id = it.id;
     if (excluded.has(id)) continue;
     nodes.set(id, {
       value: id,
-      label: it.name || it.code || String(id),
-      pid: Number(it.parentId || 0),
+      label: it.name || it.code || id,
+      pid: it.parentId || "0",
       children: [] as any[],
     });
   }
   const roots: any[] = [];
   for (const node of nodes.values()) {
-    const parent = node.pid > 0 ? nodes.get(node.pid) : undefined;
+    const parent = node.pid !== "0" ? nodes.get(node.pid) : undefined;
     if (parent) {
       parent.children.push(node);
     } else {
@@ -292,31 +296,29 @@ function buildRoleTreeOptions(items: any[], excludeIds: number[]): any[] {
 function filterPermissionSourceByCap(
   groups: any[],
   permissions: any[],
-  capIds: number[] | null | undefined,
+  capIds: string[] | null | undefined,
 ): { groups: any[]; permissions: any[] } {
   if (!capIds || capIds.length === 0) return { groups, permissions };
-  const cap = new Set(capIds.map(Number));
-  const kept = (permissions || []).filter((p) => cap.has(Number(p.id)));
+  const cap = new Set(capIds);
+  const kept = (permissions || []).filter((p) => cap.has(p.id));
   const filterGroups = (list: any[]): any[] =>
     (list || [])
       .map((g) => ({ ...g, children: filterGroups(g.children || []) }))
       .filter(
-        (g) => g.children.length > 0 || kept.some((p) => String(p.groupId) === String(g.id)),
+        (g) => g.children.length > 0 || kept.some((p) => p.groupId === g.id),
       );
   return { groups: filterGroups(groups), permissions: kept };
 }
 
 /** 按父角色上限集重建权限树；返回本次生效的 cap（拉取失败按全量展示，后端保存兜底） */
-async function rebuildPermissionTree(parentId: number | null): Promise<number[] | null> {
+async function rebuildPermissionTree(parentId: string | null): Promise<string[] | null> {
   const src = permissionTreeSource.value;
   if (!src) return null;
-  let cap: number[] | null = null;
+  let cap: string[] | null = null;
   if (parentId) {
     try {
       const parent = await fetchGetRole({ id: parentId });
-      cap = ((parent as any)?.permissions ?? [])
-        .map((v: any) => Number(v))
-        .filter((v: any) => Number.isFinite(v));
+      cap = ((parent as any)?.permissions ?? []) as string[];
     } catch (error) {
       console.error("Failed to load parent role permission cap:", error);
     }
@@ -326,7 +328,7 @@ async function rebuildPermissionTree(parentId: number | null): Promise<number[] 
   permissionTreeData.value =
     filtered.groups.length === 0 && filtered.permissions.length > 0
       ? filtered.permissions.map((p) => ({
-          key: Number(p.id),
+          key: p.id,
           title: p.name || p.code || String(p.id),
         }))
       : buildPermissionTree(filtered.groups, filtered.permissions);
@@ -334,12 +336,12 @@ async function rebuildPermissionTree(parentId: number | null): Promise<number[] 
 }
 
 /** 切换父角色：重建权限树并把已勾权限收敛到新 cap 内 */
-async function handleParentChange(pid: number) {
+async function handleParentChange(pid: string) {
   formData.parentId = pid;
   const cap = await rebuildPermissionTree(pid || null);
   if (pid && cap && permissionTreeRef.value) {
     const keys = (permissionTreeRef.value.getCheckedKeys(false) || []).filter(
-      (k: any) => typeof k === "number" && cap!.includes(Number(k))
+      (k: any) => isPermissionKey(k) && cap!.includes(k)
     );
     permissionTreeRef.value.setCheckedKeys(keys);
   }
@@ -476,7 +478,8 @@ async function open(data?: { create: boolean; row?: any }) {
     await Promise.all([loadPermissionTree(), loadOrgUnitTree(), loadRoleTreeOptions()]);
 
     // 编辑模式的初始父角色（回填值），据此收窄权限树
-    const initialParentId = !isCreate.value ? Number(data?.row?.parentId || 0) : 0;
+    const initialParentId =
+      !isCreate.value && data?.row?.parentId && data.row.parentId !== "0" ? data.row.parentId : "";
     await rebuildPermissionTree(initialParentId || null);
 
     // 如果是编辑模式，填充数据
@@ -490,16 +493,16 @@ async function open(data?: { create: boolean; row?: any }) {
       formData.status = data.row.status ?? "ON";
       formData.dataScope = data.row.dataScope ?? "ALL";
       formData.description = data.row.description ?? "";
-      formData.parentId = Number(data.row.parentId || 0);
+      formData.parentId = data.row.parentId && data.row.parentId !== "0" ? data.row.parentId : "";
 
       // 设置树的选中状态：超出父角色上限（树上不可见）的存量勾选先收敛，
       // 提交时由 outOfCap 确认流程向操作者说明（编辑时校验语义）。
       await nextTick();
       const storedPerms = Array.isArray(data.row.permissions)
-        ? data.row.permissions.filter((v: any) => typeof v === "number")
+        ? data.row.permissions.filter((v: any) => typeof v === "string")
         : [];
       const effPerms = permCapIds.value
-        ? storedPerms.filter((id: number) => permCapIds.value!.includes(Number(id)))
+        ? storedPerms.filter((id: string) => permCapIds.value!.includes(id))
         : storedPerms;
       permissionTreeRef.value?.setCheckedKeys(effPerms);
       if (formData.dataScope === "SELECTED_UNITS" && Array.isArray(data.row.orgUnits)) {
@@ -542,7 +545,7 @@ function resetForm() {
   formData.status = "ON";
   formData.dataScope = "ALL";
   formData.description = "";
-  formData.parentId = 0;
+  formData.parentId = "";
   formData.permissions = [];
 
   formRef.value?.clearValidate();
@@ -562,11 +565,11 @@ async function handleSubmit() {
   // 保存收敛确认：编辑模式下超出父角色上限（树上不可见）的存量勾选会被剥离，
   // 先向操作者确认（编辑时校验语义的前端引导；后端亦有子集校验兜底）。
   if (!isCreate.value && permCapIds.value) {
-    const storedPerms: number[] = Array.isArray(editRow.value?.permissions)
-      ? editRow.value.permissions.filter((v: any) => typeof v === "number")
+    const storedPerms: string[] = Array.isArray(editRow.value?.permissions)
+      ? editRow.value.permissions.filter((v: any) => typeof v === "string")
       : [];
     const outOfCap = storedPerms.filter(
-      (id) => !permCapIds.value!.includes(Number(id))
+      (id) => !permCapIds.value!.includes(id)
     );
     if (outOfCap.length > 0) {
       try {
@@ -589,23 +592,23 @@ async function handleSubmit() {
     await formRef.value.validate();
     submitLoading.value = true;
 
-    // 获取选中的权限ID（只保留数字类型的叶子节点）
+    // 获取选中的权限ID（只保留叶子节点：分组键带 "group-" 前缀，权限键是字符串 ID）
     const checkedKeys = permissionTreeRef.value?.getCheckedKeys(false) || [];
-    const permissions = checkedKeys.filter((key: any) => typeof key === "number");
+    const permissions = checkedKeys.filter((key: any) => isPermissionKey(key));
 
     const values: Record<string, any> = {
       ...formData,
       permissions,
-      // 父角色始终随表单提交：0=根角色（清空父角色须显式 0 进 updateMask，
+      // 父角色始终随表单提交："0"=根角色（清空父角色须显式 "0" 进 updateMask，
       // 否则后端三态语义会把它当"未声明"静默跳过）。
-      parentId: formData.parentId || 0,
+      parentId: formData.parentId || "0",
     };
 
     // 仅 SELECTED_UNITS 档提交授权单元集（含清空场景）；
     // 其余档位不携带该字段，后端维持既有集不替换。
     if (formData.dataScope === "SELECTED_UNITS") {
       const unitCheckedKeys = unitTreeRef.value?.getCheckedKeys(false) || [];
-      values.orgUnits = unitCheckedKeys.filter((key: any) => typeof key === "number");
+      values.orgUnits = unitCheckedKeys;
     }
 
     // 字段权限始终随表单提交（含清空场景）：抽屉所见即保存后的最终态。

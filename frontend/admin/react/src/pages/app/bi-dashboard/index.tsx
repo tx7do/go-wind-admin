@@ -79,7 +79,8 @@ export default function BiDashboardPage() {
   // 列表页「预览」跳 /bi/dashboard?id=N；无 id 时仍读本地草稿兼容旧链路。
   const [searchParams] = useSearchParams();
   const idParam = searchParams.get('id');
-  const dashboardId = idParam ? Number(idParam) : undefined;
+  // id 为 uint64（proto3 JSON 下是字符串），路由参数本就是字符串，直接透传
+  const dashboardId = idParam ?? undefined;
 
   const [schema, setSchema] = useState<Partial<BiDashboardSchema>>(SCHEMA);
 

@@ -191,7 +191,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       return { items: result.items || [], total: result.total || 0 };
     },
     deleteAction: async (ids: string) => {
-      await deleteNotificationChannel(Number(ids));
+      await deleteNotificationChannel(ids);
     },
     toolbar: [],
     toolbarRight: ["add"],

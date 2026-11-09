@@ -32,7 +32,8 @@ export default function BiDesignerPage() {
   const { t, i18n } = useI18n();
   const [searchParams] = useSearchParams();
   const idParam = searchParams.get('id');
-  const dashboardId = idParam && Number(idParam) > 0 ? Number(idParam) : undefined;
+  // id 为 uint64（proto3 JSON 下是字符串），路由参数本就是字符串，空串/缺省视为未指定
+  const dashboardId = idParam && idParam !== '' && idParam !== '0' ? idParam : undefined;
   const { mutateAsync: savePayload } = useSaveBiDashboardPayload();
   const { rootRef, isFullscreen, toggle } = usePageFullscreen<HTMLDivElement>();
 

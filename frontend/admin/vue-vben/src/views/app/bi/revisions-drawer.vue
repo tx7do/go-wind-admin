@@ -18,7 +18,7 @@ import {
  */
 
 const visible = ref(false);
-const dashboardId = ref<number | undefined>(undefined);
+const dashboardId = ref<string | undefined>(undefined);
 const queryClient = useQueryClient();
 
 const revisions = useBiDashboardRevisions(
@@ -63,7 +63,7 @@ watch(visible, (v) => {
   }
 });
 
-function open(id: number) {
+function open(id: string) {
   dashboardId.value = id;
   visible.value = true;
 }

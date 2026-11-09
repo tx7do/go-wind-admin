@@ -68,10 +68,10 @@ export function useCreateMenu(options?: UseMutationOptions<{}, Error, Record<str
 }
 
 export function useUpdateMenu(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.menuService.Update({
         id,
         data: { ...values } as any,
@@ -216,9 +216,12 @@ export const isButton = (type: string) => type === "BUTTON";
 export const isEmbedded = (type: string) => type === "EMBEDDED";
 export const isLink = (type: string) => type === "LINK";
 
+/** 根菜单的 parentId 形态：undefined / '' / "0"（ID 已是字符串，uint64 零值序列化为 "0"） */
+export const isRootParentId = (parentId?: string) => !parentId || parentId === "0";
+
 export function travelMenuChild(nodes: Menu[] | undefined, parent: Menu): boolean {
   if (nodes === undefined) return false;
-  if (parent.parentId === 0 || parent.parentId === undefined) {
+  if (isRootParentId(parent.parentId)) {
     nodes.push(parent);
     return true;
   }
@@ -233,7 +236,7 @@ export function travelMenuChild(nodes: Menu[] | undefined, parent: Menu): boolea
   return false;
 }
 
-export function buildMenuTree(menus: Menu[], excludeId?: number): Menu[] {
+export function buildMenuTree(menus: Menu[], excludeId?: string): Menu[] {
   // 深拷贝，避免修改 vue-query 缓存中的原始数据
   const cloned = structuredClone(menus);
 
@@ -241,7 +244,7 @@ export function buildMenuTree(menus: Menu[], excludeId?: number): Menu[] {
   // 否则 excludeId 的子节点（parentId === excludeId）在下方构建时会
   // 因找不到父（excludeId 没进 tree）而被提升为顶层根节点，用户仍可能
   // 把该菜单的父级设成自己的后代，形成环。
-  const excludedIds = new Set<number>();
+  const excludedIds = new Set<string>();
   if (excludeId !== undefined) {
     excludedIds.add(excludeId);
     // 迭代收集所有后代：只要某节点的 parentId 已在集合中，它也是后代
@@ -266,14 +269,14 @@ export function buildMenuTree(menus: Menu[], excludeId?: number): Menu[] {
   for (const menu of cloned) {
     if (!menu) continue;
     if (menu.id != null && excludedIds.has(menu.id)) continue;
-    if (menu.parentId !== 0 && menu.parentId !== undefined) continue;
+    if (!isRootParentId(menu.parentId)) continue;
     if (menu?.name) menu.name = t(menu?.name ?? "");
     tree.push(menu);
   }
   for (const menu of cloned) {
     if (!menu) continue;
     if (menu.id != null && excludedIds.has(menu.id)) continue;
-    if (menu.parentId === 0 || menu.parentId === undefined) continue;
+    if (isRootParentId(menu.parentId)) continue;
     if (travelMenuChild(tree, menu)) continue;
     if (menu?.name) menu.name = t(menu?.name ?? "");
     tree.push(menu);

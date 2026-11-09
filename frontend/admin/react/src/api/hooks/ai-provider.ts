@@ -32,7 +32,7 @@ export async function fetchListAiProviders(params: PaginationQuery) {
 
 // 3. useGetAiProvider
 export function useGetAiProvider(
-  req: { id: number },
+  req: { id: string },
   options?: Omit<UseQueryOptions<aiservicev1_AiProvider, Error>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
@@ -51,10 +51,10 @@ export function useCreateAiProvider(
 
 // 5. useUpdateAiProvider — 固定签名 { id, values }，内部自动构建 updateMask
 export function useUpdateAiProvider(
-  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
+  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.aiProviderService.Update({
         id,
         data: { ...values } as any,

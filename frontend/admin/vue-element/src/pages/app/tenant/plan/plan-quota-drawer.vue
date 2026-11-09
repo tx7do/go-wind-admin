@@ -120,7 +120,8 @@ watch(visible, (val) => {
       const row = data.value.row;
       formData.value = {
         quotaType: row.quotaType || "PLAN_QUOTA_TYPE_UNSPECIFIED",
-        quotaValue: row.quotaValue ?? 0,
+        // uint64 经 protojson 是字符串，表单数值输入框需要数字
+        quotaValue: Number(row.quotaValue ?? 0),
       };
     } else {
       // 创建模式

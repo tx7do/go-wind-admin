@@ -43,7 +43,7 @@ const NotificationPreference = () => {
   const [quietEnabled, setQuietEnabled] = useState<boolean>(false);
   const [quietStart, setQuietStart] = useState<Dayjs | undefined>(minutesToDayjs(1320));
   const [quietEnd, setQuietEnd] = useState<Dayjs | undefined>(minutesToDayjs(480));
-  const [mutedCategoryIds, setMutedCategoryIds] = useState<number[]>([]);
+  const [mutedCategoryIds, setMutedCategoryIds] = useState<string[]>([]); // 分类 id 为 uint64 字符串
 
   useEffect(() => {
     const pref = prefQuery.data;
@@ -90,7 +90,7 @@ const NotificationPreference = () => {
 
   const categoryOptions = (categoriesQuery.data?.items ?? []).map((c) => ({
     label: c.name ?? '',
-    value: c.id ?? 0,
+    value: c.id ?? '',
   }));
 
   return (
@@ -143,7 +143,7 @@ const NotificationPreference = () => {
           <Checkbox.Group
             options={categoryOptions}
             value={mutedCategoryIds}
-            onChange={(values) => setMutedCategoryIds(values as number[])}
+            onChange={(values) => setMutedCategoryIds(values as string[])}
             style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}
           />
         ) : (

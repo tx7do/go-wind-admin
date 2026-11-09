@@ -78,11 +78,11 @@ export function useUpdateMenu(
   options?: UseMutationOptions<
     object,
     Error,
-    { id: number; values: Record<string, any> }
+    { id: string; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
       apiClient.menuService.Update({
         id,
         data: { ...values } as any,
@@ -249,7 +249,7 @@ export function travelMenuChild(
   parent: Menu,
 ): boolean {
   if (nodes === undefined) return false;
-  if (parent.parentId === 0 || parent.parentId === undefined) {
+  if (parent.parentId === '0' || parent.parentId === undefined) {
     nodes.push(parent);
     return true;
   }
@@ -270,12 +270,12 @@ export function buildMenuTree(menus: Menu[]): Menu[] {
   const tree: Menu[] = [];
   for (const menu of cloned) {
     if (!menu) continue;
-    if (menu.parentId !== 0 && menu.parentId !== undefined) continue;
+    if (menu.parentId !== '0' && menu.parentId !== undefined) continue;
     tree.push(menu);
   }
   for (const menu of cloned) {
     if (!menu) continue;
-    if (menu.parentId === 0 || menu.parentId === undefined) continue;
+    if (menu.parentId === '0' || menu.parentId === undefined) continue;
     if (travelMenuChild(tree, menu)) continue;
     tree.push(menu);
   }

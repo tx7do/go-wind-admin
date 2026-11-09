@@ -7,7 +7,7 @@ import { useBiDashboardRevisions, useRestoreBiDashboardRevision } from '@/api/ho
 
 interface RevisionsDrawerProps {
   open: boolean;
-  dashboardId: number | undefined;
+  dashboardId: string | undefined; // uint64 → proto3 JSON 下为字符串
   onClose: () => void;
 }
 

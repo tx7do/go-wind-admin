@@ -67,11 +67,11 @@ const activeTab = ref<TabEnum>(TabEnum.BASIC_INFO);
 const route = useRoute();
 const router = useRouter();
 
+// 路由参数本来就是字符串，ID 升级 uint64 后直接透传，不再 Number() 互转
 const userId = computed(() => {
-  const id = route.params.id ?? -1;
-  const num = Number(id);
-  // 防止非数字 id（如 'abc'）产生 NaN 传入接口，对齐 React 版守卫
-  return isNaN(num) ? undefined : num;
+  const id = route.params.id;
+  if (Array.isArray(id)) return id[0];
+  return id || undefined;
 });
 
 const { mutateAsync: updateUser } = useUpdateUser();

@@ -20,7 +20,7 @@ interface UserDrawerProps {
   open: boolean;
   mode: 'create' | 'edit';
   data?: any;
-  tenantId: number | undefined;
+  tenantId: string | undefined; // uint64 → proto3 JSON 下为字符串
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -55,7 +55,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
   // 下拉数据
   const [roleTreeData, setRoleTreeData] = useState<any[]>([]);
   const [orgUnitTreeData, setOrgUnitTreeData] = useState<any[]>([]);
-  const [positionOptions, setPositionOptions] = useState<{ label: string; value: number }[]>([]);
+  const [positionOptions, setPositionOptions] = useState<{ label: string; value: string }[]>([]);
 
   // 加载下拉数据
   useEffect(() => {

@@ -513,14 +513,14 @@ function NodeConfigDrawer({
   onClose: () => void;
   onConfigChange: (config: Record<string, any>) => void;
   onDelete: () => void;
-  excludeAppId?: number;
+  excludeAppId?: string;
 }) {
   const { t } = useTranslation('ai-agent');
   const [form] = Form.useForm();
   const knowledgeQuery = useListAiKnowledgeBases(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }));
   const providerQuery = useListAiProviders(new PaginationQuery({ paging: { page: 1, pageSize: 100 } }));
   // 子图（subflow）目标应用下拉：排除当前应用自身（防自引用死循环）
-  const [agentOptions, setAgentOptions] = useState<Array<{ id: number; name: string }>>([]);
+  const [agentOptions, setAgentOptions] = useState<Array<{ id: string; name: string }>>([]);
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -782,7 +782,7 @@ function TestRunDrawer({
   runMutation,
 }: {
   open: boolean;
-  appId: number | undefined;
+  appId: string | undefined;
   inputVars: any[];
   onClose: () => void;
   runMutation: ReturnType<typeof useRunAiAgentApp>;

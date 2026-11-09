@@ -18,7 +18,7 @@ import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
 import { $t } from '#/locales';
 
 const props = defineProps({
-  userId: { type: Number, default: undefined },
+  userId: { type: String, default: undefined },
 });
 
 const formOptions: VbenFormProps = {

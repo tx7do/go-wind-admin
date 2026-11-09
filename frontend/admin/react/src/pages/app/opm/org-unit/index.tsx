@@ -80,7 +80,7 @@ const OrgUnitManagement = () => {
     const keys: React.Key[] = [];
     const collectKeys = (items: OrgUnit[]) => {
       items.forEach((item) => {
-        keys.push(item.id as number);
+        keys.push(item.id ?? '');
         if ((item as any).children?.length) {
           collectKeys((item as any).children);
         }
