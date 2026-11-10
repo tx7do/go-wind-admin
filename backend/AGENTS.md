@@ -182,7 +182,7 @@ message Product {
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
 }
 
-message ListProductResponse { repeated Product items = 1; uint64 total = 2; }
+message ListProductResponse { repeated Product items = 1; int64 total = 2; }
 message GetProductRequest {
   oneof query_by { uint32 id = 1; }
   optional google.protobuf.FieldMask view_mask = 100 [json_name = "viewMask"];
@@ -195,7 +195,7 @@ message UpdateProductRequest {
   optional bool allow_missing = 4 [json_name = "allowMissing"];
 }
 message DeleteProductRequest { oneof query_by { uint32 id = 1; } }
-message CountProductResponse { uint64 count = 1; }
+message CountProductResponse { int64 count = 1; }
 ```
 
 ### Step 2: BFF 层 - 定义 REST Service

@@ -35,7 +35,7 @@
 - 照抄样例：`dict_type.proto` + `i_dict_type.proto`。两个容易认错的点：
   - `additional_bindings` 在这个样例里只出现在 **Get** 上（`/admin/v1/dict/types/{id}` 之外再给一条
     `/admin/v1/dict/types/code/{code}`）——它是"同一个 RPC 换一种查法"，不是批量删除的机制；
-  - **批量删除不靠 HTTP 绑定**，靠请求体形状：`DeleteDictTypeRequest { repeated uint64 ids = 1; }`
+  - **批量删除不靠 HTTP 绑定**，靠请求体形状：`DeleteDictTypeRequest { repeated int64 ids = 1; }`
     （`dict_type.proto:128-130`），且 Delete 的绑定**没有** `body: "*"`，所以 `ids` 走 query 参数
     （`?ids=1&ids=2`）。多维查询同理，走 List 的 `filter`/`filter_expr` 而非新增绑定。
 
@@ -52,7 +52,7 @@ cd backend && gow api && make openapi
 `internal/data/ent/schema/<entity>.go`：`Annotations()`（表名 `sys_<entities>`、注释）、
 `Fields()`（业务字段全部 `Optional().Nillable()`）、`Mixin()`（第 03 章第 4 节的清单）、
 `Indexes()`。**树形态不手写 `parent_id`，加一个 `mixin.Tree64[<Entity>]{}` 就够**——该 mixin 同时给出
-`parent_id`（`Uint64`、`Optional().Nillable()`）与自引用边 `edge.To("children", T.Type).From("parent").Field("parent_id")`。
+`parent_id`（`Int64`、`Optional().Nillable()`）与自引用边 `edge.To("children", T.Type).From("parent").Field("parent_id")`。
 本仓三棵树（`menu.go` / `org_unit.go` / `permission_group.go`）都是这么接的，schema 里没有一处手写边。
 两点补充：
 

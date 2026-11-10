@@ -55,7 +55,7 @@ internal/data/ent/<entity>/**            🤖 gow ent 生成：查询构建器�
 
 - **Mixin 装配公共列**（全仓实际用到的）：`AutoIncrementId64` / `TimeAt`（created_at 等）/
   `OperatorID64`（created_by 等）/ `SwitchStatus`（status 枚举，默认 ON）/ `IsEnabled` / `SortOrder` /
-  `Remark` / `Description` / `TenantID[uint64]{}`（租户表）/ `Tree64[<Entity>]{}`（树表：给 `parent_id`
+  `Remark` / `Description` / `TenantID[int64]{}`（租户表）/ `Tree64[<Entity>]{}`（树表：给 `parent_id`
   与 children/parent 边）/ `TreePath{}`（给 `path` 列）。mixin 提供的列名与 proto 审计字段一一对应，
   mapper 按名接线；
 - **枚举列**：`field.Enum(...).NamedValues(...)` + proto 枚举**两端命名逐字一致**

@@ -4,7 +4,7 @@
 
 ## 1. 租户模型
 
-- 每个带租户维度的表有 `tenant_id` 列（ent `mixin.TenantID[uint64]{}` 装配，见第 03 章）；
+- 每个带租户维度的表有 `tenant_id` 列（ent `mixin.TenantID[int64]{}` 装配，见第 03 章）；
 - 请求进入后端后，认证中间件（`pkg/middleware/auth`）从已验签的令牌构建
   **ViewerContext**（租户 ID + 平台/系统上下文标志；标准实现在 `go-crud/viewer` 库，
   本仓 `pkg/entgo/viewer` 仅做数据范围声明的映射适配），
@@ -40,7 +40,7 @@ Create 强制覆盖 tenant_id 防伪造；显式改 tenant_id 值仅放行"同�
 组合策略：`TenantAndDataScopePolicy`（`schema/data_scope_guard.go`）把租户变更防护与
 数据范围查询过滤链在一起——任一子策略拒绝即整体拒绝。
 
-**接新表**：`Mixin()` 加 `mixin.TenantID[uint64]{}`（库层全形态隔离自动生效），
+**接新表**：`Mixin()` 加 `mixin.TenantID[int64]{}`（库层全形态隔离自动生效），
 且 `Policy()` 返回 `&TenantMutationGuardPolicy{}`——现有 33 张租户表**无一例外**都挂了
 （其中岗位表 `position.go:188` 返的是组合策略 `TenantAndDataScopePolicy{}`，见第 4 节）。
 完整步骤与守卫单测范式见参考文档第 7 节。
