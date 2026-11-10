@@ -19,29 +19,29 @@ service AiUsageLogService {
 
 // AI 调用用量流水（每次成功的模型调用一行；配额按 total_tokens 聚合）
 message AiUsageLog {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "流水ID"
     }
   ]; // 流水ID
 
-  optional uint64 provider_id = 2 [
+  optional int64 provider_id = 2 [
     json_name = "providerId",
     (gnostic.openapi.v3.property) = {description: "提供商ID"}
   ]; // 提供商ID
 
-  optional uint64 conversation_id = 3 [
+  optional int64 conversation_id = 3 [
     json_name = "conversationId",
     (gnostic.openapi.v3.property) = {description: "会话ID（0 表示非对话调用）"}
   ]; // 会话ID
 
-  optional uint64 user_id = 4 [
+  optional int64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "发起用户ID"}
   ]; // 发起用户ID
 
-  optional uint64 tenant_id = 5 [
+  optional int64 tenant_id = 5 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID（0 表示平台自用）"}
   ]; // 租户ID
@@ -77,11 +77,11 @@ message AiUsageLog {
 // 查询用量流水列表 - 回应
 message ListAiUsageLogResponse {
   repeated AiUsageLog items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 message CountAiUsageLogResponse {
-  uint64 count = 1; // 流水条数
+  int64 count = 1; // 流水条数
 }
 
 // 当月用量汇总 - 回应

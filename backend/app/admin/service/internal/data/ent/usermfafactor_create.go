@@ -65,13 +65,13 @@ func (_c *UserMfaFactorCreate) SetNillableDeletedAt(v *time.Time) *UserMfaFactor
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *UserMfaFactorCreate) SetTenantID(v uint64) *UserMfaFactorCreate {
+func (_c *UserMfaFactorCreate) SetTenantID(v int64) *UserMfaFactorCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *UserMfaFactorCreate) SetNillableTenantID(v *uint64) *UserMfaFactorCreate {
+func (_c *UserMfaFactorCreate) SetNillableTenantID(v *int64) *UserMfaFactorCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *UserMfaFactorCreate) SetNillableTenantID(v *uint64) *UserMfaFactorCrea
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *UserMfaFactorCreate) SetUserID(v uint64) *UserMfaFactorCreate {
+func (_c *UserMfaFactorCreate) SetUserID(v int64) *UserMfaFactorCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *UserMfaFactorCreate) SetNillableUserID(v *uint64) *UserMfaFactorCreate {
+func (_c *UserMfaFactorCreate) SetNillableUserID(v *int64) *UserMfaFactorCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -163,7 +163,7 @@ func (_c *UserMfaFactorCreate) SetNillableLastUsedAt(v *time.Time) *UserMfaFacto
 }
 
 // SetID sets the "id" field.
-func (_c *UserMfaFactorCreate) SetID(v uint64) *UserMfaFactorCreate {
+func (_c *UserMfaFactorCreate) SetID(v int64) *UserMfaFactorCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -263,7 +263,7 @@ func (_c *UserMfaFactorCreate) sqlSave(ctx context.Context) (*UserMfaFactor, err
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -273,7 +273,7 @@ func (_c *UserMfaFactorCreate) sqlSave(ctx context.Context) (*UserMfaFactor, err
 func (_c *UserMfaFactorCreate) createSpec() (*UserMfaFactor, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserMfaFactor{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(usermfafactor.Table, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(usermfafactor.Table, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -293,11 +293,11 @@ func (_c *UserMfaFactorCreate) createSpec() (*UserMfaFactor, *sqlgraph.CreateSpe
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(usermfafactor.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(usermfafactor.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(usermfafactor.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(usermfafactor.FieldUserID, field.TypeInt64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.Method(); ok {
@@ -409,7 +409,7 @@ func (u *UserMfaFactorUpsert) ClearDeletedAt() *UserMfaFactorUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserMfaFactorUpsert) SetUserID(v uint64) *UserMfaFactorUpsert {
+func (u *UserMfaFactorUpsert) SetUserID(v int64) *UserMfaFactorUpsert {
 	u.Set(usermfafactor.FieldUserID, v)
 	return u
 }
@@ -421,7 +421,7 @@ func (u *UserMfaFactorUpsert) UpdateUserID() *UserMfaFactorUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserMfaFactorUpsert) AddUserID(v uint64) *UserMfaFactorUpsert {
+func (u *UserMfaFactorUpsert) AddUserID(v int64) *UserMfaFactorUpsert {
 	u.Add(usermfafactor.FieldUserID, v)
 	return u
 }
@@ -619,14 +619,14 @@ func (u *UserMfaFactorUpsertOne) ClearDeletedAt() *UserMfaFactorUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserMfaFactorUpsertOne) SetUserID(v uint64) *UserMfaFactorUpsertOne {
+func (u *UserMfaFactorUpsertOne) SetUserID(v int64) *UserMfaFactorUpsertOne {
 	return u.Update(func(s *UserMfaFactorUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserMfaFactorUpsertOne) AddUserID(v uint64) *UserMfaFactorUpsertOne {
+func (u *UserMfaFactorUpsertOne) AddUserID(v int64) *UserMfaFactorUpsertOne {
 	return u.Update(func(s *UserMfaFactorUpsert) {
 		s.AddUserID(v)
 	})
@@ -767,7 +767,7 @@ func (u *UserMfaFactorUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserMfaFactorUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *UserMfaFactorUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -776,7 +776,7 @@ func (u *UserMfaFactorUpsertOne) ID(ctx context.Context) (id uint64, err error) 
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserMfaFactorUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *UserMfaFactorUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -833,7 +833,7 @@ func (_c *UserMfaFactorCreateBulk) Save(ctx context.Context) ([]*UserMfaFactor, 
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1014,14 +1014,14 @@ func (u *UserMfaFactorUpsertBulk) ClearDeletedAt() *UserMfaFactorUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserMfaFactorUpsertBulk) SetUserID(v uint64) *UserMfaFactorUpsertBulk {
+func (u *UserMfaFactorUpsertBulk) SetUserID(v int64) *UserMfaFactorUpsertBulk {
 	return u.Update(func(s *UserMfaFactorUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserMfaFactorUpsertBulk) AddUserID(v uint64) *UserMfaFactorUpsertBulk {
+func (u *UserMfaFactorUpsertBulk) AddUserID(v int64) *UserMfaFactorUpsertBulk {
 	return u.Update(func(s *UserMfaFactorUpsert) {
 		s.AddUserID(v)
 	})

@@ -30,21 +30,21 @@ import (
 )
 
 // sweepSeedSeq 给测试里的 request_id 补一个保证唯一的序号。
-var sweepSeedSeq atomic.Uint64
+var sweepSeedSeq atomic.Int64
 
 // deliveryOutcomeSent 一次成功投递的回写内容，用来在测试里充当"handler 已经把这一行定案"。
 func deliveryOutcomeSent() data.DeliveryOutcome {
 	sentAt := time.Now()
 	return data.DeliveryOutcome{
 		Status:    notificationV1.DeliveryStatus_SENT,
-		ChannelID: trans.Ptr(uint64(42)),
+		ChannelID: trans.Ptr(int64(42)),
 		SentAt:    &sentAt,
 	}
 }
 
 // seedSendingRow 直接经仓储落一行台账，created_at 由调用方决定（服务层的 SendDirect 只会写"现在"）。
 // attempts 同样手工写：Create 收不到这一列（它是结果列，只有 MarkAttempted/MarkResult 写得动）。
-func (e *notificationSvcEnv) seedSendingRow(t *testing.T, age time.Duration, attempts uint32) uint64 {
+func (e *notificationSvcEnv) seedSendingRow(t *testing.T, age time.Duration, attempts uint32) int64 {
 	t.Helper()
 
 	// createdAt.UnixNano() 单独做键不够用：连排落库时拿到的时间戳会重复（本机 5 行一批实测撞过
@@ -118,7 +118,7 @@ func TestNotificationServiceSqlite_SweepDoesNotOverwriteConcurrentResult(t *test
 	got, err := e.svc.GetNotificationDelivery(e.ctx, &notificationV1.GetNotificationDeliveryRequest{Id: id})
 	require.NoError(t, err)
 	require.Equal(t, notificationV1.DeliveryStatus_SENT, got.GetStatus())
-	require.Equal(t, uint64(42), got.GetChannelId(), "已有的回执不能被清扫抹掉")
+	require.Equal(t, int64(42), got.GetChannelId(), "已有的回执不能被清扫抹掉")
 }
 
 // TestSweptRowIsNeverDispatched 清扫的代价：定案之后 asynq 才把任务跑完，也会被幂等门挡掉。

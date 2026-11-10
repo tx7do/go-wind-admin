@@ -65,13 +65,13 @@ func (_c *NotificationTemplateCreate) SetNillableDeletedAt(v *time.Time) *Notifi
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *NotificationTemplateCreate) SetCreatedBy(v uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetCreatedBy(v int64) *NotificationTemplateCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *NotificationTemplateCreate) SetNillableCreatedBy(v *uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetNillableCreatedBy(v *int64) *NotificationTemplateCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *NotificationTemplateCreate) SetNillableCreatedBy(v *uint64) *Notificat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *NotificationTemplateCreate) SetUpdatedBy(v uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetUpdatedBy(v int64) *NotificationTemplateCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *NotificationTemplateCreate) SetNillableUpdatedBy(v *uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetNillableUpdatedBy(v *int64) *NotificationTemplateCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *NotificationTemplateCreate) SetNillableUpdatedBy(v *uint64) *Notificat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *NotificationTemplateCreate) SetDeletedBy(v uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetDeletedBy(v int64) *NotificationTemplateCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *NotificationTemplateCreate) SetNillableDeletedBy(v *uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetNillableDeletedBy(v *int64) *NotificationTemplateCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -191,7 +191,7 @@ func (_c *NotificationTemplateCreate) SetNillableContentTemplate(v *string) *Not
 }
 
 // SetID sets the "id" field.
-func (_c *NotificationTemplateCreate) SetID(v uint64) *NotificationTemplateCreate {
+func (_c *NotificationTemplateCreate) SetID(v int64) *NotificationTemplateCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -280,7 +280,7 @@ func (_c *NotificationTemplateCreate) sqlSave(ctx context.Context) (*Notificatio
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -290,7 +290,7 @@ func (_c *NotificationTemplateCreate) sqlSave(ctx context.Context) (*Notificatio
 func (_c *NotificationTemplateCreate) createSpec() (*NotificationTemplate, *sqlgraph.CreateSpec) {
 	var (
 		_node = &NotificationTemplate{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(notificationtemplate.Table, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(notificationtemplate.Table, sqlgraph.NewFieldSpec(notificationtemplate.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -310,15 +310,15 @@ func (_c *NotificationTemplateCreate) createSpec() (*NotificationTemplate, *sqlg
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationtemplate.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationtemplate.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(notificationtemplate.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -434,7 +434,7 @@ func (u *NotificationTemplateUpsert) ClearDeletedAt() *NotificationTemplateUpser
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationTemplateUpsert) SetCreatedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) SetCreatedBy(v int64) *NotificationTemplateUpsert {
 	u.Set(notificationtemplate.FieldCreatedBy, v)
 	return u
 }
@@ -446,7 +446,7 @@ func (u *NotificationTemplateUpsert) UpdateCreatedBy() *NotificationTemplateUpse
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationTemplateUpsert) AddCreatedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) AddCreatedBy(v int64) *NotificationTemplateUpsert {
 	u.Add(notificationtemplate.FieldCreatedBy, v)
 	return u
 }
@@ -458,7 +458,7 @@ func (u *NotificationTemplateUpsert) ClearCreatedBy() *NotificationTemplateUpser
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationTemplateUpsert) SetUpdatedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) SetUpdatedBy(v int64) *NotificationTemplateUpsert {
 	u.Set(notificationtemplate.FieldUpdatedBy, v)
 	return u
 }
@@ -470,7 +470,7 @@ func (u *NotificationTemplateUpsert) UpdateUpdatedBy() *NotificationTemplateUpse
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationTemplateUpsert) AddUpdatedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) AddUpdatedBy(v int64) *NotificationTemplateUpsert {
 	u.Add(notificationtemplate.FieldUpdatedBy, v)
 	return u
 }
@@ -482,7 +482,7 @@ func (u *NotificationTemplateUpsert) ClearUpdatedBy() *NotificationTemplateUpser
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationTemplateUpsert) SetDeletedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) SetDeletedBy(v int64) *NotificationTemplateUpsert {
 	u.Set(notificationtemplate.FieldDeletedBy, v)
 	return u
 }
@@ -494,7 +494,7 @@ func (u *NotificationTemplateUpsert) UpdateDeletedBy() *NotificationTemplateUpse
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationTemplateUpsert) AddDeletedBy(v uint64) *NotificationTemplateUpsert {
+func (u *NotificationTemplateUpsert) AddDeletedBy(v int64) *NotificationTemplateUpsert {
 	u.Add(notificationtemplate.FieldDeletedBy, v)
 	return u
 }
@@ -707,14 +707,14 @@ func (u *NotificationTemplateUpsertOne) ClearDeletedAt() *NotificationTemplateUp
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationTemplateUpsertOne) SetCreatedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) SetCreatedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationTemplateUpsertOne) AddCreatedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) AddCreatedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -735,14 +735,14 @@ func (u *NotificationTemplateUpsertOne) ClearCreatedBy() *NotificationTemplateUp
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationTemplateUpsertOne) SetUpdatedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) SetUpdatedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationTemplateUpsertOne) AddUpdatedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) AddUpdatedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -763,14 +763,14 @@ func (u *NotificationTemplateUpsertOne) ClearUpdatedBy() *NotificationTemplateUp
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationTemplateUpsertOne) SetDeletedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) SetDeletedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationTemplateUpsertOne) AddDeletedBy(v uint64) *NotificationTemplateUpsertOne {
+func (u *NotificationTemplateUpsertOne) AddDeletedBy(v int64) *NotificationTemplateUpsertOne {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -932,7 +932,7 @@ func (u *NotificationTemplateUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *NotificationTemplateUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *NotificationTemplateUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -941,7 +941,7 @@ func (u *NotificationTemplateUpsertOne) ID(ctx context.Context) (id uint64, err 
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *NotificationTemplateUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *NotificationTemplateUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -998,7 +998,7 @@ func (_c *NotificationTemplateCreateBulk) Save(ctx context.Context) ([]*Notifica
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1176,14 +1176,14 @@ func (u *NotificationTemplateUpsertBulk) ClearDeletedAt() *NotificationTemplateU
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationTemplateUpsertBulk) SetCreatedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) SetCreatedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationTemplateUpsertBulk) AddCreatedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) AddCreatedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1204,14 +1204,14 @@ func (u *NotificationTemplateUpsertBulk) ClearCreatedBy() *NotificationTemplateU
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationTemplateUpsertBulk) SetUpdatedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) SetUpdatedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationTemplateUpsertBulk) AddUpdatedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) AddUpdatedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1232,14 +1232,14 @@ func (u *NotificationTemplateUpsertBulk) ClearUpdatedBy() *NotificationTemplateU
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationTemplateUpsertBulk) SetDeletedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) SetDeletedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationTemplateUpsertBulk) AddDeletedBy(v uint64) *NotificationTemplateUpsertBulk {
+func (u *NotificationTemplateUpsertBulk) AddDeletedBy(v int64) *NotificationTemplateUpsertBulk {
 	return u.Update(func(s *NotificationTemplateUpsert) {
 		s.AddDeletedBy(v)
 	})

@@ -24,8 +24,8 @@ func (AiConversation) Annotations() []schema.Annotation {
 func (AiConversation) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("title").Comment("会话标题").Optional().Nillable(),
-		field.Uint64("provider_id").Comment("会话使用的提供商ID（0=未指定）").Optional().Nillable(),
-		field.Uint64("user_id").Comment("归属用户ID").Optional().Nillable(),
+		field.Int64("provider_id").Comment("会话使用的提供商ID（0=未指定）").Optional().Nillable(),
+		field.Int64("user_id").Comment("归属用户ID").Optional().Nillable(),
 		field.Time("last_message_at").Comment("最近一条消息时间").Optional().Nillable(),
 	}
 }
@@ -35,7 +35,7 @@ func (AiConversation) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

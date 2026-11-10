@@ -263,7 +263,7 @@ func (s *AiAgentService) Run(ctx context.Context, req *aiV1.RunAiAgentAppRequest
 			return
 		}
 		// 尽力而为：订阅端慢/断线即丢帧；Run 同步响应携带完整 trace，以响应为准。
-		s.runPublisher.TryPublish(ctx, sse.StreamID(strconv.FormatUint(uint64(operator.UserId), 10)), &sse.Event{
+		s.runPublisher.TryPublish(ctx, sse.StreamID(strconv.FormatInt(operator.UserId, 10)), &sse.Event{
 			ID:    []byte(id.NewGUIDv4(false)),
 			Data:  data,
 			Event: []byte(sseevent.AgentRun),
@@ -310,7 +310,7 @@ func (s *AiAgentService) ListRuns(ctx context.Context, req *paginationV1.PagingR
 
 // loadSubflowGraph subflow 节点的真实现：加载目标应用（enabled 校验）并解析其图。
 // 同租户隔离（ent viewer 租户谓词）：跨租户引用查不到即报错，不越权。
-func (s *AiAgentService) loadSubflowGraph(ctx context.Context, appID uint64) (string, *agentGraph, error) {
+func (s *AiAgentService) loadSubflowGraph(ctx context.Context, appID int64) (string, *agentGraph, error) {
 	app, err := s.appRepo.GetEntityByID(ctx, appID)
 	if err != nil {
 		return "", nil, err
@@ -344,7 +344,7 @@ func (s *AiAgentService) ListRevisions(ctx context.Context, req *aiV1.ListAiAgen
 	if err != nil {
 		return nil, err
 	}
-	return &aiV1.ListAiAgentRevisionsResponse{Items: items, Total: uint64(total)}, nil
+	return &aiV1.ListAiAgentRevisionsResponse{Items: items, Total: int64(total)}, nil
 }
 
 // RestoreRevision 恢复版本：快照 graph 写回主表。恢复动作本身先把**当前 graph**
@@ -518,9 +518,9 @@ func (s *AiAgentService) runLLMForAgent(operator *authenticationV1.UserTokenPayl
 			return "", agentUsage{}, err
 		}
 		return answer, agentUsage{
-			Prompt:     uint64(usage.PromptTokens),
-			Completion: uint64(usage.CompletionTokens),
-			Total:      uint64(usage.TotalTokens),
+			Prompt:     int64(usage.PromptTokens),
+			Completion: int64(usage.CompletionTokens),
+			Total:      int64(usage.TotalTokens),
 		}, nil
 	}
 }

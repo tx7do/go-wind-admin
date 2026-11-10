@@ -70,14 +70,14 @@ func (_u *RolePermissionUpdate) ClearDeletedAt() *RolePermissionUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RolePermissionUpdate) SetCreatedBy(v uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetCreatedBy(v int64) *RolePermissionUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RolePermissionUpdate) SetNillableCreatedBy(v *uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetNillableCreatedBy(v *int64) *RolePermissionUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *RolePermissionUpdate) ClearCreatedBy() *RolePermissionUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RolePermissionUpdate) SetUpdatedBy(v uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetUpdatedBy(v int64) *RolePermissionUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RolePermissionUpdate) SetNillableUpdatedBy(v *uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetNillableUpdatedBy(v *int64) *RolePermissionUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *RolePermissionUpdate) ClearUpdatedBy() *RolePermissionUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RolePermissionUpdate) SetDeletedBy(v uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetDeletedBy(v int64) *RolePermissionUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RolePermissionUpdate) SetNillableDeletedBy(v *uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetNillableDeletedBy(v *int64) *RolePermissionUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -165,14 +165,14 @@ func (_u *RolePermissionUpdate) SetNillableStatus(v *rolepermission.Status) *Rol
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *RolePermissionUpdate) SetRoleID(v uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetRoleID(v int64) *RolePermissionUpdate {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *RolePermissionUpdate) SetNillableRoleID(v *uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetNillableRoleID(v *int64) *RolePermissionUpdate {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -186,14 +186,14 @@ func (_u *RolePermissionUpdate) AddRoleID(v int64) *RolePermissionUpdate {
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_u *RolePermissionUpdate) SetPermissionID(v uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetPermissionID(v int64) *RolePermissionUpdate {
 	_u.mutation.ResetPermissionID()
 	_u.mutation.SetPermissionID(v)
 	return _u
 }
 
 // SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (_u *RolePermissionUpdate) SetNillablePermissionID(v *uint64) *RolePermissionUpdate {
+func (_u *RolePermissionUpdate) SetNillablePermissionID(v *int64) *RolePermissionUpdate {
 	if v != nil {
 		_u.SetPermissionID(*v)
 	}
@@ -310,7 +310,7 @@ func (_u *RolePermissionUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(rolepermission.Table, rolepermission.Columns, sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(rolepermission.Table, rolepermission.Columns, sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -334,49 +334,49 @@ func (_u *RolePermissionUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.ClearField(rolepermission.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(rolepermission.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(rolepermission.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(rolepermission.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(rolepermission.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(rolepermission.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(rolepermission.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(rolepermission.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(rolepermission.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(rolepermission.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(rolepermission.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(rolepermission.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(rolepermission.FieldRoleID, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldRoleID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(rolepermission.FieldRoleID, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldRoleID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PermissionID(); ok {
-		_spec.SetField(rolepermission.FieldPermissionID, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
-		_spec.AddField(rolepermission.FieldPermissionID, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Effect(); ok {
 		_spec.SetField(rolepermission.FieldEffect, field.TypeEnum, value)
@@ -456,14 +456,14 @@ func (_u *RolePermissionUpdateOne) ClearDeletedAt() *RolePermissionUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *RolePermissionUpdateOne) SetCreatedBy(v uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetCreatedBy(v int64) *RolePermissionUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *RolePermissionUpdateOne) SetNillableCreatedBy(v *uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetNillableCreatedBy(v *int64) *RolePermissionUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -483,14 +483,14 @@ func (_u *RolePermissionUpdateOne) ClearCreatedBy() *RolePermissionUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *RolePermissionUpdateOne) SetUpdatedBy(v uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetUpdatedBy(v int64) *RolePermissionUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *RolePermissionUpdateOne) SetNillableUpdatedBy(v *uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetNillableUpdatedBy(v *int64) *RolePermissionUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -510,14 +510,14 @@ func (_u *RolePermissionUpdateOne) ClearUpdatedBy() *RolePermissionUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *RolePermissionUpdateOne) SetDeletedBy(v uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetDeletedBy(v int64) *RolePermissionUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *RolePermissionUpdateOne) SetNillableDeletedBy(v *uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetNillableDeletedBy(v *int64) *RolePermissionUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -551,14 +551,14 @@ func (_u *RolePermissionUpdateOne) SetNillableStatus(v *rolepermission.Status) *
 }
 
 // SetRoleID sets the "role_id" field.
-func (_u *RolePermissionUpdateOne) SetRoleID(v uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetRoleID(v int64) *RolePermissionUpdateOne {
 	_u.mutation.ResetRoleID()
 	_u.mutation.SetRoleID(v)
 	return _u
 }
 
 // SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (_u *RolePermissionUpdateOne) SetNillableRoleID(v *uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetNillableRoleID(v *int64) *RolePermissionUpdateOne {
 	if v != nil {
 		_u.SetRoleID(*v)
 	}
@@ -572,14 +572,14 @@ func (_u *RolePermissionUpdateOne) AddRoleID(v int64) *RolePermissionUpdateOne {
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_u *RolePermissionUpdateOne) SetPermissionID(v uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetPermissionID(v int64) *RolePermissionUpdateOne {
 	_u.mutation.ResetPermissionID()
 	_u.mutation.SetPermissionID(v)
 	return _u
 }
 
 // SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (_u *RolePermissionUpdateOne) SetNillablePermissionID(v *uint64) *RolePermissionUpdateOne {
+func (_u *RolePermissionUpdateOne) SetNillablePermissionID(v *int64) *RolePermissionUpdateOne {
 	if v != nil {
 		_u.SetPermissionID(*v)
 	}
@@ -709,7 +709,7 @@ func (_u *RolePermissionUpdateOne) sqlSave(ctx context.Context) (_node *RolePerm
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(rolepermission.Table, rolepermission.Columns, sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(rolepermission.Table, rolepermission.Columns, sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RolePermission.id" for update`)}
@@ -750,49 +750,49 @@ func (_u *RolePermissionUpdateOne) sqlSave(ctx context.Context) (_node *RolePerm
 		_spec.ClearField(rolepermission.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(rolepermission.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(rolepermission.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(rolepermission.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(rolepermission.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(rolepermission.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(rolepermission.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(rolepermission.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(rolepermission.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(rolepermission.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(rolepermission.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(rolepermission.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(rolepermission.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.RoleID(); ok {
-		_spec.SetField(rolepermission.FieldRoleID, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldRoleID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedRoleID(); ok {
-		_spec.AddField(rolepermission.FieldRoleID, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldRoleID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PermissionID(); ok {
-		_spec.SetField(rolepermission.FieldPermissionID, field.TypeUint64, value)
+		_spec.SetField(rolepermission.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
-		_spec.AddField(rolepermission.FieldPermissionID, field.TypeUint64, value)
+		_spec.AddField(rolepermission.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Effect(); ok {
 		_spec.SetField(rolepermission.FieldEffect, field.TypeEnum, value)

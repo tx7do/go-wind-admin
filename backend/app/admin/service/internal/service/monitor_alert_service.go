@@ -170,7 +170,7 @@ func (s *MonitorAlertService) EvaluateMonitorAlerts(ctx context.Context, _ *moni
 // ==== 评估内核 ====
 
 type alertOutcome struct {
-	ruleID       uint64
+	ruleID       int64
 	name         string
 	firing       bool
 	currentValue *float64
@@ -389,7 +389,7 @@ func (s *MonitorAlertService) sendAlert(ctx context.Context, rule *monitorAlertV
 		Title:          title,
 		Content:        content,
 		RelatedId:      rule.Id,
-		OperatorUserId: trans.Ptr(uint64(0)),
+		OperatorUserId: trans.Ptr(int64(0)),
 	})
 	if err != nil {
 		s.log.Errorf(ctx, "monitor alert [%s] notify (%s → %s) failed (delivery=%d): %s",
@@ -468,7 +468,7 @@ func (s *MonitorAlertService) alertLocale(ctx context.Context, rule *monitorAler
 		if perr != nil || id == 0 {
 			return fallback // target 不是用户 ID 形态，无偏好可循
 		}
-		q = s.entClient.Client().User.Query().Where(user.IDEQ(uint64(id)))
+		q = s.entClient.Client().User.Query().Where(user.IDEQ(int64(id)))
 	case notificationV1.Channel_EMAIL:
 		target := strings.TrimSpace(rule.GetTarget())
 		if target == "" {

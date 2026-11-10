@@ -55,14 +55,14 @@ func TestNotificationDeliveryRepoSqlite_Create(t *testing.T) {
 	created, err := repo.Create(ctx, &notificationV1.NotificationDelivery{
 		EventType:       notificationV1.EventType_PASSWORD_RESET_CODE.Enum(),
 		Channel:         notificationV1.Channel_EMAIL.Enum(),
-		ChannelId:       trans.Ptr(uint64(7)),
-		RecipientUserId: trans.Ptr(uint64(1001)),
-		RelatedId:       trans.Ptr(uint64(42)),
+		ChannelId:       trans.Ptr(int64(7)),
+		RecipientUserId: trans.Ptr(int64(1001)),
+		RelatedId:       trans.Ptr(int64(42)),
 		Target:          trans.Ptr("a***@example.com"),
 		Status:          notificationV1.DeliveryStatus_SENT.Enum(),
 		RequestId:       trans.Ptr("req-create-full"),
 		SentAt:          timestamppb.New(createdAt),
-		CreatedBy:       trans.Ptr(uint64(1001)),
+		CreatedBy:       trans.Ptr(int64(1001)),
 		CreatedAt:       timestamppb.New(createdAt),
 	})
 	require.NoError(t, err, "全字段载荷的 Create 应成功")
@@ -77,11 +77,11 @@ func TestNotificationDeliveryRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.Channel)
 	require.Equal(t, notificationdelivery.ChannelEmail, *row.Channel)
 	require.NotNil(t, row.ChannelID)
-	require.Equal(t, uint64(7), *row.ChannelID)
+	require.Equal(t, int64(7), *row.ChannelID)
 	require.NotNil(t, row.RecipientUserID)
-	require.Equal(t, uint64(1001), *row.RecipientUserID)
+	require.Equal(t, int64(1001), *row.RecipientUserID)
 	require.NotNil(t, row.RelatedID)
-	require.Equal(t, uint64(42), *row.RelatedID)
+	require.Equal(t, int64(42), *row.RelatedID)
 	require.NotNil(t, row.Target)
 	require.Equal(t, "a***@example.com", *row.Target)
 	require.NotNil(t, row.RequestID)
@@ -90,7 +90,7 @@ func TestNotificationDeliveryRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, notificationdelivery.StatusSent, *row.Status)
 	require.NotNil(t, row.SentAt)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "created_by 应按载荷落库")
+	require.Equal(t, int64(1001), *row.CreatedBy, "created_by 应按载荷落库")
 	require.NotNil(t, row.CreatedAt, "created_at 必须写入：没有它台账页出空行、清扫也没锚")
 
 	// 读视图：三枚举回映射为 proto 值（schema 那句 Optional().Nillable() 承诺的兑现）
@@ -100,7 +100,7 @@ func TestNotificationDeliveryRepoSqlite_Create(t *testing.T) {
 		"实体枚举应经 converter 回映射为 proto 枚举，不能落 UNSPECIFIED 零值")
 	require.Equal(t, notificationV1.Channel_EMAIL, dto.GetChannel())
 	require.Equal(t, notificationV1.DeliveryStatus_SENT, dto.GetStatus())
-	require.Equal(t, uint64(42), dto.GetRelatedId())
+	require.Equal(t, int64(42), dto.GetRelatedId())
 	require.Equal(t, "req-create-full", dto.GetRequestId())
 
 	// 另一组枚举取值（EXT 渠道 + MONITOR_ALERT 事件 + SKIPPED 状态）：
@@ -108,7 +108,7 @@ func TestNotificationDeliveryRepoSqlite_Create(t *testing.T) {
 	created2, err := repo.Create(ctx, &notificationV1.NotificationDelivery{
 		EventType: notificationV1.EventType_MONITOR_ALERT.Enum(),
 		Channel:   notificationV1.Channel_EXT.Enum(),
-		ChannelId: trans.Ptr(uint64(88)),
+		ChannelId: trans.Ptr(int64(88)),
 		Status:    notificationV1.DeliveryStatus_SKIPPED.Enum(),
 		Target:    trans.Ptr("tg:***"),
 	})
@@ -205,7 +205,7 @@ func TestNotificationDeliveryRepoSqlite_List(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
+	require.Equal(t, int64(2), all.GetTotal())
 	require.Len(t, all.GetItems(), 2)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -214,7 +214,7 @@ func TestNotificationDeliveryRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, notificationV1.Channel_EMAIL, filtered.GetItems()[0].GetChannel())
 
@@ -233,7 +233,7 @@ func TestNotificationDeliveryRepoSqlite_MarkResult(t *testing.T) {
 
 	created, err := repo.Create(ctx, &notificationV1.NotificationDelivery{
 		EventType:       notificationV1.EventType_PASSWORD_RESET_CODE.Enum(),
-		RecipientUserId: trans.Ptr(uint64(1001)),
+		RecipientUserId: trans.Ptr(int64(1001)),
 		Target:          trans.Ptr("u***@example.com"),
 		RequestId:       trans.Ptr("req-mark"),
 	})
@@ -243,7 +243,7 @@ func TestNotificationDeliveryRepoSqlite_MarkResult(t *testing.T) {
 	sentAt := time.Now()
 	require.NoError(t, repo.MarkResult(ctx, created.GetId(), &DeliveryOutcome{
 		Status:     notificationV1.DeliveryStatus_SENT,
-		ChannelID:  trans.Ptr(uint64(9)), // 自选渠道：Create 时不知道，回写补上
+		ChannelID:  trans.Ptr(int64(9)), // 自选渠道：Create 时不知道，回写补上
 		SentAt:     &sentAt,
 		ProviderID: trans.Ptr("prov-msg-123"),
 		// Attempts 给 nil：异步路径已在 MarkAttempted 写过，回写不再碰
@@ -254,7 +254,7 @@ func TestNotificationDeliveryRepoSqlite_MarkResult(t *testing.T) {
 	require.NotNil(t, row.Status)
 	require.Equal(t, notificationdelivery.StatusSent, *row.Status)
 	require.NotNil(t, row.ChannelID)
-	require.Equal(t, uint64(9), *row.ChannelID)
+	require.Equal(t, int64(9), *row.ChannelID)
 	require.NotNil(t, row.Attempts)
 	require.Equal(t, uint32(1), *row.Attempts, "outcome.Attempts=nil 时回写不得覆盖 MarkAttempted 的计数")
 	require.NotNil(t, row.SentAt)
@@ -265,7 +265,7 @@ func TestNotificationDeliveryRepoSqlite_MarkResult(t *testing.T) {
 	// 意图快照不得被结果回写篡改
 	require.Equal(t, notificationdelivery.EventTypePasswordResetCode, *row.EventType)
 	require.Equal(t, "u***@example.com", *row.Target, "回写只覆盖结果字段，快照列不得动")
-	require.Equal(t, uint64(1001), *row.RecipientUserID)
+	require.Equal(t, int64(1001), *row.RecipientUserID)
 
 	// FAILED + last_error：失败详情落列，sent_at 保持空（FAILED 没有完成时间）
 	failed, err := repo.Create(ctx, newDelivery("req-mark-failed", notificationV1.Channel_EMAIL, nil))

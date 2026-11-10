@@ -119,7 +119,7 @@ func (r *PlanRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	}, nil
 }
 
-func (r *PlanRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PlanRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Plan.Query().
 		Where(plan.IDEQ(id)).
 		Exist(ctx)
@@ -275,7 +275,7 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 	return err
 }
 
-func (r *PlanRepo) Delete(ctx context.Context, id uint64) error {
+func (r *PlanRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}

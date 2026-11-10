@@ -8,7 +8,7 @@ import (
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
-func one(t *testing.T, typ viewer.ScopeType, targets []uint64) []viewer.DataScope {
+func one(t *testing.T, typ viewer.ScopeType, targets []int64) []viewer.DataScope {
 	t.Helper()
 	return []viewer.DataScope{{ScopeType: typ, TargetIDs: targets}}
 }
@@ -21,7 +21,7 @@ func TestBuildDataScopes(t *testing.T) {
 	tests := []struct {
 		name    string
 		scopes  []identityV1.DataScope
-		units   []uint64
+		units   []int64
 		legacy  identityV1.DataScope
 		wantLen int
 		want    []viewer.DataScope
@@ -41,21 +41,21 @@ func TestBuildDataScopes(t *testing.T) {
 		{
 			name:    "unit_only carries targets",
 			scopes:  []identityV1.DataScope{identityV1.DataScope_UNIT_ONLY},
-			units:   []uint64{5},
+			units:   []int64{5},
 			wantLen: 1,
-			want:    one(t, viewer.ScopeTypeUnit, []uint64{5}),
+			want:    one(t, viewer.ScopeTypeUnit, []int64{5}),
 		},
 		{
 			name:    "selected_units carries targets",
 			scopes:  []identityV1.DataScope{identityV1.DataScope_SELECTED_UNITS},
-			units:   []uint64{1, 2},
+			units:   []int64{1, 2},
 			wantLen: 1,
-			want:    one(t, viewer.ScopeTypeUnit, []uint64{1, 2}),
+			want:    one(t, viewer.ScopeTypeUnit, []int64{1, 2}),
 		},
 		{
 			name:    "unspecified dropped leaves empty",
 			scopes:  []identityV1.DataScope{identityV1.DataScope_DATA_SCOPE_UNSPECIFIED},
-			units:   []uint64{9},
+			units:   []int64{9},
 			wantLen: 0,
 			want:    []viewer.DataScope{},
 		},
@@ -72,11 +72,11 @@ func TestBuildDataScopes(t *testing.T) {
 				identityV1.DataScope_SELF,
 				identityV1.DataScope_UNIT_AND_CHILD,
 			},
-			units:   []uint64{3},
+			units:   []int64{3},
 			wantLen: 2,
 			want: []viewer.DataScope{
 				{ScopeType: viewer.ScopeTypeSelf},
-				{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []uint64{3}},
+				{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []int64{3}},
 			},
 		},
 	}
@@ -109,7 +109,7 @@ func TestBuildDataScopes_EdgeCombinations(t *testing.T) {
 	tests := []struct {
 		name    string
 		scopes  []identityV1.DataScope
-		units   []uint64
+		units   []int64
 		legacy  identityV1.DataScope
 		wantLen int
 		want    []viewer.DataScope

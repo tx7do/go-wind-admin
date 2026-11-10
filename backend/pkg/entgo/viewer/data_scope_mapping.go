@@ -19,7 +19,7 @@ import (
 // 以 "no data scope defined" 拒绝。
 func BuildDataScopes(
 	scopes []identityV1.DataScope,
-	unitIDs []uint64,
+	unitIDs []int64,
 	legacy identityV1.DataScope,
 ) []viewer.DataScope {
 	if len(scopes) == 0 && legacy != identityV1.DataScope_DATA_SCOPE_UNSPECIFIED {

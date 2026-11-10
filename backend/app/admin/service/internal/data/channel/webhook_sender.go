@@ -31,8 +31,8 @@ type webhookPayload struct {
 	EventType       string `json:"event_type"`
 	Title           string `json:"title"`
 	Content         string `json:"content"`
-	RecipientUserID uint64 `json:"recipient_user_id,omitempty"`
-	RelatedID       uint64 `json:"related_id,omitempty"`
+	RecipientUserID int64 `json:"recipient_user_id,omitempty"`
+	RelatedID       int64 `json:"related_id,omitempty"`
 	DeliveredAt     string `json:"delivered_at"`
 }
 
@@ -74,7 +74,7 @@ func (s *WebhookSender) Channel() notificationV1.Channel {
 //
 // 自检包含"这条渠道的模板渲染得出合法 JSON"：一次性验证码躺在队列里等四次重试
 // 才失败，和压根没配渠道一样是没发出去，但台账会记成 FAILED 且验证码已经过期。
-func (s *WebhookSender) Precheck(ctx context.Context, channelID uint64) error {
+func (s *WebhookSender) Precheck(ctx context.Context, channelID int64) error {
 	account, err := s.pickAccount(ctx, channelID)
 	if err != nil {
 		return err
@@ -114,7 +114,7 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 // req 为 nil（预检）时默认出站体只带交付时间，业务字段留空。
 func (s *WebhookSender) service(account *data.WebhookAccount, req *SendRequest) *webhook.Service {
 	return webhook.New(s.client, webhook.Config{
-		Ref:             strconv.FormatUint(uint64(account.ID), 10),
+		Ref:             strconv.FormatInt(account.ID, 10),
 		Secret:          account.Secret,
 		SignStyle:       account.SignStyle,
 		PayloadTemplate: account.PayloadTemplate,
@@ -134,7 +134,7 @@ func (s *WebhookSender) service(account *data.WebhookAccount, req *SendRequest) 
 
 // wrapSendFailure 库错误 → 台账文案：配置类转译成本包哨兵（SKIPPED 语义），
 // 其余按"拨过号被拒"（FAILED）带出渠道 ID。库层哨兵文本与本包同义，剥掉再说一次会结巴。
-func (s *WebhookSender) wrapSendFailure(accountID uint64, err error) error {
+func (s *WebhookSender) wrapSendFailure(accountID int64, err error) error {
 	if errors.Is(err, notify.ErrNotConfigured) {
 		text := stripNotifySentinel(err)
 		if errors.Is(err, notify.ErrBlockedTarget) {
@@ -149,7 +149,7 @@ func (s *WebhookSender) wrapSendFailure(accountID uint64, err error) error {
 //
 // 与 EmailSender.pickAccount 同一条判据：一切"渠道用不了"都包成 ErrChannelNotConfigured，
 // 服务层据此把台账记 SKIPPED（没拨过号）而不是 FAILED（拨过号被拒）。
-func (s *WebhookSender) pickAccount(ctx context.Context, channelID uint64) (*data.WebhookAccount, error) {
+func (s *WebhookSender) pickAccount(ctx context.Context, channelID int64) (*data.WebhookAccount, error) {
 	account, err := s.resolveAccount(ctx, channelID)
 	if err != nil {
 		return nil, err
@@ -161,7 +161,7 @@ func (s *WebhookSender) pickAccount(ctx context.Context, channelID uint64) (*dat
 }
 
 // resolveAccount 显式 ID 优先，否则取第一个启用的 WEBHOOK 渠道。
-func (s *WebhookSender) resolveAccount(ctx context.Context, channelID uint64) (*data.WebhookAccount, error) {
+func (s *WebhookSender) resolveAccount(ctx context.Context, channelID int64) (*data.WebhookAccount, error) {
 	if channelID == 0 {
 		account, err := s.channel.GetFirstEnabledWebhookChannel(ctx)
 		if err != nil {

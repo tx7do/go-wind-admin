@@ -80,7 +80,7 @@ func TestLanguageRepoSqlite_List(t *testing.T) {
 	// 无过滤：应返回全部 2 条
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条")
 
 	// contains 过滤：仅命中名称含 MARKERALPHA 的那条
@@ -90,7 +90,7 @@ func TestLanguageRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetLanguageName(), "MARKERALPHA", "命中行应为含标记的那条")
 }
@@ -111,7 +111,7 @@ func TestLanguageRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &dictV1.GetLanguageRequest{
@@ -144,7 +144,7 @@ func TestLanguageRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	// 注意：LanguageRepo.Update 的 mutate 回调对 language_name/native_name 使用
 	// 非 nillable Set + NotEmpty 校验，掩码清掉任一字段都会以空串触发校验失败，
@@ -182,7 +182,7 @@ func TestLanguageRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &dictV1.DeleteLanguageRequest{
 		QueryBy: &dictV1.DeleteLanguageRequest_Id{Id: createdID},

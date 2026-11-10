@@ -20,7 +20,7 @@ const aiChatCallTimeout = 60 * time.Second
 type AICompleter interface {
 	// ChatForScript 发起一轮（可选 system 前缀的）补全，返回回复文本。
 	// providerId=0 表示使用默认启用的提供商。
-	ChatForScript(ctx context.Context, providerId uint64, systemPrompt, content string) (string, error)
+	ChatForScript(ctx context.Context, providerId int64, systemPrompt, content string) (string, error)
 }
 
 // ModuleAI 构建语言无关的 ai 模块（JS 等基于 map[string]any 桥接的语言使用）。
@@ -59,7 +59,7 @@ func ModuleAI(completer AICompleter, logger *bLogger.Helper) hostmodule.ModuleDe
 			"chatWith": func(providerId float64, content string) (string, error) {
 				ctx, cancel := callCtx()
 				defer cancel()
-				reply, err := completer.ChatForScript(ctx, uint64(providerId), "", content)
+				reply, err := completer.ChatForScript(ctx, int64(providerId), "", content)
 				if err != nil {
 					logError("chatWith", err)
 					return "", err
@@ -70,7 +70,7 @@ func ModuleAI(completer AICompleter, logger *bLogger.Helper) hostmodule.ModuleDe
 			"chatWithSystem": func(providerId float64, systemPrompt, content string) (string, error) {
 				ctx, cancel := callCtx()
 				defer cancel()
-				reply, err := completer.ChatForScript(ctx, uint64(providerId), systemPrompt, content)
+				reply, err := completer.ChatForScript(ctx, int64(providerId), systemPrompt, content)
 				if err != nil {
 					logError("chatWithSystem", err)
 					return "", err
@@ -117,11 +117,11 @@ func LoaderAI(completer AICompleter, logger *bLogger.Helper) lua.LGFunction {
 
 		// ai.chat_with(providerId, content) → string | nil, err
 		aiModule.RawSetString("chat_with", L.NewFunction(func(L *lua.LState) int {
-			providerId := uint64(L.CheckNumber(1))
+			providerId := int64(L.CheckNumber(1))
 			content := L.CheckString(2)
 			ctx, cancel := context.WithTimeout(context.Background(), aiChatCallTimeout)
 			defer cancel()
-			reply, err := completer.ChatForScript(ctx, uint64(providerId), "", content)
+			reply, err := completer.ChatForScript(ctx, int64(providerId), "", content)
 			if err != nil {
 				if logger != nil {
 					logger.Errorf(context.Background(), "ai.chat_with error: %v", err)
@@ -136,12 +136,12 @@ func LoaderAI(completer AICompleter, logger *bLogger.Helper) lua.LGFunction {
 
 		// ai.chat_with_system(providerId, systemPrompt, content) → string | nil, err
 		aiModule.RawSetString("chat_with_system", L.NewFunction(func(L *lua.LState) int {
-			providerId := uint64(L.CheckNumber(1))
+			providerId := int64(L.CheckNumber(1))
 			systemPrompt := L.CheckString(2)
 			content := L.CheckString(3)
 			ctx, cancel := context.WithTimeout(context.Background(), aiChatCallTimeout)
 			defer cancel()
-			reply, err := completer.ChatForScript(ctx, uint64(providerId), systemPrompt, content)
+			reply, err := completer.ChatForScript(ctx, int64(providerId), systemPrompt, content)
 			if err != nil {
 				if logger != nil {
 					logger.Errorf(context.Background(), "ai.chat_with_system error: %v", err)

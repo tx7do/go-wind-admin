@@ -84,8 +84,8 @@ func (_q *PermissionApiQuery) FirstX(ctx context.Context) *PermissionApi {
 
 // FirstID returns the first PermissionApi ID from the query.
 // Returns a *NotFoundError when no PermissionApi ID was found.
-func (_q *PermissionApiQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PermissionApiQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func (_q *PermissionApiQuery) FirstID(ctx context.Context) (id uint64, err error
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *PermissionApiQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *PermissionApiQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -135,8 +135,8 @@ func (_q *PermissionApiQuery) OnlyX(ctx context.Context) *PermissionApi {
 // OnlyID is like Only, but returns the only PermissionApi ID in the query.
 // Returns a *NotSingularError when more than one PermissionApi ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *PermissionApiQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PermissionApiQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -152,7 +152,7 @@ func (_q *PermissionApiQuery) OnlyID(ctx context.Context) (id uint64, err error)
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *PermissionApiQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *PermissionApiQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -180,7 +180,7 @@ func (_q *PermissionApiQuery) AllX(ctx context.Context) []*PermissionApi {
 }
 
 // IDs executes the query and returns a list of PermissionApi IDs.
-func (_q *PermissionApiQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *PermissionApiQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -192,7 +192,7 @@ func (_q *PermissionApiQuery) IDs(ctx context.Context) (ids []uint64, err error)
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *PermissionApiQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *PermissionApiQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -374,7 +374,7 @@ func (_q *PermissionApiQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *PermissionApiQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(permissionapi.Table, permissionapi.Columns, sqlgraph.NewFieldSpec(permissionapi.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(permissionapi.Table, permissionapi.Columns, sqlgraph.NewFieldSpec(permissionapi.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -33,14 +33,14 @@ enum AiRole {
 
 // AI 对话消息
 message AiMessage {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "消息ID"
     }
   ]; // 消息ID
 
-  optional uint64 conversation_id = 2 [
+  optional int64 conversation_id = 2 [
     json_name = "conversationId",
     (gnostic.openapi.v3.property) = {description: "所属会话ID"}
   ]; // 所属会话ID
@@ -80,19 +80,19 @@ message AiMessage {
     (gnostic.openapi.v3.property) = {description: "生成失败原因（仅失败记录）"}
   ]; // 失败原因
 
-  optional uint64 user_id = 10 [
+  optional int64 user_id = 10 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "归属用户ID"}
   ]; // 归属用户ID
 
-  optional uint64 tenant_id = 11 [
+  optional int64 tenant_id = 11 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ]; // 租户ID
 
-  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -102,16 +102,16 @@ message AiMessage {
 // 查询消息列表 - 回应
 message ListAiMessageResponse {
   repeated AiMessage items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 删除消息 - 请求
 message DeleteAiMessageRequest {
   oneof query_by {
-    uint64 id = 1;
+    int64 id = 1;
   }
 }
 
 message CountAiMessageResponse {
-  uint64 count = 1; // 消息数量
+  int64 count = 1; // 消息数量
 }

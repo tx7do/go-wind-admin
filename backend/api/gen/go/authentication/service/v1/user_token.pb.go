@@ -26,16 +26,16 @@ const (
 // 用户令牌载体
 type UserTokenPayload struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	UserId           uint64                 `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                    // 用户ID
-	TenantId         *uint64                `protobuf:"varint,2,opt,name=tenant_id,json=tid,proto3,oneof" json:"tenant_id,omitempty"`                                          // 租户ID
+	UserId           int64                  `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                    // 用户ID
+	TenantId         *int64                 `protobuf:"varint,2,opt,name=tenant_id,json=tid,proto3,oneof" json:"tenant_id,omitempty"`                                          // 租户ID
 	ClientId         *string                `protobuf:"bytes,3,opt,name=client_id,json=cid,proto3,oneof" json:"client_id,omitempty"`                                           // 客户端ID
 	DeviceId         *string                `protobuf:"bytes,4,opt,name=device_id,json=did,proto3,oneof" json:"device_id,omitempty"`                                           // 设备ID
 	Username         *string                `protobuf:"bytes,5,opt,name=username,json=sub,proto3,oneof" json:"username,omitempty"`                                             // 用户名
 	Roles            []string               `protobuf:"bytes,10,rep,name=roles,json=roc,proto3" json:"roles,omitempty"`                                                        // 用户角色码列表
 	DataScope        *v1.DataScope          `protobuf:"varint,11,opt,name=data_scope,json=ds,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"`     // 数据权限范围（旧单值字段，仅为令牌平滑过渡保留）
-	OrgUnitId        *uint64                `protobuf:"varint,12,opt,name=org_unit_id,json=ouid,proto3,oneof" json:"org_unit_id,omitempty"`                                    // 当前组织单元ID
+	OrgUnitId        *int64                 `protobuf:"varint,12,opt,name=org_unit_id,json=ouid,proto3,oneof" json:"org_unit_id,omitempty"`                                    // 当前组织单元ID
 	DataScopes       []v1.DataScope         `protobuf:"varint,13,rep,packed,name=data_scopes,json=dss,proto3,enum=identity.service.v1.DataScope" json:"data_scopes,omitempty"` // 数据权限范围类型集合（登录期由多角色配置聚合，ALL 主导，UNIT_* 已并入集合并集）
-	DataScopeUnitIds []uint64               `protobuf:"varint,14,rep,packed,name=data_scope_unit_ids,json=dsu,proto3" json:"data_scope_unit_ids,omitempty"`                    // UNIT 类数据范围的组织单元目标集（多角色并集，登录期展开）
+	DataScopeUnitIds []int64                `protobuf:"varint,14,rep,packed,name=data_scope_unit_ids,json=dsu,proto3" json:"data_scope_unit_ids,omitempty"`                    // UNIT 类数据范围的组织单元目标集（多角色并集，登录期展开）
 	HiddenFields     []string               `protobuf:"bytes,15,rep,name=hidden_fields,json=hfs,proto3" json:"hidden_fields,omitempty"`                                        // 字段权限隐藏字段集（"资源.字段" 串，多角色并集，登录期聚合）
 	IsPlatformAdmin  *bool                  `protobuf:"varint,20,opt,name=is_platform_admin,json=ipa,proto3,oneof" json:"is_platform_admin,omitempty"`                         // 是否平台超级管理员
 	IsTenantAdmin    *bool                  `protobuf:"varint,21,opt,name=is_tenant_admin,json=ita,proto3,oneof" json:"is_tenant_admin,omitempty"`                             // 是否租户管理员
@@ -74,14 +74,14 @@ func (*UserTokenPayload) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_user_token_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UserTokenPayload) GetUserId() uint64 {
+func (x *UserTokenPayload) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *UserTokenPayload) GetTenantId() uint64 {
+func (x *UserTokenPayload) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -123,7 +123,7 @@ func (x *UserTokenPayload) GetDataScope() v1.DataScope {
 	return v1.DataScope(0)
 }
 
-func (x *UserTokenPayload) GetOrgUnitId() uint64 {
+func (x *UserTokenPayload) GetOrgUnitId() int64 {
 	if x != nil && x.OrgUnitId != nil {
 		return *x.OrgUnitId
 	}
@@ -137,7 +137,7 @@ func (x *UserTokenPayload) GetDataScopes() []v1.DataScope {
 	return nil
 }
 
-func (x *UserTokenPayload) GetDataScopeUnitIds() []uint64 {
+func (x *UserTokenPayload) GetDataScopeUnitIds() []int64 {
 	if x != nil {
 		return x.DataScopeUnitIds
 	}
@@ -179,8 +179,8 @@ const file_authentication_service_v1_user_token_proto_rawDesc = "" +
 	"*authentication/service/v1/user_token.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fidentity/service/v1/types.proto\"\x86\n" +
 	"\n" +
 	"\x10UserTokenPayload\x12$\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12+\n" +
-	"\ttenant_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x00R\x03tid\x88\x01\x01\x12.\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12+\n" +
+	"\ttenant_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x00R\x03tid\x88\x01\x01\x12.\n" +
 	"\tclient_id\x18\x03 \x01(\tB\x11\xbaG\x0e\x92\x02\v客户端IDH\x01R\x03cid\x88\x01\x01\x12+\n" +
 	"\tdevice_id\x18\x04 \x01(\tB\x0e\xbaG\v\x92\x02\b设备IDH\x02R\x03did\x88\x01\x01\x12+\n" +
 	"\busername\x18\x05 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x03R\x03sub\x88\x01\x01\x12/\n" +
@@ -188,9 +188,9 @@ const file_authentication_service_v1_user_token_proto_rawDesc = "" +
 	" \x03(\tB\x1b\xbaG\x18\x92\x02\x15用户角色码列表R\x03roc\x12\x8b\x01\n" +
 	"\n" +
 	"data_scope\x18\v \x01(\x0e2\x1e.identity.service.v1.DataScopeBN\xbaGK\x92\x02H数据权限范围（旧单值字段，仅为令牌平滑过渡保留）H\x04R\x02ds\x88\x01\x01\x12:\n" +
-	"\vorg_unit_id\x18\f \x01(\x04B\x1a\xbaG\x17\x92\x02\x14当前组织单元IDH\x05R\x04ouid\x88\x01\x01\x12\xb1\x01\n" +
+	"\vorg_unit_id\x18\f \x01(\x03B\x1a\xbaG\x17\x92\x02\x14当前组织单元IDH\x05R\x04ouid\x88\x01\x01\x12\xb1\x01\n" +
 	"\vdata_scopes\x18\r \x03(\x0e2\x1e.identity.service.v1.DataScopeBw\xbaGt\x92\x02q数据权限范围类型集合（登录期由多角色配置聚合，ALL 主导，UNIT_* 已并入集合并集）R\x03dss\x12{\n" +
-	"\x13data_scope_unit_ids\x18\x0e \x03(\x04BY\xbaGV\x92\x02SUNIT 类数据范围的组织单元目标集（多角色并集，登录期展开）R\x03dsu\x12\x9f\x01\n" +
+	"\x13data_scope_unit_ids\x18\x0e \x03(\x03BY\xbaGV\x92\x02SUNIT 类数据范围的组织单元目标集（多角色并集，登录期展开）R\x03dsu\x12\x9f\x01\n" +
 	"\rhidden_fields\x18\x0f \x03(\tB\x82\x01\xbaG\x7f\x92\x02|字段权限隐藏字段集（\"资源.字段\" 串，多角色并集，登录期聚合；命中字段读写两侧被剔除）R\x03hfs\x12F\n" +
 	"\x11is_platform_admin\x18\x14 \x01(\bB!\xbaG\x1e\x92\x02\x1b是否平台超级管理员H\x06R\x03ipa\x88\x01\x01\x12>\n" +
 	"\x0fis_tenant_admin\x18\x15 \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否租户管理员H\aR\x03ita\x88\x01\x01\x127\n" +

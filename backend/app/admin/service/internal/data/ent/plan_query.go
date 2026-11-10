@@ -157,8 +157,8 @@ func (_q *PlanQuery) FirstX(ctx context.Context) *Plan {
 
 // FirstID returns the first Plan ID from the query.
 // Returns a *NotFoundError when no Plan ID was found.
-func (_q *PlanQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PlanQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -170,7 +170,7 @@ func (_q *PlanQuery) FirstID(ctx context.Context) (id uint64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *PlanQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *PlanQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -208,8 +208,8 @@ func (_q *PlanQuery) OnlyX(ctx context.Context) *Plan {
 // OnlyID is like Only, but returns the only Plan ID in the query.
 // Returns a *NotSingularError when more than one Plan ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *PlanQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PlanQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -225,7 +225,7 @@ func (_q *PlanQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *PlanQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *PlanQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -253,7 +253,7 @@ func (_q *PlanQuery) AllX(ctx context.Context) []*Plan {
 }
 
 // IDs executes the query and returns a list of Plan IDs.
-func (_q *PlanQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *PlanQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -265,7 +265,7 @@ func (_q *PlanQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *PlanQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *PlanQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -499,7 +499,7 @@ func (_q *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 
 func (_q *PlanQuery) loadTenants(ctx context.Context, query *TenantQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Tenant)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Plan)
+	nodeids := make(map[int64]*Plan)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -530,7 +530,7 @@ func (_q *PlanQuery) loadTenants(ctx context.Context, query *TenantQuery, nodes 
 }
 func (_q *PlanQuery) loadQuotas(ctx context.Context, query *PlanQuotaQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *PlanQuota)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Plan)
+	nodeids := make(map[int64]*Plan)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -561,7 +561,7 @@ func (_q *PlanQuery) loadQuotas(ctx context.Context, query *PlanQuotaQuery, node
 }
 func (_q *PlanQuery) loadModules(ctx context.Context, query *PlanModuleQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *PlanModule)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Plan)
+	nodeids := make(map[int64]*Plan)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -604,7 +604,7 @@ func (_q *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *PlanQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

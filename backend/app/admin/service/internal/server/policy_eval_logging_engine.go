@@ -40,8 +40,8 @@ type evalLoggingEngine struct {
 }
 
 type resolveResult struct {
-	permissionID uint64
-	policyID     uint64
+	permissionID int64
+	policyID     int64
 	expiresAt    time.Time
 }
 
@@ -112,7 +112,7 @@ func (e *evalLoggingEngine) IsAuthorized(ctx context.Context, subject authzEngin
 }
 
 // resolvePolicyCached 带 TTL 缓存的反查；查询走 SystemContext（评估阶段无租户 viewer）。
-func (e *evalLoggingEngine) resolvePolicyCached(ctx context.Context, subject, path, method string) (permissionID, policyID uint64) {
+func (e *evalLoggingEngine) resolvePolicyCached(ctx context.Context, subject, path, method string) (permissionID, policyID int64) {
 	if e.repo == nil {
 		return 0, 0
 	}

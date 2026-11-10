@@ -50,7 +50,7 @@ func TestApiCallLimitFromPlanQuotas(t *testing.T) {
 		{QuotaType: ptrOf(planquota.QuotaTypeApiCall), QuotaValue: ptrOf(uint64(7))},
 	})
 	require.True(t, ok)
-	require.Equal(t, uint64(7), limit)
+	require.Equal(t, int64(7), limit)
 }
 
 // TestCheckApiCallQuota 纯判定：未限售放行 / 未满放行 / 已满拒绝（消息钉类型与数值）。

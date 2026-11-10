@@ -29,7 +29,7 @@ const (
 // 一条业务事件类型 → 一行规则（event_type 唯一）
 type NotificationRule struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
-	Id        *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                       // 规则ID
+	Id        *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                       // 规则ID
 	EventType *EventType             `protobuf:"varint,2,opt,name=event_type,json=eventType,proto3,enum=notification.service.v1.EventType,oneof" json:"event_type,omitempty"` // 业务事件类型
 	Channel   *Channel               `protobuf:"varint,3,opt,name=channel,proto3,enum=notification.service.v1.Channel,oneof" json:"channel,omitempty"`                        // 投递渠道
 	// 异步 = 入队 asynq、请求立刻拿到 SENDING；同步 = 当场拨号并回写结论。
@@ -37,8 +37,8 @@ type NotificationRule struct {
 	IsAsync       *bool                  `protobuf:"varint,10,opt,name=is_async,json=isAsync,proto3,oneof" json:"is_async,omitempty"`       // 是否异步派发
 	IsEnabled     *bool                  `protobuf:"varint,20,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"` // 是否启用
 	Remark        *string                `protobuf:"bytes,21,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                         // 备注
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -75,7 +75,7 @@ func (*NotificationRule) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *NotificationRule) GetId() uint64 {
+func (x *NotificationRule) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -117,14 +117,14 @@ func (x *NotificationRule) GetRemark() string {
 	return ""
 }
 
-func (x *NotificationRule) GetCreatedBy() uint64 {
+func (x *NotificationRule) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *NotificationRule) GetUpdatedBy() uint64 {
+func (x *NotificationRule) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
@@ -149,7 +149,7 @@ func (x *NotificationRule) GetUpdatedAt() *timestamppb.Timestamp {
 type ListNotificationRuleResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*NotificationRule    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -191,7 +191,7 @@ func (x *ListNotificationRuleResponse) GetItems() []*NotificationRule {
 	return nil
 }
 
-func (x *ListNotificationRuleResponse) GetTotal() uint64 {
+func (x *ListNotificationRuleResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -201,7 +201,7 @@ func (x *ListNotificationRuleResponse) GetTotal() uint64 {
 // 查询路由规则详情 - 请求
 type GetNotificationRuleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -236,7 +236,7 @@ func (*GetNotificationRuleRequest) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetNotificationRuleRequest) GetId() uint64 {
+func (x *GetNotificationRuleRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -291,7 +291,7 @@ func (x *CreateNotificationRuleRequest) GetData() *NotificationRule {
 // 更新路由规则 - 请求
 type UpdateNotificationRuleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *NotificationRule      `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -328,7 +328,7 @@ func (*UpdateNotificationRuleRequest) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateNotificationRuleRequest) GetId() uint64 {
+func (x *UpdateNotificationRuleRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -352,7 +352,7 @@ func (x *UpdateNotificationRuleRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 // 删除路由规则 - 请求
 type DeleteNotificationRuleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -387,7 +387,7 @@ func (*DeleteNotificationRuleRequest) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeleteNotificationRuleRequest) GetId() uint64 {
+func (x *DeleteNotificationRuleRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -401,7 +401,7 @@ func (x *DeleteNotificationRuleRequest) GetId() uint64 {
 // title/content 留空由服务端按事件类型渲染一封测试文案（走 mailtext，与渠道测试邮件同一条出口）。
 type TestDispatchNotificationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                // 规则ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                // 规则ID
 	Target        *string                `protobuf:"bytes,2,opt,name=target,proto3,oneof" json:"target,omitempty"`   // 投递目标
 	Title         *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`     // 通知标题
 	Content       *string                `protobuf:"bytes,4,opt,name=content,proto3,oneof" json:"content,omitempty"` // 通知正文
@@ -439,7 +439,7 @@ func (*TestDispatchNotificationRequest) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *TestDispatchNotificationRequest) GetId() uint64 {
+func (x *TestDispatchNotificationRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -470,7 +470,7 @@ func (x *TestDispatchNotificationRequest) GetContent() string {
 // 测试投递 - 回应。台账行号一并回传：报错时拿它去投递记录页查这一条。
 type TestDispatchNotificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeliveryId    uint64                 `protobuf:"varint,1,opt,name=delivery_id,json=deliveryId,proto3" json:"delivery_id,omitempty"`                   // 台账ID
+	DeliveryId    int64                  `protobuf:"varint,1,opt,name=delivery_id,json=deliveryId,proto3" json:"delivery_id,omitempty"`                   // 台账ID
 	Status        DeliveryStatus         `protobuf:"varint,2,opt,name=status,proto3,enum=notification.service.v1.DeliveryStatus" json:"status,omitempty"` // 投递结果
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -506,7 +506,7 @@ func (*TestDispatchNotificationResponse) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_rule_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *TestDispatchNotificationResponse) GetDeliveryId() uint64 {
+func (x *TestDispatchNotificationResponse) GetDeliveryId() int64 {
 	if x != nil {
 		return x.DeliveryId
 	}
@@ -526,7 +526,7 @@ const file_notification_service_v1_notification_rule_proto_rawDesc = "" +
 	"\n" +
 	"/notification/service/v1/notification_rule.proto\x12\x17notification.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a*notification/service/v1/notification.proto\"\x81\x06\n" +
 	"\x10NotificationRule\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b规则IDH\x00R\x02id\x88\x01\x01\x12x\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b规则IDH\x00R\x02id\x88\x01\x01\x12x\n" +
 	"\n" +
 	"event_type\x18\x02 \x01(\x0e2\".notification.service.v1.EventTypeB0\xbaG-\x92\x02*业务事件类型（一张表内唯一）H\x01R\teventType\x88\x01\x01\x12b\n" +
 	"\achannel\x18\x03 \x01(\x0e2 .notification.service.v1.ChannelB!\xbaG\x1e\x92\x02\x1b该事件投递走的渠道H\x02R\achannel\x88\x01\x01\x128\n" +
@@ -536,9 +536,9 @@ const file_notification_service_v1_notification_rule_proto_rawDesc = "" +
 	"is_enabled\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x04R\tisEnabled\x88\x01\x01\x12)\n" +
 	"\x06remark\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\x05R\x06remark\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04H\x06R\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_by\x18d \x01(\x03H\x06R\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04H\aR\tupdatedBy\x88\x01\x01\x12?\n" +
+	"updated_by\x18e \x01(\x03H\aR\tupdatedBy\x88\x01\x01\x12?\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\bR\tcreatedAt\x88\x01\x01\x12?\n" +
 	"\n" +
@@ -556,20 +556,20 @@ const file_notification_service_v1_notification_rule_proto_rawDesc = "" +
 	"\v_updated_at\"u\n" +
 	"\x1cListNotificationRuleResponse\x12?\n" +
 	"\x05items\x18\x01 \x03(\v2).notification.service.v1.NotificationRuleR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\",\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\",\n" +
 	"\x1aGetNotificationRuleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\"^\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"^\n" +
 	"\x1dCreateNotificationRuleRequest\x12=\n" +
 	"\x04data\x18\x01 \x01(\v2).notification.service.v1.NotificationRuleR\x04data\"\xab\x01\n" +
 	"\x1dUpdateNotificationRuleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12=\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12=\n" +
 	"\x04data\x18\x02 \x01(\v2).notification.service.v1.NotificationRuleR\x04data\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"/\n" +
 	"\x1dDeleteNotificationRuleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\"\xf5\x02\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xf5\x02\n" +
 	"\x1fTestDispatchNotificationRequest\x12\x1e\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b规则IDR\x02id\x12\x7f\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b规则IDR\x02id\x12\x7f\n" +
 	"\x06target\x18\x02 \x01(\tBb\xbaG_\x92\x02\\投递目标（收件邮箱/站内收件用户ID；WEBHOOK 留空用渠道配置的地址）H\x00R\x06target\x88\x01\x01\x12E\n" +
 	"\x05title\x18\x03 \x01(\tB*\xbaG'\x92\x02$通知标题，留空用测试文案H\x01R\x05title\x88\x01\x01\x12I\n" +
 	"\acontent\x18\x04 \x01(\tB*\xbaG'\x92\x02$通知正文，留空用测试文案H\x02R\acontent\x88\x01\x01B\t\n" +
@@ -578,7 +578,7 @@ const file_notification_service_v1_notification_rule_proto_rawDesc = "" +
 	"\n" +
 	"\b_content\"\xbd\x01\n" +
 	" TestDispatchNotificationResponse\x12D\n" +
-	"\vdelivery_id\x18\x01 \x01(\x04B#\xbaG \x92\x02\x1d本次测试产生的台账IDR\n" +
+	"\vdelivery_id\x18\x01 \x01(\x03B#\xbaG \x92\x02\x1d本次测试产生的台账IDR\n" +
 	"deliveryId\x12S\n" +
 	"\x06status\x18\x02 \x01(\x0e2'.notification.service.v1.DeliveryStatusB\x12\xbaG\x0f\x92\x02\f投递结果R\x06status2\x8d\x05\n" +
 	"\x17NotificationRuleService\x12Z\n" +

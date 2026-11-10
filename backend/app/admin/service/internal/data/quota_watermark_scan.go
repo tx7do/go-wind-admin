@@ -30,21 +30,21 @@ const QuotaWatermarkThreshold = 0.8
 
 // QuotaWatermarkHit 单租户单配额类型的水位命中（只读扫描结果，无任何拒绝语义）。
 type QuotaWatermarkHit struct {
-	TenantID   uint64
+	TenantID   int64
 	TenantName string
 	// AdminUserID 租户管理员（sys_tenants.admin_user_id；0 = 未设置，投递侧跳过）。
-	AdminUserID uint64
+	AdminUserID int64
 	// QuotaType 配额类型技术名（proto 枚举名，与用量页/闸门报错口径一致，不做翻译）。
 	QuotaType string
-	Used      uint64
-	Limit     uint64
+	Used      int64
+	Limit     int64
 	// RatioPct 用量百分数（四舍五入；limit==0 且 used>0 视为 100）。
-	RatioPct uint64
+	RatioPct int64
 }
 
 // quotaWatermarkExceeded 纯判定（可测）：limit==0 且 used>0 视为命中（配 0 上限
 // 且已有用量 = 事实超限）；否则 used >= 阈值×limit 即命中。
-func quotaWatermarkExceeded(used, limit uint64) bool {
+func quotaWatermarkExceeded(used, limit int64) bool {
 	if limit == 0 {
 		return used > 0
 	}
@@ -52,14 +52,14 @@ func quotaWatermarkExceeded(used, limit uint64) bool {
 }
 
 // ratioPct 纯函数（可测）：用量百分数。
-func ratioPct(used, limit uint64) uint64 {
+func ratioPct(used, limit int64) int64 {
 	if limit == 0 {
 		if used > 0 {
 			return 100
 		}
 		return 0
 	}
-	return uint64(math.Round(float64(used) / float64(limit) * 100))
+	return int64(math.Round(float64(used) / float64(limit) * 100))
 }
 
 // ScanQuotaWatermarks 扫描全部 ON 租户的配额水位，返回命中清单。
@@ -85,14 +85,14 @@ func (r *TenantUsageRepo) ScanQuotaWatermarks(ctx context.Context, aiRepo *AiUsa
 		if t.Name != nil {
 			tenantName = *t.Name
 		}
-		adminUserID := uint64(0)
+		adminUserID := int64(0)
 		if t.AdminUserID != nil {
 			adminUserID = *t.AdminUserID
 		}
 
 		// 各维度用量。单维度计量失败记日志（带原始错误）后跳过该维度：
 		// 扫描继续、该租户该维度不产生命中。
-		usage := map[planquota.QuotaType]uint64{}
+		usage := map[planquota.QuotaType]int64{}
 		if n, uerr := r.CountUsersInTenant(sysCtx, t.ID); uerr != nil {
 			r.log.Errorf(ctx, "quota watermark scan: count users for tenant %d failed: %v", t.ID, uerr)
 		} else {
@@ -125,15 +125,15 @@ func (r *TenantUsageRepo) ScanQuotaWatermarks(ctx context.Context, aiRepo *AiUsa
 				// 该维度计量失败被跳过，或该配额类型没有用量源：不判定。
 				continue
 			}
-			if quotaWatermarkExceeded(used, *q.QuotaValue) {
+			if quotaWatermarkExceeded(used, int64(*q.QuotaValue)) {
 				hits = append(hits, QuotaWatermarkHit{
 					TenantID:    t.ID,
 					TenantName:  tenantName,
 					AdminUserID: adminUserID,
 					QuotaType:   mapEntQuotaTypeToProto(*q.QuotaType).String(),
 					Used:        used,
-					Limit:       *q.QuotaValue,
-					RatioPct:    ratioPct(used, *q.QuotaValue),
+					Limit:       int64(*q.QuotaValue),
+					RatioPct:    ratioPct(used, int64(*q.QuotaValue)),
 				})
 			}
 		}

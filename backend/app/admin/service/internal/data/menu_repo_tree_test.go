@@ -30,7 +30,7 @@ func newMenuRepoTreeSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Clien
 }
 
 // createMenuRow 直建一条菜单行（绕过 service 层校验），parentID nil = 根。
-func createMenuRow(t *testing.T, ctx context.Context, client *ent.Client, name, path string, parentID *uint64) uint64 {
+func createMenuRow(t *testing.T, ctx context.Context, client *ent.Client, name, path string, parentID *int64) int64 {
 	t.Helper()
 	builder := client.Menu.Create().SetName(name).SetPath(path).SetType(menu.TypeMenu)
 	if parentID != nil {
@@ -42,7 +42,7 @@ func createMenuRow(t *testing.T, ctx context.Context, client *ent.Client, name, 
 }
 
 // createBindingRow 直建一条权限-菜单绑定（全路径快照）。
-func createBindingRow(t *testing.T, ctx context.Context, client *ent.Client, permissionID uint64, fullPath string) {
+func createBindingRow(t *testing.T, ctx context.Context, client *ent.Client, permissionID int64, fullPath string) {
 	t.Helper()
 	require.NoError(t, client.PermissionMenu.Create().
 		SetPermissionID(permissionID).
@@ -51,7 +51,7 @@ func createBindingRow(t *testing.T, ctx context.Context, client *ent.Client, per
 }
 
 // bindingPaths 列出指定权限的全部绑定全路径（集合化便于断言）。
-func bindingPaths(t *testing.T, ctx context.Context, client *ent.Client, permissionID uint64) map[string]struct{} {
+func bindingPaths(t *testing.T, ctx context.Context, client *ent.Client, permissionID int64) map[string]struct{} {
 	t.Helper()
 	rows, err := client.PermissionMenu.Query().
 		Where(permissionmenu.PermissionIDEQ(permissionID)).
@@ -122,7 +122,7 @@ func TestMenuRepoSqlite_ExplicitZeroParentMovesToRoot(t *testing.T) {
 	require.NotNil(t, rowChild.ParentID, "未设置 parent_id 的更新不得改挂载关系")
 
 	// 显式 0：移回根级（此前被静默忽略，"移到根"做不到）
-	zero := uint64(0)
+	zero := int64(0)
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateMenuRequest{
 		Id:   child,
 		Data: &permissionV1.Menu{ParentId: &zero},

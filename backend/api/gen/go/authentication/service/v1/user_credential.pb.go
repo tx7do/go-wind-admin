@@ -293,9 +293,9 @@ func (UserCredential_Status) EnumDescriptor() ([]byte, []int) {
 // 用户凭证
 type UserCredential struct {
 	state             protoimpl.MessageState         `protogen:"open.v1"`
-	Id                uint64                         `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                                                                                                   // 主键ID
-	UserId            *uint64                        `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                                                       // 关联主表的用户ID
-	TenantId          *uint64                        `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                                 // 租户ID
+	Id                int64                          `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                                                                                                   // 主键ID
+	UserId            *int64                         `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                                                       // 关联主表的用户ID
+	TenantId          *int64                         `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                                 // 租户ID
 	IdentityType      *UserCredential_IdentityType   `protobuf:"varint,10,opt,name=identity_type,json=identityType,proto3,enum=authentication.service.v1.UserCredential_IdentityType,oneof" json:"identity_type,omitempty"`         // 认证方式类型
 	Identifier        *string                        `protobuf:"bytes,11,opt,name=identifier,proto3,oneof" json:"identifier,omitempty"`                                                                                             // 身份唯一标识符
 	CredentialType    *UserCredential_CredentialType `protobuf:"varint,20,opt,name=credential_type,json=credentialType,proto3,enum=authentication.service.v1.UserCredential_CredentialType,oneof" json:"credential_type,omitempty"` // 凭证类型
@@ -305,8 +305,8 @@ type UserCredential struct {
 	ExtraInfo         *string                        `protobuf:"bytes,32,opt,name=extra_info,json=extraInfo,proto3,oneof" json:"extra_info,omitempty"`                                                                              // 扩展信息
 	Provider          *string                        `protobuf:"bytes,33,opt,name=provider,proto3,oneof" json:"provider,omitempty"`                                                                                                 // 第三方平台标识（如 `google`, `wechat`），当 identity_type 为 SOCIAL_OAUTH/ENTERPRISE_SSO 时使用
 	ProviderAccountId *string                        `protobuf:"bytes,34,opt,name=provider_account_id,json=providerAccountId,proto3,oneof" json:"provider_account_id,omitempty"`                                                    // 第三方平台的账号唯一ID（如 OpenID / unionid / sub）
-	CreatedBy         *uint64                        `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                            // 创建者ID
-	UpdatedBy         *uint64                        `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                            // 更新者ID
+	CreatedBy         *int64                         `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                            // 创建者ID
+	UpdatedBy         *int64                         `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                            // 更新者ID
 	CreatedAt         *timestamppb.Timestamp         `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                                             // 创建时间
 	UpdatedAt         *timestamppb.Timestamp         `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                                             // 更新时间
 	DeletedAt         *timestamppb.Timestamp         `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                                             // 删除时间
@@ -344,21 +344,21 @@ func (*UserCredential) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_user_credential_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UserCredential) GetId() uint64 {
+func (x *UserCredential) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *UserCredential) GetUserId() uint64 {
+func (x *UserCredential) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *UserCredential) GetTenantId() uint64 {
+func (x *UserCredential) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -428,14 +428,14 @@ func (x *UserCredential) GetProviderAccountId() string {
 	return ""
 }
 
-func (x *UserCredential) GetCreatedBy() uint64 {
+func (x *UserCredential) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *UserCredential) GetUpdatedBy() uint64 {
+func (x *UserCredential) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
@@ -467,7 +467,7 @@ func (x *UserCredential) GetDeletedAt() *timestamppb.Timestamp {
 type ListUserCredentialResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*UserCredential      `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -509,7 +509,7 @@ func (x *ListUserCredentialResponse) GetItems() []*UserCredential {
 	return nil
 }
 
-func (x *ListUserCredentialResponse) GetTotal() uint64 {
+func (x *ListUserCredentialResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -519,7 +519,7 @@ func (x *ListUserCredentialResponse) GetTotal() uint64 {
 // 更新 - 请求
 type UpdateUserCredentialRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *UserCredential        `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -557,7 +557,7 @@ func (*UpdateUserCredentialRequest) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_user_credential_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *UpdateUserCredentialRequest) GetId() uint64 {
+func (x *UpdateUserCredentialRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -678,7 +678,7 @@ func (x *DeleteUserCredentialRequest) GetQueryBy() isDeleteUserCredentialRequest
 	return nil
 }
 
-func (x *DeleteUserCredentialRequest) GetId() uint64 {
+func (x *DeleteUserCredentialRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteUserCredentialRequest_Id); ok {
 			return x.Id
@@ -692,7 +692,7 @@ type isDeleteUserCredentialRequest_QueryBy interface {
 }
 
 type DeleteUserCredentialRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteUserCredentialRequest_Id) isDeleteUserCredentialRequest_QueryBy() {}
@@ -746,7 +746,7 @@ func (x *GetUserCredentialRequest) GetQueryBy() isGetUserCredentialRequest_Query
 	return nil
 }
 
-func (x *GetUserCredentialRequest) GetId() uint64 {
+func (x *GetUserCredentialRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetUserCredentialRequest_Id); ok {
 			return x.Id
@@ -767,7 +767,7 @@ type isGetUserCredentialRequest_QueryBy interface {
 }
 
 type GetUserCredentialRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetUserCredentialRequest_Id) isGetUserCredentialRequest_QueryBy() {}
@@ -1087,7 +1087,7 @@ func (x *ResetCredentialRequest) GetNeedDecrypt() bool {
 
 type CountUserCredentialResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1122,7 +1122,7 @@ func (*CountUserCredentialResponse) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_user_credential_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *CountUserCredentialResponse) GetCount() uint64 {
+func (x *CountUserCredentialResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -1135,9 +1135,9 @@ const file_authentication_service_v1_user_credential_proto_rawDesc = "" +
 	"\n" +
 	"/authentication/service/v1/user_credential.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xa7\x18\n" +
 	"\x0eUserCredential\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12;\n" +
-	"\auser_id\x18\x02 \x01(\x04B\x1d\xbaG\x1a\x92\x02\x17关联主表的用户IDH\x00R\x06userId\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12\xd1\x01\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12;\n" +
+	"\auser_id\x18\x02 \x01(\x03B\x1d\xbaG\x1a\x92\x02\x17关联主表的用户IDH\x00R\x06userId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x03 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12\xd1\x01\n" +
 	"\ridentity_type\x18\n" +
 	" \x01(\x0e26.authentication.service.v1.UserCredential.IdentityTypeBo\xbaGl\x92\x02i认证方式类型，如用户名+密码、邮箱+密码、手机号+验证码、第三方平台认证等H\x02R\fidentityType\x88\x01\x01\x12\xa3\x02\n" +
 	"\n" +
@@ -1156,9 +1156,9 @@ const file_authentication_service_v1_user_credential_proto_rawDesc = "" +
 	"\x13provider_account_id\x18\" \x01(\tB&\xbaG#\x92\x02 第三方平台的账号唯一IDH\n" +
 	"R\x11providerAccountId\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12S\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -1235,9 +1235,9 @@ const file_authentication_service_v1_user_credential_proto_rawDesc = "" +
 	"\v_deleted_at\"s\n" +
 	"\x1aListUserCredentialResponse\x12?\n" +
 	"\x05items\x18\x01 \x03(\v2).authentication.service.v1.UserCredentialR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xaa\x03\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xaa\x03\n" +
 	"\x1bUpdateUserCredentialRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12=\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12=\n" +
 	"\x04data\x18\x02 \x01(\v2).authentication.service.v1.UserCredentialR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
@@ -1246,12 +1246,12 @@ const file_authentication_service_v1_user_credential_proto_rawDesc = "" +
 	"\x1bCreateUserCredentialRequest\x12=\n" +
 	"\x04data\x18\x01 \x01(\v2).authentication.service.v1.UserCredentialR\x04data\"G\n" +
 	"\x1bDeleteUserCredentialRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"\xcb\x01\n" +
 	"\x18GetUserCredentialRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -1290,7 +1290,7 @@ const file_authentication_service_v1_user_credential_proto_rawDesc = "" +
 	"\x0enew_credential\x18\x03 \x01(\tB\x0f\xbaG\f\x92\x02\t新凭证R\rnewCredential\x12;\n" +
 	"\fneed_decrypt\x18\x04 \x01(\bB\x18\xbaG\x15\x92\x02\x12是否需要解码R\vneedDecrypt\"3\n" +
 	"\x1bCountUserCredentialResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\x90\b\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\x90\b\n" +
 	"\x15UserCredentialService\x12Z\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a5.authentication.service.v1.ListUserCredentialResponse\"\x00\x12\\\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a6.authentication.service.v1.CountUserCredentialResponse\"\x00\x12g\n" +

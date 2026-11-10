@@ -9,7 +9,7 @@ option go_package = "go-wind-admin/api/gen/go/notification/service/v1;notificati
 // 用户通知偏好（每用户一行）。
 // 服务端从操作人/收件人钉定 user_id，客户端传入的 user_id 一律忽略。
 message NotificationPreference {
-  optional uint64 user_id = 1;
+  optional int64 user_id = 1;
   // 是否启用实时推送静音时段：只抑制 SSE 实时推送（桌面通知/角标即时性），
   // 收件行照常落库，用户打开收件箱仍能看到全部消息。
   optional bool quiet_enabled = 2;
@@ -20,7 +20,7 @@ message NotificationPreference {
   optional int32 quiet_end_minute = 4;
   // 退订的站内信分类 ID 列表：仅约束全员广播（targetAll），
   // 点对点定向发送不受退订影响（直接指名发给你的消息不可拒收）。
-  repeated uint64 muted_category_ids = 5;
+  repeated int64 muted_category_ids = 5;
   optional google.protobuf.Timestamp updated_at = 14;
 }
 
@@ -29,12 +29,12 @@ message UpdateNotificationPreferenceRequest {
   optional bool quiet_enabled = 1;
   optional int32 quiet_start_minute = 2;
   optional int32 quiet_end_minute = 3;
-  repeated uint64 muted_category_ids = 4;
+  repeated int64 muted_category_ids = 4;
 }
 
 // 可退订分类的精简项（只取 id + 名称，避免拖整个分类实体）。
 message NotificationCategoryItem {
-  optional uint64 id = 1;
+  optional int64 id = 1;
   optional string name = 2;
 }
 

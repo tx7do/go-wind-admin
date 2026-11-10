@@ -86,7 +86,7 @@ func (r *LanguageRepo) List(ctx context.Context, req *paginationV1.PagingRequest
 	}, nil
 }
 
-func (r *LanguageRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *LanguageRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -124,7 +124,7 @@ func (r *LanguageRepo) Get(ctx context.Context, req *dictV1.GetLanguageRequest) 
 }
 
 // ListLanguageByIds 通过多个ID获取语言信息
-func (r *LanguageRepo) ListLanguageByIds(ctx context.Context, ids []uint64) ([]*dictV1.Language, error) {
+func (r *LanguageRepo) ListLanguageByIds(ctx context.Context, ids []int64) ([]*dictV1.Language, error) {
 	if len(ids) == 0 {
 		return []*dictV1.Language{}, nil
 	}

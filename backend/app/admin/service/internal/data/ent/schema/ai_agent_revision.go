@@ -36,7 +36,7 @@ func (AiAgentRevision) Annotations() []schema.Annotation {
 // Fields of the AiAgentRevision.
 func (AiAgentRevision) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("app_id").
+		field.Int64("app_id").
 			Comment("所属应用 ID").
 			Optional().
 			Nillable(),
@@ -61,7 +61,7 @@ func (AiAgentRevision) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

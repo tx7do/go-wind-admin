@@ -66,13 +66,13 @@ func (_c *MenuCreate) SetNillableDeletedAt(v *time.Time) *MenuCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *MenuCreate) SetCreatedBy(v uint64) *MenuCreate {
+func (_c *MenuCreate) SetCreatedBy(v int64) *MenuCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *MenuCreate) SetNillableCreatedBy(v *uint64) *MenuCreate {
+func (_c *MenuCreate) SetNillableCreatedBy(v *int64) *MenuCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *MenuCreate) SetNillableCreatedBy(v *uint64) *MenuCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *MenuCreate) SetUpdatedBy(v uint64) *MenuCreate {
+func (_c *MenuCreate) SetUpdatedBy(v int64) *MenuCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *MenuCreate) SetNillableUpdatedBy(v *uint64) *MenuCreate {
+func (_c *MenuCreate) SetNillableUpdatedBy(v *int64) *MenuCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *MenuCreate) SetNillableUpdatedBy(v *uint64) *MenuCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *MenuCreate) SetDeletedBy(v uint64) *MenuCreate {
+func (_c *MenuCreate) SetDeletedBy(v int64) *MenuCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *MenuCreate) SetNillableDeletedBy(v *uint64) *MenuCreate {
+func (_c *MenuCreate) SetNillableDeletedBy(v *int64) *MenuCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *MenuCreate) SetNillableDeletedBy(v *uint64) *MenuCreate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_c *MenuCreate) SetParentID(v uint64) *MenuCreate {
+func (_c *MenuCreate) SetParentID(v int64) *MenuCreate {
 	_c.mutation.SetParentID(v)
 	return _c
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *MenuCreate) SetNillableParentID(v *uint64) *MenuCreate {
+func (_c *MenuCreate) SetNillableParentID(v *int64) *MenuCreate {
 	if v != nil {
 		_c.SetParentID(*v)
 	}
@@ -254,7 +254,7 @@ func (_c *MenuCreate) SetNillableModule(v *menu.Module) *MenuCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *MenuCreate) SetID(v uint64) *MenuCreate {
+func (_c *MenuCreate) SetID(v int64) *MenuCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -265,14 +265,14 @@ func (_c *MenuCreate) SetParent(v *Menu) *MenuCreate {
 }
 
 // AddChildIDs adds the "children" edge to the Menu entity by IDs.
-func (_c *MenuCreate) AddChildIDs(ids ...uint64) *MenuCreate {
+func (_c *MenuCreate) AddChildIDs(ids ...int64) *MenuCreate {
 	_c.mutation.AddChildIDs(ids...)
 	return _c
 }
 
 // AddChildren adds the "children" edges to the Menu entity.
 func (_c *MenuCreate) AddChildren(v ...*Menu) *MenuCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -378,7 +378,7 @@ func (_c *MenuCreate) sqlSave(ctx context.Context) (*Menu, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -388,7 +388,7 @@ func (_c *MenuCreate) sqlSave(ctx context.Context) (*Menu, error) {
 func (_c *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Menu{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(menu.Table, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(menu.Table, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -408,15 +408,15 @@ func (_c *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(menu.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(menu.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(menu.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(menu.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(menu.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(menu.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -467,7 +467,7 @@ func (_c *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Columns: []string{menu.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -484,7 +484,7 @@ func (_c *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Columns: []string{menu.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -581,7 +581,7 @@ func (u *MenuUpsert) ClearDeletedAt() *MenuUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MenuUpsert) SetCreatedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) SetCreatedBy(v int64) *MenuUpsert {
 	u.Set(menu.FieldCreatedBy, v)
 	return u
 }
@@ -593,7 +593,7 @@ func (u *MenuUpsert) UpdateCreatedBy() *MenuUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MenuUpsert) AddCreatedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) AddCreatedBy(v int64) *MenuUpsert {
 	u.Add(menu.FieldCreatedBy, v)
 	return u
 }
@@ -605,7 +605,7 @@ func (u *MenuUpsert) ClearCreatedBy() *MenuUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MenuUpsert) SetUpdatedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) SetUpdatedBy(v int64) *MenuUpsert {
 	u.Set(menu.FieldUpdatedBy, v)
 	return u
 }
@@ -617,7 +617,7 @@ func (u *MenuUpsert) UpdateUpdatedBy() *MenuUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MenuUpsert) AddUpdatedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) AddUpdatedBy(v int64) *MenuUpsert {
 	u.Add(menu.FieldUpdatedBy, v)
 	return u
 }
@@ -629,7 +629,7 @@ func (u *MenuUpsert) ClearUpdatedBy() *MenuUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MenuUpsert) SetDeletedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) SetDeletedBy(v int64) *MenuUpsert {
 	u.Set(menu.FieldDeletedBy, v)
 	return u
 }
@@ -641,7 +641,7 @@ func (u *MenuUpsert) UpdateDeletedBy() *MenuUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MenuUpsert) AddDeletedBy(v uint64) *MenuUpsert {
+func (u *MenuUpsert) AddDeletedBy(v int64) *MenuUpsert {
 	u.Add(menu.FieldDeletedBy, v)
 	return u
 }
@@ -653,7 +653,7 @@ func (u *MenuUpsert) ClearDeletedBy() *MenuUpsert {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *MenuUpsert) SetParentID(v uint64) *MenuUpsert {
+func (u *MenuUpsert) SetParentID(v int64) *MenuUpsert {
 	u.Set(menu.FieldParentID, v)
 	return u
 }
@@ -938,14 +938,14 @@ func (u *MenuUpsertOne) ClearDeletedAt() *MenuUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MenuUpsertOne) SetCreatedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetCreatedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MenuUpsertOne) AddCreatedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) AddCreatedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -966,14 +966,14 @@ func (u *MenuUpsertOne) ClearCreatedBy() *MenuUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MenuUpsertOne) SetUpdatedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetUpdatedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MenuUpsertOne) AddUpdatedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) AddUpdatedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -994,14 +994,14 @@ func (u *MenuUpsertOne) ClearUpdatedBy() *MenuUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MenuUpsertOne) SetDeletedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetDeletedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MenuUpsertOne) AddDeletedBy(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) AddDeletedBy(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1022,7 +1022,7 @@ func (u *MenuUpsertOne) ClearDeletedBy() *MenuUpsertOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *MenuUpsertOne) SetParentID(v uint64) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetParentID(v int64) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetParentID(v)
 	})
@@ -1261,7 +1261,7 @@ func (u *MenuUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *MenuUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *MenuUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1270,7 +1270,7 @@ func (u *MenuUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *MenuUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *MenuUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1327,7 +1327,7 @@ func (_c *MenuCreateBulk) Save(ctx context.Context) ([]*Menu, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1505,14 +1505,14 @@ func (u *MenuUpsertBulk) ClearDeletedAt() *MenuUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MenuUpsertBulk) SetCreatedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetCreatedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MenuUpsertBulk) AddCreatedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) AddCreatedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1533,14 +1533,14 @@ func (u *MenuUpsertBulk) ClearCreatedBy() *MenuUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MenuUpsertBulk) SetUpdatedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetUpdatedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MenuUpsertBulk) AddUpdatedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) AddUpdatedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1561,14 +1561,14 @@ func (u *MenuUpsertBulk) ClearUpdatedBy() *MenuUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MenuUpsertBulk) SetDeletedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetDeletedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MenuUpsertBulk) AddDeletedBy(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) AddDeletedBy(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1589,7 +1589,7 @@ func (u *MenuUpsertBulk) ClearDeletedBy() *MenuUpsertBulk {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *MenuUpsertBulk) SetParentID(v uint64) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetParentID(v int64) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetParentID(v)
 	})

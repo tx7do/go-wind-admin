@@ -43,7 +43,7 @@ func createFullPathMenu(t *testing.T, entClient *entCrud.EntClient[*ent.Client],
 }
 
 // countPermissionMenus 统计某权限的关联行数。
-func countPermissionMenus(t *testing.T, client *ent.Client, ctx context.Context, permissionID uint64) int {
+func countPermissionMenus(t *testing.T, client *ent.Client, ctx context.Context, permissionID int64) int {
 	t.Helper()
 	cnt, err := client.PermissionMenu.Query().
 		Where(permissionmenu.PermissionIDEQ(permissionID)).
@@ -53,7 +53,7 @@ func countPermissionMenus(t *testing.T, client *ent.Client, ctx context.Context,
 }
 
 // menuPathSet 取权限关联的全路径快照集合（无序比较用）。
-func menuPathSet(t *testing.T, client *ent.Client, ctx context.Context, permissionID uint64) map[string]struct{} {
+func menuPathSet(t *testing.T, client *ent.Client, ctx context.Context, permissionID int64) map[string]struct{} {
 	t.Helper()
 	rows, err := client.PermissionMenu.Query().
 		Where(permissionmenu.PermissionIDEQ(permissionID)).
@@ -80,7 +80,7 @@ func TestPermissionMenuRepoSqlite_AssignResolvesToFullPathSnapshots(t *testing.T
 	menuC := createFullPathMenu(t, entClient, ctx, "MenuC", "/m/c")
 
 	// 首次分配：权限 100 → [A, B] —— 落库的是全路径快照
-	require.NoError(t, repo.AssignMenus(ctx, 100, []uint64{menuA.ID, menuB.ID}), "首次分配应成功")
+	require.NoError(t, repo.AssignMenus(ctx, 100, []int64{menuA.ID, menuB.ID}), "首次分配应成功")
 	got := menuPathSet(t, client, ctx, 100)
 	require.Len(t, got, 2, "两个菜单应各落一行")
 	require.Contains(t, got, "/m/a", "绑定应落全路径快照而非 id")
@@ -93,16 +93,16 @@ func TestPermissionMenuRepoSqlite_AssignResolvesToFullPathSnapshots(t *testing.T
 	require.NoError(t, err)
 	for _, r := range rows {
 		require.NotNil(t, r.CreatedAt, "created_at 必须显式写入")
-		require.Equal(t, uint64(100), *r.PermissionID, "permission_id 应按入参落库")
+		require.Equal(t, int64(100), *r.PermissionID, "permission_id 应按入参落库")
 	}
 
 	// ListMenuIDs：快照反解回当前 id
-	ids, err := repo.ListMenuIDs(ctx, []uint64{100})
+	ids, err := repo.ListMenuIDs(ctx, []int64{100})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{menuA.ID, menuB.ID}, ids, "ListMenuIDs 应反解回当前菜单 id")
+	require.ElementsMatch(t, []int64{menuA.ID, menuB.ID}, ids, "ListMenuIDs 应反解回当前菜单 id")
 
 	// 重新分配 [B, C]：A 被清掉，B 复用原行
-	require.NoError(t, repo.AssignMenus(ctx, 100, []uint64{menuB.ID, menuC.ID}), "重新分配应成功")
+	require.NoError(t, repo.AssignMenus(ctx, 100, []int64{menuB.ID, menuC.ID}), "重新分配应成功")
 	require.Len(t, menuPathSet(t, client, ctx, 100), 2, "重新分配后仍是 2 行：被移除的清掉、保留的复用原行")
 	got = menuPathSet(t, client, ctx, 100)
 	require.Contains(t, got, "/m/b")
@@ -110,7 +110,7 @@ func TestPermissionMenuRepoSqlite_AssignResolvesToFullPathSnapshots(t *testing.T
 	require.NotContains(t, got, "/m/a", "被移出新集合的菜单关联必须清掉，残留即越权")
 
 	// 同集合重复分配：upsert 幂等，行数不涨
-	require.NoError(t, repo.AssignMenus(ctx, 100, []uint64{menuB.ID, menuC.ID}), "重复分配同集合应幂等成功")
+	require.NoError(t, repo.AssignMenus(ctx, 100, []int64{menuB.ID, menuC.ID}), "重复分配同集合应幂等成功")
 	require.Equal(t, 2, countPermissionMenus(t, client, ctx, 100), "重复分配不得新增行（唯一索引冲突应走更新分支）")
 
 	// 回收全部：空列表 = CleanNotExist 的 NOT IN 空集合恒真 → 关联全部清掉
@@ -118,18 +118,18 @@ func TestPermissionMenuRepoSqlite_AssignResolvesToFullPathSnapshots(t *testing.T
 	require.Empty(t, menuPathSet(t, client, ctx, 100), "空列表的净效果应是回收该权限的全部菜单授权")
 
 	// 失效引用：提交了不存在的菜单 id → 整体 400 带缺失明细，库内零落库（不吞错铁律）
-	require.NoError(t, repo.AssignMenus(ctx, 101, []uint64{menuA.ID}), "先落一条作对照")
-	err = repo.AssignMenus(ctx, 101, []uint64{menuA.ID, 987654321})
+	require.NoError(t, repo.AssignMenus(ctx, 101, []int64{menuA.ID}), "先落一条作对照")
+	err = repo.AssignMenus(ctx, 101, []int64{menuA.ID, 987654321})
 	require.Error(t, err, "含失效引用的分配应整体失败")
 	require.ErrorContains(t, err, "987654321", "错误应带缺失 id 明细")
 	require.Equal(t, 1, countPermissionMenus(t, client, ctx, 101), "失败分支不得多落任何绑定行")
 
 	// 多权限查询并集 + 未授权/空入参返回空集
-	require.NoError(t, repo.AssignMenus(ctx, 102, []uint64{menuC.ID}))
-	ids, err = repo.ListMenuIDs(ctx, []uint64{101, 102})
+	require.NoError(t, repo.AssignMenus(ctx, 102, []int64{menuC.ID}))
+	ids, err = repo.ListMenuIDs(ctx, []int64{101, 102})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{menuA.ID, menuC.ID}, ids, "多权限查询应返回并集")
-	ids, err = repo.ListMenuIDs(ctx, []uint64{999})
+	require.ElementsMatch(t, []int64{menuA.ID, menuC.ID}, ids, "多权限查询应返回并集")
+	ids, err = repo.ListMenuIDs(ctx, []int64{999})
 	require.NoError(t, err)
 	require.Empty(t, ids, "未授权权限应返回空集而不是错误")
 	ids, err = repo.ListMenuIDs(ctx, nil)
@@ -146,8 +146,8 @@ func TestPermissionMenuRepoSqlite_BindingSurvivesMenuRecreate(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	menuRow := createFullPathMenu(t, entClient, ctx, "DriftMenu", "/m/drift")
-	bindingPerm := uint64(200)
-	require.NoError(t, repo.AssignMenus(ctx, bindingPerm, []uint64{menuRow.ID}))
+	bindingPerm := int64(200)
+	require.NoError(t, repo.AssignMenus(ctx, bindingPerm, []int64{menuRow.ID}))
 	bindingID, err := client.PermissionMenu.Query().
 		Where(permissionmenu.PermissionIDEQ(bindingPerm)).
 		FirstID(ctx)
@@ -167,9 +167,9 @@ func TestPermissionMenuRepoSqlite_BindingSurvivesMenuRecreate(t *testing.T) {
 	require.Equal(t, "/m/drift", *binding.FullPath)
 
 	// 反解回的是重建后的新 id：导航链路照常命中
-	ids, err := repo.ListMenuIDs(ctx, []uint64{bindingPerm})
+	ids, err := repo.ListMenuIDs(ctx, []int64{bindingPerm})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{reborn.ID}, ids, "ListMenuIDs 应反解到重建后的新 id")
+	require.Equal(t, []int64{reborn.ID}, ids, "ListMenuIDs 应反解到重建后的新 id")
 }
 
 // TestPermissionMenuRepoSqlite_DeleteByFullPaths 验证全路径级联清理：
@@ -182,7 +182,7 @@ func TestPermissionMenuRepoSqlite_DeleteByFullPaths(t *testing.T) {
 	doomed := createFullPathMenu(t, entClient, ctx, "Doomed", "/m/doomed")
 	kept := createFullPathMenu(t, entClient, ctx, "Kept", "/m/kept")
 
-	require.NoError(t, repo.AssignMenus(ctx, 300, []uint64{doomed.ID, kept.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 300, []int64{doomed.ID, kept.ID}))
 	require.Equal(t, 2, countPermissionMenus(t, client, ctx, 300))
 
 	require.NoError(t, repo.DeleteByFullPaths(ctx, client, []string{"/m/doomed"}), "DeleteByFullPaths 应成功")
@@ -236,32 +236,32 @@ func TestPermissionMenuRepoSqlite_TruncateAndDelete(t *testing.T) {
 	m4 := createFullPathMenu(t, entClient, ctx, "T4", "/t/4")
 
 	// 播一批：受保护集合 700/701 各一行，普通权限 500/501 各两行
-	require.NoError(t, repo.AssignMenus(ctx, 700, []uint64{m1.ID}))
-	require.NoError(t, repo.AssignMenus(ctx, 701, []uint64{m2.ID}))
-	require.NoError(t, repo.AssignMenus(ctx, 500, []uint64{m3.ID, m4.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 700, []int64{m1.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 701, []int64{m2.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 500, []int64{m3.ID, m4.ID}))
 
-	require.NoError(t, repo.TruncateExcept(ctx, []uint64{700, 701}), "TruncateExcept 应成功")
+	require.NoError(t, repo.TruncateExcept(ctx, []int64{700, 701}), "TruncateExcept 应成功")
 
 	require.Equal(t, 1, countPermissionMenus(t, client, ctx, 700), "保留集内权限的关联应保留")
 	require.Equal(t, 1, countPermissionMenus(t, client, ctx, 701), "保留集内权限的关联应保留")
 	require.Equal(t, 0, countPermissionMenus(t, client, ctx, 500), "保留集外权限的关联应被清空")
 
 	// TruncateExcept(nil) = 全清
-	require.NoError(t, repo.AssignMenus(ctx, 700, []uint64{m1.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 700, []int64{m1.ID}))
 	require.NoError(t, repo.TruncateExcept(ctx, nil), "全清应成功")
 	require.Equal(t, 0, countPermissionMenus(t, client, ctx, 700), "全清后不得残留")
 
 	// 重新播数据测 Delete / DeleteByPermissionIDs
 	m5 := createFullPathMenu(t, entClient, ctx, "T5", "/t/5")
 	m6 := createFullPathMenu(t, entClient, ctx, "T6", "/t/6")
-	require.NoError(t, repo.AssignMenus(ctx, 600, []uint64{m5.ID}))
-	require.NoError(t, repo.AssignMenus(ctx, 601, []uint64{m6.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 600, []int64{m5.ID}))
+	require.NoError(t, repo.AssignMenus(ctx, 601, []int64{m6.ID}))
 
 	require.NoError(t, repo.Delete(ctx, 600), "按权限删除应成功")
 	require.Equal(t, 0, countPermissionMenus(t, client, ctx, 600), "删除后该权限应无关联")
 	require.Equal(t, 1, countPermissionMenus(t, client, ctx, 601), "其他权限不得被牵连")
 
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{601}), "按权限集合批量删除应成功")
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []int64{601}), "按权限集合批量删除应成功")
 	require.Equal(t, 0, countPermissionMenus(t, client, ctx, 601), "批量删除应覆盖权限 601")
 
 	// 目标不存在：静默成功（幂等删除语义，重试与并发清理依赖它）

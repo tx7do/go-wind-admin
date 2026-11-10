@@ -65,13 +65,13 @@ func (_c *UserOrgUnitCreate) SetNillableDeletedAt(v *time.Time) *UserOrgUnitCrea
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *UserOrgUnitCreate) SetCreatedBy(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetCreatedBy(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillableCreatedBy(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillableCreatedBy(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *UserOrgUnitCreate) SetNillableCreatedBy(v *uint64) *UserOrgUnitCreate 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *UserOrgUnitCreate) SetUpdatedBy(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetUpdatedBy(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillableUpdatedBy(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillableUpdatedBy(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *UserOrgUnitCreate) SetNillableUpdatedBy(v *uint64) *UserOrgUnitCreate 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *UserOrgUnitCreate) SetDeletedBy(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetDeletedBy(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillableDeletedBy(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillableDeletedBy(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *UserOrgUnitCreate) SetNillableDeletedBy(v *uint64) *UserOrgUnitCreate 
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *UserOrgUnitCreate) SetTenantID(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetTenantID(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillableTenantID(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillableTenantID(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -135,25 +135,25 @@ func (_c *UserOrgUnitCreate) SetNillableRemark(v *string) *UserOrgUnitCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *UserOrgUnitCreate) SetUserID(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetUserID(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_c *UserOrgUnitCreate) SetOrgUnitID(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetOrgUnitID(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetOrgUnitID(v)
 	return _c
 }
 
 // SetPositionID sets the "position_id" field.
-func (_c *UserOrgUnitCreate) SetPositionID(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetPositionID(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetPositionID(v)
 	return _c
 }
 
 // SetNillablePositionID sets the "position_id" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillablePositionID(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillablePositionID(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetPositionID(*v)
 	}
@@ -203,13 +203,13 @@ func (_c *UserOrgUnitCreate) SetNillableAssignedAt(v *time.Time) *UserOrgUnitCre
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_c *UserOrgUnitCreate) SetAssignedBy(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetAssignedBy(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetAssignedBy(v)
 	return _c
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_c *UserOrgUnitCreate) SetNillableAssignedBy(v *uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetNillableAssignedBy(v *int64) *UserOrgUnitCreate {
 	if v != nil {
 		_c.SetAssignedBy(*v)
 	}
@@ -245,7 +245,7 @@ func (_c *UserOrgUnitCreate) SetNillableStatus(v *userorgunit.Status) *UserOrgUn
 }
 
 // SetID sets the "id" field.
-func (_c *UserOrgUnitCreate) SetID(v uint64) *UserOrgUnitCreate {
+func (_c *UserOrgUnitCreate) SetID(v int64) *UserOrgUnitCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -339,7 +339,7 @@ func (_c *UserOrgUnitCreate) sqlSave(ctx context.Context) (*UserOrgUnit, error) 
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -349,7 +349,7 @@ func (_c *UserOrgUnitCreate) sqlSave(ctx context.Context) (*UserOrgUnit, error) 
 func (_c *UserOrgUnitCreate) createSpec() (*UserOrgUnit, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserOrgUnit{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(userorgunit.Table, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(userorgunit.Table, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -369,19 +369,19 @@ func (_c *UserOrgUnitCreate) createSpec() (*UserOrgUnit, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(userorgunit.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -389,15 +389,15 @@ func (_c *UserOrgUnitCreate) createSpec() (*UserOrgUnit, *sqlgraph.CreateSpec) {
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(userorgunit.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUserID, field.TypeInt64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.OrgUnitID(); ok {
-		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeInt64, value)
 		_node.OrgUnitID = &value
 	}
 	if value, ok := _c.mutation.PositionID(); ok {
-		_spec.SetField(userorgunit.FieldPositionID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldPositionID, field.TypeInt64, value)
 		_node.PositionID = &value
 	}
 	if value, ok := _c.mutation.StartAt(); ok {
@@ -413,7 +413,7 @@ func (_c *UserOrgUnitCreate) createSpec() (*UserOrgUnit, *sqlgraph.CreateSpec) {
 		_node.AssignedAt = &value
 	}
 	if value, ok := _c.mutation.AssignedBy(); ok {
-		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeInt64, value)
 		_node.AssignedBy = &value
 	}
 	if value, ok := _c.mutation.IsPrimary(); ok {
@@ -513,7 +513,7 @@ func (u *UserOrgUnitUpsert) ClearDeletedAt() *UserOrgUnitUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserOrgUnitUpsert) SetCreatedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetCreatedBy(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldCreatedBy, v)
 	return u
 }
@@ -525,7 +525,7 @@ func (u *UserOrgUnitUpsert) UpdateCreatedBy() *UserOrgUnitUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserOrgUnitUpsert) AddCreatedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddCreatedBy(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldCreatedBy, v)
 	return u
 }
@@ -537,7 +537,7 @@ func (u *UserOrgUnitUpsert) ClearCreatedBy() *UserOrgUnitUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserOrgUnitUpsert) SetUpdatedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetUpdatedBy(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -549,7 +549,7 @@ func (u *UserOrgUnitUpsert) UpdateUpdatedBy() *UserOrgUnitUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserOrgUnitUpsert) AddUpdatedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddUpdatedBy(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -561,7 +561,7 @@ func (u *UserOrgUnitUpsert) ClearUpdatedBy() *UserOrgUnitUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserOrgUnitUpsert) SetDeletedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetDeletedBy(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldDeletedBy, v)
 	return u
 }
@@ -573,7 +573,7 @@ func (u *UserOrgUnitUpsert) UpdateDeletedBy() *UserOrgUnitUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserOrgUnitUpsert) AddDeletedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddDeletedBy(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldDeletedBy, v)
 	return u
 }
@@ -603,7 +603,7 @@ func (u *UserOrgUnitUpsert) ClearRemark() *UserOrgUnitUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserOrgUnitUpsert) SetUserID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetUserID(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldUserID, v)
 	return u
 }
@@ -615,13 +615,13 @@ func (u *UserOrgUnitUpsert) UpdateUserID() *UserOrgUnitUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserOrgUnitUpsert) AddUserID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddUserID(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldUserID, v)
 	return u
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *UserOrgUnitUpsert) SetOrgUnitID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetOrgUnitID(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldOrgUnitID, v)
 	return u
 }
@@ -633,13 +633,13 @@ func (u *UserOrgUnitUpsert) UpdateOrgUnitID() *UserOrgUnitUpsert {
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *UserOrgUnitUpsert) AddOrgUnitID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddOrgUnitID(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldOrgUnitID, v)
 	return u
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *UserOrgUnitUpsert) SetPositionID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetPositionID(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldPositionID, v)
 	return u
 }
@@ -651,7 +651,7 @@ func (u *UserOrgUnitUpsert) UpdatePositionID() *UserOrgUnitUpsert {
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *UserOrgUnitUpsert) AddPositionID(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddPositionID(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldPositionID, v)
 	return u
 }
@@ -717,7 +717,7 @@ func (u *UserOrgUnitUpsert) ClearAssignedAt() *UserOrgUnitUpsert {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserOrgUnitUpsert) SetAssignedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) SetAssignedBy(v int64) *UserOrgUnitUpsert {
 	u.Set(userorgunit.FieldAssignedBy, v)
 	return u
 }
@@ -729,7 +729,7 @@ func (u *UserOrgUnitUpsert) UpdateAssignedBy() *UserOrgUnitUpsert {
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserOrgUnitUpsert) AddAssignedBy(v uint64) *UserOrgUnitUpsert {
+func (u *UserOrgUnitUpsert) AddAssignedBy(v int64) *UserOrgUnitUpsert {
 	u.Add(userorgunit.FieldAssignedBy, v)
 	return u
 }
@@ -867,14 +867,14 @@ func (u *UserOrgUnitUpsertOne) ClearDeletedAt() *UserOrgUnitUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserOrgUnitUpsertOne) SetCreatedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetCreatedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserOrgUnitUpsertOne) AddCreatedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddCreatedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -895,14 +895,14 @@ func (u *UserOrgUnitUpsertOne) ClearCreatedBy() *UserOrgUnitUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserOrgUnitUpsertOne) SetUpdatedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetUpdatedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserOrgUnitUpsertOne) AddUpdatedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddUpdatedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -923,14 +923,14 @@ func (u *UserOrgUnitUpsertOne) ClearUpdatedBy() *UserOrgUnitUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserOrgUnitUpsertOne) SetDeletedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetDeletedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserOrgUnitUpsertOne) AddDeletedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddDeletedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -972,14 +972,14 @@ func (u *UserOrgUnitUpsertOne) ClearRemark() *UserOrgUnitUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserOrgUnitUpsertOne) SetUserID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetUserID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserOrgUnitUpsertOne) AddUserID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddUserID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddUserID(v)
 	})
@@ -993,14 +993,14 @@ func (u *UserOrgUnitUpsertOne) UpdateUserID() *UserOrgUnitUpsertOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *UserOrgUnitUpsertOne) SetOrgUnitID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetOrgUnitID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *UserOrgUnitUpsertOne) AddOrgUnitID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddOrgUnitID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1014,14 +1014,14 @@ func (u *UserOrgUnitUpsertOne) UpdateOrgUnitID() *UserOrgUnitUpsertOne {
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *UserOrgUnitUpsertOne) SetPositionID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetPositionID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetPositionID(v)
 	})
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *UserOrgUnitUpsertOne) AddPositionID(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddPositionID(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddPositionID(v)
 	})
@@ -1105,14 +1105,14 @@ func (u *UserOrgUnitUpsertOne) ClearAssignedAt() *UserOrgUnitUpsertOne {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserOrgUnitUpsertOne) SetAssignedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) SetAssignedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserOrgUnitUpsertOne) AddAssignedBy(v uint64) *UserOrgUnitUpsertOne {
+func (u *UserOrgUnitUpsertOne) AddAssignedBy(v int64) *UserOrgUnitUpsertOne {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddAssignedBy(v)
 	})
@@ -1183,7 +1183,7 @@ func (u *UserOrgUnitUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserOrgUnitUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *UserOrgUnitUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1192,7 +1192,7 @@ func (u *UserOrgUnitUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserOrgUnitUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *UserOrgUnitUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1249,7 +1249,7 @@ func (_c *UserOrgUnitCreateBulk) Save(ctx context.Context) ([]*UserOrgUnit, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1430,14 +1430,14 @@ func (u *UserOrgUnitUpsertBulk) ClearDeletedAt() *UserOrgUnitUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *UserOrgUnitUpsertBulk) SetCreatedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetCreatedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *UserOrgUnitUpsertBulk) AddCreatedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddCreatedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1458,14 +1458,14 @@ func (u *UserOrgUnitUpsertBulk) ClearCreatedBy() *UserOrgUnitUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *UserOrgUnitUpsertBulk) SetUpdatedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetUpdatedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *UserOrgUnitUpsertBulk) AddUpdatedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddUpdatedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1486,14 +1486,14 @@ func (u *UserOrgUnitUpsertBulk) ClearUpdatedBy() *UserOrgUnitUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *UserOrgUnitUpsertBulk) SetDeletedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetDeletedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *UserOrgUnitUpsertBulk) AddDeletedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddDeletedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1535,14 +1535,14 @@ func (u *UserOrgUnitUpsertBulk) ClearRemark() *UserOrgUnitUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *UserOrgUnitUpsertBulk) SetUserID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetUserID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *UserOrgUnitUpsertBulk) AddUserID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddUserID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddUserID(v)
 	})
@@ -1556,14 +1556,14 @@ func (u *UserOrgUnitUpsertBulk) UpdateUserID() *UserOrgUnitUpsertBulk {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *UserOrgUnitUpsertBulk) SetOrgUnitID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetOrgUnitID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *UserOrgUnitUpsertBulk) AddOrgUnitID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddOrgUnitID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1577,14 +1577,14 @@ func (u *UserOrgUnitUpsertBulk) UpdateOrgUnitID() *UserOrgUnitUpsertBulk {
 }
 
 // SetPositionID sets the "position_id" field.
-func (u *UserOrgUnitUpsertBulk) SetPositionID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetPositionID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetPositionID(v)
 	})
 }
 
 // AddPositionID adds v to the "position_id" field.
-func (u *UserOrgUnitUpsertBulk) AddPositionID(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddPositionID(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddPositionID(v)
 	})
@@ -1668,14 +1668,14 @@ func (u *UserOrgUnitUpsertBulk) ClearAssignedAt() *UserOrgUnitUpsertBulk {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (u *UserOrgUnitUpsertBulk) SetAssignedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) SetAssignedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.SetAssignedBy(v)
 	})
 }
 
 // AddAssignedBy adds v to the "assigned_by" field.
-func (u *UserOrgUnitUpsertBulk) AddAssignedBy(v uint64) *UserOrgUnitUpsertBulk {
+func (u *UserOrgUnitUpsertBulk) AddAssignedBy(v int64) *UserOrgUnitUpsertBulk {
 	return u.Update(func(s *UserOrgUnitUpsert) {
 		s.AddAssignedBy(v)
 	})

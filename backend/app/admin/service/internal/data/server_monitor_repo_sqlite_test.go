@@ -40,7 +40,7 @@ func TestServerMonitorRepoSqlite_GetInfoWithDatabase(t *testing.T) {
 	require.NotNil(t, goInfo.GetMemSysBytes(), "系统内存字段应被填充")
 	require.NotNil(t, goInfo.GetGcCycles(), "GC 周期字段应被填充")
 	require.NotNil(t, goInfo.GetStartedAt(), "started_at 应被填充")
-	require.GreaterOrEqual(t, goInfo.GetUptimeSeconds(), uint64(0), "uptime 应非负")
+	require.GreaterOrEqual(t, goInfo.GetUptimeSeconds(), int64(0), "uptime 应非负")
 
 	// 主机段：与运行环境一致（hostname 受环境影响，不 assert）
 	hostInfo := info.GetHost()

@@ -119,7 +119,7 @@ func SettingsSchemaByType(typeName string) *SettingsSchema {
 
 // SettingsAccount 一条扩展渠道的解密后配置（repo 提供，仅发送链路内部使用）。
 type SettingsAccount struct {
-	ID       uint64
+	ID       int64
 	TypeName string // proto Type 枚举名（与 settingsBuilders 键一致）
 	Settings map[string]any
 }
@@ -233,7 +233,7 @@ func (s *SettingsSender) Channel() notificationV1.Channel {
 }
 
 // Precheck 解析配置并按 schema 校验必填，不拨号。见 channel.Prechecker。
-func (s *SettingsSender) Precheck(ctx context.Context, channelID uint64) error {
+func (s *SettingsSender) Precheck(ctx context.Context, channelID int64) error {
 	account, err := s.pickAccount(ctx, channelID)
 	if err != nil {
 		return err
@@ -279,7 +279,7 @@ func (s *SettingsSender) Send(ctx context.Context, req *SendRequest) (*SendRecei
 
 // pickAccount 显式 ID 优先，否则取第一个启用的扩展渠道行——
 // EXT 是一个 Channel 大类，下含 39 种 type：自选策略按"第一个启用的 settings 行"落。
-func (s *SettingsSender) pickAccount(ctx context.Context, channelID uint64) (*SettingsAccount, error) {
+func (s *SettingsSender) pickAccount(ctx context.Context, channelID int64) (*SettingsAccount, error) {
 	if channelID == 0 {
 		typeName, storeJSON, err := s.channel.GetFirstEnabledSettingsRaw(ctx, SettingsTypeNames())
 		if err != nil {

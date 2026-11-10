@@ -37,7 +37,7 @@ service AccessKeyService {
 
 // OpenAPI 访问凭证（AK/SK）
 message AccessKey {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "凭证ID"
@@ -85,16 +85,16 @@ message AccessKey {
     }
   ]; // 最近使用时间
 
-  optional uint64 tenant_id = 10 [
+  optional int64 tenant_id = 10 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {
       description: "归属租户ID（机器令牌继承该租户的隔离与闸门）"
     }
   ]; // 归属租户ID
 
-  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}]; // 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}]; // 更新时间
@@ -104,13 +104,13 @@ message AccessKey {
 // 查询访问凭证列表 - 回应
 message ListAccessKeyResponse {
   repeated AccessKey items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询访问凭证详情 - 请求
 message GetAccessKeyRequest {
   oneof query_by {
-    uint64 id = 1;
+    int64 id = 1;
     string access_key = 2 [json_name = "accessKey"];
   }
 
@@ -129,7 +129,7 @@ message CreateAccessKeyRequest {
 
 // 更新访问凭证 - 请求
 message UpdateAccessKeyRequest {
-  uint64 id = 1;
+  int64 id = 1;
 
   AccessKey data = 2;
 
@@ -149,11 +149,11 @@ message UpdateAccessKeyRequest {
 
 // 删除访问凭证 - 请求
 message DeleteAccessKeyRequest {
-  uint64 id = 1;
+  int64 id = 1;
 }
 
 message CountAccessKeyResponse {
-  uint64 count = 1; // 凭证数量
+  int64 count = 1; // 凭证数量
 }
 
 // 创建访问凭证 - 回应（secret 仅本次明文返回，服务端只存 SHA-256 摘要）
@@ -164,7 +164,7 @@ message CreateAccessKeyResponse {
 
 // 重置密钥 - 请求
 message ResetAccessKeySecretRequest {
-  uint64 id = 1; // 凭证ID
+  int64 id = 1; // 凭证ID
 }
 
 // 令牌交换 - 请求（机器对机器：AK/SK 换取短期 JWT）

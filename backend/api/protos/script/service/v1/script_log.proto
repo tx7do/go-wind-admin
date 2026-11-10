@@ -23,14 +23,14 @@ service ScriptLogService {
 
 // 脚本执行日志
 message ScriptLog {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "日志ID"
     }
   ]; // 日志ID
 
-  optional uint64 script_id = 2 [
+  optional int64 script_id = 2 [
     json_name = "scriptId",
     (gnostic.openapi.v3.property) = {description: "脚本ID，试运行草稿为 0"}
   ]; // 脚本ID
@@ -81,11 +81,11 @@ message ScriptLog {
 // 查询脚本执行日志列表 - 回应
 message ListScriptLogsResponse {
   repeated ScriptLog items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 message CountScriptLogsResponse {
-  uint64 count = 1;  // 日志数量
+  int64 count = 1;  // 日志数量
 }
 
 // 清理日志 - 请求（删除 created_at 早于 before 的日志）

@@ -95,7 +95,7 @@ func TestScriptRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 行")
 	require.Contains(t, *filtered.Items[0].Name, "markerxyz", "命中行应是携带标记的行")
 
@@ -114,12 +114,12 @@ func TestScriptRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), none.Total, "无命中 contains 应返回 Total=0")
+	require.Equal(t, int64(0), none.Total, "无命中 contains 应返回 Total=0")
 	require.Empty(t, none.Items)
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应返回全部 2 行")
+	require.Equal(t, int64(2), all.Total, "无过滤时应返回全部 2 行")
 	require.Len(t, all.Items, 2)
 }
 
@@ -169,7 +169,7 @@ func TestScriptRepoSqlite_Get(t *testing.T) {
 	require.Error(t, err, "不存在的名字取源码应返回错误")
 
 	// GetVersionByName 命中：返回的是版本号数字串（修复前格式化的是
-	// *uint64 指针地址，DBSource 热更新变更检测指纹因此失效）。
+	// *int64 指针地址，DBSource 热更新变更检测指纹因此失效）。
 	version, err := repo.GetVersionByName(ctx, "sqlite_script_get")
 	require.NoError(t, err)
 	require.Equal(t, "1", version, "按名应返回初始版本号 1 的十进制串")
@@ -391,7 +391,7 @@ func TestScriptRepoSqlite_Delete(t *testing.T) {
 	require.Len(t, rows, 2)
 
 	require.NoError(t, repo.Delete(ctx, &scriptV1.DeleteScriptRequest{
-		Ids: []uint64{rows[0].ID, rows[1].ID},
+		Ids: []int64{rows[0].ID, rows[1].ID},
 	}), "Delete 应成功")
 	cnt, err := repo.entClient.Client().Script.Query().Count(ctx)
 	require.NoError(t, err)

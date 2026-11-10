@@ -64,7 +64,7 @@ func (e *notificationSvcEnv) armRecordWriteFailure(t *testing.T) func() bool {
 	return func() bool { return fired }
 }
 
-func (e *notificationSvcEnv) getDelivery(t *testing.T, id uint64) *notificationV1.NotificationDelivery {
+func (e *notificationSvcEnv) getDelivery(t *testing.T, id int64) *notificationV1.NotificationDelivery {
 	t.Helper()
 
 	got, err := e.svc.GetNotificationDelivery(e.ctx, &notificationV1.GetNotificationDeliveryRequest{Id: id})

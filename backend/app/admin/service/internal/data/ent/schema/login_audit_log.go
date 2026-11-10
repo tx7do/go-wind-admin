@@ -32,7 +32,7 @@ func (LoginAuditLog) Annotations() []schema.Annotation {
 // Fields of the LoginAuditLog.
 func (LoginAuditLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("user_id").
+		field.Int64("user_id").
 			Comment("操作者用户ID").
 			Optional().
 			Nillable(),
@@ -152,7 +152,7 @@ func (LoginAuditLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId64{},
 		mixin.CreatedAt{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

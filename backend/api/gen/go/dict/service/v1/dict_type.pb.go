@@ -29,16 +29,16 @@ const (
 // 字典类型
 type DictType struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                   // 字典类型ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                   // 字典类型ID
 	TypeCode      *string                `protobuf:"bytes,2,opt,name=type_code,json=typeCode,proto3,oneof" json:"type_code,omitempty"`        // 字典类型唯一代码
 	TypeName      *string                `protobuf:"bytes,3,opt,name=type_name,json=typeName,proto3,oneof" json:"type_name,omitempty"`        // 字典类型名称
 	IsEnabled     *bool                  `protobuf:"varint,4,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`    // 是否启用
 	SortOrder     *uint32                `protobuf:"varint,5,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`    // 排序号，越小越靠前
-	TenantId      *uint64                `protobuf:"varint,10,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`      // 租户ID，0代表系统全局角色
+	TenantId      *int64                 `protobuf:"varint,10,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`      // 租户ID，0代表系统全局角色
 	TenantName    *string                `protobuf:"bytes,11,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"` // 租户名称
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`  // 创建者用户ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`  // 更新者用户ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`  // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`  // 创建者用户ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`  // 更新者用户ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`  // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`   // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`   // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`   // 删除时间
@@ -76,7 +76,7 @@ func (*DictType) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_dict_type_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DictType) GetId() uint64 {
+func (x *DictType) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -111,7 +111,7 @@ func (x *DictType) GetSortOrder() uint32 {
 	return 0
 }
 
-func (x *DictType) GetTenantId() uint64 {
+func (x *DictType) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -125,21 +125,21 @@ func (x *DictType) GetTenantName() string {
 	return ""
 }
 
-func (x *DictType) GetCreatedBy() uint64 {
+func (x *DictType) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *DictType) GetUpdatedBy() uint64 {
+func (x *DictType) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *DictType) GetDeletedBy() uint64 {
+func (x *DictType) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -171,7 +171,7 @@ func (x *DictType) GetDeletedAt() *timestamppb.Timestamp {
 type ListDictTypeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*DictType            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,7 +213,7 @@ func (x *ListDictTypeResponse) GetItems() []*DictType {
 	return nil
 }
 
-func (x *ListDictTypeResponse) GetTotal() uint64 {
+func (x *ListDictTypeResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -270,7 +270,7 @@ func (x *GetDictTypeRequest) GetQueryBy() isGetDictTypeRequest_QueryBy {
 	return nil
 }
 
-func (x *GetDictTypeRequest) GetId() uint64 {
+func (x *GetDictTypeRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetDictTypeRequest_Id); ok {
 			return x.Id
@@ -300,7 +300,7 @@ type isGetDictTypeRequest_QueryBy interface {
 }
 
 type GetDictTypeRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 type GetDictTypeRequest_Code struct {
@@ -359,7 +359,7 @@ func (x *CreateDictTypeRequest) GetData() *DictType {
 // 更新字典类型 - 请求
 type UpdateDictTypeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *DictType              `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -397,7 +397,7 @@ func (*UpdateDictTypeRequest) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_dict_type_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateDictTypeRequest) GetId() uint64 {
+func (x *UpdateDictTypeRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -428,7 +428,7 @@ func (x *UpdateDictTypeRequest) GetAllowMissing() bool {
 // 批量删除字典 - 请求
 type DeleteDictTypeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ids           []uint64               `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"` // 要删除的ID列表
+	Ids           []int64                `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"` // 要删除的ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -463,7 +463,7 @@ func (*DeleteDictTypeRequest) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_dict_type_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeleteDictTypeRequest) GetIds() []uint64 {
+func (x *DeleteDictTypeRequest) GetIds() []int64 {
 	if x != nil {
 		return x.Ids
 	}
@@ -472,7 +472,7 @@ func (x *DeleteDictTypeRequest) GetIds() []uint64 {
 
 type CountDictTypeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 字典类型数量
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 字典类型数量
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -507,7 +507,7 @@ func (*CountDictTypeResponse) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_dict_type_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountDictTypeResponse) GetCount() uint64 {
+func (x *CountDictTypeResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -520,7 +520,7 @@ const file_dict_service_v1_dict_type_proto_rawDesc = "" +
 	"\n" +
 	"\x1fdict/service/v1/dict_type.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xea\b\n" +
 	"\bDictType\x12)\n" +
-	"\x02id\x18\x01 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e字典类型IDH\x00R\x02id\x88\x01\x01\x12f\n" +
+	"\x02id\x18\x01 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e字典类型IDH\x00R\x02id\x88\x01\x01\x12f\n" +
 	"\ttype_code\x18\x02 \x01(\tBD\xbaGA\x92\x02>字典类型唯一编码，如 app_type、platform、risk_typeH\x01R\btypeCode\x88\x01\x01\x12U\n" +
 	"\ttype_name\x18\x03 \x01(\tB3\xbaG0\x92\x02-字典类型名称（中文，仅后台用）H\x02R\btypeName\x88\x01\x01\x126\n" +
 	"\n" +
@@ -528,15 +528,15 @@ const file_dict_service_v1_dict_type_proto_rawDesc = "" +
 	"\n" +
 	"sort_order\x18\x05 \x01(\rB!\xbaG\x1e\x92\x02\x1b排序号，越小越靠前H\x04R\tsortOrder\x88\x01\x01\x12L\n" +
 	"\ttenant_id\x18\n" +
-	" \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x05R\btenantId\x88\x01\x01\x128\n" +
+	" \x01(\x03B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x05R\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x06R\n" +
 	"tenantName\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\aR\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x03B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\aR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
 	"R\tcreatedAt\x88\x01\x01\x12S\n" +
@@ -562,9 +562,9 @@ const file_dict_service_v1_dict_type_proto_rawDesc = "" +
 	"\v_deleted_at\"]\n" +
 	"\x14ListDictTypeResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.dict.service.v1.DictTypeR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcf\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xcf\x01\n" +
 	"\x12GetDictTypeRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\x03H\x00R\x02id\x12\x14\n" +
 	"\x04code\x18\x02 \x01(\tH\x00R\x04code\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -574,16 +574,16 @@ const file_dict_service_v1_dict_type_proto_rawDesc = "" +
 	"\x15CreateDictTypeRequest\x12-\n" +
 	"\x04data\x18\x01 \x01(\v2\x19.dict.service.v1.DictTypeR\x04data\"\x94\x03\n" +
 	"\x15UpdateDictTypeRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12-\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12-\n" +
 	"\x04data\x18\x02 \x01(\v2\x19.dict.service.v1.DictTypeR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\")\n" +
 	"\x15DeleteDictTypeRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\x04R\x03ids\"-\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids\"-\n" +
 	"\x15CountDictTypeResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xd8\x03\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xd8\x03\n" +
 	"\x0fDictTypeService\x12J\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListDictTypeResponse\"\x00\x12L\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a&.dict.service.v1.CountDictTypeResponse\"\x00\x12G\n" +

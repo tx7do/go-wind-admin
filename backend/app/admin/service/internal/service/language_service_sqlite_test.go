@@ -47,7 +47,7 @@ func TestLanguageServiceSqlite_InitSeedsDefaultsOnEmptyTable(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(len(constants.DefaultLanguages)), listResp.Total, "List 应统计全部已播种语言")
+	require.Equal(t, int64(len(constants.DefaultLanguages)), listResp.Total, "List 应统计全部已播种语言")
 	require.Len(t, listResp.Items, len(constants.DefaultLanguages), "List 应返回全部已播种语言")
 
 	zhFound := false
@@ -91,7 +91,7 @@ func TestLanguageServiceSqlite_InitGuardSkipsReseedWhenNonEmpty(t *testing.T) {
 		if r.LanguageCode != nil && *r.LanguageCode == "tst-SVCX" {
 			customFound = true
 			require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-			require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+			require.Equal(t, int64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 		}
 	}
 	require.True(t, customFound, "自定义语言行应存在")
@@ -115,10 +115,10 @@ func TestLanguageServiceSqlite_Get_ByIdAndByCode(t *testing.T) {
 	rows, err := entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(constants.DefaultLanguages))
-	var zhID uint64
+	var zhID int64
 	for _, r := range rows {
 		if r.LanguageCode != nil && *r.LanguageCode == "zh-CN" {
-			zhID = uint64(r.ID)
+			zhID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, zhID, "播种结果中应找到 zh-CN 的主键")
@@ -162,10 +162,10 @@ func TestLanguageServiceSqlite_Update_OnlyMaskedFields(t *testing.T) {
 	rows, err := entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(constants.DefaultLanguages))
-	var koID uint64
+	var koID int64
 	for _, r := range rows {
 		if r.LanguageCode != nil && *r.LanguageCode == "ko-KR" {
-			koID = uint64(r.ID)
+			koID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, koID, "播种结果中应找到 ko-KR 的主键")
@@ -187,7 +187,7 @@ func TestLanguageServiceSqlite_Update_OnlyMaskedFields(t *testing.T) {
 			require.Equal(t, "更新后的韩语名称", *r.LanguageName, "掩码内字段 language_name 应被更新")
 			require.Equal(t, "업데이트된 이름", *r.NativeName, "掩码内字段 native_name 应被更新")
 			require.NotNil(t, r.UpdatedBy, "服务层应把操作人 ID 盖入 updated_by")
-			require.Equal(t, uint64(7), *r.UpdatedBy, "updated_by 应等于令牌声明中的操作人 ID")
+			require.Equal(t, int64(7), *r.UpdatedBy, "updated_by 应等于令牌声明中的操作人 ID")
 		}
 	}
 }
@@ -203,7 +203,7 @@ func TestLanguageServiceSqlite_Delete(t *testing.T) {
 	rows, err := entClient.Client().Language.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(constants.DefaultLanguages))
-	delID := uint64(rows[0].ID)
+	delID := int64(rows[0].ID)
 
 	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &dictV1.DeleteLanguageRequest{
 		QueryBy: &dictV1.DeleteLanguageRequest_Id{Id: delID},

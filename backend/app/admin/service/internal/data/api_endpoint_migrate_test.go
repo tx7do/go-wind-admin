@@ -70,7 +70,7 @@ func TestWalkMenuFullPathsCycleGuard(t *testing.T) {
 	}
 	require.NotPanics(t, func() {
 		byID := walkMenuFullPaths(rows)
-		require.Contains(t, byID, uint64(1))
+		require.Contains(t, byID, int64(1))
 	})
 }
 

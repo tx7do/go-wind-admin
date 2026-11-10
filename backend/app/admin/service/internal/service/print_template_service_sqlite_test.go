@@ -56,7 +56,7 @@ func TestPrintTemplateServiceSqlite_CreateUpdateStampsOperator(t *testing.T) {
 		Data: &printV1.PrintTemplate{
 			Name:      trans.Ptr("出库单模板"),
 			Code:      trans.Ptr("svc-tpl-a"),
-			CreatedBy: trans.Ptr(uint64(1)),
+			CreatedBy: trans.Ptr(int64(1)),
 		},
 	})
 	require.NoError(t, err, "合法创建应成功")
@@ -66,7 +66,7 @@ func TestPrintTemplateServiceSqlite_CreateUpdateStampsOperator(t *testing.T) {
 		Only(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(91), *row.CreatedBy, "created_by 应取令牌操作人")
+	require.Equal(t, int64(91), *row.CreatedBy, "created_by 应取令牌操作人")
 
 	// 带掩码更新：客户端掩码只有 name，service 追加 updated_by 后盖章才能落库
 	_, err = svc.Update(opCtx, &printV1.UpdatePrintTemplateRequest{
@@ -81,8 +81,8 @@ func TestPrintTemplateServiceSqlite_CreateUpdateStampsOperator(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "改名后的模板", *row.Name, "掩码内 name 应更新")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(91), *row.UpdatedBy, "updated_by 应盖章令牌操作人（service 追加掩码路径）")
-	require.Equal(t, uint64(91), *row.CreatedBy, "更新不得改写 created_by（掩码外）")
+	require.Equal(t, int64(91), *row.UpdatedBy, "updated_by 应盖章令牌操作人（service 追加掩码路径）")
+	require.Equal(t, int64(91), *row.CreatedBy, "更新不得改写 created_by（掩码外）")
 
 	// 入参守卫与缺操作人
 	_, err = svc.Update(opCtx, nil)
@@ -114,7 +114,7 @@ func TestPrintTemplateServiceSqlite_ListGetDeletePassthrough(t *testing.T) {
 
 	list, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), list.GetTotal())
+	require.Equal(t, int64(2), list.GetTotal())
 
 	row, err := entClient.Client().PrintTemplate.Query().
 		Where(printtemplate.CodeEQ("pass-tpl")).

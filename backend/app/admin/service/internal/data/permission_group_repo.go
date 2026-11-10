@@ -123,8 +123,8 @@ func (r *PermissionGroupRepo) List(ctx context.Context, req *paginationV1.Paging
 	if treeTravel {
 		dtos = pagination.BuildTree(
 			dtos,
-			func(node *permissionV1.PermissionGroup) *uint64 { return node.Id },
-			func(node *permissionV1.PermissionGroup) *uint64 { return node.ParentId },
+			func(node *permissionV1.PermissionGroup) *int64 { return node.Id },
+			func(node *permissionV1.PermissionGroup) *int64 { return node.ParentId },
 			func(node *permissionV1.PermissionGroup) *[]*permissionV1.PermissionGroup { return &node.Children },
 		)
 	}
@@ -135,12 +135,12 @@ func (r *PermissionGroupRepo) List(ctx context.Context, req *paginationV1.Paging
 	}
 
 	return &permissionV1.ListPermissionGroupResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *PermissionGroupRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PermissionGroupRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().PermissionGroup.Query().
 		Where(permissiongroup.IDEQ(id)).
 		Exist(ctx)
@@ -238,7 +238,7 @@ func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, permissionGroups 
 
 	// 批量插入不经过 setTreePath，路径为 NULL：从批内根（父不在批内的节点）
 	// 逐棵重算，BFS 沿 parent_id 自动覆盖同批的父子链。
-	inBatch := make(map[uint64]bool, len(entities))
+	inBatch := make(map[int64]bool, len(entities))
 	for _, entity := range entities {
 		inBatch[entity.ID] = true
 	}
@@ -359,7 +359,7 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 }
 
 // UpdateParentIDs 更新 Permission ParentID
-func (r *PermissionGroupRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint64]uint64) (err error) {
+func (r *PermissionGroupRepo) UpdateParentIDs(ctx context.Context, parentIDs map[int64]int64) (err error) {
 	if len(parentIDs) == 0 {
 		return nil
 	}
@@ -475,7 +475,7 @@ func (r *PermissionGroupRepo) TruncateBizGroup(ctx context.Context) error {
 	return nil
 }
 
-func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []uint64) ([]*permissionV1.PermissionGroup, error) {
+func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []int64) ([]*permissionV1.PermissionGroup, error) {
 	if len(ids) == 0 {
 		return []*permissionV1.PermissionGroup{}, nil
 	}
@@ -527,16 +527,16 @@ func (r *PermissionGroupRepo) setTreePath(ctx context.Context, tx *ent.Tx, entit
 // "/父路径/ID/"，与 proto 注释的 "/1/10/101/（包含自身）" 格式一致。
 // 不能直接用 entCrud.ComputeTreePath：它对空父路径返回 "/"，会让所有根节点
 // 共享同一前缀（org_unit 同款问题）。
-func (r *PermissionGroupRepo) computeGroupTreePath(parentPath string, nodeID uint64) string {
+func (r *PermissionGroupRepo) computeGroupTreePath(parentPath string, nodeID int64) string {
 	if parentPath == "" {
-		return "/" + strconv.FormatUint(uint64(nodeID), 10) + "/"
+		return "/" + strconv.FormatInt(nodeID, 10) + "/"
 	}
 	return entCrud.ComputeTreePath64(parentPath, nodeID)
 }
 
 // ensureGroupAcyclicParent 校验把 nodeID 挂到 newParentID 下不会成环：从新父沿
 // parent 链上行，命中 nodeID 即拒绝。visited 防护让存量环脏数据也不死循环。
-func (r *PermissionGroupRepo) ensureGroupAcyclicParent(ctx context.Context, nodeID, newParentID uint64) error {
+func (r *PermissionGroupRepo) ensureGroupAcyclicParent(ctx context.Context, nodeID, newParentID int64) error {
 	if newParentID == nodeID {
 		return permissionV1.ErrorBadRequest("cannot move permission group under itself")
 	}
@@ -547,13 +547,13 @@ func (r *PermissionGroupRepo) ensureGroupAcyclicParent(ctx context.Context, node
 		r.log.Errorf(ctx, "query permission groups for parent acyclicity check failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("query permission groups failed")
 	}
-	parentOf := make(map[uint64]uint64, len(rows))
+	parentOf := make(map[int64]int64, len(rows))
 	for _, row := range rows {
 		if row.ParentID != nil && *row.ParentID != 0 {
 			parentOf[row.ID] = *row.ParentID
 		}
 	}
-	visited := make(map[uint64]struct{}, len(rows))
+	visited := make(map[int64]struct{}, len(rows))
 	cur := newParentID
 	for cur != 0 {
 		if cur == nodeID {
@@ -573,7 +573,7 @@ func (r *PermissionGroupRepo) ensureGroupAcyclicParent(ctx context.Context, node
 // 按 parent 链走可顺带自愈；移动到自身后代下会成环，检测到即拒绝。
 // client 由调用方给：事务内（如 UpdateParentIDs 的 tx.Client()）传事务客户端，
 // 保证读到同事务内未提交的 parent 变更。
-func (r *PermissionGroupRepo) relocateSubtree(ctx context.Context, client *ent.Client, nodeID uint64) error {
+func (r *PermissionGroupRepo) relocateSubtree(ctx context.Context, client *ent.Client, nodeID int64) error {
 	node, err := client.PermissionGroup.Query().
 		Where(permissiongroup.IDEQ(nodeID)).
 		Select(permissiongroup.FieldPath, permissiongroup.FieldParentID).
@@ -597,16 +597,16 @@ func (r *PermissionGroupRepo) relocateSubtree(ctx context.Context, client *ent.C
 		if parent.Path != nil {
 			parentPath = *parent.Path
 		}
-		if parentPath != "" && strings.Contains(parentPath, "/"+strconv.FormatUint(uint64(nodeID), 10)+"/") {
+		if parentPath != "" && strings.Contains(parentPath, "/"+strconv.FormatInt(nodeID, 10)+"/") {
 			return permissionV1.ErrorBadRequest("cannot move permission group under its own descendant")
 		}
 	}
 
 	type queueItem struct {
-		id         uint64
+		id         int64
 		parentPath string
 	}
-	visited := map[uint64]bool{nodeID: true}
+	visited := map[int64]bool{nodeID: true}
 	queue := []queueItem{{id: nodeID, parentPath: parentPath}}
 	for len(queue) > 0 {
 		it := queue[0]

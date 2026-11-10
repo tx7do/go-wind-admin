@@ -34,7 +34,7 @@ func NewUserPositionRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*e
 }
 
 // CleanRelationsByUserID 删除用户的所有岗位关联
-func (r *UserPositionRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, userID uint64) error {
+func (r *UserPositionRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, userID int64) error {
 	if userID == 0 {
 		return nil
 	}
@@ -51,7 +51,7 @@ func (r *UserPositionRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.T
 }
 
 // CleanRelationsByUserIDs 删除多个用户的所有岗位关联
-func (r *UserPositionRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.Tx, userIDs []uint64) error {
+func (r *UserPositionRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.Tx, userIDs []int64) error {
 	if len(userIDs) == 0 {
 		return nil
 	}
@@ -68,7 +68,7 @@ func (r *UserPositionRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.
 }
 
 // CleanRelationsByPositionID 删除岗位的所有用户关联
-func (r *UserPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *ent.Tx, positionID uint64) error {
+func (r *UserPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *ent.Tx, positionID int64) error {
 	if positionID == 0 {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *e
 }
 
 // CleanRelationsByPositionIDs 删除多个岗位的所有用户关联
-func (r *UserPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *ent.Tx, positionIDs []uint64) error {
+func (r *UserPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *ent.Tx, positionIDs []int64) error {
 	if len(positionIDs) == 0 {
 		return nil
 	}
@@ -102,7 +102,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *
 }
 
 // RemovePositionsFromUser 从用户移除岗位
-func (r *UserPositionRepo) RemovePositionsFromUser(ctx context.Context, userID uint64, positionIDs []uint64) error {
+func (r *UserPositionRepo) RemovePositionsFromUser(ctx context.Context, userID int64, positionIDs []int64) error {
 	if len(positionIDs) == 0 || userID == 0 {
 		return nil
 	}
@@ -157,7 +157,7 @@ func (r *UserPositionRepo) AssignUserPosition(
 // AssignUserPositions 分配岗位给用户
 func (r *UserPositionRepo) AssignUserPositions(
 	ctx context.Context, tx *ent.Tx,
-	userID uint64,
+	userID int64,
 	datas []*identityV1.UserPosition,
 ) error {
 	if len(datas) == 0 || userID == 0 {
@@ -204,9 +204,9 @@ func (r *UserPositionRepo) AssignUserPositions(
 }
 
 // ListPositionIDs 获取用户的岗位ID列表
-func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID int64, excludeExpired bool) ([]int64, error) {
 	if userID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	q := r.entClient.Client().UserPosition.Query().
@@ -231,17 +231,17 @@ func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID uint64, e
 		r.log.Errorf(ctx, "query position ids by user id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position ids by user id failed")
 	}
-	ids := make([]uint64, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint64(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
 
 // ListUserIDs 获取岗位关联的用户ID列表
-func (r *UserPositionRepo) ListUserIDs(ctx context.Context, positionID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserPositionRepo) ListUserIDs(ctx context.Context, positionID int64, excludeExpired bool) ([]int64, error) {
 	if positionID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	q := r.entClient.Client().UserPosition.Query().
@@ -266,15 +266,15 @@ func (r *UserPositionRepo) ListUserIDs(ctx context.Context, positionID uint64, e
 		r.log.Errorf(ctx, "query user ids by position id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by position id failed")
 	}
-	ids := make([]uint64, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint64(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
 
 // ListUserIDsByPositionIDs 获取多个岗位关联的用户ID列表
-func (r *UserPositionRepo) ListUserIDsByPositionIDs(ctx context.Context, positionIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserPositionRepo) ListUserIDsByPositionIDs(ctx context.Context, positionIDs []int64, excludeExpired bool) ([]int64, error) {
 	if len(positionIDs) == 0 {
 		return nil, nil
 	}
@@ -301,9 +301,9 @@ func (r *UserPositionRepo) ListUserIDsByPositionIDs(ctx context.Context, positio
 		r.log.Errorf(ctx, "query user ids by position ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by position ids failed")
 	}
-	ids := make([]uint64, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint64(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }

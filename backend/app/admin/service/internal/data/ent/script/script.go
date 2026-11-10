@@ -87,7 +87,7 @@ var (
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // Language defines the type for the "language" enum field.

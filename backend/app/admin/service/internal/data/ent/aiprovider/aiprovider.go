@@ -98,7 +98,7 @@ var (
 	// DefaultIsDefault holds the default value on creation for the "is_default" field.
 	DefaultIsDefault bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // ModelType defines the type for the "model_type" enum field.

@@ -147,8 +147,8 @@ func (s *PrintTemplateService) Create(ctx context.Context, req *printV1.CreatePr
 		if guErr == nil {
 			if limit, ok := quotaLimitFromUsages(usage.GetQuotas(), identityV1.PlanQuota_TEMPLATE_COUNT); ok {
 				current := s.countTemplatesInTenant(ctx, targetTenantID)
-				if uint64(current) >= limit {
-					return nil, quotaExceededError("TEMPLATE_COUNT", limit, uint64(current))
+				if int64(current) >= limit {
+					return nil, quotaExceededError("TEMPLATE_COUNT", limit, int64(current))
 				}
 			}
 		}
@@ -167,7 +167,7 @@ func (s *PrintTemplateService) Create(ctx context.Context, req *printV1.CreatePr
 // countTemplatesInTenant 统计指定租户的打印模板数（builtin 行 tenant_id=0 不计入）。
 // 计数失败返回 math.MaxInt64 → 触发配额拒绝（fail-closed），但调用方只在 limit>0
 // 时才走计数路径——未配置配额的场景不会调到这里。
-func (s *PrintTemplateService) countTemplatesInTenant(ctx context.Context, tenantID uint64) int64 {
+func (s *PrintTemplateService) countTemplatesInTenant(ctx context.Context, tenantID int64) int64 {
 	n, err := s.printTemplateRepo.CountByTenant(ctx, tenantID)
 	if err != nil {
 		s.log.Errorf(ctx, "count print templates for tenant [%d] failed: %s", tenantID, err.Error())

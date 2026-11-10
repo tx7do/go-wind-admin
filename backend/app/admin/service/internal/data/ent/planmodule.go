@@ -18,7 +18,7 @@ type PlanModule struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,17 +26,17 @@ type PlanModule struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 功能模块
 	Module *planmodule.Module `json:"module,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanModuleQuery when eager-loading is set.
 	Edges        PlanModuleEdges `json:"edges"`
-	plan_id      *uint64
+	plan_id      *int64
 	selectValues sql.SelectValues
 }
 
@@ -93,7 +93,7 @@ func (_m *PlanModule) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case planmodule.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -119,22 +119,22 @@ func (_m *PlanModule) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case planmodule.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case planmodule.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case planmodule.FieldModule:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -147,8 +147,8 @@ func (_m *PlanModule) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field plan_id", value)
 			} else if value.Valid {
-				_m.plan_id = new(uint64)
-				*_m.plan_id = uint64(value.Int64)
+				_m.plan_id = new(int64)
+				*_m.plan_id = int64(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

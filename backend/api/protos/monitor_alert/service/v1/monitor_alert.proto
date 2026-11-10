@@ -37,7 +37,7 @@ enum AlertOp {
 // 渠道与目标显式写在规则上（不经路由表）：告警是"点对点"的运营配置，
 // 路由表解决的是"事件该发去哪类渠道"，而这里要的是"这条告警发到这个邮箱"。
 message MonitorAlertRule {
-  optional uint64 id = 1;
+  optional int64 id = 1;
   optional string name = 2 [(validate.rules).string = {min_len: 1, max_len: 100}];
   optional monitor_alert.service.v1.MonitorMetric metric = 3;
   // DB_PING_FAIL 时忽略 op/threshold
@@ -59,7 +59,7 @@ message MonitorAlertRule {
 }
 
 message GetMonitorAlertRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
 }
 
 message CreateMonitorAlertRuleRequest {
@@ -67,17 +67,17 @@ message CreateMonitorAlertRuleRequest {
 }
 
 message UpdateMonitorAlertRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
   MonitorAlertRule data = 2;
   optional google.protobuf.FieldMask update_mask = 3;
 }
 
 message DeleteMonitorAlertRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
 }
 
 message ListMonitorAlertRuleResponse {
-  uint64 total = 1;
+  int64 total = 1;
   repeated MonitorAlertRule items = 2;
 }
 
@@ -86,7 +86,7 @@ message EvaluateMonitorAlertsRequest {}
 
 message EvaluateMonitorAlertsResponse {
   message RuleOutcome {
-    uint64 rule_id = 1;
+    int64 rule_id = 1;
     string name = 2;
     // 本次扫描是否越限
     bool firing = 3;

@@ -55,7 +55,7 @@ func TestInQuietWindow(t *testing.T) {
 // ---- categoryMuted 单元 ----
 
 func TestCategoryMuted(t *testing.T) {
-	pref := &notificationV1.NotificationPreference{MutedCategoryIds: []uint64{7, 9}}
+	pref := &notificationV1.NotificationPreference{MutedCategoryIds: []int64{7, 9}}
 	require.True(t, categoryMuted(pref, 7))
 	require.False(t, categoryMuted(pref, 8))
 	require.False(t, categoryMuted(pref, 0), "未归类消息（categoryId=0）不受退订约束")
@@ -78,7 +78,7 @@ func TestValidateQuietWindow(t *testing.T) {
 // prefBroadcastUserRepoStub 广播受众桩：List 按页返回固定用户，Get 供租户打标。
 type prefBroadcastUserRepoStub struct {
 	data.UserRepo
-	tenantByUserID map[uint64]uint64
+	tenantByUserID map[int64]int64
 }
 
 func (s *prefBroadcastUserRepoStub) Get(_ context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
@@ -95,7 +95,7 @@ func (s *prefBroadcastUserRepoStub) List(_ context.Context, _ *paginationV1.Pagi
 	for uid, tid := range s.tenantByUserID {
 		items = append(items, &identityV1.User{Id: trans.Ptr(uid), TenantId: trans.Ptr(tid)})
 	}
-	return &identityV1.ListUserResponse{Total: uint64(len(items)), Items: items}, nil
+	return &identityV1.ListUserResponse{Total: int64(len(items)), Items: items}, nil
 }
 
 // TestBroadcastRespectsMutedCategoriesAndQuietHours 钉住 P3 偏好在广播上的两条执行语义：
@@ -114,7 +114,7 @@ func TestBroadcastRespectsMutedCategoriesAndQuietHours(t *testing.T) {
 		internalMessageRecipientRepo: data.NewInternalMessageRecipientRepoForTest(entClient),
 		notificationPreferenceRepo:   prefRepo,
 		userRepo: &prefBroadcastUserRepoStub{
-			tenantByUserID: map[uint64]uint64{
+			tenantByUserID: map[int64]int64{
 				11: 5, // 未配置偏好：正常落库 + 推送
 				12: 5, // 退订分类 7：整行不落库
 				13: 5, // 静音时段：落库但不推送
@@ -126,7 +126,7 @@ func TestBroadcastRespectsMutedCategoriesAndQuietHours(t *testing.T) {
 
 	// 12 号退订分类 7；13 号启用静音（窗口 00:00-23:59 全天，任何时刻命中）
 	_, err := prefRepo.Upsert(ctx, 12, &notificationV1.UpdateNotificationPreferenceRequest{
-		MutedCategoryIds: []uint64{7},
+		MutedCategoryIds: []int64{7},
 	}, 12)
 	require.NoError(t, err)
 	_, err = prefRepo.Upsert(ctx, 13, &notificationV1.UpdateNotificationPreferenceRequest{
@@ -141,7 +141,7 @@ func TestBroadcastRespectsMutedCategoriesAndQuietHours(t *testing.T) {
 	// 收件行：只有 11 和 13；12 整行缺席
 	recipients, err := entClient.Client().InternalMessageRecipient.Query().All(ctx)
 	require.NoError(t, err)
-	got := make(map[uint64]bool, len(recipients))
+	got := make(map[int64]bool, len(recipients))
 	for _, r := range recipients {
 		got[*r.RecipientUserID] = true
 	}
@@ -173,7 +173,7 @@ func TestBroadcastUnmutedCategoryDeliversAll(t *testing.T) {
 		internalMessageRecipientRepo: data.NewInternalMessageRecipientRepoForTest(entClient),
 		notificationPreferenceRepo:   prefRepo,
 		userRepo: &prefBroadcastUserRepoStub{
-			tenantByUserID: map[uint64]uint64{21: 5, 22: 5},
+			tenantByUserID: map[int64]int64{21: 5, 22: 5},
 		},
 		internalMessagePublisher: pub,
 		notifier:                 unwiredNotifier{},
@@ -181,7 +181,7 @@ func TestBroadcastUnmutedCategoryDeliversAll(t *testing.T) {
 
 	// 22 号退订的是分类 9，广播是分类 7：照常投递
 	_, err := prefRepo.Upsert(ctx, 22, &notificationV1.UpdateNotificationPreferenceRequest{
-		MutedCategoryIds: []uint64{9},
+		MutedCategoryIds: []int64{9},
 	}, 22)
 	require.NoError(t, err)
 

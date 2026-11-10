@@ -37,7 +37,7 @@ func (Permission) Fields() []ent.Field {
 			Nillable().
 			Comment("权限编码（如：opm:user:delete、order:export）"),
 
-		field.Uint64("group_id").
+		field.Int64("group_id").
 			Optional().
 			Nillable().
 			Comment("关联权限分组 ID"),

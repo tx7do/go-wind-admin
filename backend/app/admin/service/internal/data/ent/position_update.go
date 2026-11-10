@@ -70,14 +70,14 @@ func (_u *PositionUpdate) ClearDeletedAt() *PositionUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PositionUpdate) SetCreatedBy(v uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetCreatedBy(v int64) *PositionUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableCreatedBy(v *uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableCreatedBy(v *int64) *PositionUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *PositionUpdate) ClearCreatedBy() *PositionUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PositionUpdate) SetUpdatedBy(v uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetUpdatedBy(v int64) *PositionUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableUpdatedBy(v *uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableUpdatedBy(v *int64) *PositionUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *PositionUpdate) ClearUpdatedBy() *PositionUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PositionUpdate) SetDeletedBy(v uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetDeletedBy(v int64) *PositionUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableDeletedBy(v *uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableDeletedBy(v *int64) *PositionUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -240,14 +240,14 @@ func (_u *PositionUpdate) SetNillableCode(v *string) *PositionUpdate {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *PositionUpdate) SetOrgUnitID(v uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetOrgUnitID(v int64) *PositionUpdate {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableOrgUnitID(v *uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableOrgUnitID(v *int64) *PositionUpdate {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -261,14 +261,14 @@ func (_u *PositionUpdate) AddOrgUnitID(v int64) *PositionUpdate {
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (_u *PositionUpdate) SetReportsToPositionID(v uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetReportsToPositionID(v int64) *PositionUpdate {
 	_u.mutation.ResetReportsToPositionID()
 	_u.mutation.SetReportsToPositionID(v)
 	return _u
 }
 
 // SetNillableReportsToPositionID sets the "reports_to_position_id" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableReportsToPositionID(v *uint64) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableReportsToPositionID(v *int64) *PositionUpdate {
 	if v != nil {
 		_u.SetReportsToPositionID(*v)
 	}
@@ -530,7 +530,7 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(position.Table, position.Columns, sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(position.Table, position.Columns, sqlgraph.NewFieldSpec(position.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -554,31 +554,31 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(position.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(position.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(position.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(position.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(position.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(position.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(position.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(position.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(position.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(position.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
 		_spec.SetField(position.FieldSortOrder, field.TypeUint32, value)
@@ -596,7 +596,7 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(position.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(position.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(position.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(position.FieldStatus, field.TypeEnum, value)
@@ -608,19 +608,19 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.SetField(position.FieldCode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(position.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(position.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(position.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.AddField(position.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.ReportsToPositionID(); ok {
-		_spec.SetField(position.FieldReportsToPositionID, field.TypeUint64, value)
+		_spec.SetField(position.FieldReportsToPositionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedReportsToPositionID(); ok {
-		_spec.AddField(position.FieldReportsToPositionID, field.TypeUint64, value)
+		_spec.AddField(position.FieldReportsToPositionID, field.TypeInt64, value)
 	}
 	if _u.mutation.ReportsToPositionIDCleared() {
-		_spec.ClearField(position.FieldReportsToPositionID, field.TypeUint64)
+		_spec.ClearField(position.FieldReportsToPositionID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(position.FieldDescription, field.TypeString, value)
@@ -736,14 +736,14 @@ func (_u *PositionUpdateOne) ClearDeletedAt() *PositionUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PositionUpdateOne) SetCreatedBy(v uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetCreatedBy(v int64) *PositionUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableCreatedBy(v *uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableCreatedBy(v *int64) *PositionUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -763,14 +763,14 @@ func (_u *PositionUpdateOne) ClearCreatedBy() *PositionUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PositionUpdateOne) SetUpdatedBy(v uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetUpdatedBy(v int64) *PositionUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableUpdatedBy(v *uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableUpdatedBy(v *int64) *PositionUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -790,14 +790,14 @@ func (_u *PositionUpdateOne) ClearUpdatedBy() *PositionUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PositionUpdateOne) SetDeletedBy(v uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetDeletedBy(v int64) *PositionUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableDeletedBy(v *uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableDeletedBy(v *int64) *PositionUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -906,14 +906,14 @@ func (_u *PositionUpdateOne) SetNillableCode(v *string) *PositionUpdateOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *PositionUpdateOne) SetOrgUnitID(v uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetOrgUnitID(v int64) *PositionUpdateOne {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableOrgUnitID(v *uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableOrgUnitID(v *int64) *PositionUpdateOne {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -927,14 +927,14 @@ func (_u *PositionUpdateOne) AddOrgUnitID(v int64) *PositionUpdateOne {
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (_u *PositionUpdateOne) SetReportsToPositionID(v uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetReportsToPositionID(v int64) *PositionUpdateOne {
 	_u.mutation.ResetReportsToPositionID()
 	_u.mutation.SetReportsToPositionID(v)
 	return _u
 }
 
 // SetNillableReportsToPositionID sets the "reports_to_position_id" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableReportsToPositionID(v *uint64) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableReportsToPositionID(v *int64) *PositionUpdateOne {
 	if v != nil {
 		_u.SetReportsToPositionID(*v)
 	}
@@ -1209,7 +1209,7 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(position.Table, position.Columns, sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(position.Table, position.Columns, sqlgraph.NewFieldSpec(position.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Position.id" for update`)}
@@ -1250,31 +1250,31 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 		_spec.ClearField(position.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(position.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(position.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(position.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(position.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(position.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(position.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(position.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(position.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(position.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(position.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(position.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
 		_spec.SetField(position.FieldSortOrder, field.TypeUint32, value)
@@ -1292,7 +1292,7 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 		_spec.ClearField(position.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(position.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(position.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(position.FieldStatus, field.TypeEnum, value)
@@ -1304,19 +1304,19 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 		_spec.SetField(position.FieldCode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(position.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(position.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(position.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.AddField(position.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.ReportsToPositionID(); ok {
-		_spec.SetField(position.FieldReportsToPositionID, field.TypeUint64, value)
+		_spec.SetField(position.FieldReportsToPositionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedReportsToPositionID(); ok {
-		_spec.AddField(position.FieldReportsToPositionID, field.TypeUint64, value)
+		_spec.AddField(position.FieldReportsToPositionID, field.TypeInt64, value)
 	}
 	if _u.mutation.ReportsToPositionIDCleared() {
-		_spec.ClearField(position.FieldReportsToPositionID, field.TypeUint64)
+		_spec.ClearField(position.FieldReportsToPositionID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(position.FieldDescription, field.TypeString, value)

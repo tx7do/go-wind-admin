@@ -30,7 +30,7 @@ type roleStubRepo struct {
 	pathsByRoles map[string][]string // key: roleIDs 逗号串
 }
 
-func (r *roleStubRepo) GetRolesPermissionMenuFullPaths(_ context.Context, roleIDs []uint64) ([]string, error) {
+func (r *roleStubRepo) GetRolesPermissionMenuFullPaths(_ context.Context, roleIDs []int64) ([]string, error) {
 	key := fmt.Sprintf("%v", roleIDs)
 	if paths, ok := r.pathsByRoles[key]; ok {
 		return paths, nil
@@ -40,7 +40,7 @@ func (r *roleStubRepo) GetRolesPermissionMenuFullPaths(_ context.Context, roleID
 
 type userStubRepo struct {
 	data.UserRepo
-	usersByID map[uint64]*identityV1.User
+	usersByID map[int64]*identityV1.User
 }
 
 func (r *userStubRepo) Get(_ context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
@@ -52,13 +52,13 @@ func (r *userStubRepo) Get(_ context.Context, req *identityV1.GetUserRequest) (*
 
 // newVisibleMenuTestFixture 造真 MenuRepo（SQLite 内存库）+ 按路径预置菜单，
 // 返回 svc 装配、path→id 期望映射与 ent 客户端（删菜单用例需要）。
-func newVisibleMenuTestFixture(t *testing.T, paths ...string) (*AiContentService, map[string]uint64, *entCrud.EntClient[*ent.Client]) {
+func newVisibleMenuTestFixture(t *testing.T, paths ...string) (*AiContentService, map[string]int64, *entCrud.EntClient[*ent.Client]) {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
 	menuRepo := data.NewMenuRepoForTest(entClient)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	pathToID := make(map[string]uint64, len(paths))
+	pathToID := make(map[string]int64, len(paths))
 	for i, p := range paths {
 		row, err := entClient.Client().Menu.Create().
 			SetName(fmt.Sprintf("Menu%d", i)).
@@ -89,55 +89,55 @@ func TestVisibleMenuIDs(t *testing.T) {
 		"[2]":   {"/vis/b", "/vis/c", "/vis/gone"},
 	}}
 	svc.roleRepo = roleRepo
-	svc.userRepo = &userStubRepo{usersByID: map[uint64]*identityV1.User{
-		7: {Id: trans.Ptr(uint64(7)), RoleIds: []uint64{1, 2}},
-		8: {Id: trans.Ptr(uint64(8)), RoleIds: nil},
+	svc.userRepo = &userStubRepo{usersByID: map[int64]*identityV1.User{
+		7: {Id: trans.Ptr(int64(7)), RoleIds: []int64{1, 2}},
+		8: {Id: trans.Ptr(int64(8)), RoleIds: nil},
 	}}
 
 	// 平台管理员：nil = 调用方不过滤
 	ids, err := svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
-		UserId: 1, TenantId: trans.Ptr(uint64(0)),
+		UserId: 1, TenantId: trans.Ptr(int64(0)),
 	})
 	require.NoError(t, err)
 	require.Nil(t, ids, "平台管理员应返回 nil（不过滤）")
 
 	// 租户用户：两角色并集去重（全路径反解回当前菜单 id）
 	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
-		UserId: 7, TenantId: trans.Ptr(uint64(5)),
+		UserId: 7, TenantId: trans.Ptr(int64(5)),
 	})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{pathToID["/vis/a"], pathToID["/vis/b"], pathToID["/vis/c"]},
+	require.ElementsMatch(t, []int64{pathToID["/vis/a"], pathToID["/vis/b"], pathToID["/vis/c"]},
 		ids, "应取角色菜单并集（反解回当前 id）")
 
 	// 无角色用户：空集
 	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
-		UserId: 8, TenantId: trans.Ptr(uint64(5)),
+		UserId: 8, TenantId: trans.Ptr(int64(5)),
 	})
 	require.NoError(t, err)
 	require.Empty(t, ids, "无角色用户应返回空集（AI 搜索不返回任何菜单）")
 
 	// 已删除菜单的快照：反解时跳过，不虚报可见性（角色 [2] 持有 /vis/gone 路径）
 	require.NoError(t, entClient.Client().Menu.DeleteOneID(pathToID["/vis/gone"]).Exec(ctx))
-	svc.userRepo = &userStubRepo{usersByID: map[uint64]*identityV1.User{
-		10: {Id: trans.Ptr(uint64(10)), RoleIds: []uint64{2}},
+	svc.userRepo = &userStubRepo{usersByID: map[int64]*identityV1.User{
+		10: {Id: trans.Ptr(int64(10)), RoleIds: []int64{2}},
 	}}
 	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
-		UserId: 10, TenantId: trans.Ptr(uint64(5)),
+		UserId: 10, TenantId: trans.Ptr(int64(5)),
 	})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{pathToID["/vis/b"], pathToID["/vis/c"]},
+	require.ElementsMatch(t, []int64{pathToID["/vis/b"], pathToID["/vis/c"]},
 		ids, "已删除菜单的路径快照应被反解跳过，其余照常命中")
 }
 
 // TestSemanticSearchEmptyVisibleMenus 非平台用户且无可见菜单 → 直接空结果（不查库、不泄露）。
 func TestSemanticSearchEmptyVisibleMenus(t *testing.T) {
 	svc := &AiContentService{
-		userRepo: &userStubRepo{usersByID: map[uint64]*identityV1.User{
-			9: {Id: trans.Ptr(uint64(9)), TenantId: trans.Ptr(uint64(5))},
+		userRepo: &userStubRepo{usersByID: map[int64]*identityV1.User{
+			9: {Id: trans.Ptr(int64(9)), TenantId: trans.Ptr(int64(5))},
 		}},
 	}
 	ctx := auth.NewContext(context.Background(), &authenticationV1.UserTokenPayload{
-		UserId: 9, TenantId: trans.Ptr(uint64(5)),
+		UserId: 9, TenantId: trans.Ptr(int64(5)),
 	})
 	resp, err := svc.SemanticSearch(ctx, &aiV1.SemanticSearchRequest{
 		Query: "用户管理", Limit: trans.Ptr(uint32(8)),

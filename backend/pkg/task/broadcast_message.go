@@ -16,6 +16,6 @@ const BroadcastMessageTaskType = "broadcast_message"
 // 若统一注入 SystemContext（平台上下文 → 查询不加租户谓词），租户管理员的"全员广播"
 // 会把收件行写给全平台每个租户的用户。
 type BroadcastMessageTaskData struct {
-	MessageId uint64 `json:"message_id"`
-	TenantId  uint64 `json:"tenant_id"`
+	MessageId int64 `json:"message_id"`
+	TenantId  int64 `json:"tenant_id"`
 }

@@ -29,7 +29,7 @@ func (PermissionMenu) Annotations() []schema.Annotation {
 // Fields of the PermissionMenu.
 func (PermissionMenu) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("permission_id").
+		field.Int64("permission_id").
 			Comment("权限ID（关联sys_permissions.id）").
 			Nillable(),
 

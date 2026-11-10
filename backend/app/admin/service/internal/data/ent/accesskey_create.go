@@ -65,13 +65,13 @@ func (_c *AccessKeyCreate) SetNillableDeletedAt(v *time.Time) *AccessKeyCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AccessKeyCreate) SetCreatedBy(v uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetCreatedBy(v int64) *AccessKeyCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AccessKeyCreate) SetNillableCreatedBy(v *uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetNillableCreatedBy(v *int64) *AccessKeyCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *AccessKeyCreate) SetNillableCreatedBy(v *uint64) *AccessKeyCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AccessKeyCreate) SetUpdatedBy(v uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetUpdatedBy(v int64) *AccessKeyCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AccessKeyCreate) SetNillableUpdatedBy(v *uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetNillableUpdatedBy(v *int64) *AccessKeyCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *AccessKeyCreate) SetNillableUpdatedBy(v *uint64) *AccessKeyCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AccessKeyCreate) SetDeletedBy(v uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetDeletedBy(v int64) *AccessKeyCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AccessKeyCreate) SetNillableDeletedBy(v *uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetNillableDeletedBy(v *int64) *AccessKeyCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *AccessKeyCreate) SetNillableStatus(v *accesskey.Status) *AccessKeyCrea
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AccessKeyCreate) SetTenantID(v uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetTenantID(v int64) *AccessKeyCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AccessKeyCreate) SetNillableTenantID(v *uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetNillableTenantID(v *int64) *AccessKeyCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -205,7 +205,7 @@ func (_c *AccessKeyCreate) SetNillableLastUsedAt(v *time.Time) *AccessKeyCreate 
 }
 
 // SetID sets the "id" field.
-func (_c *AccessKeyCreate) SetID(v uint64) *AccessKeyCreate {
+func (_c *AccessKeyCreate) SetID(v int64) *AccessKeyCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -289,7 +289,7 @@ func (_c *AccessKeyCreate) sqlSave(ctx context.Context) (*AccessKey, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -299,7 +299,7 @@ func (_c *AccessKeyCreate) sqlSave(ctx context.Context) (*AccessKey, error) {
 func (_c *AccessKeyCreate) createSpec() (*AccessKey, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AccessKey{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(accesskey.Table, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(accesskey.Table, sqlgraph.NewFieldSpec(accesskey.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -319,15 +319,15 @@ func (_c *AccessKeyCreate) createSpec() (*AccessKey, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(accesskey.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(accesskey.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(accesskey.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(accesskey.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(accesskey.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -335,7 +335,7 @@ func (_c *AccessKeyCreate) createSpec() (*AccessKey, *sqlgraph.CreateSpec) {
 		_node.Status = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(accesskey.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(accesskey.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -447,7 +447,7 @@ func (u *AccessKeyUpsert) ClearDeletedAt() *AccessKeyUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AccessKeyUpsert) SetCreatedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) SetCreatedBy(v int64) *AccessKeyUpsert {
 	u.Set(accesskey.FieldCreatedBy, v)
 	return u
 }
@@ -459,7 +459,7 @@ func (u *AccessKeyUpsert) UpdateCreatedBy() *AccessKeyUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AccessKeyUpsert) AddCreatedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) AddCreatedBy(v int64) *AccessKeyUpsert {
 	u.Add(accesskey.FieldCreatedBy, v)
 	return u
 }
@@ -471,7 +471,7 @@ func (u *AccessKeyUpsert) ClearCreatedBy() *AccessKeyUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AccessKeyUpsert) SetUpdatedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) SetUpdatedBy(v int64) *AccessKeyUpsert {
 	u.Set(accesskey.FieldUpdatedBy, v)
 	return u
 }
@@ -483,7 +483,7 @@ func (u *AccessKeyUpsert) UpdateUpdatedBy() *AccessKeyUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AccessKeyUpsert) AddUpdatedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) AddUpdatedBy(v int64) *AccessKeyUpsert {
 	u.Add(accesskey.FieldUpdatedBy, v)
 	return u
 }
@@ -495,7 +495,7 @@ func (u *AccessKeyUpsert) ClearUpdatedBy() *AccessKeyUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AccessKeyUpsert) SetDeletedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) SetDeletedBy(v int64) *AccessKeyUpsert {
 	u.Set(accesskey.FieldDeletedBy, v)
 	return u
 }
@@ -507,7 +507,7 @@ func (u *AccessKeyUpsert) UpdateDeletedBy() *AccessKeyUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AccessKeyUpsert) AddDeletedBy(v uint64) *AccessKeyUpsert {
+func (u *AccessKeyUpsert) AddDeletedBy(v int64) *AccessKeyUpsert {
 	u.Add(accesskey.FieldDeletedBy, v)
 	return u
 }
@@ -717,14 +717,14 @@ func (u *AccessKeyUpsertOne) ClearDeletedAt() *AccessKeyUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AccessKeyUpsertOne) SetCreatedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) SetCreatedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AccessKeyUpsertOne) AddCreatedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) AddCreatedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -745,14 +745,14 @@ func (u *AccessKeyUpsertOne) ClearCreatedBy() *AccessKeyUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AccessKeyUpsertOne) SetUpdatedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) SetUpdatedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AccessKeyUpsertOne) AddUpdatedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) AddUpdatedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -773,14 +773,14 @@ func (u *AccessKeyUpsertOne) ClearUpdatedBy() *AccessKeyUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AccessKeyUpsertOne) SetDeletedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) SetDeletedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AccessKeyUpsertOne) AddDeletedBy(v uint64) *AccessKeyUpsertOne {
+func (u *AccessKeyUpsertOne) AddDeletedBy(v int64) *AccessKeyUpsertOne {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -935,7 +935,7 @@ func (u *AccessKeyUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AccessKeyUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *AccessKeyUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -944,7 +944,7 @@ func (u *AccessKeyUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AccessKeyUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *AccessKeyUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1001,7 +1001,7 @@ func (_c *AccessKeyCreateBulk) Save(ctx context.Context) ([]*AccessKey, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1182,14 +1182,14 @@ func (u *AccessKeyUpsertBulk) ClearDeletedAt() *AccessKeyUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AccessKeyUpsertBulk) SetCreatedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) SetCreatedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AccessKeyUpsertBulk) AddCreatedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) AddCreatedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1210,14 +1210,14 @@ func (u *AccessKeyUpsertBulk) ClearCreatedBy() *AccessKeyUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AccessKeyUpsertBulk) SetUpdatedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) SetUpdatedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AccessKeyUpsertBulk) AddUpdatedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) AddUpdatedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1238,14 +1238,14 @@ func (u *AccessKeyUpsertBulk) ClearUpdatedBy() *AccessKeyUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AccessKeyUpsertBulk) SetDeletedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) SetDeletedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AccessKeyUpsertBulk) AddDeletedBy(v uint64) *AccessKeyUpsertBulk {
+func (u *AccessKeyUpsertBulk) AddDeletedBy(v int64) *AccessKeyUpsertBulk {
 	return u.Update(func(s *AccessKeyUpsert) {
 		s.AddDeletedBy(v)
 	})

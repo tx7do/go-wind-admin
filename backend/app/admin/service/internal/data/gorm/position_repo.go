@@ -97,7 +97,7 @@ func (r *PositionRepo) List(ctx context.Context, req *paginationV1.PagingRequest
 	}, nil
 }
 
-func (r *PositionRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PositionRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -137,7 +137,7 @@ func (r *PositionRepo) Get(ctx context.Context, req *identityV1.GetPositionReque
 }
 
 // ListPositionByIds 通过多个ID获取职位信息
-func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []uint64) ([]*identityV1.Position, error) {
+func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []int64) ([]*identityV1.Position, error) {
 	if len(ids) == 0 {
 		return []*identityV1.Position{}, nil
 	}

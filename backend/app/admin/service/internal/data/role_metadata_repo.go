@@ -138,7 +138,7 @@ func (r *RoleMetadataRepo) Upsert(ctx context.Context, data *permissionV1.RoleMe
 }
 
 // Get 获取角色元数据
-func (r *RoleMetadataRepo) Get(ctx context.Context, roleID uint64) (*permissionV1.RoleMetadata, error) {
+func (r *RoleMetadataRepo) Get(ctx context.Context, roleID int64) (*permissionV1.RoleMetadata, error) {
 	rm, err := r.entClient.Client().RoleMetadata.Query().
 		Where(
 			rolemetadata.RoleIDEQ(roleID),
@@ -153,7 +153,7 @@ func (r *RoleMetadataRepo) Get(ctx context.Context, roleID uint64) (*permissionV
 }
 
 // IsExistByRoleID 判断角色元数据是否存在
-func (r *RoleMetadataRepo) IsExistByRoleID(ctx context.Context, roleID uint64) (bool, error) {
+func (r *RoleMetadataRepo) IsExistByRoleID(ctx context.Context, roleID int64) (bool, error) {
 	count, err := r.entClient.Client().RoleMetadata.Query().
 		Where(
 			rolemetadata.RoleIDEQ(roleID),
@@ -166,7 +166,7 @@ func (r *RoleMetadataRepo) IsExistByRoleID(ctx context.Context, roleID uint64) (
 }
 
 // IsTemplateRole 判断角色是否是模版角色
-func (r *RoleMetadataRepo) IsTemplateRole(ctx context.Context, roleID uint64) (bool, error) {
+func (r *RoleMetadataRepo) IsTemplateRole(ctx context.Context, roleID int64) (bool, error) {
 	rm, err := r.entClient.Client().RoleMetadata.Query().
 		Where(
 			rolemetadata.RoleIDEQ(roleID),
@@ -185,14 +185,14 @@ func (r *RoleMetadataRepo) IsTemplateRole(ctx context.Context, roleID uint64) (b
 // UpgradeTemplateVersion 升级模版版本号
 // CleanByRoleID 在事务内清理指定角色的元数据行。
 // 角色删除时随主记录一并清理，防止 sys_role_metadata 留孤儿行。
-func (r *RoleMetadataRepo) CleanByRoleID(ctx context.Context, tx *ent.Tx, roleID uint64) error {
+func (r *RoleMetadataRepo) CleanByRoleID(ctx context.Context, tx *ent.Tx, roleID int64) error {
 	_, err := tx.RoleMetadata.Delete().
 		Where(rolemetadata.RoleIDEQ(roleID)).
 		Exec(ctx)
 	return err
 }
 
-func (r *RoleMetadataRepo) UpgradeTemplateVersion(ctx context.Context, tx *ent.Tx, roleID uint64) error {
+func (r *RoleMetadataRepo) UpgradeTemplateVersion(ctx context.Context, tx *ent.Tx, roleID int64) error {
 	err := tx.RoleMetadata.Update().
 		Where(
 			rolemetadata.RoleIDEQ(roleID),

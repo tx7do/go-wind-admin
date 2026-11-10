@@ -39,7 +39,7 @@ func aimessageRoleOf(r aiV1.AiRole) aimessage.Role {
 
 // seedConversation 直插一个真实会话行：conversation_id 是指向会话的外键
 //（_pragma=foreign_keys(1) 开启），消息必须挂在存在的会话上。
-func seedConversation(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, title string) uint64 {
+func seedConversation(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, title string) int64 {
 	t.Helper()
 	row, err := entClient.Client().AiConversation.Create().
 		SetTitle(title).
@@ -51,7 +51,7 @@ func seedConversation(t *testing.T, entClient *entCrud.EntClient[*ent.Client], c
 }
 
 // newMessage 构造归属 user 33 / 租户 7 的用户消息载荷，字段可按需覆盖。
-func newMessage(conversationID uint64, role aiV1.AiRole, content string) *aiV1.AiMessage {
+func newMessage(conversationID int64, role aiV1.AiRole, content string) *aiV1.AiMessage {
 	return &aiV1.AiMessage{
 		ConversationId:   trans.Ptr(conversationID),
 		Role:             role.Enum(),
@@ -60,8 +60,8 @@ func newMessage(conversationID uint64, role aiV1.AiRole, content string) *aiV1.A
 		PromptTokens:     trans.Ptr(uint32(120)),
 		CompletionTokens: trans.Ptr(uint32(480)),
 		DurationMs:       trans.Ptr(uint32(2300)),
-		UserId:           trans.Ptr(uint64(33)),
-		TenantId:         trans.Ptr(uint64(7)),
+		UserId:           trans.Ptr(int64(33)),
+		TenantId:         trans.Ptr(int64(7)),
 	}
 }
 
@@ -87,18 +87,18 @@ func TestAiMessageRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, uint32(120), *entity.PromptTokens)
 	require.Equal(t, uint32(480), *entity.CompletionTokens)
 	require.Equal(t, uint32(2300), *entity.DurationMs)
-	require.Equal(t, uint64(33), *entity.UserID, "归属用户必须落库：owner 过滤与越权兜底全靠它")
-	require.Equal(t, uint64(7), *entity.TenantID)
+	require.Equal(t, int64(33), *entity.UserID, "归属用户必须落库：owner 过滤与越权兜底全靠它")
+	require.Equal(t, int64(7), *entity.TenantID)
 	require.NotNil(t, entity.CreatedAt, "created_at 必须显式写入：ListRecentByConversation 按它排序")
 	require.Nil(t, entity.ErrorMessage, "成功消息不应有错误信息")
 
 	// 失败的助手回复：error_message 有值、ASSISTANT 枚举落对字面量
 	failed := newMessage(convID, aiV1.AiRole_ASSISTANT, "")
 	failed.ErrorMessage = trans.Ptr("upstream timeout")
-	failed.Id = trans.Ptr(uint64(99002))
+	failed.Id = trans.Ptr(int64(99002))
 	entity2, err := repo.Create(ctx, failed)
 	require.NoError(t, err)
-	require.Equal(t, uint64(99002), entity2.ID, "载荷带 Id 时应按指定 ID 落库")
+	require.Equal(t, int64(99002), entity2.ID, "载荷带 Id 时应按指定 ID 落库")
 	require.Equal(t, aimessage.RoleASSISTANT, *entity2.Role)
 	require.Equal(t, "upstream timeout", *entity2.ErrorMessage, "失败原因必须落库：前端靠它展示失败消息")
 
@@ -134,28 +134,28 @@ func TestAiMessageRepoSqlite_List(t *testing.T) {
 	require.NoError(t, err)
 	_, err = repo.Create(ctx, func() *aiV1.AiMessage {
 		m := newMessage(convB, aiV1.AiRole_USER, "乙的消息")
-		m.UserId = trans.Ptr(uint64(44))
+		m.UserId = trans.Ptr(int64(44))
 		return m
 	}())
 	require.NoError(t, err)
 
 	own, err := repo.List(ctx, &paginationV1.PagingRequest{}, 33)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), own.GetTotal(), "owner 过滤应只统计该用户的消息")
+	require.Equal(t, int64(1), own.GetTotal(), "owner 过滤应只统计该用户的消息")
 	require.Len(t, own.GetItems(), 1)
 	require.Equal(t, msgA.ID, own.GetItems()[0].GetId())
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{}, 0)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal(), "owner=0 是管理视角，不应过滤")
+	require.Equal(t, int64(2), all.GetTotal(), "owner=0 是管理视角，不应过滤")
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
 		FilteringType: &paginationV1.PagingRequest_Query{
-			Query: `{"conversation_id__eq":` + strconv.FormatUint(uint64(convB), 10) + `}`,
+			Query: `{"conversation_id__eq":` + strconv.FormatInt(convB, 10) + `}`,
 		},
 	}, 0)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "按会话过滤应只统计该会话的消息")
+	require.Equal(t, int64(1), filtered.GetTotal(), "按会话过滤应只统计该会话的消息")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, convB, filtered.GetItems()[0].GetConversationId())
 
@@ -178,7 +178,7 @@ func TestAiMessageRepoSqlite_ListRecentByConversation(t *testing.T) {
 	// 保护 created_at 不可改——要钉单调递增的时间序，只能建行时显式 SetCreatedAt。
 	// 这正是白盒测试的便利：造一份时间可控的历史，再让被测的读路径去裁剪它。
 	base := time.Now().Add(-time.Hour)
-	seed := func(convID uint64, offsetMin int, role aiV1.AiRole, content string) uint64 {
+	seed := func(convID int64, offsetMin int, role aiV1.AiRole, content string) int64 {
 		entity, err := entClient.Client().AiMessage.Create().
 			SetConversationID(convID).
 			SetRole(aimessageRoleOf(role)).
@@ -192,7 +192,7 @@ func TestAiMessageRepoSqlite_ListRecentByConversation(t *testing.T) {
 	}
 
 	// 会话 A 的 5 条消息（时间递增），B 里放 1 条干扰行
-	ids := make([]uint64, 0, 5)
+	ids := make([]int64, 0, 5)
 	for i := 0; i < 5; i++ {
 		role := aiV1.AiRole_USER
 		if i%2 == 1 {

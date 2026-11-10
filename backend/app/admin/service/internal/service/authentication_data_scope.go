@@ -33,9 +33,9 @@ const maxDataScopeUnitIds = 256
 // refresh 流程同样走本函数，配置变更最迟随下次刷新令牌生效。
 func (s *AuthenticationService) aggregateDataScopes(
 	ctx context.Context,
-	tenantID uint64,
-	userID uint64,
-	roleIDs []uint64,
+	tenantID int64,
+	userID int64,
+	roleIDs []int64,
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) {
 	// 平台上下文：无租户隔离维度，整体全量。
@@ -56,7 +56,7 @@ func (s *AuthenticationService) aggregateDataScopes(
 	unitTypes := make(map[identityV1.DataScope]struct{})
 	needOwnUnits := false
 	needDescendants := false
-	var selectedUnitRoleIDs []uint64
+	var selectedUnitRoleIDs []int64
 
 	for _, role := range roles {
 		switch role.GetDataScope() {
@@ -86,7 +86,7 @@ func (s *AuthenticationService) aggregateDataScopes(
 	}
 
 	// 阶段二：收集 UNIT 类目标集（全部经本租户过滤）。
-	unitTargets := make(map[uint64]struct{})
+	unitTargets := make(map[int64]struct{})
 
 	if needOwnUnits {
 		ownUnits, err := s.userRepo.ListOrgUnitIDsByUserID(ctx, userID)
@@ -108,7 +108,7 @@ func (s *AuthenticationService) aggregateDataScopes(
 			tenantOwn = expanded
 		}
 		for _, id := range tenantOwn {
-			unitTargets[uint64(id)] = struct{}{}
+			unitTargets[int64(id)] = struct{}{}
 		}
 	}
 
@@ -126,7 +126,7 @@ func (s *AuthenticationService) aggregateDataScopes(
 				return
 			}
 			for _, id := range inTenant {
-				unitTargets[uint64(id)] = struct{}{}
+				unitTargets[int64(id)] = struct{}{}
 			}
 		}
 	}

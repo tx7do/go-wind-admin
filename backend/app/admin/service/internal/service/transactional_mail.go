@@ -91,7 +91,7 @@ func renderContactBindCode(ctx context.Context, mailer *transactionalMailer, cod
 
 // renderChannelTestEmail 渠道测试邮件。模板 code：channel_test_email；
 // 变量：{{channelId}}、{{operatorId}}。
-func renderChannelTestEmail(ctx context.Context, mailer *transactionalMailer, channelID, operatorID uint64) (string, string) {
+func renderChannelTestEmail(ctx context.Context, mailer *transactionalMailer, channelID, operatorID int64) (string, string) {
 	return renderTransactional(ctx, mailer, TplCodeChannelTest,
 		map[string]string{
 			"channelId":  fmtUint(channelID),
@@ -101,12 +101,12 @@ func renderChannelTestEmail(ctx context.Context, mailer *transactionalMailer, ch
 }
 
 // renderRuleTestNotification 路由规则测试通知。模板 code：rule_test_notification。
-func renderRuleTestNotification(ctx context.Context, mailer *transactionalMailer, ruleID uint64, eventType string) (string, string) {
+func renderRuleTestNotification(ctx context.Context, mailer *transactionalMailer, ruleID int64, eventType string) (string, string) {
 	return renderTransactional(ctx, mailer, TplCodeRuleTestNote,
 		map[string]string{"ruleId": fmtUint(ruleID), "eventType": eventType},
 		func() (string, string) { return mailtext.RuleTestNotification(ctx, ruleID, eventType) })
 }
 
-func fmtUint(v uint64) string {
+func fmtUint(v int64) string {
 	return strings.TrimSpace(strings.Join(strings.Fields(fmt.Sprint(v)), ""))
 }

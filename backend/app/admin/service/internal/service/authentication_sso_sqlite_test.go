@@ -120,9 +120,9 @@ func TestSsoLoginHappyPath(t *testing.T) {
 	// 预置本地用户（email 映射）+ 平台管理员角色（resolveUserAuthority 需要
 	// sys:access_backend 权限，与既有登录测试同款装配）
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
-	e.seedStubUser(7701, nil, "sso-user", identityV1.User_NORMAL, []uint64{roleID})
-	e.stub.emailToUserID = map[string]uint64{email: 7701}
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
+	e.seedStubUser(7701, nil, "sso-user", identityV1.User_NORMAL, []int64{roleID})
+	e.stub.emailToUserID = map[string]int64{email: 7701}
 
 	urlResp, err := e.svc.GetSsoLoginUrl(e.ctx, &authenticationV1.GetSsoLoginUrlRequest{})
 	require.NoError(t, err)
@@ -143,9 +143,9 @@ func TestSsoLoginStateReplayRejected(t *testing.T) {
 
 	const email = "replay-user@example.com"
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
-	e.seedStubUser(7710, nil, "replay-user", identityV1.User_NORMAL, []uint64{roleID})
-	e.stub.emailToUserID = map[string]uint64{email: 7710}
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
+	e.seedStubUser(7710, nil, "replay-user", identityV1.User_NORMAL, []int64{roleID})
+	e.stub.emailToUserID = map[string]int64{email: 7710}
 	// 假 IdP 的 userinfo 固定返回 startFakeOIDCProvider 注入的 email——这里用同邮箱
 	_ = email
 
@@ -181,9 +181,9 @@ func TestSsoLoginFrozenUserRejected(t *testing.T) {
 	fake := startFakeOIDCProvider(t, email)
 	wireSsoEnv(t, e, fake)
 
-	e.stub.emailToUserID = map[string]uint64{email: 7702}
+	e.stub.emailToUserID = map[string]int64{email: 7702}
 	e.stub.usersByID[7702] = &identityV1.User{
-		Id:       trans.Ptr(uint64(7702)),
+		Id:       trans.Ptr(int64(7702)),
 		Username: trans.Ptr("frozen"),
 		Status:   identityV1.User_DISABLED.Enum(),
 	}

@@ -85,25 +85,25 @@ func (Membership_Status) EnumDescriptor() ([]byte, []int) {
 // 成员关联
 type Membership struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                    // ID
-	UserId        *uint64                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                              // 用户ID
-	TenantId      *uint64                `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                        // 租户ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                    // ID
+	UserId        *int64                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                              // 用户ID
+	TenantId      *int64                 `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                        // 租户ID
 	IsPrimary     *bool                  `protobuf:"varint,4,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                     // 是否主身份
 	Status        *Membership_Status     `protobuf:"varint,5,opt,name=status,proto3,enum=identity.service.v1.Membership_Status,oneof" json:"status,omitempty"` // 状态
 	AssignedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=assigned_at,json=assignedAt,proto3,oneof" json:"assigned_at,omitempty"`                   // 分配时间（UTC）
-	AssignedBy    *uint64                `protobuf:"varint,7,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`
+	AssignedBy    *int64                 `protobuf:"varint,7,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`
 	JoinedAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=joined_at,json=joinedAt,proto3,oneof" json:"joined_at,omitempty"`             // 加入时间（UTC）
 	StartAt       *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`                // 生效时间
 	EndAt         *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=end_at,json=endAt,proto3,oneof" json:"end_at,omitempty"`                     // 失效时间
-	RoleId        *uint64                `protobuf:"varint,20,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                 // 角色ID
-	RoleIds       []uint64               `protobuf:"varint,21,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`             // 角色ID
-	PositionId    *uint64                `protobuf:"varint,22,opt,name=position_id,json=positionId,proto3,oneof" json:"position_id,omitempty"`     // 岗位ID
-	PositionIds   []uint64               `protobuf:"varint,23,rep,packed,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"` // 岗位ID
-	OrgUnitId     *uint64                `protobuf:"varint,24,opt,name=org_unit_id,json=orgUnitId,proto3,oneof" json:"org_unit_id,omitempty"`      // 组织ID
-	OrgUnitIds    []uint64               `protobuf:"varint,25,rep,packed,name=org_unit_ids,json=orgUnitIds,proto3" json:"org_unit_ids,omitempty"`  // 组织ID
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
+	RoleId        *int64                 `protobuf:"varint,20,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                 // 角色ID
+	RoleIds       []int64                `protobuf:"varint,21,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`             // 角色ID
+	PositionId    *int64                 `protobuf:"varint,22,opt,name=position_id,json=positionId,proto3,oneof" json:"position_id,omitempty"`     // 岗位ID
+	PositionIds   []int64                `protobuf:"varint,23,rep,packed,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"` // 岗位ID
+	OrgUnitId     *int64                 `protobuf:"varint,24,opt,name=org_unit_id,json=orgUnitId,proto3,oneof" json:"org_unit_id,omitempty"`      // 组织ID
+	OrgUnitIds    []int64                `protobuf:"varint,25,rep,packed,name=org_unit_ids,json=orgUnitIds,proto3" json:"org_unit_ids,omitempty"`  // 组织ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`        // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`        // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`        // 删除时间
@@ -141,21 +141,21 @@ func (*Membership) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_membership_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Membership) GetId() uint64 {
+func (x *Membership) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *Membership) GetUserId() uint64 {
+func (x *Membership) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *Membership) GetTenantId() uint64 {
+func (x *Membership) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -183,7 +183,7 @@ func (x *Membership) GetAssignedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Membership) GetAssignedBy() uint64 {
+func (x *Membership) GetAssignedBy() int64 {
 	if x != nil && x.AssignedBy != nil {
 		return *x.AssignedBy
 	}
@@ -211,63 +211,63 @@ func (x *Membership) GetEndAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Membership) GetRoleId() uint64 {
+func (x *Membership) GetRoleId() int64 {
 	if x != nil && x.RoleId != nil {
 		return *x.RoleId
 	}
 	return 0
 }
 
-func (x *Membership) GetRoleIds() []uint64 {
+func (x *Membership) GetRoleIds() []int64 {
 	if x != nil {
 		return x.RoleIds
 	}
 	return nil
 }
 
-func (x *Membership) GetPositionId() uint64 {
+func (x *Membership) GetPositionId() int64 {
 	if x != nil && x.PositionId != nil {
 		return *x.PositionId
 	}
 	return 0
 }
 
-func (x *Membership) GetPositionIds() []uint64 {
+func (x *Membership) GetPositionIds() []int64 {
 	if x != nil {
 		return x.PositionIds
 	}
 	return nil
 }
 
-func (x *Membership) GetOrgUnitId() uint64 {
+func (x *Membership) GetOrgUnitId() int64 {
 	if x != nil && x.OrgUnitId != nil {
 		return *x.OrgUnitId
 	}
 	return 0
 }
 
-func (x *Membership) GetOrgUnitIds() []uint64 {
+func (x *Membership) GetOrgUnitIds() []int64 {
 	if x != nil {
 		return x.OrgUnitIds
 	}
 	return nil
 }
 
-func (x *Membership) GetCreatedBy() uint64 {
+func (x *Membership) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Membership) GetUpdatedBy() uint64 {
+func (x *Membership) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Membership) GetDeletedBy() uint64 {
+func (x *Membership) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -302,35 +302,35 @@ const file_identity_service_v1_membership_proto_rawDesc = "" +
 	"$identity/service/v1/membership.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\r\n" +
 	"\n" +
 	"Membership\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\x04B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
-	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDH\x01R\x06userId\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x129\n" +
+	"\x02id\x18\x01 \x01(\x03B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
+	"\auser_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDH\x01R\x06userId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x03 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x129\n" +
 	"\n" +
 	"is_primary\x18\x04 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主身份H\x03R\tisPrimary\x88\x01\x01\x12Q\n" +
 	"\x06status\x18\x05 \x01(\x0e2&.identity.service.v1.Membership.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x12]\n" +
 	"\vassigned_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15分配时间（UTC）H\x05R\n" +
 	"assignedAt\x88\x01\x01\x12>\n" +
-	"\vassigned_by\x18\a \x01(\x04B\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\x06R\n" +
+	"\vassigned_by\x18\a \x01(\x03B\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\x06R\n" +
 	"assignedBy\x88\x01\x01\x12Y\n" +
 	"\tjoined_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15加入时间（UTC）H\aR\bjoinedAt\x88\x01\x01\x12N\n" +
 	"\bstart_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f生效时间H\bR\astartAt\x88\x01\x01\x12J\n" +
 	"\x06end_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f失效时间H\tR\x05endAt\x88\x01\x01\x12,\n" +
-	"\arole_id\x18\x14 \x01(\x04B\x0e\xbaG\v\x92\x02\b角色IDH\n" +
+	"\arole_id\x18\x14 \x01(\x03B\x0e\xbaG\v\x92\x02\b角色IDH\n" +
 	"R\x06roleId\x88\x01\x01\x12)\n" +
-	"\brole_ids\x18\x15 \x03(\x04B\x0e\xbaG\v\x92\x02\b角色IDR\aroleIds\x124\n" +
-	"\vposition_id\x18\x16 \x01(\x04B\x0e\xbaG\v\x92\x02\b岗位IDH\vR\n" +
+	"\brole_ids\x18\x15 \x03(\x03B\x0e\xbaG\v\x92\x02\b角色IDR\aroleIds\x124\n" +
+	"\vposition_id\x18\x16 \x01(\x03B\x0e\xbaG\v\x92\x02\b岗位IDH\vR\n" +
 	"positionId\x88\x01\x01\x121\n" +
-	"\fposition_ids\x18\x17 \x03(\x04B\x0e\xbaG\v\x92\x02\b岗位IDR\vpositionIds\x123\n" +
-	"\vorg_unit_id\x18\x18 \x01(\x04B\x0e\xbaG\v\x92\x02\b组织IDH\fR\torgUnitId\x88\x01\x01\x120\n" +
-	"\forg_unit_ids\x18\x19 \x03(\x04B\x0e\xbaG\v\x92\x02\b组织IDR\n" +
+	"\fposition_ids\x18\x17 \x03(\x03B\x0e\xbaG\v\x92\x02\b岗位IDR\vpositionIds\x123\n" +
+	"\vorg_unit_id\x18\x18 \x01(\x03B\x0e\xbaG\v\x92\x02\b组织IDH\fR\torgUnitId\x88\x01\x01\x120\n" +
+	"\forg_unit_ids\x18\x19 \x03(\x03B\x0e\xbaG\v\x92\x02\b组织IDR\n" +
 	"orgUnitIds\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\rR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\rR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x0eR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x0eR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x0fR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x0fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x10R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +

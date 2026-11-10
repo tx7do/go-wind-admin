@@ -142,7 +142,7 @@ func TestRoleServiceSqlite_GetEnrichment(t *testing.T) {
 	// RoleRepo.Create 只返回 error，角色 ID 从列表反查（按唯一 code 定位）。
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var roleID uint64
+	var roleID int64
 	var found bool
 	for _, item := range listResp.GetItems() {
 		if item.GetCode() == "ROLESVC_ROLE_TENANT_B" {
@@ -179,7 +179,7 @@ func TestRoleServiceSqlite_CreateAndDelete(t *testing.T) {
 	})
 	require.NoError(t, err, "service.Create 应走完操作人注入与事务创建")
 
-	var createdID uint64
+	var createdID int64
 	listResp, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	var found bool
@@ -209,7 +209,7 @@ func TestRoleServiceSqlite_CreateAndDelete(t *testing.T) {
 
 // createServiceRoleForTest 经 svc.Create 建角色并反查 ID（按唯一 code 定位）。
 // operatorCtx 走平台操作人（tenant 0），角色默认落平台侧。
-func createServiceRoleForTest(t *testing.T, svc *RoleService, opCtx context.Context, code, name string, parentID uint64, perms []uint64) uint64 {
+func createServiceRoleForTest(t *testing.T, svc *RoleService, opCtx context.Context, code, name string, parentID int64, perms []int64) int64 {
 	t.Helper()
 	data := &permissionV1.Role{
 		Name:   trans.Ptr(name),
@@ -244,10 +244,10 @@ func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
 	baseCtx := enttest.NewSystemContext(context.Background())
 	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
-	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_PARENT", "继承父角色", 0, []uint64{101, 102})
+	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_PARENT", "继承父角色", 0, []int64{101, 102})
 
 	// 子集：放行
-	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_CHILD_OK", "合法子角色", parentID, []uint64{101})
+	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_CHILD_OK", "合法子角色", parentID, []int64{101})
 	require.NotZero(t, childID)
 
 	// 越界：拒绝
@@ -258,7 +258,7 @@ func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TENANT.Enum(),
 			ParentId:    trans.Ptr(parentID),
-			Permissions: []uint64{101, 999},
+			Permissions: []int64{101, 999},
 		},
 	})
 	require.Error(t, err, "子角色权限超出父角色应被拒绝")
@@ -271,7 +271,7 @@ func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
 			Code:     trans.Ptr("ROLESVC_PB_ORPHAN"),
 			Status:   permissionV1.Role_ON.Enum(),
 			Type:     permissionV1.Role_TENANT.Enum(),
-			ParentId: trans.Ptr(uint64(999999)),
+			ParentId: trans.Ptr(int64(999999)),
 		},
 	})
 	require.Error(t, err, "父角色不存在应被拒绝")
@@ -285,9 +285,9 @@ func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
 	baseCtx := enttest.NewSystemContext(context.Background())
 	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
-	roleAID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_A", "环检测角色甲", 0, []uint64{101, 102})
-	roleBID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_B", "环检测角色乙", 0, []uint64{101})
-	roleCID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_C", "环检测角色丙", 0, []uint64{101, 102})
+	roleAID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_A", "环检测角色甲", 0, []int64{101, 102})
+	roleBID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_B", "环检测角色乙", 0, []int64{101})
+	roleCID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_C", "环检测角色丙", 0, []int64{101, 102})
 	roleDID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_D", "环检测角色丁", 0, nil)
 
 	var err error
@@ -329,7 +329,7 @@ func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
 	// 改权限越界：乙的父是甲（cap=101,102），改权限为 [101,999] 应拒绝
 	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
 		Id:         roleBID,
-		Data:       &permissionV1.Role{Permissions: []uint64{101, 999}},
+		Data:       &permissionV1.Role{Permissions: []int64{101, 999}},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
 	})
 	require.Error(t, err, "子角色改权限越出父角色上限应被拒绝")
@@ -337,7 +337,7 @@ func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
 	// 改权限子集：应放行
 	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
 		Id:         roleBID,
-		Data:       &permissionV1.Role{Permissions: []uint64{101}},
+		Data:       &permissionV1.Role{Permissions: []int64{101}},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
 	})
 	require.NoError(t, err, "子角色改权限仍在父角色上限内应放行")
@@ -358,8 +358,8 @@ func TestRoleServiceSqlite_DeleteParentDetachesChildren(t *testing.T) {
 	baseCtx := enttest.NewSystemContext(context.Background())
 	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
-	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_PARENT", "待删除父角色", 0, []uint64{101, 102})
-	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_CHILD", "挂父子角色", parentID, []uint64{101})
+	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_PARENT", "待删除父角色", 0, []int64{101, 102})
+	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_CHILD", "挂父子角色", parentID, []int64{101})
 
 	_, err := svc.Delete(opCtx, &permissionV1.DeleteRoleRequest{
 		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: parentID},
@@ -370,9 +370,9 @@ func TestRoleServiceSqlite_DeleteParentDetachesChildren(t *testing.T) {
 		QueryBy: &permissionV1.GetRoleRequest_Id{Id: childID},
 	})
 	require.NoError(t, err, "子角色应仍可查询")
-	require.Equal(t, uint64(0), after.GetParentId(), "删除父角色后子角色 parent_id 应解除为 0")
+	require.Equal(t, int64(0), after.GetParentId(), "删除父角色后子角色 parent_id 应解除为 0")
 	require.Empty(t, after.GetParentName(), "解除后不应再回填父角色名")
-	require.ElementsMatch(t, []uint64{101}, after.GetPermissions(), "子角色绑定权限应保持不变")
+	require.ElementsMatch(t, []int64{101}, after.GetPermissions(), "子角色绑定权限应保持不变")
 }
 
 // TestRoleServiceSqlite_ParentNameEnrichment 验证 List / Get 的 ParentName 回填。
@@ -447,7 +447,7 @@ func TestRoleServiceSqlite_ReservedRoleCodeRejected(t *testing.T) {
 	// Update：把普通角色 code 改成保留码被拒。
 	listResp, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	var targetID uint64
+	var targetID int64
 	for _, item := range listResp.GetItems() {
 		if item.GetCode() == "tenant:sales" {
 			targetID = item.GetId()

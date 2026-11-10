@@ -29,9 +29,9 @@ import (
 func newConversation(title string) *aiV1.AiConversation {
 	return &aiV1.AiConversation{
 		Title:      trans.Ptr(title),
-		ProviderId: trans.Ptr(uint64(11)),
-		UserId:     trans.Ptr(uint64(33)),
-		TenantId:   trans.Ptr(uint64(7)),
+		ProviderId: trans.Ptr(int64(11)),
+		UserId:     trans.Ptr(int64(33)),
+		TenantId:   trans.Ptr(int64(7)),
 	}
 }
 
@@ -47,18 +47,18 @@ func TestAiConversationRepoSqlite_Create(t *testing.T) {
 	require.NotZero(t, entity.ID)
 
 	require.Equal(t, "帮我排查内存泄漏", *entity.Title, "title 应按载荷落库")
-	require.Equal(t, uint64(11), *entity.ProviderID)
-	require.Equal(t, uint64(33), *entity.UserID, "归属用户必须落库：owner 过滤全靠它")
-	require.Equal(t, uint64(7), *entity.TenantID)
+	require.Equal(t, int64(11), *entity.ProviderID)
+	require.Equal(t, int64(33), *entity.UserID, "归属用户必须落库：owner 过滤全靠它")
+	require.Equal(t, int64(7), *entity.TenantID)
 	require.NotNil(t, entity.CreatedAt, "created_at 必须显式写入")
 	require.Nil(t, entity.LastMessageAt, "新会话还没有消息，last_message_at 应为 NULL")
 
 	// 显式 ID 直插（chat 主链路迁移/回放场景）
 	fixed := newConversation("固定ID会话")
-	fixed.Id = trans.Ptr(uint64(88001))
+	fixed.Id = trans.Ptr(int64(88001))
 	entity2, err := repo.Create(ctx, fixed)
 	require.NoError(t, err)
-	require.Equal(t, uint64(88001), entity2.ID, "载荷带 Id 时应按指定 ID 落库")
+	require.Equal(t, int64(88001), entity2.ID, "载荷带 Id 时应按指定 ID 落库")
 
 	_, err = repo.Create(ctx, nil)
 	require.Error(t, err, "nil 载荷应返回 BadRequest")
@@ -75,14 +75,14 @@ func TestAiConversationRepoSqlite_List(t *testing.T) {
 	require.NoError(t, err)
 	_, err = repo.Create(ctx, func() *aiV1.AiConversation {
 		c := newConversation("用户44的会话")
-		c.UserId = trans.Ptr(uint64(44))
+		c.UserId = trans.Ptr(int64(44))
 		return c
 	}())
 	require.NoError(t, err)
 	_, err = repo.Create(ctx, func() *aiV1.AiConversation {
 		c := newConversation("租户9的会话")
-		c.UserId = trans.Ptr(uint64(55))
-		c.TenantId = trans.Ptr(uint64(9))
+		c.UserId = trans.Ptr(int64(55))
+		c.TenantId = trans.Ptr(int64(9))
 		return c
 	}())
 	require.NoError(t, err)
@@ -90,14 +90,14 @@ func TestAiConversationRepoSqlite_List(t *testing.T) {
 	// ownerUserID>0：聊天场景只可见自己的会话
 	own, err := repo.List(ctx, &paginationV1.PagingRequest{}, 33)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), own.GetTotal(), "owner 过滤应只统计该用户的会话")
+	require.Equal(t, int64(1), own.GetTotal(), "owner 过滤应只统计该用户的会话")
 	require.Len(t, own.GetItems(), 1)
 	require.Equal(t, "用户33的会话", own.GetItems()[0].GetTitle())
 
 	// ownerUserID=0：管理后台全量视角
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{}, 0)
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), all.GetTotal(), "owner=0 是管理视角，不应过滤")
+	require.Equal(t, int64(3), all.GetTotal(), "owner=0 是管理视角，不应过滤")
 
 	// 分页：PageSize 限 2 时 total 仍是全量、items 截断（分页走 Page+PageSize 路径）
 	paged, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -105,7 +105,7 @@ func TestAiConversationRepoSqlite_List(t *testing.T) {
 		PageSize: trans.Ptr(uint32(2)),
 	}, 0)
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), paged.GetTotal(), "total 应是过滤后全量，不受 page size 影响")
+	require.Equal(t, int64(3), paged.GetTotal(), "total 应是过滤后全量，不受 page size 影响")
 	require.Len(t, paged.GetItems(), 2, "items 应按 page size 截断")
 
 	// 标题 contains 过滤
@@ -115,7 +115,7 @@ func TestAiConversationRepoSqlite_List(t *testing.T) {
 		},
 	}, 0)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
 
 	_, err = repo.List(ctx, nil, 0)
 	require.Error(t, err, "nil 分页请求应返回 BadRequest")
@@ -137,7 +137,7 @@ func TestAiConversationRepoSqlite_GetAndGetEntityByID(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, entity.ID, dto.GetId())
 	require.Equal(t, "取数样例", dto.GetTitle())
-	require.Equal(t, uint64(33), dto.GetUserId())
+	require.Equal(t, int64(33), dto.GetUserId())
 
 	got, err := repo.GetEntityByID(ctx, entity.ID)
 	require.NoError(t, err)
@@ -174,7 +174,7 @@ func TestAiConversationRepoSqlite_Update(t *testing.T) {
 		Data: &aiV1.AiConversation{
 			Title:         trans.Ptr("改后的标题"),
 			LastMessageAt: lastMsg,
-			ProviderId:    trans.Ptr(uint64(999)),
+			ProviderId:    trans.Ptr(int64(999)),
 		},
 	}, ))
 
@@ -184,20 +184,20 @@ func TestAiConversationRepoSqlite_Update(t *testing.T) {
 	require.NotNil(t, row.LastMessageAt)
 	require.WithinDuration(t, lastMsg.AsTime(), *row.LastMessageAt, time.Second,
 		"掩码内的 last_message_at 应经 tsOf 转换落库")
-	require.Equal(t, uint64(11), *row.ProviderID, "掩码外的 provider_id 应保持原值（载荷里的 999 不许写进去）")
-	require.Equal(t, uint64(7), *row.TenantID, "租户归属不因更新漂移")
+	require.Equal(t, int64(11), *row.ProviderID, "掩码外的 provider_id 应保持原值（载荷里的 999 不许写进去）")
+	require.Equal(t, int64(7), *row.TenantID, "租户归属不因更新漂移")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// updated_by 按载荷盖操作人（无掩码全量更新路径）
 	require.NoError(t, repo.Update(ctx, &aiV1.UpdateAiConversationRequest{
 		Id:   entity.ID,
-		Data: &aiV1.AiConversation{Title: trans.Ptr("二改标题"), UpdatedBy: trans.Ptr(uint64(2001))},
+		Data: &aiV1.AiConversation{Title: trans.Ptr("二改标题"), UpdatedBy: trans.Ptr(int64(2001))},
 	}))
 	row, err = entClient.Client().AiConversation.Get(ctx, entity.ID)
 	require.NoError(t, err)
 	require.Equal(t, "二改标题", *row.Title)
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "updated_by 应按载荷盖成新操作人")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "updated_by 应按载荷盖成新操作人")
 	require.NotNil(t, row.LastMessageAt, "无掩码更新未带 last_message_at 时应保持原值（SetNillable no-op）")
 
 	// 不存在 ID：无效果、不新增行
@@ -207,7 +207,7 @@ func TestAiConversationRepoSqlite_Update(t *testing.T) {
 	}))
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), cnt.GetCount(), "对不存在 ID 的更新不应新增行")
+	require.Equal(t, int64(1), cnt.GetCount(), "对不存在 ID 的更新不应新增行")
 
 	// 入参守卫
 	require.Error(t, repo.Update(ctx, nil), "nil 请求应返回 BadRequest")
@@ -256,14 +256,14 @@ func TestAiConversationRepoSqlite_Delete(t *testing.T) {
 		ConversationId: trans.Ptr(entity.ID),
 		Role:           aiV1.AiRole_USER.Enum(),
 		Content:        trans.Ptr("会话内的消息一"),
-		UserId:         trans.Ptr(uint64(33)),
+		UserId:         trans.Ptr(int64(33)),
 	})
 	require.NoError(t, err)
 	_, err = msgRepo.Create(ctx, &aiV1.AiMessage{
 		ConversationId: trans.Ptr(entity.ID),
 		Role:           aiV1.AiRole_ASSISTANT.Enum(),
 		Content:        trans.Ptr("会话内的消息二"),
-		UserId:         trans.Ptr(uint64(33)),
+		UserId:         trans.Ptr(int64(33)),
 	})
 	require.NoError(t, err)
 
@@ -274,7 +274,7 @@ func TestAiConversationRepoSqlite_Delete(t *testing.T) {
 		ConversationId: trans.Ptr(other.ID),
 		Role:           aiV1.AiRole_USER.Enum(),
 		Content:        trans.Ptr("幸存会话的消息"),
-		UserId:         trans.Ptr(uint64(33)),
+		UserId:         trans.Ptr(int64(33)),
 	})
 	require.NoError(t, err)
 
@@ -291,7 +291,7 @@ func TestAiConversationRepoSqlite_Delete(t *testing.T) {
 
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), cnt.GetCount(), "只该删掉一个会话")
+	require.Equal(t, int64(1), cnt.GetCount(), "只该删掉一个会话")
 
 	require.Error(t, repo.Delete(ctx, nil), "nil 请求应返回 BadRequest")
 	require.NoError(t, repo.Delete(ctx, &aiV1.DeleteAiConversationRequest{

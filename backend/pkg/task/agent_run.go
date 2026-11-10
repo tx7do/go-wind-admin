@@ -12,7 +12,7 @@ const AgentRunTaskType = "agent_run"
 
 // AgentRunTaskData 定时触发 Agent 任务的载荷（sys_tasks.task_payload 的 JSON 形态）。
 type AgentRunTaskData struct {
-	AppId        uint64            `json:"appId"`                  // 要执行的 Agent 应用 ID
+	AppId        int64            `json:"appId"`                  // 要执行的 Agent 应用 ID
 	Input        map[string]string `json:"input,omitempty"`        // start 节点声明的输入变量名 → 值
-	NotifyUserId uint64            `json:"notifyUserId,omitempty"` // 结果站内信回传的用户（缺省不通知，只看运行台账）
+	NotifyUserId int64            `json:"notifyUserId,omitempty"` // 结果站内信回传的用户（缺省不通知，只看运行台账）
 }

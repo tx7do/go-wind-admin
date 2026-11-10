@@ -190,19 +190,19 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 		require.Error(t, err, "缺 Data 应报 BadRequest")
 
 		_, err = svc.Create(ctx, &auditV1.CreateDataAccessAuditLogRequest{
-			Data: &auditV1.DataAccessAuditLog{UserId: trans.Ptr(uint64(7))},
+			Data: &auditV1.DataAccessAuditLog{UserId: trans.Ptr(int64(7))},
 		})
 		require.NoError(t, err)
 
 		resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		require.Equal(t, uint64(1), resp.GetTotal())
+		require.Equal(t, int64(1), resp.GetTotal())
 
 		got, err := svc.Get(ctx, &auditV1.GetDataAccessAuditLogRequest{
 			QueryBy: &auditV1.GetDataAccessAuditLogRequest_Id{Id: 1},
 		})
 		require.NoError(t, err)
-		require.Equal(t, uint64(7), got.GetUserId())
+		require.Equal(t, int64(7), got.GetUserId())
 	})
 
 	t.Run("LoginAuditLogService", func(t *testing.T) {
@@ -212,7 +212,7 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 
 		_, err = svc.Create(ctx, &auditV1.CreateLoginAuditLogRequest{
 			Data: &auditV1.LoginAuditLog{
-				UserId:   trans.Ptr(uint64(7)),
+				UserId:   trans.Ptr(int64(7)),
 				Username: trans.Ptr("svc_login_user"),
 			},
 		})
@@ -220,14 +220,14 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 
 		resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		require.Equal(t, uint64(1), resp.GetTotal())
+		require.Equal(t, int64(1), resp.GetTotal())
 		require.Equal(t, "svc_login_user", resp.GetItems()[0].GetUsername())
 
 		got, err := svc.Get(ctx, &auditV1.GetLoginAuditLogRequest{
 			QueryBy: &auditV1.GetLoginAuditLogRequest_Id{Id: 1},
 		})
 		require.NoError(t, err)
-		require.Equal(t, uint64(7), got.GetUserId())
+		require.Equal(t, int64(7), got.GetUserId())
 	})
 
 	t.Run("OperationAuditLogService", func(t *testing.T) {
@@ -236,19 +236,19 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 		require.Error(t, err, "缺 Data 应报 BadRequest")
 
 		_, err = svc.Create(ctx, &auditV1.CreateOperationAuditLogRequest{
-			Data: &auditV1.OperationAuditLog{UserId: trans.Ptr(uint64(9))},
+			Data: &auditV1.OperationAuditLog{UserId: trans.Ptr(int64(9))},
 		})
 		require.NoError(t, err)
 
 		resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		require.Equal(t, uint64(1), resp.GetTotal())
+		require.Equal(t, int64(1), resp.GetTotal())
 
 		got, err := svc.Get(ctx, &auditV1.GetOperationAuditLogRequest{
 			QueryBy: &auditV1.GetOperationAuditLogRequest_Id{Id: 1},
 		})
 		require.NoError(t, err)
-		require.Equal(t, uint64(9), got.GetUserId())
+		require.Equal(t, int64(9), got.GetUserId())
 	})
 
 	t.Run("PermissionAuditLogService", func(t *testing.T) {
@@ -257,19 +257,19 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 		require.Error(t, err, "缺 Data 应报 BadRequest")
 
 		_, err = svc.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{
-			Data: &auditV1.PermissionAuditLog{OperatorId: trans.Ptr(uint64(11))},
+			Data: &auditV1.PermissionAuditLog{OperatorId: trans.Ptr(int64(11))},
 		})
 		require.NoError(t, err)
 
 		resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		require.Equal(t, uint64(1), resp.GetTotal())
+		require.Equal(t, int64(1), resp.GetTotal())
 
 		got, err := svc.Get(ctx, &auditV1.GetPermissionAuditLogRequest{
 			QueryBy: &auditV1.GetPermissionAuditLogRequest_Id{Id: 1},
 		})
 		require.NoError(t, err)
-		require.Equal(t, uint64(11), got.GetOperatorId())
+		require.Equal(t, int64(11), got.GetOperatorId())
 	})
 
 	t.Run("PolicyEvaluationLogService", func(t *testing.T) {
@@ -278,18 +278,18 @@ func TestThinAuditLogServices_GuardAndRoundTrip(t *testing.T) {
 		require.Error(t, err, "缺 Data 应报 BadRequest")
 
 		_, err = svc.Create(ctx, &permissionV1.CreatePolicyEvaluationLogRequest{
-			Data: &permissionV1.PolicyEvaluationLog{UserId: trans.Ptr(uint64(13))},
+			Data: &permissionV1.PolicyEvaluationLog{UserId: trans.Ptr(int64(13))},
 		})
 		require.NoError(t, err)
 
 		resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
-		require.Equal(t, uint64(1), resp.GetTotal())
+		require.Equal(t, int64(1), resp.GetTotal())
 
 		got, err := svc.Get(ctx, &permissionV1.GetPolicyEvaluationLogRequest{
 			QueryBy: &permissionV1.GetPolicyEvaluationLogRequest_Id{Id: 1},
 		})
 		require.NoError(t, err)
-		require.Equal(t, uint64(13), got.GetUserId())
+		require.Equal(t, int64(13), got.GetUserId())
 	})
 }

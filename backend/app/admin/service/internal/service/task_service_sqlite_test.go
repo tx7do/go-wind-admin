@@ -132,7 +132,7 @@ func newTaskServiceForTest(t *testing.T, scheduler TaskScheduler, withTenantUsag
 
 // seedTaskRow 经 repo 直落一条任务行（平台上下文 + 显式租户，绕过服务层，
 // 便于单独断言调度行为）。
-func seedTaskRow(t *testing.T, svc *TaskService, ctx context.Context, tenantID uint64, typeName string, typ taskV1.Task_Type, cron string, enable bool) {
+func seedTaskRow(t *testing.T, svc *TaskService, ctx context.Context, tenantID int64, typeName string, typ taskV1.Task_Type, cron string, enable bool) {
 	t.Helper()
 	_, err := svc.taskRepo.Create(ctx, &taskV1.CreateTaskRequest{
 		Data: &taskV1.Task{
@@ -159,8 +159,8 @@ func taskPlatformOpCtx(ctx context.Context) context.Context {
 // taskPlatformTenantOpCtx 平台管理员操作者 + 具名租户 viewer 的组合上下文：
 // ControlTask 按 type_name 取行要求具名租户作用域（task_repo.Get 的租户闸门），
 // 平台闸门又要求操作者旗标，二者叠加才可通过。
-func taskPlatformTenantOpCtx(ctx context.Context, tenantID uint64) context.Context {
-	vctx := crudViewer.WithContext(ctx, crudViewer.NewUserContext(1, uint64(tenantID), 0, "", nil))
+func taskPlatformTenantOpCtx(ctx context.Context, tenantID int64) context.Context {
+	vctx := crudViewer.WithContext(ctx, crudViewer.NewUserContext(1, int64(tenantID), 0, "", nil))
 	return auth.NewContext(vctx, &authenticationV1.UserTokenPayload{
 		UserId:          7,
 		IsPlatformAdmin: trans.Ptr(true),
@@ -274,7 +274,7 @@ func TestTaskService_CreateDisabledSkipsScheduler(t *testing.T) {
 	rows, err := client.Task.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "禁用任务应落库")
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
 }
 
 // TestTaskService_CreateEnabledEntersScheduler 验证启用任务按类型进调度入口：
@@ -637,7 +637,7 @@ func TestTaskService_MultiTenantSameTypeNameCoexist(t *testing.T) {
 	require.NoError(t, err)
 
 	// B 行的 entryID 仍在账本里（未被误伤）
-	ownerB := "row:" + strconv.FormatUint(uint64(rowB.ID), 10)
+	ownerB := "row:" + strconv.FormatInt(rowB.ID, 10)
 	entriesB, ok := svc.periodicEntryIDs[ownerB]
 	require.True(t, ok, "B 行账本不应被误伤")
 	require.NotEmpty(t, entriesB)

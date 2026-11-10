@@ -38,7 +38,7 @@ func newAiUsageLogServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent
 }
 
 // aiUsageOperator 构造指定用户/租户的操作者上下文。
-func aiUsageOperator(ctx context.Context, userID uint64, tenantID uint64) context.Context {
+func aiUsageOperator(ctx context.Context, userID int64, tenantID int64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
 		UserId:   userID,
 		TenantId: trans.Ptr(tenantID),
@@ -47,7 +47,7 @@ func aiUsageOperator(ctx context.Context, userID uint64, tenantID uint64) contex
 
 // aiUsageSeedRow 直插一条指定租户/总量/时间的用量行（服务侧 Create 只写 now，
 // 钉"上月老账不进本月"必须直插历史时间）。
-func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint64, totalTokens uint32, createdAt time.Time) {
+func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID int64, totalTokens uint32, createdAt time.Time) {
 	t.Helper()
 	_, err := entClient.Client().AiUsageLog.Create().
 		SetTenantID(tenantID).
@@ -59,7 +59,7 @@ func aiUsageSeedRow(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx
 }
 
 // aiUsageSeedTenantWithQuota 建租户并挂配了 AI_TOKENS 上限的套餐，返回租户 ID。
-func aiUsageSeedTenantWithQuota(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string, aiTokenLimit uint64) uint64 {
+func aiUsageSeedTenantWithQuota(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name string, aiTokenLimit uint64) int64 {
 	t.Helper()
 	plan, err := entClient.Client().Plan.Create().SetNillableName(trans.Ptr(name + "套餐")).Save(ctx)
 	require.NoError(t, err)
@@ -135,12 +135,12 @@ func TestAiUsageLogService_ListAndCount(t *testing.T) {
 
 	listResp, err := svc.List(opCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listResp.GetTotal(), "列表 total 应与行数一致")
+	require.Equal(t, int64(2), listResp.GetTotal(), "列表 total 应与行数一致")
 	require.Len(t, listResp.GetItems(), 2)
 
 	countResp, err := svc.Count(opCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), countResp.GetCount(), "计数应与行数一致")
+	require.Equal(t, int64(2), countResp.GetCount(), "计数应与行数一致")
 
 	_, err = svc.List(opCtx, nil)
 	require.Error(t, err, "nil 分页请求应返回 BadRequest")

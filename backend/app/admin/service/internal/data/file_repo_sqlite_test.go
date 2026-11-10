@@ -54,7 +54,7 @@ func TestFileRepoSqlite_Create(t *testing.T) {
 			Size:          trans.Ptr(uint64(512)),
 			LinkUrl:       trans.Ptr("https://oss.example/bucket-alpha/saved_1.bin"),
 			ContentHash:   trans.Ptr("sha256:abc"),
-			CreatedBy:     trans.Ptr(uint64(21)),
+			CreatedBy:     trans.Ptr(int64(21)),
 		},
 	})
 	require.NoError(t, err, "repo.Create 写入 SQLite 应成功")
@@ -75,7 +75,7 @@ func TestFileRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, "512B", *row.SizeFormat, "512 字节应格式化为 512B")
 	require.Equal(t, "https://oss.example/bucket-alpha/saved_1.bin", *row.LinkURL, "link_url 应按请求落库")
 	require.Equal(t, "sha256:abc", *row.ContentHash, "content_hash 应按请求落库")
-	require.Equal(t, uint64(21), *row.CreatedBy, "created_by 应按请求落库")
+	require.Equal(t, int64(21), *row.CreatedBy, "created_by 应按请求落库")
 	require.False(t, row.CreatedAt.IsZero(), "created_at 应由 repo 写入")
 }
 
@@ -86,7 +86,7 @@ func TestFileRepoSqlite_SizeFormatBranches(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	cases := []struct {
-		size uint64
+		size int64
 		want string
 	}{
 		{2048, "2KB"},
@@ -97,7 +97,7 @@ func TestFileRepoSqlite_SizeFormatBranches(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, &storageV1.CreateFileRequest{
 			Data: &storageV1.File{
 				FileGuid: trans.Ptr(fmt.Sprintf("guid-sqlite-file-sizefmt-%d", i)),
-				Size:     trans.Ptr(c.size),
+				Size:     trans.Ptr(uint64(c.size)),
 			},
 		}), "size=%d 建行应成功", c.size)
 	}
@@ -108,7 +108,7 @@ func TestFileRepoSqlite_SizeFormatBranches(t *testing.T) {
 	for _, row := range rows {
 		var want string
 		for _, c := range cases {
-			if row.Size != nil && *row.Size == c.size {
+			if row.Size != nil && *row.Size == uint64(c.size) {
 				want = c.want
 				break
 			}
@@ -180,7 +180,7 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -198,7 +198,7 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetFileName(), "MARKERNU", "命中行应为含标记的那条")
 
@@ -217,7 +217,7 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), byID.Total, "id 等值过滤应只统计目标行")
+	require.Equal(t, int64(1), byID.Total, "id 等值过滤应只统计目标行")
 	require.Len(t, byID.Items, 1, "id 等值过滤应只返回目标行")
 	require.Equal(t, firstID, byID.Items[0].GetId())
 
@@ -226,7 +226,7 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page1.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page1.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page1.Items, 1, "pageSize=1 第一页应只含 1 行")
 
 	page2, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -234,10 +234,10 @@ func TestFileRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint64{firstID, secondID},
-		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []int64{firstID, secondID},
+		[]int64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestFileRepoSqlite_Get 验证 Get 按主键的命中与未命中。
@@ -377,7 +377,7 @@ func TestFileRepoSqlite_DeleteAndUniqueGuid(t *testing.T) {
 	// 跨租户同 guid：允许（唯一性按租户维度）
 	require.NoError(t, repo.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
-			TenantId: trans.Ptr(uint64(5)),
+			TenantId: trans.Ptr(int64(5)),
 			FileGuid: trans.Ptr("guid-sqlite-file-uniq-1"),
 			FileName: trans.Ptr("uniq-other-tenant.bin"),
 		},

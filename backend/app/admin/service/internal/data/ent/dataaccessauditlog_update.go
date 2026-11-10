@@ -30,14 +30,14 @@ func (_u *DataAccessAuditLogUpdate) Where(ps ...predicate.DataAccessAuditLog) *D
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *DataAccessAuditLogUpdate) SetUserID(v uint64) *DataAccessAuditLogUpdate {
+func (_u *DataAccessAuditLogUpdate) SetUserID(v int64) *DataAccessAuditLogUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *DataAccessAuditLogUpdate) SetNillableUserID(v *uint64) *DataAccessAuditLogUpdate {
+func (_u *DataAccessAuditLogUpdate) SetNillableUserID(v *int64) *DataAccessAuditLogUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -573,7 +573,7 @@ func (_u *DataAccessAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(dataaccessauditlog.Table, dataaccessauditlog.Columns, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(dataaccessauditlog.Table, dataaccessauditlog.Columns, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -585,16 +585,16 @@ func (_u *DataAccessAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 		_spec.ClearField(dataaccessauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(dataaccessauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(dataaccessauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(dataaccessauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(dataaccessauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(dataaccessauditlog.FieldUserID, field.TypeUint64)
+		_spec.ClearField(dataaccessauditlog.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(dataaccessauditlog.FieldUsername, field.TypeString, value)
@@ -763,14 +763,14 @@ type DataAccessAuditLogUpdateOne struct {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *DataAccessAuditLogUpdateOne) SetUserID(v uint64) *DataAccessAuditLogUpdateOne {
+func (_u *DataAccessAuditLogUpdateOne) SetUserID(v int64) *DataAccessAuditLogUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *DataAccessAuditLogUpdateOne) SetNillableUserID(v *uint64) *DataAccessAuditLogUpdateOne {
+func (_u *DataAccessAuditLogUpdateOne) SetNillableUserID(v *int64) *DataAccessAuditLogUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -1319,7 +1319,7 @@ func (_u *DataAccessAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Data
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(dataaccessauditlog.Table, dataaccessauditlog.Columns, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(dataaccessauditlog.Table, dataaccessauditlog.Columns, sqlgraph.NewFieldSpec(dataaccessauditlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "DataAccessAuditLog.id" for update`)}
@@ -1348,16 +1348,16 @@ func (_u *DataAccessAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Data
 		_spec.ClearField(dataaccessauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(dataaccessauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(dataaccessauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(dataaccessauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(dataaccessauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(dataaccessauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(dataaccessauditlog.FieldUserID, field.TypeUint64)
+		_spec.ClearField(dataaccessauditlog.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(dataaccessauditlog.FieldUsername, field.TypeString, value)

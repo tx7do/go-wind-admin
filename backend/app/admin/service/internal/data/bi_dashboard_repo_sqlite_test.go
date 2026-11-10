@@ -69,7 +69,7 @@ func TestBiDashboardRepoSqlite_Create(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	payload := newBiDashboardPayload("sales-monthly")
-	payload.CreatedBy = trans.Ptr(uint64(1001))
+	payload.CreatedBy = trans.Ptr(int64(1001))
 	require.NoError(t, repo.Create(ctx, &biV1.CreateBiDashboardRequest{Data: payload}),
 		"完整载荷的 Create 应成功")
 
@@ -99,13 +99,13 @@ func TestBiDashboardRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.SortOrder)
 	require.Equal(t, uint32(10), *row.SortOrder)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "载荷的 createdBy 应落 created_by")
+	require.Equal(t, int64(1001), *row.CreatedBy, "载荷的 createdBy 应落 created_by")
 	require.Nil(t, row.UpdatedBy, "Create 不写 updated_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入")
 	require.NotNil(t, row.Version)
 	require.Equal(t, uint32(1), *row.Version, "未显式给 version 时应落列默认 1：乐观锁从 1 起步")
 	require.NotNil(t, row.TenantID)
-	require.Equal(t, uint64(0), *row.TenantID, "系统上下文落平台租户 0")
+	require.Equal(t, int64(0), *row.TenantID, "系统上下文落平台租户 0")
 
 	// 读视图：ent 行 → DTO 全量回读（payload 逐字节、枚举回 proto 成员）
 	dto, err := repo.Get(ctx, &biV1.GetBiDashboardRequest{
@@ -121,7 +121,7 @@ func TestBiDashboardRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, "ocean-dark", dto.GetThemeKey())
 	require.True(t, dto.GetIsPublic())
 	require.False(t, dto.GetIsBuiltIn())
-	require.Equal(t, uint64(1001), dto.GetCreatedBy())
+	require.Equal(t, int64(1001), dto.GetCreatedBy())
 	require.Equal(t, uint32(1), dto.GetVersion(), "乐观锁版本号必须出现在读视图里：设计器保存时要回传它")
 
 	// 未携带创建人的创建（系统播种路径）：不写出不存在的操作人
@@ -210,9 +210,9 @@ func TestBiDashboardRepoSqlite_List(t *testing.T) {
 	// 无过滤：total 与行数一致，kind 枚举在列表读视图同样要回 proto 成员
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal(), "无过滤时 total 应统计全部行")
+	require.Equal(t, int64(2), all.GetTotal(), "无过滤时 total 应统计全部行")
 	require.Len(t, all.GetItems(), 2)
-	byID := map[uint64]*biV1.BiDashboard{}
+	byID := map[int64]*biV1.BiDashboard{}
 	for _, it := range all.GetItems() {
 		byID[it.GetId()] = it
 	}
@@ -226,7 +226,7 @@ func TestBiDashboardRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤的 total 应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤的 total 应只统计命中行")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, "list-alpha", filtered.GetItems()[0].GetCode())
 
@@ -237,7 +237,7 @@ func TestBiDashboardRepoSqlite_List(t *testing.T) {
 	// Count 与 List total 同源
 	cnt, err := repo.Count(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cnt, "Count 应与无过滤 List 的 total 一致")
+	require.Equal(t, int64(2), cnt, "Count 应与无过滤 List 的 total 一致")
 }
 
 // TestBiDashboardRepoSqlite_UpdateCAS 验证乐观锁主路径：
@@ -264,7 +264,7 @@ func TestBiDashboardRepoSqlite_UpdateCAS(t *testing.T) {
 			Payload:   trans.Ptr(updatedPayload),
 			Kind:      biV1.BiDashboardKind_DASHBOARD.Enum(),
 			Version:   trans.Ptr(uint32(1)),
-			UpdatedBy: trans.Ptr(uint64(2001)),
+			UpdatedBy: trans.Ptr(int64(2001)),
 		},
 	}), "回传当前版本 1 的 CAS 更新应命中")
 
@@ -275,7 +275,7 @@ func TestBiDashboardRepoSqlite_UpdateCAS(t *testing.T) {
 	require.Equal(t, updatedPayload, *row.Payload, "CAS 命中应整份覆盖 payload")
 	require.Equal(t, bidashboard.KindDASHBOARD, *row.Kind, "CAS 命中应更新 kind")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// stale 版本：拿着旧版本 1 再来保存（模拟另一个标签页先保存过）
@@ -340,7 +340,7 @@ func TestBiDashboardRepoSqlite_UpdatePlain(t *testing.T) {
 			Name:      trans.Ptr("无掩码改名"),
 			Remark:    trans.Ptr("列表页轻量编辑"),
 			IsEnabled: trans.Ptr(false),
-			UpdatedBy: trans.Ptr(uint64(3001)),
+			UpdatedBy: trans.Ptr(int64(3001)),
 		},
 	}), "不带 version 的普通更新应成功")
 
@@ -350,7 +350,7 @@ func TestBiDashboardRepoSqlite_UpdatePlain(t *testing.T) {
 	require.False(t, *row.IsEnabled, "is_enabled=false 也要如实更新")
 	require.Equal(t, uint32(2), *row.Version, "普通更新不校验版本，但版本号照样 +1：挡住旧编辑器的下一次 stale 保存")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(3001), *row.UpdatedBy)
+	require.Equal(t, int64(3001), *row.UpdatedBy)
 	require.Equal(t, bidashboard.KindSCREEN, *row.Kind, "Data 未给 kind 时不得被改走")
 
 	// 带掩码：掩码内 remark 更新，掩码外的 name 保持原值；版本继续推进

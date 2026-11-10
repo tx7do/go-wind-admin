@@ -40,7 +40,7 @@ service NotificationRuleService {
 
 // 一条业务事件类型 → 一行规则（event_type 唯一）
 message NotificationRule {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "规则ID" }
   ]; // 规则ID
@@ -72,8 +72,8 @@ message NotificationRule {
     (gnostic.openapi.v3.property) = { description: "备注" }
   ]; // 备注
 
-  optional uint64 created_by = 100 [json_name = "createdBy"];
-  optional uint64 updated_by = 101 [json_name = "updatedBy"];
+  optional int64 created_by = 100 [json_name = "createdBy"];
+  optional int64 updated_by = 101 [json_name = "updatedBy"];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
@@ -82,12 +82,12 @@ message NotificationRule {
 // 查询路由规则列表 - 回应
 message ListNotificationRuleResponse {
   repeated NotificationRule items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询路由规则详情 - 请求
 message GetNotificationRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
 }
 
 // 创建路由规则 - 请求
@@ -97,14 +97,14 @@ message CreateNotificationRuleRequest {
 
 // 更新路由规则 - 请求
 message UpdateNotificationRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
   NotificationRule data = 2;
   google.protobuf.FieldMask update_mask = 3 [json_name = "updateMask"];
 }
 
 // 删除路由规则 - 请求
 message DeleteNotificationRuleRequest {
-  uint64 id = 1;
+  int64 id = 1;
 }
 
 // 测试投递 - 请求。
@@ -113,7 +113,7 @@ message DeleteNotificationRuleRequest {
 // target 对 EMAIL/INTERNAL 是必填的投递目标，对 WEBHOOK 留空则取所选渠道配置的 webhook_url；
 // title/content 留空由服务端按事件类型渲染一封测试文案（走 mailtext，与渠道测试邮件同一条出口）。
 message TestDispatchNotificationRequest {
-  uint64 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "规则ID" }
   ]; // 规则ID
@@ -136,7 +136,7 @@ message TestDispatchNotificationRequest {
 
 // 测试投递 - 回应。台账行号一并回传：报错时拿它去投递记录页查这一条。
 message TestDispatchNotificationResponse {
-  uint64 delivery_id = 1 [
+  int64 delivery_id = 1 [
     json_name = "deliveryId",
     (gnostic.openapi.v3.property) = { description: "本次测试产生的台账ID" }
   ]; // 台账ID

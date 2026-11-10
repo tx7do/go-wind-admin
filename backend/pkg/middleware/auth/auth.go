@@ -84,9 +84,9 @@ func Server(opts ...Option) middleware.Middleware {
 				}
 
 				userViewer := viewer.NewUserContext(
-					uint64(tokenPayload.GetUserId()),
-					uint64(tokenPayload.GetTenantId()),
-					uint64(tokenPayload.GetOrgUnitId()),
+					int64(tokenPayload.GetUserId()),
+					int64(tokenPayload.GetTenantId()),
+					int64(tokenPayload.GetOrgUnitId()),
 					traceID,
 					appViewer.BuildDataScopes(
 						tokenPayload.GetDataScopes(),
@@ -100,9 +100,9 @@ func Server(opts ...Option) middleware.Middleware {
 			if op.injectMetadata {
 				ctx, err = metadata.NewContext(ctx,
 					&authenticationV1.OperatorMetadata{
-						UserId:           uint64(tokenPayload.GetUserId()),
-						TenantId:         uint64(tokenPayload.GetTenantId()),
-						OrgUnitId:        uint64(tokenPayload.GetOrgUnitId()),
+						UserId:           int64(tokenPayload.GetUserId()),
+						TenantId:         int64(tokenPayload.GetTenantId()),
+						OrgUnitId:        int64(tokenPayload.GetOrgUnitId()),
 						DataScope:        tokenPayload.GetDataScope(),
 						DataScopes:       tokenPayload.GetDataScopes(),
 						DataScopeUnitIds: tokenPayload.GetDataScopeUnitIds(),

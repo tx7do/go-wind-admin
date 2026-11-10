@@ -60,7 +60,7 @@ type userProfileUserRepoStub struct {
 	data.UserRepo
 	getUserResult      *identityV1.User
 	getUserErr         error
-	capturedGetQueryID uint64
+	capturedGetQueryID int64
 	capturedUpdates    []*identityV1.UpdateUserRequest
 }
 
@@ -139,7 +139,7 @@ func profileEncCredential(t *testing.T, plain string) string {
 
 // seedProfileUserCredential 经 ent 直插一枚 username/password_hash 凭证行，
 // 哈希走生产 bcrypt 实现（NewPasswordCrypto）。
-func seedProfileUserCredential(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, userID uint64, identifier, plainPassword string) {
+func seedProfileUserCredential(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, userID int64, identifier, plainPassword string) {
 	t.Helper()
 	pc := data.NewPasswordCrypto()
 	hash, err := pc.Encrypt(plainPassword)
@@ -180,7 +180,7 @@ func TestUserProfileServiceSqlite_GetUser_EnrichesRoleCodes(t *testing.T) {
 	}))
 	roles, err := env.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
-	var roleID uint64
+	var roleID int64
 	for _, r := range roles {
 		if r.Code != nil && *r.Code == "PROFILE_ROLE_A" {
 			roleID = r.ID
@@ -189,8 +189,8 @@ func TestUserProfileServiceSqlite_GetUser_EnrichesRoleCodes(t *testing.T) {
 	require.NotZero(t, roleID, "应能查到落库角色的 ID")
 
 	env.stub.getUserResult = &identityV1.User{
-		Id:      trans.Ptr(uint64(4242)),
-		RoleIds: []uint64{roleID},
+		Id:      trans.Ptr(int64(4242)),
+		RoleIds: []int64{roleID},
 	}
 	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 4242})
 
@@ -206,7 +206,7 @@ func TestUserProfileServiceSqlite_GetUser_NoRolesAndErrors(t *testing.T) {
 	env := newUserProfileServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	env.stub.getUserResult = &identityV1.User{Id: trans.Ptr(uint64(4242))}
+	env.stub.getUserResult = &identityV1.User{Id: trans.Ptr(int64(4242))}
 	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 4242})
 
 	resp, err := env.svc.GetUser(opCtx, &emptypb.Empty{})
@@ -259,8 +259,8 @@ func TestUserProfileServiceSqlite_UpdateUser_ProfileFieldWhitelist(t *testing.T)
 	_, err := env.svc.UpdateUser(opCtx, &identityV1.UpdateUserRequest{
 		Data: &identityV1.User{
 			Nickname: trans.Ptr("合法昵称"),
-			RoleId:   trans.Ptr(uint64(1)), // platform:admin 种子恒为 id=1
-			RoleIds:  []uint64{1},
+			RoleId:   trans.Ptr(int64(1)), // platform:admin 种子恒为 id=1
+			RoleIds:  []int64{1},
 			Status:   identityV1.User_NORMAL.Enum(),
 		},
 	})
@@ -286,7 +286,7 @@ func TestUserProfileServiceSqlite_DeleteAvatar_ClearsAvatar(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, env.stub.capturedUpdates, 1)
 	captured := env.stub.capturedUpdates[0]
-	require.Equal(t, uint64(4242), captured.Data.GetId(), "目标 ID 应为操作人")
+	require.Equal(t, int64(4242), captured.Data.GetId(), "目标 ID 应为操作人")
 	require.Empty(t, captured.Data.GetAvatar(), "头像值应被清空")
 	require.NotNil(t, captured.UpdateMask, "更新应携带 avatar 掩码")
 	require.Equal(t, []string{"avatar"}, captured.UpdateMask.GetPaths(), "掩码应仅含 avatar")
@@ -313,7 +313,7 @@ func TestUserProfileServiceSqlite_UploadAvatar_UrlPathAndValidation(t *testing.T
 	require.Equal(t, avatarURL, resp.GetUrl(), "url 路径应原样回显")
 	require.Len(t, env.stub.capturedUpdates, 1)
 	captured := env.stub.capturedUpdates[0]
-	require.Equal(t, uint64(4242), captured.Data.GetId(), "目标 ID 应为操作人")
+	require.Equal(t, int64(4242), captured.Data.GetId(), "目标 ID 应为操作人")
 	require.Equal(t, avatarURL, captured.Data.GetAvatar(), "url 路径的头像值应原样写入")
 	require.Equal(t, []string{"avatar"}, captured.UpdateMask.GetPaths(), "掩码应仅含 avatar")
 

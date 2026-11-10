@@ -34,11 +34,11 @@ func (RoleOrgUnit) Annotations() []schema.Annotation {
 func (RoleOrgUnit) Fields() []ent.Field {
 	return []ent.Field{
 
-		field.Uint64("role_id").
+		field.Int64("role_id").
 			Comment("角色ID（关联sys_roles.id）").
 			Nillable(),
 
-		field.Uint64("org_unit_id").
+		field.Int64("org_unit_id").
 			Comment("组织单元ID（关联org_units.id）").
 			Nillable(),
 	}
@@ -50,7 +50,7 @@ func (RoleOrgUnit) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

@@ -36,7 +36,7 @@ func newMyTenantUsageServiceForTest(t *testing.T) (*MyTenantUsageService, *entCr
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
 	}
 	opCtx := auth.NewContext(enttest.NewSystemContext(context.Background()),
-		&authenticationV1.UserTokenPayload{UserId: 101, TenantId: trans.Ptr(uint64(5))})
+		&authenticationV1.UserTokenPayload{UserId: 101, TenantId: trans.Ptr(int64(5))})
 	return svc, entClient, opCtx
 }
 
@@ -53,7 +53,7 @@ func TestMyTenantUsageService_PlatformUserGetsEmptyUsage(t *testing.T) {
 	usage, err := svc.GetMyTenantUsage(platformCtx, nil)
 	require.NoError(t, err)
 	require.NotNil(t, usage)
-	require.Equal(t, uint64(0), usage.GetTenantId(), "平台用户应返回 TenantId=0 的空 Usage")
+	require.Equal(t, int64(0), usage.GetTenantId(), "平台用户应返回 TenantId=0 的空 Usage")
 }
 
 // TestMyTenantUsageService_TenantUserScopes 无操作人报错、租户存在读到本租户

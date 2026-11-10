@@ -49,8 +49,8 @@ func TestInternalMessageRepoSqlite_Create(t *testing.T) {
 		Data: &internalMessageV1.InternalMessage{
 			Title:      trans.Ptr("sqlite消息标题"),
 			Content:    trans.Ptr("sqlite消息正文"),
-			SenderId:   trans.Ptr(uint64(7)),
-			CategoryId: trans.Ptr(uint64(4)),
+			SenderId:   trans.Ptr(int64(7)),
+			CategoryId: trans.Ptr(int64(4)),
 			Status:     internalMessageV1.InternalMessage_PUBLISHED.Enum(),
 			Type:       internalMessageV1.InternalMessage_PRIVATE.Enum(),
 		},
@@ -63,8 +63,8 @@ func TestInternalMessageRepoSqlite_Create(t *testing.T) {
 	row := rows[0]
 	require.Equal(t, "sqlite消息标题", *row.Title, "title 应按请求落库")
 	require.Equal(t, "sqlite消息正文", *row.Content, "content 应按请求落库")
-	require.Equal(t, uint64(7), *row.SenderID, "sender_id 应按请求落库")
-	require.Equal(t, uint64(4), *row.CategoryID, "category_id 应按请求落库")
+	require.Equal(t, int64(7), *row.SenderID, "sender_id 应按请求落库")
+	require.Equal(t, int64(4), *row.CategoryID, "category_id 应按请求落库")
 	require.NotNil(t, row.Status, "status 枚举应经 converter 落库")
 	require.Equal(t, entInternalMessage.StatusPublished, *row.Status,
 		"proto PUBLISHED 应映射为 ent StatusPublished")
@@ -177,7 +177,7 @@ func TestInternalMessageRepoSqlite_EnumReadback(t *testing.T) {
 	for _, row := range rows {
 		rowsByTitle[*row.Title] = row
 	}
-	ids := make([]uint64, 0, len(cases))
+	ids := make([]int64, 0, len(cases))
 	for _, c := range cases {
 		row, ok := rowsByTitle[c.title]
 		require.True(t, ok, "行 %s 应存在", c.title)

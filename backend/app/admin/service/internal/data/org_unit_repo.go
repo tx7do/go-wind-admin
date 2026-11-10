@@ -153,8 +153,8 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 	// 构建树形结构
 	dtos = pagination.BuildTree(
 		dtos,
-		func(node *identityV1.OrgUnit) *uint64 { return node.Id },
-		func(node *identityV1.OrgUnit) *uint64 { return node.ParentId },
+		func(node *identityV1.OrgUnit) *int64 { return node.Id },
+		func(node *identityV1.OrgUnit) *int64 { return node.ParentId },
 		func(node *identityV1.OrgUnit) *[]*identityV1.OrgUnit { return &node.Children },
 	)
 
@@ -164,12 +164,12 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 	}
 
 	return &identityV1.ListOrgUnitResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, err
 }
 
-func (r *OrgUnitRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *OrgUnitRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().OrgUnit.Query().
 		Where(orgunit.IDEQ(id)).
 		Exist(ctx)
@@ -203,7 +203,7 @@ func (r *OrgUnitRepo) Get(ctx context.Context, req *identityV1.GetOrgUnitRequest
 }
 
 // ListOrgUnitsByIds 通过多个ID获取组织列表
-func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint64) ([]*identityV1.OrgUnit, error) {
+func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []int64) ([]*identityV1.OrgUnit, error) {
 	if len(ids) == 0 {
 		return []*identityV1.OrgUnit{}, nil
 	}
@@ -408,7 +408,7 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 
 // ensureUnitAcyclicParent 校验把 nodeID 挂到 newParentID 下不会成环：从新父沿
 // parent 链上行，命中 nodeID 即拒绝。visited 防护让存量环脏数据也不死循环。
-func (r *OrgUnitRepo) ensureUnitAcyclicParent(ctx context.Context, nodeID, newParentID uint64) error {
+func (r *OrgUnitRepo) ensureUnitAcyclicParent(ctx context.Context, nodeID, newParentID int64) error {
 	if newParentID == nodeID {
 		return identityV1.ErrorBadRequest("cannot move org unit under itself")
 	}
@@ -419,13 +419,13 @@ func (r *OrgUnitRepo) ensureUnitAcyclicParent(ctx context.Context, nodeID, newPa
 		r.log.Errorf(ctx, "query org units for parent acyclicity check failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("query org units failed")
 	}
-	parentOf := make(map[uint64]uint64, len(rows))
+	parentOf := make(map[int64]int64, len(rows))
 	for _, row := range rows {
 		if row.ParentID != nil && *row.ParentID != 0 {
 			parentOf[row.ID] = *row.ParentID
 		}
 	}
-	visited := make(map[uint64]struct{}, len(rows))
+	visited := make(map[int64]struct{}, len(rows))
 	cur := newParentID
 	for cur != 0 {
 		if cur == nodeID {
@@ -443,7 +443,7 @@ func (r *OrgUnitRepo) ensureUnitAcyclicParent(ctx context.Context, nodeID, newPa
 // relocateSubtree 以 parent_id 链为准，BFS 重算 node 及其全部后代的物化路径。
 // 不按旧 path 前缀扫描：历史数据可能存着脏路径（如全表都是 "/"），按 parent 链
 // 走可顺带自愈；移动到自身后代下会成环，检测到即拒绝。
-func (r *OrgUnitRepo) relocateSubtree(ctx context.Context, nodeID uint64) error {
+func (r *OrgUnitRepo) relocateSubtree(ctx context.Context, nodeID int64) error {
 	client := r.entClient.Client()
 
 	node, err := client.OrgUnit.Query().
@@ -469,18 +469,18 @@ func (r *OrgUnitRepo) relocateSubtree(ctx context.Context, nodeID uint64) error 
 		if parent.Path != nil {
 			parentPath = *parent.Path
 		}
-		if parentPath != "" && strings.Contains(parentPath, "/"+strconv.FormatUint(uint64(nodeID), 10)+"/") {
+		if parentPath != "" && strings.Contains(parentPath, "/"+strconv.FormatInt(nodeID, 10)+"/") {
 			return identityV1.ErrorBadRequest("cannot move org unit under its own descendant")
 		}
 	}
 
 	type queueItem struct {
-		id         uint64
+		id         int64
 		parentPath string
 	}
 	// visited 防护：存量环脏数据（外部导入/直改库）下 BFS 正常收敛，不会
 	// 死循环挂死 goroutine（permission_group 版本同款防线）
-	visited := map[uint64]bool{nodeID: true}
+	visited := map[int64]bool{nodeID: true}
 	queue := []queueItem{{id: nodeID, parentPath: parentPath}}
 	for len(queue) > 0 {
 		it := queue[0]
@@ -537,13 +537,13 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitR
 		r.log.Errorf(ctx, "query org units for subtree collection failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("query org units failed")
 	}
-	childrenOf := make(map[uint64][]uint64, len(rows))
+	childrenOf := make(map[int64][]int64, len(rows))
 	for _, row := range rows {
 		if row.ParentID != nil && *row.ParentID != 0 {
 			childrenOf[*row.ParentID] = append(childrenOf[*row.ParentID], row.ID)
 		}
 	}
-	childrenIds := collectTreeIDs(childrenOf, func(id uint64) uint64 { return id }, req.GetId())
+	childrenIds := collectTreeIDs(childrenOf, func(id int64) int64 { return id }, req.GetId())
 
 	//r.log.Info(ctx, "orgunits childrenIds to delete: ", childrenIds)
 
@@ -639,9 +639,9 @@ func (r *OrgUnitRepo) setTreePath(ctx context.Context, tx *ent.Tx, entity *ent.O
 
 // computeUnitTreePath 物化路径：根节点 "/ID/"（各根前缀互不相同），
 // 子孙节点沿用库函数的 "/父路径/ID/" 拼接。
-func (r *OrgUnitRepo) computeUnitTreePath(parentPath string, nodeID uint64) string {
+func (r *OrgUnitRepo) computeUnitTreePath(parentPath string, nodeID int64) string {
 	if parentPath == "" {
-		return "/" + strconv.FormatUint(uint64(nodeID), 10) + "/"
+		return "/" + strconv.FormatInt(nodeID, 10) + "/"
 	}
 	return entCrud.ComputeTreePath64(parentPath, nodeID)
 }
@@ -649,9 +649,9 @@ func (r *OrgUnitRepo) computeUnitTreePath(parentPath string, nodeID uint64) stri
 // ListOrgUnitIDsInTenant 返回 ids 中属于指定租户的子集（跨租户剔除）。
 // 登录聚合上下文为 privacy.Allow（绕过租户隐私层），本方法内的显式租户谓词
 // 是该路径上唯一的租户防线。
-func (r *OrgUnitRepo) ListOrgUnitIDsInTenant(ctx context.Context, tenantID uint64, ids []uint64) ([]uint64, error) {
+func (r *OrgUnitRepo) ListOrgUnitIDsInTenant(ctx context.Context, tenantID int64, ids []int64) ([]int64, error) {
 	if len(ids) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	intIDs, err := r.entClient.Client().OrgUnit.Query().
@@ -665,9 +665,9 @@ func (r *OrgUnitRepo) ListOrgUnitIDsInTenant(ctx context.Context, tenantID uint6
 		return nil, identityV1.ErrorInternalServerError("query org unit ids in tenant failed")
 	}
 
-	result := make([]uint64, len(intIDs))
+	result := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		result[i] = uint64(v)
+		result[i] = int64(v)
 	}
 	return result, nil
 }
@@ -676,9 +676,9 @@ func (r *OrgUnitRepo) ListOrgUnitIDsInTenant(ctx context.Context, tenantID uint6
 // （含种子自身），以 path 前缀匹配展开，全程限定指定租户。
 // UNIT_AND_CHILD 数据范围的登录期展开专用；登录上下文为 privacy.Allow，
 // 显式租户谓词是该路径上唯一的租户防线。
-func (r *OrgUnitRepo) ListSelfAndDescendantOrgUnitIds(ctx context.Context, tenantID uint64, seeds []uint64) ([]uint64, error) {
+func (r *OrgUnitRepo) ListSelfAndDescendantOrgUnitIds(ctx context.Context, tenantID int64, seeds []int64) ([]int64, error) {
 	if len(seeds) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	seedPaths, err := r.entClient.Client().OrgUnit.Query().
@@ -701,7 +701,7 @@ func (r *OrgUnitRepo) ListSelfAndDescendantOrgUnitIds(ctx context.Context, tenan
 		pathPreds = append(pathPreds, orgunit.PathHasPrefix(p))
 	}
 	if len(pathPreds) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	intIDs, err := r.entClient.Client().OrgUnit.Query().
@@ -715,9 +715,9 @@ func (r *OrgUnitRepo) ListSelfAndDescendantOrgUnitIds(ctx context.Context, tenan
 		return nil, identityV1.ErrorInternalServerError("expand org unit descendants failed")
 	}
 
-	result := make([]uint64, len(intIDs))
+	result := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		result[i] = uint64(v)
+		result[i] = int64(v)
 	}
 	return result, nil
 }

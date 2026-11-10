@@ -35,13 +35,13 @@ func TestAiAgentRunRepoSqlite_CreateRunning(t *testing.T) {
 
 	row, err := entClient.Client().AiAgentRun.Get(ctx, id)
 	require.NoError(t, err)
-	require.Equal(t, uint64(42), *row.AppID, "app_id 必须落库：台账按应用追溯全靠它")
+	require.Equal(t, int64(42), *row.AppID, "app_id 必须落库：台账按应用追溯全靠它")
 	require.Equal(t, aiagentrun.StatusRunning, row.Status, "起步行状态应为 RUNNING")
 	require.NotNil(t, row.Input)
 	require.Equal(t, `{"city":"杭州"}`, *row.Input, "运行入参应原样落库")
 	require.Equal(t, "[]", row.Trace, "trace 应先占位为空数组：SettleResult 前的运行也要有合法 JSON（实体侧是值型列）")
-	require.Equal(t, uint64(7), *row.TenantID, "租户归属必须落库")
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(7), *row.TenantID, "租户归属必须落库")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入")
 	require.Nil(t, row.Output, "起步行还没有产出")
 	require.Nil(t, row.Error, "起步行还没有失败原因")
@@ -123,7 +123,7 @@ func TestAiAgentRunRepoSqlite_Get(t *testing.T) {
 	dto, err := repo.Get(ctx, id)
 	require.NoError(t, err)
 	require.Equal(t, id, dto.GetId())
-	require.Equal(t, uint64(42), dto.GetAppId())
+	require.Equal(t, int64(42), dto.GetAppId())
 	require.Equal(t, aiV1.AiAgentRun_RUNNING, dto.GetStatus(),
 		"RUNNING 应经回填读回 proto 枚举，不能落 STATUS_UNSPECIFIED 零值")
 	require.NotNil(t, dto.Trace)
@@ -157,9 +157,9 @@ func TestAiAgentRunRepoSqlite_List(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
+	require.Equal(t, int64(2), all.GetTotal())
 	require.Len(t, all.GetItems(), 2)
-	statusByID := map[uint64]aiV1.AiAgentRun_Status{}
+	statusByID := map[int64]aiV1.AiAgentRun_Status{}
 	for _, it := range all.GetItems() {
 		require.NotNil(t, it.Status, "status 应经读路径回填为指针")
 		statusByID[it.GetId()] = it.GetStatus()
@@ -173,7 +173,7 @@ func TestAiAgentRunRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "按应用过滤应只统计该应用的运行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "按应用过滤应只统计该应用的运行")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, idA, filtered.GetItems()[0].GetId())
 

@@ -51,31 +51,31 @@ type UserRepo interface {
 	UserExists(ctx context.Context, req *identityV1.UserExistsRequest) (*identityV1.UserExistsResponse, error)
 
 	AssignUserRole(ctx context.Context, data *permissionV1.UserRole) error
-	AssignUserRoles(ctx context.Context, userID uint64, datas []*permissionV1.UserRole) error
+	AssignUserRoles(ctx context.Context, userID int64, datas []*permissionV1.UserRole) error
 
 	AssignUserOrgUnit(ctx context.Context, data *identityV1.UserOrgUnit) error
-	AssignUserOrgUnits(ctx context.Context, userID uint64, datas []*identityV1.UserOrgUnit) error
+	AssignUserOrgUnits(ctx context.Context, userID int64, datas []*identityV1.UserOrgUnit) error
 
 	AssignUserPosition(ctx context.Context, data *identityV1.UserPosition) error
-	AssignUserPositions(ctx context.Context, userID uint64, datas []*identityV1.UserPosition) error
+	AssignUserPositions(ctx context.Context, userID int64, datas []*identityV1.UserPosition) error
 
-	ListUsersByIds(ctx context.Context, ids []uint64) ([]*identityV1.User, error)
+	ListUsersByIds(ctx context.Context, ids []int64) ([]*identityV1.User, error)
 
-	ListRoleIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error)
+	ListRoleIDsByUserID(ctx context.Context, userID int64) ([]int64, error)
 
-	ListPositionIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error)
+	ListPositionIDsByUserID(ctx context.Context, userID int64) ([]int64, error)
 
-	ListOrgUnitIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error)
+	ListOrgUnitIDsByUserID(ctx context.Context, userID int64) ([]int64, error)
 
-	ListUserRelationIDs(ctx context.Context, userID uint64) (roleIDs []uint64, positionIDs []uint64, orgUnitIDs []uint64, err error)
+	ListUserRelationIDs(ctx context.Context, userID int64) (roleIDs []int64, positionIDs []int64, orgUnitIDs []int64, err error)
 
 	// CountByTenantIDs 批量统计各租户下的用户数，用于回填 tenant.member_count。
-	CountByTenantIDs(ctx context.Context, tenantIDs []uint64) (map[uint64]int, error)
+	CountByTenantIDs(ctx context.Context, tenantIDs []int64) (map[int64]int, error)
 
 	// FindUsernameByIdentifier 登录 identifier 智能解析：含 @ 按 email 查、
 	// 纯数字按 mobile 查，其余原样视为 username 返回（userId=0 表示未反查）。
 	// mobile 在租户内非唯一，命中多行时返回错误（数据歧义应拒绝登录而非随机取一）。
-	FindUsernameByIdentifier(ctx context.Context, tenantID uint64, identifier string) (username string, userId uint64, err error)
+	FindUsernameByIdentifier(ctx context.Context, tenantID int64, identifier string) (username string, userId int64, err error)
 }
 
 type userRepo struct {
@@ -163,7 +163,7 @@ func (r *userRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 }
 
 // queryUserIDsByRelationIDs 根据关联关系查询用户ID列表
-func (r *userRepo) queryUserIDsByRelationIDs(ctx context.Context, roleIDs []uint64, orgUnitIDs []uint64, positionIDs []uint64) ([]uint64, error) {
+func (r *userRepo) queryUserIDsByRelationIDs(ctx context.Context, roleIDs []int64, orgUnitIDs []int64, positionIDs []int64) ([]int64, error) {
 	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
 		return nil, nil
 	}
@@ -179,16 +179,16 @@ func (r *userRepo) queryUserIDsByRelationIDs(ctx context.Context, roleIDs []uint
 }
 
 // queryUserIDsByRelationIDsUserTenantRelationOneToMany 根据关联关系一对多查询用户ID列表
-func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx context.Context, roleIDs []uint64, orgUnitIDs []uint64, positionIDs []uint64) ([]uint64, error) {
+func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx context.Context, roleIDs []int64, orgUnitIDs []int64, positionIDs []int64) ([]int64, error) {
 	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
 		return nil, nil
 	}
 
 	var err error
 
-	var orgUnitUserIDs []uint64
-	var positionUserIDs []uint64
-	var roleUserIDs []uint64
+	var orgUnitUserIDs []int64
+	var positionUserIDs []int64
+	var roleUserIDs []int64
 
 	if len(orgUnitIDs) > 0 {
 		orgUnitUserIDs, err = r.membershipRepo.ListUserIDsByOrgUnitIDs(ctx, orgUnitIDs, false)
@@ -210,7 +210,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx cont
 	}
 
 	// 收集所有非空列表用于求交集
-	lists := make([][]uint64, 0, 3)
+	lists := make([][]int64, 0, 3)
 	if orgUnitUserIDs != nil {
 		lists = append(lists, orgUnitUserIDs)
 	}
@@ -223,7 +223,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx cont
 
 	// 如果没有任何实际列表（例如对应 ids 为空导致查询未执行），返回空
 	if len(lists) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	// 逐步求交集
@@ -239,16 +239,16 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx cont
 }
 
 // queryUserIDsByRelationIDsUserTenantRelationOneToOne 根据关联关系一对一查询用户ID列表
-func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx context.Context, roleIDs []uint64, orgUnitIDs []uint64, positionIDs []uint64) ([]uint64, error) {
+func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx context.Context, roleIDs []int64, orgUnitIDs []int64, positionIDs []int64) ([]int64, error) {
 	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
 		return nil, nil
 	}
 
 	var err error
 
-	var orgUnitUserIDs []uint64
-	var positionUserIDs []uint64
-	var roleUserIDs []uint64
+	var orgUnitUserIDs []int64
+	var positionUserIDs []int64
+	var roleUserIDs []int64
 	if len(orgUnitIDs) > 0 {
 		orgUnitUserIDs, err = r.userOrgUnitRepo.ListUserIDsByOrgUnitIDs(ctx, orgUnitIDs, false)
 		if err != nil {
@@ -269,7 +269,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx conte
 	}
 
 	// 收集所有非空列表用于求交集
-	lists := make([][]uint64, 0, 3)
+	lists := make([][]int64, 0, 3)
 	if orgUnitUserIDs != nil {
 		lists = append(lists, orgUnitUserIDs)
 	}
@@ -282,7 +282,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx conte
 
 	// 如果没有任何实际列表（例如对应 ids 为空导致查询未执行），返回空
 	if len(lists) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	// 逐步求交集
@@ -317,54 +317,54 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		"role_id", "role_ids",
 	})
 
-	var orgUnitIDs []uint64
-	var positionIDs []uint64
-	var roleIDs []uint64
+	var orgUnitIDs []int64
+	var positionIDs []int64
+	var roleIDs []int64
 	for _, cond := range excludeConditions {
 		//r.log.Debugf(ctx, "excluding filter condition: field=%s operator=%s value=%v", cond.GetField(), cond.GetOp(), cond.GetValue())
 
-		var val uint64
+		var val int64
 		switch cond.GetField() {
 		case "org_unit_id":
-			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
-				orgUnitIDs = append(orgUnitIDs, uint64(val))
+			if val, err = strconv.ParseInt(cond.GetValue(), 10, 64); err == nil {
+				orgUnitIDs = append(orgUnitIDs, int64(val))
 			} else {
 				r.log.Errorf(ctx, "parse org_unit_id value failed: %s", err.Error())
 			}
 		case "org_unit_ids":
 			for _, v := range cond.GetValues() {
-				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
-					orgUnitIDs = append(orgUnitIDs, uint64(val))
+				if val, err = strconv.ParseInt(v, 10, 64); err == nil {
+					orgUnitIDs = append(orgUnitIDs, int64(val))
 				} else {
 					r.log.Errorf(ctx, "parse org_unit_ids value failed: %s", err.Error())
 				}
 			}
 
 		case "position_id":
-			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
-				positionIDs = append(positionIDs, uint64(val))
+			if val, err = strconv.ParseInt(cond.GetValue(), 10, 64); err == nil {
+				positionIDs = append(positionIDs, int64(val))
 			} else {
 				r.log.Errorf(ctx, "parse position_id value failed: %s", err.Error())
 			}
 		case "position_ids":
 			for _, v := range cond.GetValues() {
-				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
-					positionIDs = append(positionIDs, uint64(val))
+				if val, err = strconv.ParseInt(v, 10, 64); err == nil {
+					positionIDs = append(positionIDs, int64(val))
 				} else {
 					r.log.Errorf(ctx, "parse position_ids value failed: %s", err.Error())
 				}
 			}
 
 		case "role_id":
-			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
-				roleIDs = append(roleIDs, uint64(val))
+			if val, err = strconv.ParseInt(cond.GetValue(), 10, 64); err == nil {
+				roleIDs = append(roleIDs, int64(val))
 			} else {
 				r.log.Errorf(ctx, "parse role_id value failed: %s", err.Error())
 			}
 		case "role_ids":
 			for _, v := range cond.GetValues() {
-				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
-					roleIDs = append(roleIDs, uint64(val))
+				if val, err = strconv.ParseInt(v, 10, 64); err == nil {
+					roleIDs = append(roleIDs, int64(val))
 				} else {
 					r.log.Errorf(ctx, "parse role_ids value failed: %s", err.Error())
 				}
@@ -372,7 +372,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		}
 	}
 
-	var mergedUserIDs []uint64
+	var mergedUserIDs []int64
 	mergedUserIDs, err = r.queryUserIDsByRelationIDs(ctx, roleIDs, orgUnitIDs, positionIDs)
 	if err != nil {
 		r.log.Errorf(ctx, "query user ids by relation ids failed: %s", err.Error())
@@ -394,7 +394,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 			Values: func() []string {
 				values := make([]string, 0, len(mergedUserIDs))
 				for _, id := range mergedUserIDs {
-					values = append(values, strconv.FormatUint(uint64(id), 10))
+					values = append(values, strconv.FormatInt(id, 10))
 				}
 				return values
 			}(),
@@ -648,7 +648,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		return false
 	}
 
-	var roleIds []uint64
+	var roleIds []int64
 	if maskPathInUpdate("role_ids", "role_id") {
 		if len(req.Data.GetRoleIds()) > 0 {
 			roleIds = req.Data.GetRoleIds()
@@ -659,7 +659,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		roleIds = sliceutil.Unique(roleIds)
 	}
 
-	var orgUnitIds []uint64
+	var orgUnitIds []int64
 	if maskPathInUpdate("org_unit_ids", "org_unit_id") {
 		if len(req.Data.GetOrgUnitIds()) > 0 {
 			orgUnitIds = req.Data.GetOrgUnitIds()
@@ -670,7 +670,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		orgUnitIds = sliceutil.Unique(orgUnitIds)
 	}
 
-	var positionIds []uint64
+	var positionIds []int64
 	if maskPathInUpdate("position_ids", "position_id") {
 		if len(req.Data.GetPositionIds()) > 0 {
 			positionIds = req.Data.GetPositionIds()
@@ -838,7 +838,7 @@ func (r *userRepo) Delete(ctx context.Context, req *identityV1.DeleteUserRequest
 }
 
 // removeUserRelations 移除用户关联关系
-func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID uint64) (err error) {
+func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID int64) (err error) {
 	if err = r.userRoleRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
 		r.log.Errorf(ctx, "clean user role relations failed: %s", err.Error())
 	}
@@ -853,7 +853,7 @@ func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID u
 }
 
 // removeMembershipRelations 移除用户关联关系（通过 Membership 关联）
-func (r *userRepo) removeMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint64) error {
+func (r *userRepo) removeMembershipRelations(ctx context.Context, tx *ent.Tx, userID int64) error {
 	if err := r.membershipRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
 		r.log.Errorf(ctx, "clean user membership relations failed: %s", err.Error())
 		return err
@@ -896,8 +896,8 @@ func (r *userRepo) UserExists(ctx context.Context, req *identityV1.UserExistsReq
 
 // assignMembershipRelations 分配用户关联关系（通过 Membership 关联）
 func (r *userRepo) assignMembershipRelations(ctx context.Context, tx *ent.Tx,
-	tenantID, userID uint64,
-	roleIDs, orgUnitIDs, positionIDs []uint64,
+	tenantID, userID int64,
+	roleIDs, orgUnitIDs, positionIDs []int64,
 ) error {
 	now := time.Now()
 	err := r.membershipRepo.AssignTenantMembershipWithTx(ctx, tx, &identityV1.Membership{
@@ -920,8 +920,8 @@ func (r *userRepo) assignMembershipRelations(ctx context.Context, tx *ent.Tx,
 
 // assignUserRelations 分配用户关联关系
 func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
-	tenantID, userID uint64,
-	roleIDs, orgUnitIDs, positionIDs []uint64,
+	tenantID, userID int64,
+	roleIDs, orgUnitIDs, positionIDs []int64,
 ) (err error) {
 	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
 		return nil
@@ -1011,7 +1011,7 @@ func (r *userRepo) AssignUserRole(ctx context.Context, data *permissionV1.UserRo
 }
 
 // AssignUserRoles 分配角色
-func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint64, datas []*permissionV1.UserRole) error {
+func (r *userRepo) AssignUserRoles(ctx context.Context, userID int64, datas []*permissionV1.UserRole) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
@@ -1059,7 +1059,7 @@ func (r *userRepo) AssignUserOrgUnit(ctx context.Context, data *identityV1.UserO
 }
 
 // AssignUserOrgUnits 分配组织单元给用户
-func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID uint64, datas []*identityV1.UserOrgUnit) error {
+func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID int64, datas []*identityV1.UserOrgUnit) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
@@ -1107,7 +1107,7 @@ func (r *userRepo) AssignUserPosition(ctx context.Context, data *identityV1.User
 }
 
 // AssignUserPositions 分配岗位给用户
-func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint64, datas []*identityV1.UserPosition) error {
+func (r *userRepo) AssignUserPositions(ctx context.Context, userID int64, datas []*identityV1.UserPosition) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
@@ -1131,7 +1131,7 @@ func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint64, datas
 }
 
 // ListUsersByIds 根据ID列表获取用户列表
-func (r *userRepo) ListUsersByIds(ctx context.Context, ids []uint64) ([]*identityV1.User, error) {
+func (r *userRepo) ListUsersByIds(ctx context.Context, ids []int64) ([]*identityV1.User, error) {
 	if len(ids) == 0 {
 		return []*identityV1.User{}, nil
 	}
@@ -1155,8 +1155,8 @@ func (r *userRepo) ListUsersByIds(ctx context.Context, ids []uint64) ([]*identit
 
 // CountByTenantIDs 批量统计各租户下的用户数。
 // 仅返回存在的 tenant_id 计数，未出现的 tenant 隐含 0。
-func (r *userRepo) CountByTenantIDs(ctx context.Context, tenantIDs []uint64) (map[uint64]int, error) {
-	result := make(map[uint64]int, len(tenantIDs))
+func (r *userRepo) CountByTenantIDs(ctx context.Context, tenantIDs []int64) (map[int64]int, error) {
+	result := make(map[int64]int, len(tenantIDs))
 	if len(tenantIDs) == 0 {
 		return result, nil
 	}
@@ -1177,7 +1177,7 @@ func (r *userRepo) CountByTenantIDs(ctx context.Context, tenantIDs []uint64) (ma
 // 凭证表只存 USERNAME 维度的密码行，email/mobile 登录通过 user 表反查得到 username
 // 后仍走现有凭证校验，不改凭证数据模型。
 // mobile 在租户内非唯一索引：命中多行属于数据歧义，返回错误拒绝登录（而非随机取一行）。
-func (r *userRepo) FindUsernameByIdentifier(ctx context.Context, tenantID uint64, identifier string) (string, uint64, error) {
+func (r *userRepo) FindUsernameByIdentifier(ctx context.Context, tenantID int64, identifier string) (string, int64, error) {
 	switch {
 	case strings.Contains(identifier, "@"):
 		entity, err := r.entClient.Client().User.Query().
@@ -1238,20 +1238,20 @@ func isDigits(s string) bool {
 	return true
 }
 
-func (r *userRepo) ListRoleIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *userRepo) ListRoleIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return r.userRoleRepo.ListRoleIDs(ctx, userID, false)
 }
 
-func (r *userRepo) ListPositionIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *userRepo) ListPositionIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return r.userPositionRepo.ListPositionIDs(ctx, userID, false)
 }
 
-func (r *userRepo) ListOrgUnitIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *userRepo) ListOrgUnitIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return r.userOrgUnitRepo.ListOrgUnitIDs(ctx, userID, false)
 }
 
 // ListUserRelationIDs 列出用户关联的角色、岗位、组织单元ID列表
-func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID uint64) (roleIDs []uint64, positionIDs []uint64, orgUnitIDs []uint64, err error) {
+func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID int64) (roleIDs []int64, positionIDs []int64, orgUnitIDs []int64, err error) {
 	if userID == 0 {
 		return
 	}
@@ -1267,7 +1267,7 @@ func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID uint64) (role
 }
 
 // listUserRelationIDsOneToOne 列出用户关联的角色、岗位、组织单元ID列表（一对一关系）
-func (r *userRepo) listUserRelationIDs(ctx context.Context, userID uint64) (roleIDs []uint64, positionIDs []uint64, orgUnitIDs []uint64, err error) {
+func (r *userRepo) listUserRelationIDs(ctx context.Context, userID int64) (roleIDs []int64, positionIDs []int64, orgUnitIDs []int64, err error) {
 	if userID == 0 {
 		r.log.Errorf(ctx, "invalid user id: %d", userID)
 		return

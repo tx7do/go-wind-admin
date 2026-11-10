@@ -65,7 +65,7 @@ func (r *PermissionApiRepo) init() {
 
 // resolveEndpoints 把 api 引用（id 列表）解析成端点身份快照；解析不到随 missing
 // 返回由调用方整体失败（不吞错铁律）。与 data 栈同名方法语义一致。
-func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint64) (endpoints []Endpoint, missing []uint64, err error) {
+func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []int64) (endpoints []Endpoint, missing []int64, err error) {
 	if len(apiIDs) == 0 {
 		return nil, nil, nil
 	}
@@ -76,7 +76,7 @@ func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint6
 		return nil, nil, permissionV1.ErrorInternalServerError("query apis failed")
 	}
 
-	byID := make(map[uint64]Endpoint, len(apis))
+	byID := make(map[int64]Endpoint, len(apis))
 	for _, a := range apis {
 		if a == nil || a.Path == nil || a.Method == nil || *a.Path == "" || *a.Method == "" {
 			continue
@@ -102,7 +102,7 @@ func (r *PermissionApiRepo) resolveEndpoints(ctx context.Context, apiIDs []uint6
 }
 
 // ListEndpoints 列出权限关联的端点快照（绑定表即真相，不回查 sys_apis）。
-func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []uint64) ([]Endpoint, error) {
+func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []int64) ([]Endpoint, error) {
 	if len(permissionIDs) == 0 {
 		return nil, nil
 	}
@@ -128,7 +128,7 @@ func (r *PermissionApiRepo) ListEndpoints(ctx context.Context, permissionIDs []u
 
 // ListApiIDs 端点快照反解回当前 sys_apis id（管理页勾选框回显）；
 // 端点已删除的快照解析不出 id，防御性跳过。
-func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint64) ([]uint64, error) {
+func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []int64) ([]int64, error) {
 	endpoints, err := r.ListEndpoints(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		return nil, permissionV1.ErrorInternalServerError("resolve api ids by endpoints failed")
 	}
 
-	byEndpoint := make(map[string]uint64, len(apis))
+	byEndpoint := make(map[string]int64, len(apis))
 	for _, a := range apis {
 		if a == nil || a.Path == nil || a.Method == nil {
 			continue
@@ -161,8 +161,8 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		byEndpoint[(Endpoint{Path: *a.Path, Method: *a.Method}).key()] = a.ID
 	}
 
-	ids := make([]uint64, 0, len(endpoints))
-	idSeen := make(map[uint64]struct{}, len(endpoints))
+	ids := make([]int64, 0, len(endpoints))
+	idSeen := make(map[int64]struct{}, len(endpoints))
 	for _, e := range endpoints {
 		id, ok := byEndpoint[e.key()]
 		if !ok {
@@ -183,8 +183,8 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 // 空列表 = 清空该权限的全部接口授权。
 func (r *PermissionApiRepo) AssignApis(
 	ctx context.Context,
-	permissionID uint64,
-	apiIDs []uint64,
+	permissionID int64,
+	apiIDs []int64,
 ) error {
 	endpoints, missing, err := r.resolveEndpoints(ctx, apiIDs)
 	if err != nil {
@@ -207,7 +207,7 @@ func (r *PermissionApiRepo) AssignApis(
 func (r *PermissionApiRepo) AssignApisWithTx(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint64,
+	permissionID int64,
 	endpoints []Endpoint,
 ) error {
 	return r.assignEndpointsWithClient(ctx, tx, permissionID, endpoints)
@@ -216,7 +216,7 @@ func (r *PermissionApiRepo) AssignApisWithTx(
 func (r *PermissionApiRepo) assignEndpointsWithClient(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint64,
+	permissionID int64,
 	endpoints []Endpoint,
 ) error {
 	if len(endpoints) == 0 {
@@ -248,7 +248,7 @@ ON CONFLICT (permission_id, path, method) DO UPDATE SET updated_at = EXCLUDED.up
 func (r *PermissionApiRepo) cleanNotExistApisWithClient(
 	ctx context.Context,
 	tx *gormDB.DB,
-	permissionID uint64,
+	permissionID int64,
 	endpoints []Endpoint,
 ) error {
 	db := tx.Where("permission_id = ?", permissionID)
@@ -284,7 +284,7 @@ func (r *PermissionApiRepo) DeleteByEndpoints(ctx context.Context, tx *gormDB.DB
 // TruncateExcept 清空绑定表但保留指定权限的绑定。keepPermissionIDs 由调用方按
 // 系统权限 code 前缀解析（不再依赖"种子权限=1/2/3"的硬编码 id 假设）；为空 =
 // 全清。与 data 栈同名方法语义一致。
-func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint64) error {
+func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []int64) error {
 	db := r.client.DB.WithContext(ctx)
 	if len(keepPermissionIDs) > 0 {
 		db = db.Where("permission_id NOT IN ?", keepPermissionIDs)
@@ -300,7 +300,7 @@ func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionID
 }
 
 // Delete 删除权限关联的API资源
-func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint64) error {
+func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID int64) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id = ?", permissionID) },
 	}); err != nil {
@@ -310,7 +310,7 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint64) err
 	return nil
 }
 
-func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
+func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []int64) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {

@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.PermissionPolicy {
+func ID(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.PermissionPolicy {
+func IDEQ(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.PermissionPolicy {
+func IDNEQ(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.PermissionPolicy {
+func IDIn(ids ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.PermissionPolicy {
+func IDNotIn(ids ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.PermissionPolicy {
+func IDGT(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.PermissionPolicy {
+func IDGTE(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.PermissionPolicy {
+func IDLT(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.PermissionPolicy {
+func IDLTE(id int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,22 +70,22 @@ func DeletedAt(v time.Time) predicate.PermissionPolicy {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.PermissionPolicy {
+func CreatedBy(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.PermissionPolicy {
+func UpdatedBy(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.PermissionPolicy {
+func DeletedBy(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // PermissionID applies equality check predicate on the "permission_id" field. It's identical to PermissionIDEQ.
-func PermissionID(v uint64) predicate.PermissionPolicy {
+func PermissionID(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldPermissionID, v))
 }
 
@@ -260,42 +260,42 @@ func DeletedAtNotNil() predicate.PermissionPolicy {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.PermissionPolicy {
+func CreatedByEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.PermissionPolicy {
+func CreatedByNEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.PermissionPolicy {
+func CreatedByIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.PermissionPolicy {
+func CreatedByNotIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.PermissionPolicy {
+func CreatedByGT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.PermissionPolicy {
+func CreatedByGTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.PermissionPolicy {
+func CreatedByLT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.PermissionPolicy {
+func CreatedByLTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -310,42 +310,42 @@ func CreatedByNotNil() predicate.PermissionPolicy {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.PermissionPolicy {
+func UpdatedByEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.PermissionPolicy {
+func UpdatedByNEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.PermissionPolicy {
+func UpdatedByIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.PermissionPolicy {
+func UpdatedByNotIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.PermissionPolicy {
+func UpdatedByGT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.PermissionPolicy {
+func UpdatedByGTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.PermissionPolicy {
+func UpdatedByLT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.PermissionPolicy {
+func UpdatedByLTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -360,42 +360,42 @@ func UpdatedByNotNil() predicate.PermissionPolicy {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.PermissionPolicy {
+func DeletedByEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.PermissionPolicy {
+func DeletedByNEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.PermissionPolicy {
+func DeletedByIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.PermissionPolicy {
+func DeletedByNotIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.PermissionPolicy {
+func DeletedByGT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.PermissionPolicy {
+func DeletedByGTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.PermissionPolicy {
+func DeletedByLT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.PermissionPolicy {
+func DeletedByLTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -430,42 +430,42 @@ func StatusNotIn(vs ...Status) predicate.PermissionPolicy {
 }
 
 // PermissionIDEQ applies the EQ predicate on the "permission_id" field.
-func PermissionIDEQ(v uint64) predicate.PermissionPolicy {
+func PermissionIDEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldEQ(FieldPermissionID, v))
 }
 
 // PermissionIDNEQ applies the NEQ predicate on the "permission_id" field.
-func PermissionIDNEQ(v uint64) predicate.PermissionPolicy {
+func PermissionIDNEQ(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNEQ(FieldPermissionID, v))
 }
 
 // PermissionIDIn applies the In predicate on the "permission_id" field.
-func PermissionIDIn(vs ...uint64) predicate.PermissionPolicy {
+func PermissionIDIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldIn(FieldPermissionID, vs...))
 }
 
 // PermissionIDNotIn applies the NotIn predicate on the "permission_id" field.
-func PermissionIDNotIn(vs ...uint64) predicate.PermissionPolicy {
+func PermissionIDNotIn(vs ...int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldNotIn(FieldPermissionID, vs...))
 }
 
 // PermissionIDGT applies the GT predicate on the "permission_id" field.
-func PermissionIDGT(v uint64) predicate.PermissionPolicy {
+func PermissionIDGT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGT(FieldPermissionID, v))
 }
 
 // PermissionIDGTE applies the GTE predicate on the "permission_id" field.
-func PermissionIDGTE(v uint64) predicate.PermissionPolicy {
+func PermissionIDGTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldGTE(FieldPermissionID, v))
 }
 
 // PermissionIDLT applies the LT predicate on the "permission_id" field.
-func PermissionIDLT(v uint64) predicate.PermissionPolicy {
+func PermissionIDLT(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLT(FieldPermissionID, v))
 }
 
 // PermissionIDLTE applies the LTE predicate on the "permission_id" field.
-func PermissionIDLTE(v uint64) predicate.PermissionPolicy {
+func PermissionIDLTE(v int64) predicate.PermissionPolicy {
 	return predicate.PermissionPolicy(sql.FieldLTE(FieldPermissionID, v))
 }
 

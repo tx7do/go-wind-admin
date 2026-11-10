@@ -95,7 +95,7 @@ func (r *InternalMessageRepo) List(ctx context.Context, req *paginationV1.Paging
 	}, nil
 }
 
-func (r *InternalMessageRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *InternalMessageRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -133,9 +133,9 @@ func (r *InternalMessageRepo) Get(ctx context.Context, req *internalMessageV1.Ge
 // ListByIds 按主键批量取消息本体，用于收件箱列表回填 title/content，
 // 替代逐条 Get 的 N+1 查询。缺失的 id 不会出现在返回的 map 里。
 // 与 ent 版语义一致。
-func (r *InternalMessageRepo) ListByIds(ctx context.Context, ids []uint64) (map[uint64]*internalMessageV1.InternalMessage, error) {
+func (r *InternalMessageRepo) ListByIds(ctx context.Context, ids []int64) (map[int64]*internalMessageV1.InternalMessage, error) {
 	if len(ids) == 0 {
-		return map[uint64]*internalMessageV1.InternalMessage{}, nil
+		return map[int64]*internalMessageV1.InternalMessage{}, nil
 	}
 
 	var entities []*models.InternalMessage
@@ -147,7 +147,7 @@ func (r *InternalMessageRepo) ListByIds(ctx context.Context, ids []uint64) (map[
 		return nil, internalMessageV1.ErrorInternalServerError("query internal messages failed")
 	}
 
-	ret := make(map[uint64]*internalMessageV1.InternalMessage, len(entities))
+	ret := make(map[int64]*internalMessageV1.InternalMessage, len(entities))
 	for _, entity := range entities {
 		ret[entity.ID] = r.mapper.ToDTO(entity)
 	}
@@ -201,7 +201,7 @@ func (r *InternalMessageRepo) Update(ctx context.Context, req *internalMessageV1
 	return nil
 }
 
-func (r *InternalMessageRepo) Delete(ctx context.Context, id uint64) error {
+func (r *InternalMessageRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}

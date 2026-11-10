@@ -65,13 +65,13 @@ func (_c *PositionCreate) SetNillableDeletedAt(v *time.Time) *PositionCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *PositionCreate) SetCreatedBy(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetCreatedBy(v int64) *PositionCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableCreatedBy(v *uint64) *PositionCreate {
+func (_c *PositionCreate) SetNillableCreatedBy(v *int64) *PositionCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *PositionCreate) SetNillableCreatedBy(v *uint64) *PositionCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *PositionCreate) SetUpdatedBy(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetUpdatedBy(v int64) *PositionCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableUpdatedBy(v *uint64) *PositionCreate {
+func (_c *PositionCreate) SetNillableUpdatedBy(v *int64) *PositionCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *PositionCreate) SetNillableUpdatedBy(v *uint64) *PositionCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *PositionCreate) SetDeletedBy(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetDeletedBy(v int64) *PositionCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableDeletedBy(v *uint64) *PositionCreate {
+func (_c *PositionCreate) SetNillableDeletedBy(v *int64) *PositionCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -135,13 +135,13 @@ func (_c *PositionCreate) SetNillableRemark(v *string) *PositionCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *PositionCreate) SetTenantID(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetTenantID(v int64) *PositionCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableTenantID(v *uint64) *PositionCreate {
+func (_c *PositionCreate) SetNillableTenantID(v *int64) *PositionCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -175,19 +175,19 @@ func (_c *PositionCreate) SetCode(v string) *PositionCreate {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_c *PositionCreate) SetOrgUnitID(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetOrgUnitID(v int64) *PositionCreate {
 	_c.mutation.SetOrgUnitID(v)
 	return _c
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (_c *PositionCreate) SetReportsToPositionID(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetReportsToPositionID(v int64) *PositionCreate {
 	_c.mutation.SetReportsToPositionID(v)
 	return _c
 }
 
 // SetNillableReportsToPositionID sets the "reports_to_position_id" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableReportsToPositionID(v *uint64) *PositionCreate {
+func (_c *PositionCreate) SetNillableReportsToPositionID(v *int64) *PositionCreate {
 	if v != nil {
 		_c.SetReportsToPositionID(*v)
 	}
@@ -321,7 +321,7 @@ func (_c *PositionCreate) SetNillableEndAt(v *time.Time) *PositionCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *PositionCreate) SetID(v uint64) *PositionCreate {
+func (_c *PositionCreate) SetID(v int64) *PositionCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -454,7 +454,7 @@ func (_c *PositionCreate) sqlSave(ctx context.Context) (*Position, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -464,7 +464,7 @@ func (_c *PositionCreate) sqlSave(ctx context.Context) (*Position, error) {
 func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Position{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(position.Table, sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(position.Table, sqlgraph.NewFieldSpec(position.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -484,15 +484,15 @@ func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(position.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(position.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(position.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(position.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
@@ -504,7 +504,7 @@ func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(position.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(position.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -520,11 +520,11 @@ func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 		_node.Code = &value
 	}
 	if value, ok := _c.mutation.OrgUnitID(); ok {
-		_spec.SetField(position.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(position.FieldOrgUnitID, field.TypeInt64, value)
 		_node.OrgUnitID = &value
 	}
 	if value, ok := _c.mutation.ReportsToPositionID(); ok {
-		_spec.SetField(position.FieldReportsToPositionID, field.TypeUint64, value)
+		_spec.SetField(position.FieldReportsToPositionID, field.TypeInt64, value)
 		_node.ReportsToPositionID = &value
 	}
 	if value, ok := _c.mutation.Description(); ok {
@@ -652,7 +652,7 @@ func (u *PositionUpsert) ClearDeletedAt() *PositionUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PositionUpsert) SetCreatedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) SetCreatedBy(v int64) *PositionUpsert {
 	u.Set(position.FieldCreatedBy, v)
 	return u
 }
@@ -664,7 +664,7 @@ func (u *PositionUpsert) UpdateCreatedBy() *PositionUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PositionUpsert) AddCreatedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) AddCreatedBy(v int64) *PositionUpsert {
 	u.Add(position.FieldCreatedBy, v)
 	return u
 }
@@ -676,7 +676,7 @@ func (u *PositionUpsert) ClearCreatedBy() *PositionUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PositionUpsert) SetUpdatedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) SetUpdatedBy(v int64) *PositionUpsert {
 	u.Set(position.FieldUpdatedBy, v)
 	return u
 }
@@ -688,7 +688,7 @@ func (u *PositionUpsert) UpdateUpdatedBy() *PositionUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PositionUpsert) AddUpdatedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) AddUpdatedBy(v int64) *PositionUpsert {
 	u.Add(position.FieldUpdatedBy, v)
 	return u
 }
@@ -700,7 +700,7 @@ func (u *PositionUpsert) ClearUpdatedBy() *PositionUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PositionUpsert) SetDeletedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) SetDeletedBy(v int64) *PositionUpsert {
 	u.Set(position.FieldDeletedBy, v)
 	return u
 }
@@ -712,7 +712,7 @@ func (u *PositionUpsert) UpdateDeletedBy() *PositionUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PositionUpsert) AddDeletedBy(v uint64) *PositionUpsert {
+func (u *PositionUpsert) AddDeletedBy(v int64) *PositionUpsert {
 	u.Add(position.FieldDeletedBy, v)
 	return u
 }
@@ -802,7 +802,7 @@ func (u *PositionUpsert) UpdateCode() *PositionUpsert {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *PositionUpsert) SetOrgUnitID(v uint64) *PositionUpsert {
+func (u *PositionUpsert) SetOrgUnitID(v int64) *PositionUpsert {
 	u.Set(position.FieldOrgUnitID, v)
 	return u
 }
@@ -814,13 +814,13 @@ func (u *PositionUpsert) UpdateOrgUnitID() *PositionUpsert {
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *PositionUpsert) AddOrgUnitID(v uint64) *PositionUpsert {
+func (u *PositionUpsert) AddOrgUnitID(v int64) *PositionUpsert {
 	u.Add(position.FieldOrgUnitID, v)
 	return u
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (u *PositionUpsert) SetReportsToPositionID(v uint64) *PositionUpsert {
+func (u *PositionUpsert) SetReportsToPositionID(v int64) *PositionUpsert {
 	u.Set(position.FieldReportsToPositionID, v)
 	return u
 }
@@ -832,7 +832,7 @@ func (u *PositionUpsert) UpdateReportsToPositionID() *PositionUpsert {
 }
 
 // AddReportsToPositionID adds v to the "reports_to_position_id" field.
-func (u *PositionUpsert) AddReportsToPositionID(v uint64) *PositionUpsert {
+func (u *PositionUpsert) AddReportsToPositionID(v int64) *PositionUpsert {
 	u.Add(position.FieldReportsToPositionID, v)
 	return u
 }
@@ -1096,14 +1096,14 @@ func (u *PositionUpsertOne) ClearDeletedAt() *PositionUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PositionUpsertOne) SetCreatedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetCreatedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PositionUpsertOne) AddCreatedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddCreatedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1124,14 +1124,14 @@ func (u *PositionUpsertOne) ClearCreatedBy() *PositionUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PositionUpsertOne) SetUpdatedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetUpdatedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PositionUpsertOne) AddUpdatedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddUpdatedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1152,14 +1152,14 @@ func (u *PositionUpsertOne) ClearUpdatedBy() *PositionUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PositionUpsertOne) SetDeletedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetDeletedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PositionUpsertOne) AddDeletedBy(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddDeletedBy(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1271,14 +1271,14 @@ func (u *PositionUpsertOne) UpdateCode() *PositionUpsertOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *PositionUpsertOne) SetOrgUnitID(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetOrgUnitID(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *PositionUpsertOne) AddOrgUnitID(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddOrgUnitID(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1292,14 +1292,14 @@ func (u *PositionUpsertOne) UpdateOrgUnitID() *PositionUpsertOne {
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (u *PositionUpsertOne) SetReportsToPositionID(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetReportsToPositionID(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetReportsToPositionID(v)
 	})
 }
 
 // AddReportsToPositionID adds v to the "reports_to_position_id" field.
-func (u *PositionUpsertOne) AddReportsToPositionID(v uint64) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddReportsToPositionID(v int64) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddReportsToPositionID(v)
 	})
@@ -1517,7 +1517,7 @@ func (u *PositionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PositionUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *PositionUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1526,7 +1526,7 @@ func (u *PositionUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PositionUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *PositionUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1583,7 +1583,7 @@ func (_c *PositionCreateBulk) Save(ctx context.Context) ([]*Position, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1764,14 +1764,14 @@ func (u *PositionUpsertBulk) ClearDeletedAt() *PositionUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PositionUpsertBulk) SetCreatedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetCreatedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PositionUpsertBulk) AddCreatedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddCreatedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1792,14 +1792,14 @@ func (u *PositionUpsertBulk) ClearCreatedBy() *PositionUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PositionUpsertBulk) SetUpdatedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetUpdatedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PositionUpsertBulk) AddUpdatedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddUpdatedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1820,14 +1820,14 @@ func (u *PositionUpsertBulk) ClearUpdatedBy() *PositionUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PositionUpsertBulk) SetDeletedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetDeletedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PositionUpsertBulk) AddDeletedBy(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddDeletedBy(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1939,14 +1939,14 @@ func (u *PositionUpsertBulk) UpdateCode() *PositionUpsertBulk {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (u *PositionUpsertBulk) SetOrgUnitID(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetOrgUnitID(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetOrgUnitID(v)
 	})
 }
 
 // AddOrgUnitID adds v to the "org_unit_id" field.
-func (u *PositionUpsertBulk) AddOrgUnitID(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddOrgUnitID(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddOrgUnitID(v)
 	})
@@ -1960,14 +1960,14 @@ func (u *PositionUpsertBulk) UpdateOrgUnitID() *PositionUpsertBulk {
 }
 
 // SetReportsToPositionID sets the "reports_to_position_id" field.
-func (u *PositionUpsertBulk) SetReportsToPositionID(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetReportsToPositionID(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetReportsToPositionID(v)
 	})
 }
 
 // AddReportsToPositionID adds v to the "reports_to_position_id" field.
-func (u *PositionUpsertBulk) AddReportsToPositionID(v uint64) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddReportsToPositionID(v int64) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddReportsToPositionID(v)
 	})

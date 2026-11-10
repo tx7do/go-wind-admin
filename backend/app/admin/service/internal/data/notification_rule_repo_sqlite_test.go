@@ -67,7 +67,7 @@ func TestNotificationRuleRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.Remark)
 	require.Equal(t, "找回密码：入队即回，不等 SMTP 往返", *row.Remark)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入：留给 NULL 列表页会出一排空行")
 
 	// 读视图：枚举回映射（这一条就是 schema 那句"Optional().Nillable()"承诺的兑现）
@@ -193,10 +193,10 @@ func TestNotificationRuleRepoSqlite_List(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
+	require.Equal(t, int64(2), all.GetTotal())
 	require.Len(t, all.GetItems(), 2)
 	// 列表同样要把枚举读回来（mapper 命中即够，不靠额外回填）
-	byID := map[uint64]*notificationV1.NotificationRule{}
+	byID := map[int64]*notificationV1.NotificationRule{}
 	for _, it := range all.GetItems() {
 		byID[it.GetId()] = it
 	}
@@ -209,7 +209,7 @@ func TestNotificationRuleRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, notificationV1.EventType_PASSWORD_RESET_CODE, filtered.GetItems()[0].GetEventType())
 
@@ -251,7 +251,7 @@ func TestNotificationRuleRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "orig-remark", *row.Remark, "掩码外的 remark 应保持原值")
 	require.Equal(t, notificationrule.EventTypePasswordResetCode, *row.EventType, "掩码外的事件类型不得被改走")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// 停用规则：resolveRoute 据此判定"这条路由不生效"

@@ -104,7 +104,7 @@ func countBlock(b *queryBlock, whitelist map[string]string) {
 // enforcePerBlockTenantFilter 租户路径的结构化逐块强制：
 // 每个含白名单表引用的查询块，其 tenant_id = <租户ID> 合取条件数必须
 // 不小于表引用数。返回 error 即拒绝（fail-closed）。
-func enforcePerBlockTenantFilter(strippedSQL string, whitelist map[string]string, tenantID uint64) error {
+func enforcePerBlockTenantFilter(strippedSQL string, whitelist map[string]string, tenantID int64) error {
 	_, blocks := splitQueryBlocks(strippedSQL)
 	for i := range blocks {
 		countBlock(&blocks[i], whitelist)

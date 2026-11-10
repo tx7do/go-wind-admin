@@ -11,7 +11,7 @@ type InternalMessageCategory struct {
 	IconURL *string `gorm:"column:icon_url;type:varchar(1024);comment:图标URL"`
 
 	// 简单树结构字段（原 Ent 的 Tree 在 GORM mixin 中可能不同，这里保留常用字段）
-	ParentID *uint64 `gorm:"column:parent_id;type:int unsigned;comment:父级ID"`
+	ParentID *int64 `gorm:"column:parent_id;type:int unsigned;comment:父级ID"`
 	Path     *string `gorm:"column:path;type:varchar(1024);comment:路径"`
 
 	mixin.TimeAt

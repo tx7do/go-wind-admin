@@ -39,10 +39,10 @@ func newMfaChallengeCacheForTest(t *testing.T) (*MfaChallengeCache, *miniredis.M
 	return NewMfaChallengeCacheForTest(rdb), mr
 }
 
-func newLoginPayload(userID uint64) *authenticationV1.UserTokenPayload {
+func newLoginPayload(userID int64) *authenticationV1.UserTokenPayload {
 	return &authenticationV1.UserTokenPayload{
 		UserId:   userID,
-		TenantId: trans.Ptr(uint64(7)),
+		TenantId: trans.Ptr(int64(7)),
 		Username: trans.Ptr("alice"),
 	}
 }
@@ -61,8 +61,8 @@ func TestMfaChallengeCache_LoginChallengeRoundTrip(t *testing.T) {
 
 	got, err := c.PeekLoginChallenge(ctx, opId)
 	require.NoError(t, err)
-	require.Equal(t, uint64(42), got.Payload.GetUserId())
-	require.Equal(t, uint64(7), got.Payload.GetTenantId())
+	require.Equal(t, int64(42), got.Payload.GetUserId())
+	require.Equal(t, int64(7), got.Payload.GetTenantId())
 	require.Equal(t, "alice", got.Payload.GetUsername())
 	require.Equal(t, authenticationV1.ClientType_admin, got.ClientType,
 		"clientType 应随信封原样还原")
@@ -161,8 +161,8 @@ func TestMfaChallengeCache_EnrollChallenge(t *testing.T) {
 	got, err := c.PeekEnrollChallenge(ctx, opId)
 	require.NoError(t, err)
 	require.Equal(t, "JBSWY3DPEHPK3PXP", got.Secret)
-	require.Equal(t, uint64(7), got.TenantID)
-	require.Equal(t, uint64(42), got.UserID)
+	require.Equal(t, int64(7), got.TenantID)
+	require.Equal(t, int64(42), got.UserID)
 
 	_, err = c.PeekEnrollChallenge(ctx, opId)
 	require.NoError(t, err, "注册上下文 Peek 只读（Confirm 失败可重试）")

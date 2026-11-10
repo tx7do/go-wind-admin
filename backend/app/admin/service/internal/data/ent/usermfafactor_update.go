@@ -70,14 +70,14 @@ func (_u *UserMfaFactorUpdate) ClearDeletedAt() *UserMfaFactorUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserMfaFactorUpdate) SetUserID(v uint64) *UserMfaFactorUpdate {
+func (_u *UserMfaFactorUpdate) SetUserID(v int64) *UserMfaFactorUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserMfaFactorUpdate) SetNillableUserID(v *uint64) *UserMfaFactorUpdate {
+func (_u *UserMfaFactorUpdate) SetNillableUserID(v *int64) *UserMfaFactorUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -263,7 +263,7 @@ func (_u *UserMfaFactorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usermfafactor.Table, usermfafactor.Columns, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(usermfafactor.Table, usermfafactor.Columns, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -287,16 +287,16 @@ func (_u *UserMfaFactorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(usermfafactor.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(usermfafactor.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(usermfafactor.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(usermfafactor.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(usermfafactor.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(usermfafactor.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(usermfafactor.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(usermfafactor.FieldUserID, field.TypeUint64)
+		_spec.ClearField(usermfafactor.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Method(); ok {
 		_spec.SetField(usermfafactor.FieldMethod, field.TypeEnum, value)
@@ -391,14 +391,14 @@ func (_u *UserMfaFactorUpdateOne) ClearDeletedAt() *UserMfaFactorUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserMfaFactorUpdateOne) SetUserID(v uint64) *UserMfaFactorUpdateOne {
+func (_u *UserMfaFactorUpdateOne) SetUserID(v int64) *UserMfaFactorUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserMfaFactorUpdateOne) SetNillableUserID(v *uint64) *UserMfaFactorUpdateOne {
+func (_u *UserMfaFactorUpdateOne) SetNillableUserID(v *int64) *UserMfaFactorUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -597,7 +597,7 @@ func (_u *UserMfaFactorUpdateOne) sqlSave(ctx context.Context) (_node *UserMfaFa
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usermfafactor.Table, usermfafactor.Columns, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(usermfafactor.Table, usermfafactor.Columns, sqlgraph.NewFieldSpec(usermfafactor.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserMfaFactor.id" for update`)}
@@ -638,16 +638,16 @@ func (_u *UserMfaFactorUpdateOne) sqlSave(ctx context.Context) (_node *UserMfaFa
 		_spec.ClearField(usermfafactor.FieldDeletedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(usermfafactor.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(usermfafactor.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(usermfafactor.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(usermfafactor.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(usermfafactor.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(usermfafactor.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(usermfafactor.FieldUserID, field.TypeUint64)
+		_spec.ClearField(usermfafactor.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Method(); ok {
 		_spec.SetField(usermfafactor.FieldMethod, field.TypeEnum, value)

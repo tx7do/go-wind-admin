@@ -37,13 +37,13 @@ func (_c *PolicyEvaluationLogCreate) SetNillableCreatedAt(v *time.Time) *PolicyE
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *PolicyEvaluationLogCreate) SetTenantID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetTenantID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *PolicyEvaluationLogCreate) SetNillableTenantID(v *uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetNillableTenantID(v *int64) *PolicyEvaluationLogCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -51,31 +51,31 @@ func (_c *PolicyEvaluationLogCreate) SetNillableTenantID(v *uint64) *PolicyEvalu
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *PolicyEvaluationLogCreate) SetUserID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetUserID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (_c *PolicyEvaluationLogCreate) SetMembershipID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetMembershipID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetMembershipID(v)
 	return _c
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_c *PolicyEvaluationLogCreate) SetPermissionID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetPermissionID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetPermissionID(v)
 	return _c
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (_c *PolicyEvaluationLogCreate) SetPolicyID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetPolicyID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetPolicyID(v)
 	return _c
 }
 
 // SetNillablePolicyID sets the "policy_id" field if the given value is not nil.
-func (_c *PolicyEvaluationLogCreate) SetNillablePolicyID(v *uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetNillablePolicyID(v *int64) *PolicyEvaluationLogCreate {
 	if v != nil {
 		_c.SetPolicyID(*v)
 	}
@@ -215,7 +215,7 @@ func (_c *PolicyEvaluationLogCreate) SetSignature(v []byte) *PolicyEvaluationLog
 }
 
 // SetID sets the "id" field.
-func (_c *PolicyEvaluationLogCreate) SetID(v uint64) *PolicyEvaluationLogCreate {
+func (_c *PolicyEvaluationLogCreate) SetID(v int64) *PolicyEvaluationLogCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -303,7 +303,7 @@ func (_c *PolicyEvaluationLogCreate) sqlSave(ctx context.Context) (*PolicyEvalua
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -313,7 +313,7 @@ func (_c *PolicyEvaluationLogCreate) sqlSave(ctx context.Context) (*PolicyEvalua
 func (_c *PolicyEvaluationLogCreate) createSpec() (*PolicyEvaluationLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PolicyEvaluationLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(policyevaluationlog.Table, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(policyevaluationlog.Table, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -325,23 +325,23 @@ func (_c *PolicyEvaluationLogCreate) createSpec() (*PolicyEvaluationLog, *sqlgra
 		_node.CreatedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(policyevaluationlog.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeInt64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.MembershipID(); ok {
-		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeInt64, value)
 		_node.MembershipID = &value
 	}
 	if value, ok := _c.mutation.PermissionID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeInt64, value)
 		_node.PermissionID = &value
 	}
 	if value, ok := _c.mutation.PolicyID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeInt64, value)
 		_node.PolicyID = &value
 	}
 	if value, ok := _c.mutation.RequestPath(); ok {
@@ -437,7 +437,7 @@ type (
 )
 
 // SetUserID sets the "user_id" field.
-func (u *PolicyEvaluationLogUpsert) SetUserID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) SetUserID(v int64) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldUserID, v)
 	return u
 }
@@ -449,13 +449,13 @@ func (u *PolicyEvaluationLogUpsert) UpdateUserID() *PolicyEvaluationLogUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *PolicyEvaluationLogUpsert) AddUserID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) AddUserID(v int64) *PolicyEvaluationLogUpsert {
 	u.Add(policyevaluationlog.FieldUserID, v)
 	return u
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (u *PolicyEvaluationLogUpsert) SetMembershipID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) SetMembershipID(v int64) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldMembershipID, v)
 	return u
 }
@@ -467,13 +467,13 @@ func (u *PolicyEvaluationLogUpsert) UpdateMembershipID() *PolicyEvaluationLogUps
 }
 
 // AddMembershipID adds v to the "membership_id" field.
-func (u *PolicyEvaluationLogUpsert) AddMembershipID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) AddMembershipID(v int64) *PolicyEvaluationLogUpsert {
 	u.Add(policyevaluationlog.FieldMembershipID, v)
 	return u
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PolicyEvaluationLogUpsert) SetPermissionID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) SetPermissionID(v int64) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldPermissionID, v)
 	return u
 }
@@ -485,13 +485,13 @@ func (u *PolicyEvaluationLogUpsert) UpdatePermissionID() *PolicyEvaluationLogUps
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PolicyEvaluationLogUpsert) AddPermissionID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) AddPermissionID(v int64) *PolicyEvaluationLogUpsert {
 	u.Add(policyevaluationlog.FieldPermissionID, v)
 	return u
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (u *PolicyEvaluationLogUpsert) SetPolicyID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) SetPolicyID(v int64) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldPolicyID, v)
 	return u
 }
@@ -503,7 +503,7 @@ func (u *PolicyEvaluationLogUpsert) UpdatePolicyID() *PolicyEvaluationLogUpsert 
 }
 
 // AddPolicyID adds v to the "policy_id" field.
-func (u *PolicyEvaluationLogUpsert) AddPolicyID(v uint64) *PolicyEvaluationLogUpsert {
+func (u *PolicyEvaluationLogUpsert) AddPolicyID(v int64) *PolicyEvaluationLogUpsert {
 	u.Add(policyevaluationlog.FieldPolicyID, v)
 	return u
 }
@@ -743,14 +743,14 @@ func (u *PolicyEvaluationLogUpsertOne) Update(set func(*PolicyEvaluationLogUpser
 }
 
 // SetUserID sets the "user_id" field.
-func (u *PolicyEvaluationLogUpsertOne) SetUserID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) SetUserID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *PolicyEvaluationLogUpsertOne) AddUserID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) AddUserID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddUserID(v)
 	})
@@ -764,14 +764,14 @@ func (u *PolicyEvaluationLogUpsertOne) UpdateUserID() *PolicyEvaluationLogUpsert
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (u *PolicyEvaluationLogUpsertOne) SetMembershipID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) SetMembershipID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetMembershipID(v)
 	})
 }
 
 // AddMembershipID adds v to the "membership_id" field.
-func (u *PolicyEvaluationLogUpsertOne) AddMembershipID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) AddMembershipID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddMembershipID(v)
 	})
@@ -785,14 +785,14 @@ func (u *PolicyEvaluationLogUpsertOne) UpdateMembershipID() *PolicyEvaluationLog
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PolicyEvaluationLogUpsertOne) SetPermissionID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) SetPermissionID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetPermissionID(v)
 	})
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PolicyEvaluationLogUpsertOne) AddPermissionID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) AddPermissionID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddPermissionID(v)
 	})
@@ -806,14 +806,14 @@ func (u *PolicyEvaluationLogUpsertOne) UpdatePermissionID() *PolicyEvaluationLog
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (u *PolicyEvaluationLogUpsertOne) SetPolicyID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) SetPolicyID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetPolicyID(v)
 	})
 }
 
 // AddPolicyID adds v to the "policy_id" field.
-func (u *PolicyEvaluationLogUpsertOne) AddPolicyID(v uint64) *PolicyEvaluationLogUpsertOne {
+func (u *PolicyEvaluationLogUpsertOne) AddPolicyID(v int64) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddPolicyID(v)
 	})
@@ -1052,7 +1052,7 @@ func (u *PolicyEvaluationLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PolicyEvaluationLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *PolicyEvaluationLogUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1061,7 +1061,7 @@ func (u *PolicyEvaluationLogUpsertOne) ID(ctx context.Context) (id uint64, err e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PolicyEvaluationLogUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *PolicyEvaluationLogUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1118,7 +1118,7 @@ func (_c *PolicyEvaluationLogCreateBulk) Save(ctx context.Context) ([]*PolicyEva
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1257,14 +1257,14 @@ func (u *PolicyEvaluationLogUpsertBulk) Update(set func(*PolicyEvaluationLogUpse
 }
 
 // SetUserID sets the "user_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) SetUserID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) SetUserID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) AddUserID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) AddUserID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddUserID(v)
 	})
@@ -1278,14 +1278,14 @@ func (u *PolicyEvaluationLogUpsertBulk) UpdateUserID() *PolicyEvaluationLogUpser
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) SetMembershipID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) SetMembershipID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetMembershipID(v)
 	})
 }
 
 // AddMembershipID adds v to the "membership_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) AddMembershipID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) AddMembershipID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddMembershipID(v)
 	})
@@ -1299,14 +1299,14 @@ func (u *PolicyEvaluationLogUpsertBulk) UpdateMembershipID() *PolicyEvaluationLo
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) SetPermissionID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) SetPermissionID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetPermissionID(v)
 	})
 }
 
 // AddPermissionID adds v to the "permission_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) AddPermissionID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) AddPermissionID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddPermissionID(v)
 	})
@@ -1320,14 +1320,14 @@ func (u *PolicyEvaluationLogUpsertBulk) UpdatePermissionID() *PolicyEvaluationLo
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) SetPolicyID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) SetPolicyID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.SetPolicyID(v)
 	})
 }
 
 // AddPolicyID adds v to the "policy_id" field.
-func (u *PolicyEvaluationLogUpsertBulk) AddPolicyID(v uint64) *PolicyEvaluationLogUpsertBulk {
+func (u *PolicyEvaluationLogUpsertBulk) AddPolicyID(v int64) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.AddPolicyID(v)
 	})

@@ -261,7 +261,7 @@ func (s *NotificationService) applyTemplate(ctx context.Context, req *notificati
 // deliver 当场投递并回写台账结论。同步事件、以及入队失败的兜底共用这一条路。
 func (s *NotificationService) deliver(
 	ctx context.Context,
-	deliveryId uint64,
+	deliveryId int64,
 	req *notificationV1.SendDirectNotificationRequest,
 	sender channel.Sender,
 ) (*notificationV1.SendNotificationResponse, error) {
@@ -349,7 +349,7 @@ func (s *NotificationService) sendOnce(
 // 再抄一份进 Redis 只是多一个会漂移的副本。
 func (s *NotificationService) dispatchAsync(
 	ctx context.Context,
-	deliveryId uint64,
+	deliveryId int64,
 	req *notificationV1.SendDirectNotificationRequest,
 	sender channel.Sender,
 ) (*notificationV1.SendNotificationResponse, bool, error) {
@@ -510,7 +510,7 @@ func dispatchRequest(row *notificationV1.NotificationDelivery, payload *task.Not
 }
 
 // pickedChannelId 把回执里的渠道 ID 转成台账的可选列（0/无回执 → nil，表示不修改）。
-func pickedChannelId(receipt *channel.SendReceipt) *uint64 {
+func pickedChannelId(receipt *channel.SendReceipt) *int64 {
 	if receipt == nil || receipt.ChannelID == 0 {
 		return nil
 	}
@@ -761,7 +761,7 @@ func shouldDeleteArchivedNotification(ti *asynq.TaskInfo, wantType string, cutof
 //
 // 这里刻意不做进程内重试：异步侧的重试机制就是 asynq，再造一个只会把"重投递"和"重写台账"
 // 两件事混成一个计数器；而同步侧无论重试几次都不改变"不能回错给调用方"这个结论。
-func (s *NotificationService) markResult(ctx context.Context, deliveryId uint64, outcome *data.DeliveryOutcome) error {
+func (s *NotificationService) markResult(ctx context.Context, deliveryId int64, outcome *data.DeliveryOutcome) error {
 	if err := s.deliveryRepo.MarkResult(ctx, deliveryId, outcome); err != nil {
 		s.log.Errorf(ctx, "write back delivery [%d] result [%s] failed, the row keeps its previous status (notification_delivery_sweep will settle it): %s",
 			deliveryId, outcome.Status.String(), err.Error())

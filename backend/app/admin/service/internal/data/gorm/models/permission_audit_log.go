@@ -8,7 +8,7 @@ import (
 type PermissionAuditLog struct {
 	mixin.AutoIncrementID64
 
-	OperatorId *uint64 `gorm:"column:operator_id;type:int unsigned;index;comment:操作者用户ID"`
+	OperatorId *int64 `gorm:"column:operator_id;type:int unsigned;index;comment:操作者用户ID"`
 	TargetType *string `gorm:"column:target_type;type:varchar(255);comment:目标类型"`
 	TargetId   *string `gorm:"column:target_id;type:varchar(255);comment:目标ID"`
 	Action     *string `gorm:"column:action;type:varchar(128);comment:动作"`

@@ -74,7 +74,7 @@ func TestScriptLogService_ListAndCount(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listResp.GetTotal(), "应统计全部 2 条日志")
+	require.Equal(t, int64(2), listResp.GetTotal(), "应统计全部 2 条日志")
 	require.Len(t, listResp.GetItems(), 2)
 	nameSet := map[string]bool{}
 	for _, item := range listResp.GetItems() {
@@ -87,7 +87,7 @@ func TestScriptLogService_ListAndCount(t *testing.T) {
 
 	cntResp, err := svc.Count(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cntResp.GetCount(), "计数应等于落库行数")
+	require.Equal(t, int64(2), cntResp.GetCount(), "计数应等于落库行数")
 }
 
 // TestScriptLogService_Purge 验证 Purge 的守卫与钳制（P2 修复后口径）：
@@ -129,7 +129,7 @@ func TestScriptLogService_Purge(t *testing.T) {
 	require.Zero(t, resp.GetDeleted(), "默认 90 天阈值不应清理近期行")
 	cnt, err := svc.repo.CountLog(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cnt.GetCount(), "两次 Purge 后行数应保持 2")
+	require.Equal(t, int64(2), cnt.GetCount(), "两次 Purge 后行数应保持 2")
 
 	// 未来时间点：被钳制为"至少保留最近 1 天"，近期行不可一键清空（P2 修复）。
 	// 注：此前口径是未来 before 全量清理——sys_script_logs 是钩子/任务审计痕迹，
@@ -141,5 +141,5 @@ func TestScriptLogService_Purge(t *testing.T) {
 	require.Zero(t, resp.GetDeleted(), "未来时间点应被钳制，近期行保留")
 	cnt, err = svc.repo.CountLog(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cnt.GetCount(), "钳制后近期行应全部保留")
+	require.Equal(t, int64(2), cnt.GetCount(), "钳制后近期行应全部保留")
 }

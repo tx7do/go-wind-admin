@@ -48,16 +48,16 @@ func newRecipientServiceForTest(t *testing.T) (*InternalMessageRecipientService,
 }
 
 // inboxTestTenantID 是收件箱测试的公共租户（消息与收件行都落它名下）。
-const inboxTestTenantID = uint64(5)
+const inboxTestTenantID = int64(5)
 
 // newUserViewerCtx 构造租户 5 的普通用户 viewer 上下文（会触发归属谓词）。
-func newUserViewerCtx(uid uint64) context.Context {
+func newUserViewerCtx(uid int64) context.Context {
 	return crudViewer.WithContext(context.Background(),
-		crudViewer.NewUserContext(uint64(uid), uint64(inboxTestTenantID), 0, "", nil))
+		crudViewer.NewUserContext(int64(uid), int64(inboxTestTenantID), 0, "", nil))
 }
 
 // seedInboxRow 落一条父消息 + 指定用户的收件行，返回收件行 ID。
-func seedInboxRow(t *testing.T, svc *InternalMessageRecipientService, recipientUserID uint64, title, content string) uint64 {
+func seedInboxRow(t *testing.T, svc *InternalMessageRecipientService, recipientUserID int64, title, content string) int64 {
 	t.Helper()
 	sysCtx := enttest.NewSystemContext(context.Background())
 
@@ -91,7 +91,7 @@ func TestInternalMessageRecipientService_ListUserInbox_EnrichesAndScopes(t *test
 	// user 71 的收件箱：1 行，且标题/正文已回填
 	resp, err := svc.ListUserInbox(opCtx71, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), resp.GetTotal(), "user 71 只应看到自己的收件行")
+	require.Equal(t, int64(1), resp.GetTotal(), "user 71 只应看到自己的收件行")
 	require.Len(t, resp.GetItems(), 1)
 	require.Equal(t, "维护公告", resp.GetItems()[0].GetTitle(), "标题应从父消息回填")
 	require.Equal(t, "本周六 02:00-04:00 系统维护", resp.GetItems()[0].GetContent(), "正文应从父消息回填")
@@ -99,7 +99,7 @@ func TestInternalMessageRecipientService_ListUserInbox_EnrichesAndScopes(t *test
 	// user 72：归属谓词生效，翻不到 user 71 的收件行
 	resp72, err := svc.ListUserInbox(opCtx72, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), resp72.GetTotal())
+	require.Equal(t, int64(1), resp72.GetTotal())
 	require.Equal(t, "别人的信", resp72.GetItems()[0].GetTitle())
 
 	// nil 分页请求：repo 守卫透传
@@ -114,7 +114,7 @@ func TestInternalMessageRecipientService_ReadAndDeletePassthrough(t *testing.T) 
 	id := seedInboxRow(t, svc, 71, "待读通知", "点了已读才安心")
 
 	_, err := svc.MarkNotificationAsRead(opCtx71, &internalMessageV1.MarkNotificationAsReadRequest{
-		RecipientIds: []uint64{id},
+		RecipientIds: []int64{id},
 	})
 	require.NoError(t, err)
 
@@ -127,17 +127,17 @@ func TestInternalMessageRecipientService_ReadAndDeletePassthrough(t *testing.T) 
 		"标记已读后状态应为 READ")
 
 	_, err = svc.MarkNotificationsStatus(opCtx71, &internalMessageV1.MarkNotificationsStatusRequest{
-		RecipientIds: []uint64{id},
+		RecipientIds: []int64{id},
 		NewStatus:    internalMessageV1.InternalMessageRecipient_READ,
 	})
 	require.NoError(t, err, "批量状态修改应连通")
 
 	_, err = svc.DeleteNotificationFromInbox(opCtx71, &internalMessageV1.DeleteNotificationFromInboxRequest{
-		RecipientIds: []uint64{id},
+		RecipientIds: []int64{id},
 	})
 	require.NoError(t, err)
 
 	resp, err := svc.ListUserInbox(opCtx71, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), resp.GetTotal(), "删除后收件箱应为空")
+	require.Equal(t, int64(0), resp.GetTotal(), "删除后收件箱应为空")
 }

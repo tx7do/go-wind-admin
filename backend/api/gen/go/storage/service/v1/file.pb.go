@@ -101,7 +101,7 @@ func (OSSProvider) EnumDescriptor() ([]byte, []int) {
 // 文件
 type File struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                 // 文件ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                 // 文件ID
 	Provider      *OSSProvider           `protobuf:"varint,2,opt,name=provider,proto3,enum=storage.service.v1.OSSProvider,oneof" json:"provider,omitempty"` // OSS供应商
 	BucketName    *string                `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`                // 存储桶名称
 	FileDirectory *string                `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`       // 文件目录
@@ -113,11 +113,11 @@ type File struct {
 	SizeFormat    *string                `protobuf:"bytes,10,opt,name=size_format,json=sizeFormat,proto3,oneof" json:"size_format,omitempty"`               // 格式化后的文件长度字符串
 	LinkUrl       *string                `protobuf:"bytes,11,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`                        // 链接地址
 	ContentHash   *string                `protobuf:"bytes,12,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`            // 文件内容hash值
-	TenantId      *uint64                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                    // 租户ID，0代表系统全局角色
+	TenantId      *int64                 `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                    // 租户ID，0代表系统全局角色
 	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`               // 租户名称
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                // 创建者用户ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                // 更新者用户ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                // 创建者用户ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                // 更新者用户ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                 // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                 // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                 // 删除时间
@@ -155,7 +155,7 @@ func (*File) Descriptor() ([]byte, []int) {
 	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *File) GetId() uint64 {
+func (x *File) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -239,7 +239,7 @@ func (x *File) GetContentHash() string {
 	return ""
 }
 
-func (x *File) GetTenantId() uint64 {
+func (x *File) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -253,21 +253,21 @@ func (x *File) GetTenantName() string {
 	return ""
 }
 
-func (x *File) GetCreatedBy() uint64 {
+func (x *File) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *File) GetUpdatedBy() uint64 {
+func (x *File) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *File) GetDeletedBy() uint64 {
+func (x *File) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -299,7 +299,7 @@ func (x *File) GetDeletedAt() *timestamppb.Timestamp {
 type ListFileResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*File                `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -341,7 +341,7 @@ func (x *ListFileResponse) GetItems() []*File {
 	return nil
 }
 
-func (x *ListFileResponse) GetTotal() uint64 {
+func (x *ListFileResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -397,7 +397,7 @@ func (x *GetFileRequest) GetQueryBy() isGetFileRequest_QueryBy {
 	return nil
 }
 
-func (x *GetFileRequest) GetId() uint64 {
+func (x *GetFileRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetFileRequest_Id); ok {
 			return x.Id
@@ -418,7 +418,7 @@ type isGetFileRequest_QueryBy interface {
 }
 
 type GetFileRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetFileRequest_Id) isGetFileRequest_QueryBy() {}
@@ -471,7 +471,7 @@ func (x *CreateFileRequest) GetData() *File {
 // 更新 - 请求
 type UpdateFileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *File                  `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -509,7 +509,7 @@ func (*UpdateFileRequest) Descriptor() ([]byte, []int) {
 	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateFileRequest) GetId() uint64 {
+func (x *UpdateFileRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -585,7 +585,7 @@ func (x *DeleteFileRequest) GetQueryBy() isDeleteFileRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteFileRequest) GetId() uint64 {
+func (x *DeleteFileRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteFileRequest_Id); ok {
 			return x.Id
@@ -599,14 +599,14 @@ type isDeleteFileRequest_QueryBy interface {
 }
 
 type DeleteFileRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteFileRequest_Id) isDeleteFileRequest_QueryBy() {}
 
 type CountFileResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -641,7 +641,7 @@ func (*CountFileResponse) Descriptor() ([]byte, []int) {
 	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountFileResponse) GetCount() uint64 {
+func (x *CountFileResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -654,7 +654,7 @@ const file_storage_service_v1_file_proto_rawDesc = "" +
 	"\n" +
 	"\x1dstorage/service/v1/file.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x90\x0e\n" +
 	"\x04File\x12&\n" +
-	"\x02id\x18\x01 \x01(\x04B\x11\xe0A\x01\xbaG\v\x92\x02\b文件IDH\x00R\x02id\x88\x01\x01\x12T\n" +
+	"\x02id\x18\x01 \x01(\x03B\x11\xe0A\x01\xbaG\v\x92\x02\b文件IDH\x00R\x02id\x88\x01\x01\x12T\n" +
 	"\bprovider\x18\x02 \x01(\x0e2\x1f.storage.service.v1.OSSProviderB\x12\xbaG\x0f\x92\x02\fOSS供应商H\x01R\bprovider\x88\x01\x01\x12;\n" +
 	"\vbucket_name\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f存储桶名称H\x02R\n" +
 	"bucketName\x88\x01\x01\x12Z\n" +
@@ -671,15 +671,15 @@ const file_storage_service_v1_file_proto_rawDesc = "" +
 	"\blink_url\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f链接地址H\n" +
 	"R\alinkUrl\x88\x01\x01\x12A\n" +
 	"\fcontent_hash\x18\f \x01(\tB\x19\xbaG\x16\x92\x02\x13文件内容hash值H\vR\vcontentHash\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\fR\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18( \x01(\x03B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\fR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\rR\n" +
 	"tenantName\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0eR\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x03B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0eR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x10R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x10R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x11R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -712,9 +712,9 @@ const file_storage_service_v1_file_proto_rawDesc = "" +
 	"\v_deleted_at\"X\n" +
 	"\x10ListFileResponse\x12.\n" +
 	"\x05items\x18\x01 \x03(\v2\x18.storage.service.v1.FileR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc1\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xc1\x01\n" +
 	"\x0eGetFileRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -724,19 +724,19 @@ const file_storage_service_v1_file_proto_rawDesc = "" +
 	"\x11CreateFileRequest\x12,\n" +
 	"\x04data\x18\x01 \x01(\v2\x18.storage.service.v1.FileR\x04data\"\x8f\x03\n" +
 	"\x11UpdateFileRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12,\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12,\n" +
 	"\x04data\x18\x02 \x01(\v2\x18.storage.service.v1.FileR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"=\n" +
 	"\x11DeleteFileRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\")\n" +
 	"\x11CountFileResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count*~\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count*~\n" +
 	"\vOSSProvider\x12\t\n" +
 	"\x05MINIO\x10\x00\x12\n" +
 	"\n" +

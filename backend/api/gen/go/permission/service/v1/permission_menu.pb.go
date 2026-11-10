@@ -25,9 +25,9 @@ const (
 // 权限点 - 菜单 关联关系
 type PermissionMenu struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
-	PermissionId  *uint64                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
-	MenuId        *uint64                `protobuf:"varint,3,opt,name=menu_id,json=menuId,proto3,oneof" json:"menu_id,omitempty"`                   // 菜单ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
+	PermissionId  *int64                 `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
+	MenuId        *int64                 `protobuf:"varint,3,opt,name=menu_id,json=menuId,proto3,oneof" json:"menu_id,omitempty"`                   // 菜单ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -62,21 +62,21 @@ func (*PermissionMenu) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_menu_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PermissionMenu) GetId() uint64 {
+func (x *PermissionMenu) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PermissionMenu) GetPermissionId() uint64 {
+func (x *PermissionMenu) GetPermissionId() int64 {
 	if x != nil && x.PermissionId != nil {
 		return *x.PermissionId
 	}
 	return 0
 }
 
-func (x *PermissionMenu) GetMenuId() uint64 {
+func (x *PermissionMenu) GetMenuId() int64 {
 	if x != nil && x.MenuId != nil {
 		return *x.MenuId
 	}
@@ -89,9 +89,9 @@ const file_permission_service_v1_permission_menu_proto_rawDesc = "" +
 	"\n" +
 	"+permission/service/v1/permission_menu.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\"\xbf\x01\n" +
 	"\x0ePermissionMenu\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\x04B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x02 \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12,\n" +
-	"\amenu_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b菜单IDH\x02R\x06menuId\x88\x01\x01B\x05\n" +
+	"\x02id\x18\x01 \x01(\x03B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
+	"\rpermission_id\x18\x02 \x01(\x03B\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12,\n" +
+	"\amenu_id\x18\x03 \x01(\x03B\x0e\xbaG\v\x92\x02\b菜单IDH\x02R\x06menuId\x88\x01\x01B\x05\n" +
 	"\x03_idB\x10\n" +
 	"\x0e_permission_idB\n" +
 	"\n" +

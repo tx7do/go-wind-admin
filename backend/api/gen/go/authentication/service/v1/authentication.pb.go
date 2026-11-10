@@ -237,7 +237,7 @@ type LoginRequest struct {
 	ClientSecret *string                `protobuf:"bytes,3,opt,name=client_secret,proto3,oneof" json:"client_secret,omitempty"`
 	Scope        *string                `protobuf:"bytes,4,opt,name=scope,proto3,oneof" json:"scope,omitempty"`               // 以空格分隔的范围列表。如果未提供，scope则授权任何范围，默认为空列表。
 	RedirectUri  *string                `protobuf:"bytes,5,opt,name=redirect_uri,proto3,oneof" json:"redirect_uri,omitempty"` // 跳转链接
-	UserId       *uint64                `protobuf:"varint,6,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`          // 用户ID
+	UserId       *int64                 `protobuf:"varint,6,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`          // 用户ID
 	// 登录标识（用户名、邮箱、手机号三选一）
 	//
 	// Types that are valid to be assigned to Identifier:
@@ -322,7 +322,7 @@ func (x *LoginRequest) GetRedirectUri() string {
 	return ""
 }
 
-func (x *LoginRequest) GetUserId() uint64 {
+func (x *LoginRequest) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -527,7 +527,7 @@ func (x *LoginResponse) GetMfaOperationId() string {
 // 用户登出 - 请求
 type LogoutRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                       // 用户ID
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                       // 用户ID
 	ClientType    ClientType             `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType" json:"client_type,omitempty"` // 客户端类型
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -563,7 +563,7 @@ func (*LogoutRequest) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *LogoutRequest) GetUserId() uint64 {
+func (x *LogoutRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -583,7 +583,7 @@ type ValidateTokenRequest struct {
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`                                                                        // 令牌
 	ClientType    ClientType             `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType" json:"client_type,omitempty"` // 客户端类型
 	TokenCategory TokenCategory          `protobuf:"varint,3,opt,name=token_category,json=tokenCategory,proto3,enum=authentication.service.v1.TokenCategory" json:"token_category,omitempty"`
-	UserId        *uint64                `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"` // 用户ID
+	UserId        *int64                 `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"` // 用户ID
 	SkipRedis     *bool                  `protobuf:"varint,5,opt,name=skip_redis,json=skipRedis,proto3,oneof" json:"skip_redis,omitempty"`
 	SkipBlacklist *bool                  `protobuf:"varint,6,opt,name=skip_blacklist,json=skipBlacklist,proto3,oneof" json:"skip_blacklist,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -641,7 +641,7 @@ func (x *ValidateTokenRequest) GetTokenCategory() TokenCategory {
 	return TokenCategory_TOKEN_CATEGORY_UNSPECIFIED
 }
 
-func (x *ValidateTokenRequest) GetUserId() uint64 {
+func (x *ValidateTokenRequest) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -833,7 +833,7 @@ func (x *ResetPasswordByCodeRequest) GetNewPassword() string {
 // 获取当前用户身份信息 - 响应
 type WhoAmIResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint64                 `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"` // 用户ID
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"` // 用户ID
 	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`         // 当前用户的用户名
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -869,7 +869,7 @@ func (*WhoAmIResponse) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *WhoAmIResponse) GetUserId() uint64 {
+func (x *WhoAmIResponse) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -885,7 +885,7 @@ func (x *WhoAmIResponse) GetUsername() string {
 
 type GetAccessTokensRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                       // 用户ID
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                       // 用户ID
 	ClientType    ClientType             `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType" json:"client_type,omitempty"` // 客户端类型
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -921,7 +921,7 @@ func (*GetAccessTokensRequest) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *GetAccessTokensRequest) GetUserId() uint64 {
+func (x *GetAccessTokensRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -982,7 +982,7 @@ func (x *GetAccessTokensResponse) GetAccessTokens() []string {
 // 将指定令牌加入黑名单 / 拉黑（支持通过明文 token 或 token_id）
 type BlockTokenRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
-	UserId     uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	UserId     int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
 	ClientType ClientType             `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType" json:"client_type,omitempty"`
 	// Types that are valid to be assigned to Target:
 	//
@@ -1025,7 +1025,7 @@ func (*BlockTokenRequest) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *BlockTokenRequest) GetUserId() uint64 {
+func (x *BlockTokenRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1096,7 +1096,7 @@ func (*BlockTokenRequest_Jti) isBlockTokenRequest_Target() {}
 
 type UnblockTokenRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
-	UserId     uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	UserId     int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
 	ClientType ClientType             `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType" json:"client_type,omitempty"`
 	// Types that are valid to be assigned to Target:
 	//
@@ -1137,7 +1137,7 @@ func (*UnblockTokenRequest) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *UnblockTokenRequest) GetUserId() uint64 {
+func (x *UnblockTokenRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1242,7 +1242,7 @@ type RevokeTokenByIdRequest struct {
 	Jti           string                 `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
 	ClientType    *ClientType            `protobuf:"varint,2,opt,name=client_type,json=clientType,proto3,enum=authentication.service.v1.ClientType,oneof" json:"client_type,omitempty"` // 目标令牌所属的客户端类型
 	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`                                                                            // 撤销原因
-	UserId        *uint64                `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 关联用户ID（可选）
+	UserId        *int64                 `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                       // 关联用户ID（可选）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1298,7 +1298,7 @@ func (x *RevokeTokenByIdRequest) GetReason() string {
 	return ""
 }
 
-func (x *RevokeTokenByIdRequest) GetUserId() uint64 {
+func (x *RevokeTokenByIdRequest) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
@@ -1467,7 +1467,7 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\rclient_secret\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f客户端密钥H\x02R\rclient_secret\x88\x01\x01\x12\x92\x01\n" +
 	"\x05scope\x18\x04 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x03R\x05scope\x88\x01\x01\x12;\n" +
 	"\fredirect_uri\x18\x05 \x01(\tB\x12\xbaG\x0f\x92\x02\f跳转链接H\x04R\fredirect_uri\x88\x01\x01\x12-\n" +
-	"\auser_id\x18\x06 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDH\x05R\auser_id\x88\x01\x01\x124\n" +
+	"\auser_id\x18\x06 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDH\x05R\auser_id\x88\x01\x01\x124\n" +
 	"\busername\x18\n" +
 	" \x01(\tB\x16\xfaB\x04r\x02\x18@\xbaG\f\x92\x02\t用户名H\x00R\busername\x128\n" +
 	"\x05email\x18\v \x01(\tB \xfaB\x05r\x03\x18\xfe\x01\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x120\n" +
@@ -1512,7 +1512,7 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\t_id_tokenB\x13\n" +
 	"\x11_mfa_operation_id\"\x97\x01\n" +
 	"\rLogoutRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +
 	"clientType\"\xec\x05\n" +
 	"\x14ValidateTokenRequest\x12\"\n" +
@@ -1520,7 +1520,7 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +
 	"clientType\x12\xe8\x01\n" +
 	"\x0etoken_category\x18\x03 \x01(\x0e2(.authentication.service.v1.TokenCategoryB\x96\x01\xbaG\x92\x01\x92\x02\x8e\x01期望验证的令牌类别：ACCESS=访问令牌，REFRESH=刷新令牌。若未指定，服务端可尝试根据 token 推断处理方式。R\rtokenCategory\x12,\n" +
-	"\auser_id\x18\x04 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDH\x00R\x06userId\x88\x01\x01\x12\x80\x01\n" +
+	"\auser_id\x18\x04 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDH\x00R\x06userId\x88\x01\x01\x12\x80\x01\n" +
 	"\n" +
 	"skip_redis\x18\x05 \x01(\bB\\\xbaGY\x92\x02V可选：为 true 时跳过 Redis 在库校验；默认 false（进行 Redis 校验）H\x01R\tskipRedis\x88\x01\x01\x12\x86\x01\n" +
 	"\x0eskip_blacklist\x18\x06 \x01(\bBZ\xbaGW\x92\x02T可选：为 true 时跳过黑名单校验；默认 false（进行黑名单校验）H\x02R\rskipBlacklist\x88\x01\x01B\n" +
@@ -1550,16 +1550,16 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\x05_codeB\x0f\n" +
 	"\r_new_password\"r\n" +
 	"\x0eWhoAmIResponse\x12$\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12:\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12:\n" +
 	"\busername\x18\x02 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18当前用户的用户名R\busername\"\xa0\x01\n" +
 	"\x16GetAccessTokensRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +
 	"clientType\"X\n" +
 	"\x17GetAccessTokensResponse\x12=\n" +
 	"\raccess_tokens\x18\x01 \x03(\tB\x18\xbaG\x15\x92\x02\x12访问令牌列表R\faccessTokens\"\x81\x03\n" +
 	"\x11BlockTokenRequest\x12*\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x11\xe0A\x02\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x11\xe0A\x02\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +
 	"clientType\x12\x16\n" +
 	"\x05token\x18\n" +
@@ -1570,7 +1570,7 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\x06targetB\v\n" +
 	"\t_duration\"\xd6\x01\n" +
 	"\x13UnblockTokenRequest\x12*\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x11\xe0A\x02\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\auser_id\x18\x01 \x01(\x03B\x11\xe0A\x02\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +
 	"clientType\x12\x16\n" +
 	"\x05token\x18\n" +
@@ -1584,7 +1584,7 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB_\xbaG\\\x92\x02Y可选：目标令牌所属的客户端类型（当 jti 非全局唯一时必须提供）H\x00R\n" +
 	"clientType\x88\x01\x01\x12*\n" +
 	"\x06reason\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f撤销原因R\x06reason\x12w\n" +
-	"\auser_id\x18\x04 \x01(\x04BY\xbaGV\x92\x02S可选：关联的用户ID，便于高效定位要撤销的令牌（向后兼容）H\x01R\x06userId\x88\x01\x01B\x0e\n" +
+	"\auser_id\x18\x04 \x01(\x03BY\xbaGV\x92\x02S可选：关联的用户ID，便于高效定位要撤销的令牌（向后兼容）H\x01R\x06userId\x88\x01\x01B\x0e\n" +
 	"\f_client_typeB\n" +
 	"\n" +
 	"\b_user_id\"\x94\x02\n" +

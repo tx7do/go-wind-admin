@@ -52,7 +52,7 @@ func TestDictTypeServiceSqlite_CreateAndGet(t *testing.T) {
 	require.Equal(t, "svc-dt-create-code", *rows[0].TypeCode, "type_code 应按请求落库")
 	require.Equal(t, "服务层字典类型-创建", *rows[0].TypeName, "type_name 应按请求落库")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	got, err := svc.Get(ctx, &dictV1.GetDictTypeRequest{
 		QueryBy: &dictV1.GetDictTypeRequest_Id{Id: rows[0].ID},
@@ -86,7 +86,7 @@ func TestDictTypeServiceSqlite_List(t *testing.T) {
 
 	all, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条")
 
 	filtered, err := svc.List(ctx, &paginationV1.PagingRequest{
@@ -104,7 +104,7 @@ func TestDictTypeServiceSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 条")
 	require.Contains(t, filtered.Items[0].GetTypeName(), "markerdtqwe", "命中行应是携带标记的那条")
 }
@@ -160,7 +160,7 @@ func TestDictTypeServiceSqlite_Delete(t *testing.T) {
 	rows, err := entClient.Client().DictType.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	ids := []uint64{rows[0].ID, rows[1].ID}
+	ids := []int64{rows[0].ID, rows[1].ID}
 
 	_, err = svc.Delete(ctx, &dictV1.DeleteDictTypeRequest{Ids: ids})
 	require.NoError(t, err, "批量删除应成功")

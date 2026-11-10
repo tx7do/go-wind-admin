@@ -23,12 +23,12 @@ const guardTestDSN = "host=127.0.0.1 port=5432 user=postgres password=*Abcd12345
 
 // mockViewer 测试用 ViewerContext：模拟指定租户的用户。
 type mockViewer struct {
-	tid uint64
+	tid int64
 }
 
-func (m mockViewer) UserID() uint64                    { return m.tid }
-func (m mockViewer) TenantID() uint64                  { return m.tid }
-func (m mockViewer) OrgUnitID() uint64                 { return 0 }
+func (m mockViewer) UserID() int64                     { return m.tid }
+func (m mockViewer) TenantID() int64                   { return m.tid }
+func (m mockViewer) OrgUnitID() int64                  { return 0 }
 func (m mockViewer) Permissions() []string             { return nil }
 func (m mockViewer) Roles() []string                   { return nil }
 func (m mockViewer) DataScope() []viewer.DataScope     { return nil }
@@ -69,7 +69,7 @@ func openGuardTestClient(t *testing.T) *ent.Client {
 	return client
 }
 
-func tenantCtx(ctx context.Context, tid uint64) context.Context {
+func tenantCtx(ctx context.Context, tid int64) context.Context {
 	return viewer.WithContext(ctx, mockViewer{tid: tid})
 }
 
@@ -130,7 +130,7 @@ func TestTenantMutationGuard(t *testing.T) {
 }
 
 // dictTypeIDByCode 在指定租户视角下按 type_code 反查主键。
-func dictTypeIDByCode(client *ent.Client, ctx context.Context, code string) uint64 {
+func dictTypeIDByCode(client *ent.Client, ctx context.Context, code string) int64 {
 	row := client.DictType.Query().Where(dicttype.TypeCodeEQ(code)).OnlyX(ctx)
 	return row.ID
 }
@@ -193,7 +193,7 @@ func TestTenantMutationGuardAccessKey(t *testing.T) {
 }
 
 // accessKeyIDByKey 在指定租户视角下按 access_key 反查主键。
-func accessKeyIDByKey(client *ent.Client, ctx context.Context, key string) uint64 {
+func accessKeyIDByKey(client *ent.Client, ctx context.Context, key string) int64 {
 	row := client.AccessKey.Query().Where(accesskey.AccessKeyEQ(key)).OnlyX(ctx)
 	return row.ID
 }

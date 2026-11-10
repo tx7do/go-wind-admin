@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.RoleMetadata {
+func ID(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.RoleMetadata {
+func IDEQ(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.RoleMetadata {
+func IDNEQ(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.RoleMetadata {
+func IDIn(ids ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.RoleMetadata {
+func IDNotIn(ids ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.RoleMetadata {
+func IDGT(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.RoleMetadata {
+func IDGTE(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.RoleMetadata {
+func IDLT(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.RoleMetadata {
+func IDLTE(id int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,27 +70,27 @@ func DeletedAt(v time.Time) predicate.RoleMetadata {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.RoleMetadata {
+func CreatedBy(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.RoleMetadata {
+func UpdatedBy(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.RoleMetadata {
+func DeletedBy(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.RoleMetadata {
+func TenantID(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldTenantID, v))
 }
 
 // RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
-func RoleID(v uint64) predicate.RoleMetadata {
+func RoleID(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldRoleID, v))
 }
 
@@ -270,42 +270,42 @@ func DeletedAtNotNil() predicate.RoleMetadata {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.RoleMetadata {
+func CreatedByEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.RoleMetadata {
+func CreatedByNEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.RoleMetadata {
+func CreatedByIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.RoleMetadata {
+func CreatedByNotIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.RoleMetadata {
+func CreatedByGT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.RoleMetadata {
+func CreatedByGTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.RoleMetadata {
+func CreatedByLT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.RoleMetadata {
+func CreatedByLTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -320,42 +320,42 @@ func CreatedByNotNil() predicate.RoleMetadata {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.RoleMetadata {
+func UpdatedByEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.RoleMetadata {
+func UpdatedByNEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.RoleMetadata {
+func UpdatedByIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.RoleMetadata {
+func UpdatedByNotIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.RoleMetadata {
+func UpdatedByGT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.RoleMetadata {
+func UpdatedByGTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.RoleMetadata {
+func UpdatedByLT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.RoleMetadata {
+func UpdatedByLTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -370,42 +370,42 @@ func UpdatedByNotNil() predicate.RoleMetadata {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.RoleMetadata {
+func DeletedByEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.RoleMetadata {
+func DeletedByNEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.RoleMetadata {
+func DeletedByIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.RoleMetadata {
+func DeletedByNotIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.RoleMetadata {
+func DeletedByGT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.RoleMetadata {
+func DeletedByGTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.RoleMetadata {
+func DeletedByLT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.RoleMetadata {
+func DeletedByLTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -420,42 +420,42 @@ func DeletedByNotNil() predicate.RoleMetadata {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.RoleMetadata {
+func TenantIDEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.RoleMetadata {
+func TenantIDNEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.RoleMetadata {
+func TenantIDIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.RoleMetadata {
+func TenantIDNotIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.RoleMetadata {
+func TenantIDGT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.RoleMetadata {
+func TenantIDGTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.RoleMetadata {
+func TenantIDLT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.RoleMetadata {
+func TenantIDLTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -470,42 +470,42 @@ func TenantIDNotNil() predicate.RoleMetadata {
 }
 
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
-func RoleIDEQ(v uint64) predicate.RoleMetadata {
+func RoleIDEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldRoleID, v))
 }
 
 // RoleIDNEQ applies the NEQ predicate on the "role_id" field.
-func RoleIDNEQ(v uint64) predicate.RoleMetadata {
+func RoleIDNEQ(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNEQ(FieldRoleID, v))
 }
 
 // RoleIDIn applies the In predicate on the "role_id" field.
-func RoleIDIn(vs ...uint64) predicate.RoleMetadata {
+func RoleIDIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldIn(FieldRoleID, vs...))
 }
 
 // RoleIDNotIn applies the NotIn predicate on the "role_id" field.
-func RoleIDNotIn(vs ...uint64) predicate.RoleMetadata {
+func RoleIDNotIn(vs ...int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
 // RoleIDGT applies the GT predicate on the "role_id" field.
-func RoleIDGT(v uint64) predicate.RoleMetadata {
+func RoleIDGT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGT(FieldRoleID, v))
 }
 
 // RoleIDGTE applies the GTE predicate on the "role_id" field.
-func RoleIDGTE(v uint64) predicate.RoleMetadata {
+func RoleIDGTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldGTE(FieldRoleID, v))
 }
 
 // RoleIDLT applies the LT predicate on the "role_id" field.
-func RoleIDLT(v uint64) predicate.RoleMetadata {
+func RoleIDLT(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLT(FieldRoleID, v))
 }
 
 // RoleIDLTE applies the LTE predicate on the "role_id" field.
-func RoleIDLTE(v uint64) predicate.RoleMetadata {
+func RoleIDLTE(v int64) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldLTE(FieldRoleID, v))
 }
 

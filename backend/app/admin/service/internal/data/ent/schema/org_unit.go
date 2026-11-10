@@ -38,7 +38,7 @@ func (OrgUnit) Fields() []ent.Field {
 			Nillable().
 			Comment("唯一编码（可用于导入/识别）"),
 
-		field.Uint64("leader_id").
+		field.Int64("leader_id").
 			Optional().
 			Nillable().
 			Comment("负责人用户ID"),
@@ -83,7 +83,7 @@ func (OrgUnit) Fields() []ent.Field {
 			Nillable().
 			Comment("税号"),
 
-		field.Uint64("legal_entity_org_id").
+		field.Int64("legal_entity_org_id").
 			Optional().
 			Nillable().
 			Comment("关联的法定主体组织ID"),
@@ -133,7 +133,7 @@ func (OrgUnit) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint64("contact_user_id").
+		field.Int64("contact_user_id").
 			Optional().
 			Nillable().
 			Comment("业务联系人用户ID"),
@@ -151,7 +151,7 @@ func (OrgUnit) Mixin() []ent.Mixin {
 		mixin.OperatorID64{},
 		mixin.SwitchStatus{},
 		mixin.SortOrder{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 		mixin.Remark{},
 		mixin.Description{},
 		mixin.Tree64[OrgUnit]{},

@@ -18,17 +18,17 @@ import (
 // 拒绝只在"配额明确存在且已用满"时发生，避免计费基础设施抖动把租户业务打死。
 
 // quotaExceededError 构造配额超限错误（403，消息带类型与数值供前端展示）。
-func quotaExceededError(quotaType string, limit, current uint64) error {
+func quotaExceededError(quotaType string, limit, current int64) error {
 	return identityV1.ErrorForbidden(
 		"plan quota exceeded: %s limit %d reached (current %d)",
 		quotaType, limit, current)
 }
 
 // quotaLimitFromUsages 从配额条目里找指定类型的上限；无条目返回 ok=false。
-func quotaLimitFromUsages(quotas []*identityV1.QuotaUsage, quotaType identityV1.PlanQuota_QuotaType) (uint64, bool) {
+func quotaLimitFromUsages(quotas []*identityV1.QuotaUsage, quotaType identityV1.PlanQuota_QuotaType) (int64, bool) {
 	for _, q := range quotas {
 		if q.GetQuotaType() == quotaType {
-			return q.GetQuotaValue(), true
+			return int64(q.GetQuotaValue()), true
 		}
 	}
 	return 0, false
@@ -36,7 +36,7 @@ func quotaLimitFromUsages(quotas []*identityV1.QuotaUsage, quotaType identityV1.
 
 // checkUserQuotaWith 纯判定（可测）：从配额条目找 USER_LIMIT 上限，已满即超限。
 // 入口接线见 user_service.go 的 Create（GetUsage 计数后调用）。
-func checkUserQuotaWith(quotas []*identityV1.QuotaUsage, currentUsers uint64) error {
+func checkUserQuotaWith(quotas []*identityV1.QuotaUsage, currentUsers int64) error {
 	limit, ok := quotaLimitFromUsages(quotas, identityV1.PlanQuota_USER_LIMIT)
 	if !ok {
 		return nil // 套餐未设用户上限 = 未限售
@@ -49,7 +49,7 @@ func checkUserQuotaWith(quotas []*identityV1.QuotaUsage, currentUsers uint64) er
 
 // checkStorageQuotaWith 纯判定（可测）：STORAGE 上限，当前占用 + 本次上传 > 上限即超。
 // 入口接线见 file_transfer_service.go 的 directUploadFile。
-func checkStorageQuotaWith(quotas []*identityV1.QuotaUsage, currentBytes, uploadBytes uint64) error {
+func checkStorageQuotaWith(quotas []*identityV1.QuotaUsage, currentBytes, uploadBytes int64) error {
 	limit, ok := quotaLimitFromUsages(quotas, identityV1.PlanQuota_STORAGE)
 	if !ok {
 		return nil

@@ -98,7 +98,7 @@ var (
 	// DefaultLastFiring holds the default value on creation for the "last_firing" field.
 	DefaultLastFiring bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // Metric defines the type for the "metric" enum field.

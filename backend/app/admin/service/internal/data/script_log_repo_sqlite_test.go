@@ -76,7 +76,7 @@ func TestScriptLogRepoSqlite_RecordAndList(t *testing.T) {
 	// CountLog：全部行数
 	countResp, err := repo.CountLog(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), countResp.Count, "Record 两行后 CountLog 应为 2")
+	require.Equal(t, int64(2), countResp.Count, "Record 两行后 CountLog 应为 2")
 
 	// 直查确认两行均带请求字段
 	rows, err := entClient.Client().ScriptLog.Query().All(ctx)
@@ -90,7 +90,7 @@ func TestScriptLogRepoSqlite_RecordAndList(t *testing.T) {
 	// List 全量
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤 List 应返回全部 2 行")
+	require.Equal(t, int64(2), all.Total, "无过滤 List 应返回全部 2 行")
 	require.Len(t, all.Items, 2)
 
 	// List contains 过滤：只命中携带标记的行
@@ -109,7 +109,7 @@ func TestScriptLogRepoSqlite_RecordAndList(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 行")
 
 	// contains 无命中
@@ -128,7 +128,7 @@ func TestScriptLogRepoSqlite_RecordAndList(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), none.Total, "无命中 contains 应返回 Total=0")
+	require.Equal(t, int64(0), none.Total, "无命中 contains 应返回 Total=0")
 	require.Empty(t, none.Items)
 }
 
@@ -158,12 +158,12 @@ func TestScriptLogRepoSqlite_Purge(t *testing.T) {
 	require.Zero(t, deleted, "过去时间阈值不应删除任何行")
 	remain, err := repo.CountLog(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), remain.Count, "过去时间阈值后仍应有 2 行")
+	require.Equal(t, int64(2), remain.Count, "过去时间阈值后仍应有 2 行")
 
 	// 阈值取未来时间：全部删除
 	deleted, err = repo.Purge(ctx, time.Now().Add(24*time.Hour))
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), deleted, "未来时间阈值应删除全部 2 行")
+	require.Equal(t, int64(2), deleted, "未来时间阈值应删除全部 2 行")
 	after, err := repo.CountLog(ctx)
 	require.NoError(t, err)
 	require.Zero(t, after.Count, "清理后 CountLog 应为 0")

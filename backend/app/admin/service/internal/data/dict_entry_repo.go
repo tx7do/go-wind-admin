@@ -134,7 +134,7 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	}
 
 	return &dictV1.ListDictEntryResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
@@ -169,7 +169,7 @@ func (r *DictEntryRepo) Get(ctx context.Context, req *dictV1.GetDictEntryRequest
 	return dto, err
 }
 
-func (r *DictEntryRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *DictEntryRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().DictEntry.Query().
 		Where(dictentry.IDEQ(id)).
 		Exist(ctx)
@@ -332,7 +332,7 @@ func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryR
 	return err
 }
 
-func (r *DictEntryRepo) Delete(ctx context.Context, id uint64) error {
+func (r *DictEntryRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
@@ -350,7 +350,7 @@ func (r *DictEntryRepo) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (r *DictEntryRepo) BatchDelete(ctx context.Context, ids []uint64) error {
+func (r *DictEntryRepo) BatchDelete(ctx context.Context, ids []int64) error {
 	if len(ids) == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}

@@ -97,7 +97,7 @@ func (r *PlanRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	}, nil
 }
 
-func (r *PlanRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PlanRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -177,7 +177,7 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 	return nil
 }
 
-func (r *PlanRepo) Delete(ctx context.Context, id uint64) error {
+func (r *PlanRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}

@@ -8,7 +8,7 @@ import (
 
 // Script represents a Lua script
 type Script struct {
-	ID          uint64    `json:"id"`
+	ID          int64    `json:"id"`
 	Name        string    `json:"name"`        // Unique script name
 	Hook        string    `json:"hook"`        // Hook point name
 	Language    string    `json:"language"`    // Script language (lua / javascript); empty = engine default

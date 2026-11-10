@@ -111,7 +111,7 @@ func parseKey(key string) (folder, filename, ext string) {
 // recordFile 记录文件元数据到数据库
 func (s *FileTransferService) recordFile(
 	ctx context.Context,
-	tenantID, userID uint64,
+	tenantID, userID int64,
 	fileData []byte,
 	sourceFileName string,
 	info minio.UploadInfo,
@@ -176,7 +176,7 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		if usedErr == nil {
 			quotas, qErr := s.usageRepo.GetUsage(ctx, operator.GetTenantId())
 			if qErr == nil {
-				if qerr := checkStorageQuotaWith(quotas.GetQuotas(), used, uint64(len(req.GetFile()))); qerr != nil {
+				if qerr := checkStorageQuotaWith(quotas.GetQuotas(), used, int64(len(req.GetFile()))); qerr != nil {
 					return nil, storageV1.ErrorFileTooLarge("plan storage quota: %v", qerr)
 				}
 			}

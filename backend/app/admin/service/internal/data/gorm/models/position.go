@@ -12,8 +12,8 @@ type Position struct {
 
 	Name                *string    `gorm:"column:name;type:varchar(255);comment:职位名称"`
 	Code                *string    `gorm:"column:code;type:varchar(128);comment:唯一编码"`
-	OrgUnitId           *uint64    `gorm:"column:org_unit_id;type:int unsigned;comment:所属组织单元ID"`
-	ReportsToPositionId *uint64    `gorm:"column:reports_to_position_id;type:int unsigned;comment:汇报对象职位ID"`
+	OrgUnitId           *int64    `gorm:"column:org_unit_id;type:int unsigned;comment:所属组织单元ID"`
+	ReportsToPositionId *int64    `gorm:"column:reports_to_position_id;type:int unsigned;comment:汇报对象职位ID"`
 	Description         *string    `gorm:"column:description;type:varchar(1024);comment:职能描述"`
 	JobFamily           *string    `gorm:"column:job_family;type:varchar(255);comment:职位族"`
 	JobGrade            *string    `gorm:"column:job_grade;type:varchar(255);comment:职级"`

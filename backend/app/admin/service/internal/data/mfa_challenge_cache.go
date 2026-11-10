@@ -43,8 +43,8 @@ type MfaLoginChallengeContext struct {
 // StartEnrollMethod 生成 TOTP secret 后写入；ConfirmEnrollMethod 取出 secret 校验首码。
 type MfaEnrollChallengeContext struct {
 	Secret   string
-	TenantID uint64
-	UserID   uint64
+	TenantID int64
+	UserID   int64
 }
 
 // MfaChallengeCache MFA 操作上下文缓存。
@@ -177,7 +177,7 @@ func (c *MfaChallengeCache) TakeLoginChallengeAtomic(ctx context.Context, opId s
 // TryAcquireUsedTotpCode 同码重放防线（P3 加固）：记录 (uid, code) 组合，
 // 90 秒内（TOTP ±skew 窗口）重复出现即拒绝。Redis 异常放行（防御性优化，
 // 不阻断正常登录；主防线是挑战一次性消耗）。
-func (c *MfaChallengeCache) TryAcquireUsedTotpCode(ctx context.Context, userID uint64, code string) bool {
+func (c *MfaChallengeCache) TryAcquireUsedTotpCode(ctx context.Context, userID int64, code string) bool {
 	key := fmt.Sprintf("mfa:usedcode:%d:%s", userID, code)
 	ok, err := c.rdb.SetNX(ctx, key, 1, 90*time.Second).Result()
 	if err != nil {
@@ -187,7 +187,7 @@ func (c *MfaChallengeCache) TryAcquireUsedTotpCode(ctx context.Context, userID u
 	return ok
 }
 
-func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenantID, userID uint64) bool {
+func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenantID, userID int64) bool {
 	key := fmt.Sprintf("mfa:enrollcd:%d:%d", tenantID, userID)
 	ok, err := c.rdb.SetNX(ctx, key, 1, mfaEnrollCooldown).Result()
 	if err != nil {
@@ -199,7 +199,7 @@ func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenant
 }
 
 // SetEnrollChallenge 写入注册上下文，返回 operation_id。
-func (c *MfaChallengeCache) SetEnrollChallenge(ctx context.Context, secret string, tenantID, userID uint64) (string, error) {
+func (c *MfaChallengeCache) SetEnrollChallenge(ctx context.Context, secret string, tenantID, userID int64) (string, error) {
 	opId := newOperationID()
 	envelope := MfaEnrollChallengeContext{
 		Secret:   secret,

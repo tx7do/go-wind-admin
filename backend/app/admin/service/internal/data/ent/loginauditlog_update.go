@@ -31,14 +31,14 @@ func (_u *LoginAuditLogUpdate) Where(ps ...predicate.LoginAuditLog) *LoginAuditL
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *LoginAuditLogUpdate) SetUserID(v uint64) *LoginAuditLogUpdate {
+func (_u *LoginAuditLogUpdate) SetUserID(v int64) *LoginAuditLogUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *LoginAuditLogUpdate) SetNillableUserID(v *uint64) *LoginAuditLogUpdate {
+func (_u *LoginAuditLogUpdate) SetNillableUserID(v *int64) *LoginAuditLogUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -455,7 +455,7 @@ func (_u *LoginAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(loginauditlog.Table, loginauditlog.Columns, sqlgraph.NewFieldSpec(loginauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(loginauditlog.Table, loginauditlog.Columns, sqlgraph.NewFieldSpec(loginauditlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -467,16 +467,16 @@ func (_u *LoginAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(loginauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(loginauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(loginauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(loginauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(loginauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(loginauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(loginauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(loginauditlog.FieldUserID, field.TypeUint64)
+		_spec.ClearField(loginauditlog.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(loginauditlog.FieldUsername, field.TypeString, value)
@@ -611,14 +611,14 @@ type LoginAuditLogUpdateOne struct {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *LoginAuditLogUpdateOne) SetUserID(v uint64) *LoginAuditLogUpdateOne {
+func (_u *LoginAuditLogUpdateOne) SetUserID(v int64) *LoginAuditLogUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *LoginAuditLogUpdateOne) SetNillableUserID(v *uint64) *LoginAuditLogUpdateOne {
+func (_u *LoginAuditLogUpdateOne) SetNillableUserID(v *int64) *LoginAuditLogUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -1048,7 +1048,7 @@ func (_u *LoginAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *LoginAudi
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(loginauditlog.Table, loginauditlog.Columns, sqlgraph.NewFieldSpec(loginauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(loginauditlog.Table, loginauditlog.Columns, sqlgraph.NewFieldSpec(loginauditlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "LoginAuditLog.id" for update`)}
@@ -1077,16 +1077,16 @@ func (_u *LoginAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *LoginAudi
 		_spec.ClearField(loginauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(loginauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(loginauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(loginauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(loginauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(loginauditlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(loginauditlog.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(loginauditlog.FieldUserID, field.TypeUint64)
+		_spec.ClearField(loginauditlog.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(loginauditlog.FieldUsername, field.TypeString, value)

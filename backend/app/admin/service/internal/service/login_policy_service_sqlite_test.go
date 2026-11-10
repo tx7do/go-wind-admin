@@ -69,7 +69,7 @@ func TestLoginPolicyService_CreateValidatesValueFormat(t *testing.T) {
 		QueryBy: &authenticationV1.GetLoginPolicyRequest_Id{Id: 1},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(91), created.GetCreatedBy(), "CreatedBy 应落操作人")
+	require.Equal(t, int64(91), created.GetCreatedBy(), "CreatedBy 应落操作人")
 
 	// 守卫
 	_, err = svc.Create(opCtx, nil)
@@ -129,7 +129,7 @@ func TestLoginPolicyService_UpdateValidatesBeforeOperator(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, "10.0.0.0/24", updated.GetValue())
-	require.Equal(t, uint64(91), updated.GetUpdatedBy(), "UpdatedBy 应经追加掩码落库")
+	require.Equal(t, int64(91), updated.GetUpdatedBy(), "UpdatedBy 应经追加掩码落库")
 
 	// 守卫
 	_, err = svc.Update(opCtx, nil)

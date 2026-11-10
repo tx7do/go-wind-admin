@@ -18,7 +18,7 @@ type OrgUnit struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,23 +26,23 @@ type OrgUnit struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 状态
 	Status *orgunit.Status `json:"status,omitempty"`
 	// 排序值（越小越靠前）
 	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
 	// 描述
 	Description *string `json:"description,omitempty"`
 	// 父节点ID
-	ParentID *uint64 `json:"parent_id,omitempty"`
+	ParentID *int64 `json:"parent_id,omitempty"`
 	// 树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。
 	Path *string `json:"path,omitempty"`
 	// 名称
@@ -50,7 +50,7 @@ type OrgUnit struct {
 	// 唯一编码（可用于导入/识别）
 	Code *string `json:"code,omitempty"`
 	// 负责人用户ID
-	LeaderID *uint64 `json:"leader_id,omitempty"`
+	LeaderID *int64 `json:"leader_id,omitempty"`
 	// 组织类型
 	Type *orgunit.Type `json:"type,omitempty"`
 	// 组织的业务范围/服务条线
@@ -64,7 +64,7 @@ type OrgUnit struct {
 	// 税号
 	TaxID *string `json:"tax_id,omitempty"`
 	// 关联的法定主体组织ID
-	LegalEntityOrgID *uint64 `json:"legal_entity_org_id,omitempty"`
+	LegalEntityOrgID *int64 `json:"legal_entity_org_id,omitempty"`
 	// 详细地址
 	Address *string `json:"address,omitempty"`
 	// 联系电话
@@ -84,7 +84,7 @@ type OrgUnit struct {
 	// 结束有效期（UTC）
 	EndAt *time.Time `json:"end_at,omitempty"`
 	// 业务联系人用户ID
-	ContactUserID *uint64 `json:"contact_user_id,omitempty"`
+	ContactUserID *int64 `json:"contact_user_id,omitempty"`
 	// 与权限/角色映射的标签
 	PermissionTags []string `json:"permission_tags,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -161,7 +161,7 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case orgunit.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -187,22 +187,22 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case orgunit.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case orgunit.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case orgunit.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -222,8 +222,8 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case orgunit.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -243,8 +243,8 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				_m.ParentID = new(uint64)
-				*_m.ParentID = uint64(value.Int64)
+				_m.ParentID = new(int64)
+				*_m.ParentID = value.Int64
 			}
 		case orgunit.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -271,8 +271,8 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field leader_id", values[i])
 			} else if value.Valid {
-				_m.LeaderID = new(uint64)
-				*_m.LeaderID = uint64(value.Int64)
+				_m.LeaderID = new(int64)
+				*_m.LeaderID = value.Int64
 			}
 		case orgunit.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -321,8 +321,8 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field legal_entity_org_id", values[i])
 			} else if value.Valid {
-				_m.LegalEntityOrgID = new(uint64)
-				*_m.LegalEntityOrgID = uint64(value.Int64)
+				_m.LegalEntityOrgID = new(int64)
+				*_m.LegalEntityOrgID = value.Int64
 			}
 		case orgunit.FieldAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -391,8 +391,8 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field contact_user_id", values[i])
 			} else if value.Valid {
-				_m.ContactUserID = new(uint64)
-				*_m.ContactUserID = uint64(value.Int64)
+				_m.ContactUserID = new(int64)
+				*_m.ContactUserID = value.Int64
 			}
 		case orgunit.FieldPermissionTags:
 			if value, ok := values[i].(*[]byte); !ok {

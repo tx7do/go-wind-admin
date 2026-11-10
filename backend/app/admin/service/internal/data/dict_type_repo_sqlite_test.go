@@ -89,7 +89,7 @@ func TestDictTypeRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 行")
 	require.Contains(t, *filtered.Items[0].TypeName, "markerqwe", "命中行应是携带标记的行")
 
@@ -109,13 +109,13 @@ func TestDictTypeRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), none.Total, "无命中 contains 应返回 Total=0")
+	require.Equal(t, int64(0), none.Total, "无命中 contains 应返回 Total=0")
 	require.Empty(t, none.Items, "无命中 contains 应返回空列表")
 
 	// 无过滤：返回全部两行
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应返回全部 2 行")
+	require.Equal(t, int64(2), all.Total, "无过滤时应返回全部 2 行")
 	require.Len(t, all.Items, 2)
 }
 
@@ -229,7 +229,7 @@ func TestDictTypeRepoSqlite_Delete(t *testing.T) {
 	rows, err = repo.entClient.Client().DictType.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	require.NoError(t, repo.BatchDelete(ctx, []uint64{rows[0].ID, rows[1].ID}), "BatchDelete 应成功")
+	require.NoError(t, repo.BatchDelete(ctx, []int64{rows[0].ID, rows[1].ID}), "BatchDelete 应成功")
 	cnt, err = repo.entClient.Client().DictType.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, cnt, "BatchDelete 后表内行数应为 0")

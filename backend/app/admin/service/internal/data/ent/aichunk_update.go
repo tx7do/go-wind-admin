@@ -30,13 +30,13 @@ func (_u *AiChunkUpdate) Where(ps ...predicate.AiChunk) *AiChunkUpdate {
 }
 
 // SetDocID sets the "doc_id" field.
-func (_u *AiChunkUpdate) SetDocID(v uint64) *AiChunkUpdate {
+func (_u *AiChunkUpdate) SetDocID(v int64) *AiChunkUpdate {
 	_u.mutation.SetDocID(v)
 	return _u
 }
 
 // SetNillableDocID sets the "doc_id" field if the given value is not nil.
-func (_u *AiChunkUpdate) SetNillableDocID(v *uint64) *AiChunkUpdate {
+func (_u *AiChunkUpdate) SetNillableDocID(v *int64) *AiChunkUpdate {
 	if v != nil {
 		_u.SetDocID(*v)
 	}
@@ -146,7 +146,7 @@ func (_u *AiChunkUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AiChun
 }
 
 func (_u *AiChunkUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aichunk.Table, aichunk.Columns, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aichunk.Table, aichunk.Columns, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -158,7 +158,7 @@ func (_u *AiChunkUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(aichunk.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aichunk.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aichunk.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(aichunk.FieldContent, field.TypeString, value)
@@ -183,7 +183,7 @@ func (_u *AiChunkUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aichunk.DocColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -196,7 +196,7 @@ func (_u *AiChunkUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aichunk.DocColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -227,13 +227,13 @@ type AiChunkUpdateOne struct {
 }
 
 // SetDocID sets the "doc_id" field.
-func (_u *AiChunkUpdateOne) SetDocID(v uint64) *AiChunkUpdateOne {
+func (_u *AiChunkUpdateOne) SetDocID(v int64) *AiChunkUpdateOne {
 	_u.mutation.SetDocID(v)
 	return _u
 }
 
 // SetNillableDocID sets the "doc_id" field if the given value is not nil.
-func (_u *AiChunkUpdateOne) SetNillableDocID(v *uint64) *AiChunkUpdateOne {
+func (_u *AiChunkUpdateOne) SetNillableDocID(v *int64) *AiChunkUpdateOne {
 	if v != nil {
 		_u.SetDocID(*v)
 	}
@@ -356,7 +356,7 @@ func (_u *AiChunkUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AiC
 }
 
 func (_u *AiChunkUpdateOne) sqlSave(ctx context.Context) (_node *AiChunk, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aichunk.Table, aichunk.Columns, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aichunk.Table, aichunk.Columns, sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiChunk.id" for update`)}
@@ -385,7 +385,7 @@ func (_u *AiChunkUpdateOne) sqlSave(ctx context.Context) (_node *AiChunk, err er
 		_spec.ClearField(aichunk.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aichunk.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aichunk.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(aichunk.FieldContent, field.TypeString, value)
@@ -410,7 +410,7 @@ func (_u *AiChunkUpdateOne) sqlSave(ctx context.Context) (_node *AiChunk, err er
 			Columns: []string{aichunk.DocColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -423,7 +423,7 @@ func (_u *AiChunkUpdateOne) sqlSave(ctx context.Context) (_node *AiChunk, err er
 			Columns: []string{aichunk.DocColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

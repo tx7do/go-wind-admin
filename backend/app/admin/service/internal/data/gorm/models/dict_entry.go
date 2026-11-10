@@ -10,7 +10,7 @@ type DictEntry struct {
 
 	EntryValue   *string `gorm:"column:entry_value;type:varchar(255);comment:字典项的实际值"`
 	NumericValue *int32  `gorm:"column:numeric_value;type:int;comment:数值型值"`
-	TypeID       *uint64 `gorm:"column:type_id;type:int unsigned;comment:所属字典类型ID"`
+	TypeID       *int64 `gorm:"column:type_id;type:int unsigned;comment:所属字典类型ID"`
 
 	DictType *DictType `gorm:"foreignKey:TypeID;references:ID"`
 

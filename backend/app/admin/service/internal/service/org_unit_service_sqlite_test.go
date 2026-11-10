@@ -39,7 +39,7 @@ type orgUnitServiceUserRepoStub struct {
 	data.UserRepo
 }
 
-func (s *orgUnitServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []uint64) ([]*identityV1.User, error) {
+func (s *orgUnitServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []int64) ([]*identityV1.User, error) {
 	users := make([]*identityV1.User, 0, len(ids))
 	for _, id := range ids {
 		users = append(users, &identityV1.User{
@@ -75,7 +75,7 @@ func TestOrgUnitServiceSqlite_ListTreeAssemblyAndEnrichment(t *testing.T) {
 			Code:     trans.Ptr("ORGSVC_ROOT_A"),
 			Status:   identityV1.OrgUnit_ON.Enum(),
 			Type:     identityV1.OrgUnit_DEPARTMENT.Enum(),
-			LeaderId: trans.Ptr(uint64(5551)),
+			LeaderId: trans.Ptr(int64(5551)),
 		},
 	}))
 	// 取根节点 ID（repo Create 不返回 DTO，从列表反查）。
@@ -97,7 +97,7 @@ func TestOrgUnitServiceSqlite_ListTreeAssemblyAndEnrichment(t *testing.T) {
 	// 列表：根节点提升到顶层，子节点挂到 Children（树组装）。
 	resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), resp.GetTotal(), "计数统计应包含根与子共 2 行")
+	require.Equal(t, int64(2), resp.GetTotal(), "计数统计应包含根与子共 2 行")
 	require.Len(t, resp.GetItems(), 1, "只有根节点出现在顶层")
 	root := resp.GetItems()[0]
 	require.Equal(t, "OrgSvc 根单元甲", root.GetName())
@@ -130,8 +130,8 @@ func TestOrgUnitServiceSqlite_GetEnrichment(t *testing.T) {
 			Code:          trans.Ptr("ORGSVC_GET_A"),
 			Status:        identityV1.OrgUnit_ON.Enum(),
 			Type:          identityV1.OrgUnit_DEPARTMENT.Enum(),
-			LeaderId:      trans.Ptr(uint64(5552)),
-			ContactUserId: trans.Ptr(uint64(5553)),
+			LeaderId:      trans.Ptr(int64(5552)),
+			ContactUserId: trans.Ptr(int64(5553)),
 		},
 	}))
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
@@ -186,5 +186,5 @@ func TestOrgUnitServiceSqlite_CreateAndDelete(t *testing.T) {
 	after, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Empty(t, after.GetItems(), "删除后列表不应再包含该节点")
-	require.Equal(t, uint64(0), after.GetTotal(), "删除后表内计数应归零")
+	require.Equal(t, int64(0), after.GetTotal(), "删除后表内计数应归零")
 }

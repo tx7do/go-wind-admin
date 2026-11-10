@@ -27,11 +27,11 @@ const (
 // AI 调用用量流水（每次成功的模型调用一行；配额按 total_tokens 聚合）
 type AiUsageLog struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                     // 流水ID
-	ProviderId       *uint64                `protobuf:"varint,2,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`                   // 提供商ID
-	ConversationId   *uint64                `protobuf:"varint,3,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`       // 会话ID
-	UserId           *uint64                `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                               // 发起用户ID
-	TenantId         *uint64                `protobuf:"varint,5,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                         // 租户ID
+	Id               *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                     // 流水ID
+	ProviderId       *int64                 `protobuf:"varint,2,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`                   // 提供商ID
+	ConversationId   *int64                 `protobuf:"varint,3,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`       // 会话ID
+	UserId           *int64                 `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                               // 发起用户ID
+	TenantId         *int64                 `protobuf:"varint,5,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                         // 租户ID
 	ModelName        *string                `protobuf:"bytes,6,opt,name=model_name,json=modelName,proto3,oneof" json:"model_name,omitempty"`                       // 模型名称
 	PromptTokens     *uint32                `protobuf:"varint,7,opt,name=prompt_tokens,json=promptTokens,proto3,oneof" json:"prompt_tokens,omitempty"`             // 输入 token 数
 	CompletionTokens *uint32                `protobuf:"varint,8,opt,name=completion_tokens,json=completionTokens,proto3,oneof" json:"completion_tokens,omitempty"` // 输出 token 数
@@ -72,35 +72,35 @@ func (*AiUsageLog) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_usage_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AiUsageLog) GetId() uint64 {
+func (x *AiUsageLog) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *AiUsageLog) GetProviderId() uint64 {
+func (x *AiUsageLog) GetProviderId() int64 {
 	if x != nil && x.ProviderId != nil {
 		return *x.ProviderId
 	}
 	return 0
 }
 
-func (x *AiUsageLog) GetConversationId() uint64 {
+func (x *AiUsageLog) GetConversationId() int64 {
 	if x != nil && x.ConversationId != nil {
 		return *x.ConversationId
 	}
 	return 0
 }
 
-func (x *AiUsageLog) GetUserId() uint64 {
+func (x *AiUsageLog) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *AiUsageLog) GetTenantId() uint64 {
+func (x *AiUsageLog) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -153,7 +153,7 @@ func (x *AiUsageLog) GetCreatedAt() *timestamppb.Timestamp {
 type ListAiUsageLogResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*AiUsageLog          `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -195,7 +195,7 @@ func (x *ListAiUsageLogResponse) GetItems() []*AiUsageLog {
 	return nil
 }
 
-func (x *ListAiUsageLogResponse) GetTotal() uint64 {
+func (x *ListAiUsageLogResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -204,7 +204,7 @@ func (x *ListAiUsageLogResponse) GetTotal() uint64 {
 
 type CountAiUsageLogResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 流水条数
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 流水条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -239,7 +239,7 @@ func (*CountAiUsageLogResponse) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_usage_log_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CountAiUsageLogResponse) GetCount() uint64 {
+func (x *CountAiUsageLogResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -322,12 +322,12 @@ const file_ai_service_v1_ai_usage_log_proto_rawDesc = "" +
 	" ai/service/v1/ai_usage_log.proto\x12\rai.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\x8d\a\n" +
 	"\n" +
 	"AiUsageLog\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b流水IDH\x00R\x02id\x88\x01\x01\x127\n" +
-	"\vprovider_id\x18\x02 \x01(\x04B\x11\xbaG\x0e\x92\x02\v提供商IDH\x01R\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b流水IDH\x00R\x02id\x88\x01\x01\x127\n" +
+	"\vprovider_id\x18\x02 \x01(\x03B\x11\xbaG\x0e\x92\x02\v提供商IDH\x01R\n" +
 	"providerId\x88\x01\x01\x12Y\n" +
-	"\x0fconversation_id\x18\x03 \x01(\x04B+\xbaG(\x92\x02%会话ID（0 表示非对话调用）H\x02R\x0econversationId\x88\x01\x01\x122\n" +
-	"\auser_id\x18\x04 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e发起用户IDH\x03R\x06userId\x88\x01\x01\x12J\n" +
-	"\ttenant_id\x18\x05 \x01(\x04B(\xbaG%\x92\x02\"租户ID（0 表示平台自用）H\x04R\btenantId\x88\x01\x01\x126\n" +
+	"\x0fconversation_id\x18\x03 \x01(\x03B+\xbaG(\x92\x02%会话ID（0 表示非对话调用）H\x02R\x0econversationId\x88\x01\x01\x122\n" +
+	"\auser_id\x18\x04 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e发起用户IDH\x03R\x06userId\x88\x01\x01\x12J\n" +
+	"\ttenant_id\x18\x05 \x01(\x03B(\xbaG%\x92\x02\"租户ID（0 表示平台自用）H\x04R\btenantId\x88\x01\x01\x126\n" +
 	"\n" +
 	"model_name\x18\x06 \x01(\tB\x12\xbaG\x0f\x92\x02\f模型名称H\x05R\tmodelName\x88\x01\x01\x12@\n" +
 	"\rprompt_tokens\x18\a \x01(\rB\x16\xbaG\x13\x92\x02\x10输入 token 数H\x06R\fpromptTokens\x88\x01\x01\x12H\n" +
@@ -354,9 +354,9 @@ const file_ai_service_v1_ai_usage_log_proto_rawDesc = "" +
 	"\v_created_at\"_\n" +
 	"\x16ListAiUsageLogResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.ai.service.v1.AiUsageLogR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"/\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"/\n" +
 	"\x17CountAiUsageLogResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count\"\xa6\x01\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count\"\xa6\x01\n" +
 	"\x14UsageSummaryResponse\x12!\n" +
 	"\fmonth_tokens\x18\x01 \x01(\rR\vmonthTokens\x12\x1f\n" +
 	"\vmonth_calls\x18\x02 \x01(\rR\n" +

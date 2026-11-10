@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.AiKnowledgeBase {
+func ID(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.AiKnowledgeBase {
+func IDEQ(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.AiKnowledgeBase {
+func IDNEQ(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.AiKnowledgeBase {
+func IDIn(ids ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.AiKnowledgeBase {
+func IDNotIn(ids ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.AiKnowledgeBase {
+func IDGT(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.AiKnowledgeBase {
+func IDGTE(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.AiKnowledgeBase {
+func IDLT(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.AiKnowledgeBase {
+func IDLTE(id int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,22 +71,22 @@ func DeletedAt(v time.Time) predicate.AiKnowledgeBase {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.AiKnowledgeBase {
+func CreatedBy(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.AiKnowledgeBase {
+func UpdatedBy(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.AiKnowledgeBase {
+func DeletedBy(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.AiKnowledgeBase {
+func TenantID(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldTenantID, v))
 }
 
@@ -101,7 +101,7 @@ func Description(v string) predicate.AiKnowledgeBase {
 }
 
 // ProviderID applies equality check predicate on the "provider_id" field. It's identical to ProviderIDEQ.
-func ProviderID(v uint64) predicate.AiKnowledgeBase {
+func ProviderID(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldProviderID, v))
 }
 
@@ -111,7 +111,7 @@ func EmbeddingModel(v string) predicate.AiKnowledgeBase {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint64) predicate.AiKnowledgeBase {
+func UserID(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldUserID, v))
 }
 
@@ -266,42 +266,42 @@ func DeletedAtNotNil() predicate.AiKnowledgeBase {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.AiKnowledgeBase {
+func CreatedByEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.AiKnowledgeBase {
+func CreatedByNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.AiKnowledgeBase {
+func CreatedByIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func CreatedByNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.AiKnowledgeBase {
+func CreatedByGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.AiKnowledgeBase {
+func CreatedByGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.AiKnowledgeBase {
+func CreatedByLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.AiKnowledgeBase {
+func CreatedByLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -316,42 +316,42 @@ func CreatedByNotNil() predicate.AiKnowledgeBase {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.AiKnowledgeBase {
+func UpdatedByIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func UpdatedByNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.AiKnowledgeBase {
+func UpdatedByLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -366,42 +366,42 @@ func UpdatedByNotNil() predicate.AiKnowledgeBase {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.AiKnowledgeBase {
+func DeletedByEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.AiKnowledgeBase {
+func DeletedByNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.AiKnowledgeBase {
+func DeletedByIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func DeletedByNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.AiKnowledgeBase {
+func DeletedByGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.AiKnowledgeBase {
+func DeletedByGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.AiKnowledgeBase {
+func DeletedByLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.AiKnowledgeBase {
+func DeletedByLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -416,42 +416,42 @@ func DeletedByNotNil() predicate.AiKnowledgeBase {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.AiKnowledgeBase {
+func TenantIDEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.AiKnowledgeBase {
+func TenantIDNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.AiKnowledgeBase {
+func TenantIDIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func TenantIDNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.AiKnowledgeBase {
+func TenantIDGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.AiKnowledgeBase {
+func TenantIDGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.AiKnowledgeBase {
+func TenantIDLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.AiKnowledgeBase {
+func TenantIDLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -616,42 +616,42 @@ func DescriptionContainsFold(v string) predicate.AiKnowledgeBase {
 }
 
 // ProviderIDEQ applies the EQ predicate on the "provider_id" field.
-func ProviderIDEQ(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldProviderID, v))
 }
 
 // ProviderIDNEQ applies the NEQ predicate on the "provider_id" field.
-func ProviderIDNEQ(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldProviderID, v))
 }
 
 // ProviderIDIn applies the In predicate on the "provider_id" field.
-func ProviderIDIn(vs ...uint64) predicate.AiKnowledgeBase {
+func ProviderIDIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldProviderID, vs...))
 }
 
 // ProviderIDNotIn applies the NotIn predicate on the "provider_id" field.
-func ProviderIDNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func ProviderIDNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldProviderID, vs...))
 }
 
 // ProviderIDGT applies the GT predicate on the "provider_id" field.
-func ProviderIDGT(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldProviderID, v))
 }
 
 // ProviderIDGTE applies the GTE predicate on the "provider_id" field.
-func ProviderIDGTE(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldProviderID, v))
 }
 
 // ProviderIDLT applies the LT predicate on the "provider_id" field.
-func ProviderIDLT(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldProviderID, v))
 }
 
 // ProviderIDLTE applies the LTE predicate on the "provider_id" field.
-func ProviderIDLTE(v uint64) predicate.AiKnowledgeBase {
+func ProviderIDLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldProviderID, v))
 }
 
@@ -741,42 +741,42 @@ func EmbeddingModelContainsFold(v string) predicate.AiKnowledgeBase {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint64) predicate.AiKnowledgeBase {
+func UserIDEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint64) predicate.AiKnowledgeBase {
+func UserIDNEQ(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint64) predicate.AiKnowledgeBase {
+func UserIDIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint64) predicate.AiKnowledgeBase {
+func UserIDNotIn(vs ...int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint64) predicate.AiKnowledgeBase {
+func UserIDGT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint64) predicate.AiKnowledgeBase {
+func UserIDGTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint64) predicate.AiKnowledgeBase {
+func UserIDLT(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint64) predicate.AiKnowledgeBase {
+func UserIDLTE(v int64) predicate.AiKnowledgeBase {
 	return predicate.AiKnowledgeBase(sql.FieldLTE(FieldUserID, v))
 }
 

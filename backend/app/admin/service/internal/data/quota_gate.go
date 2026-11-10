@@ -24,10 +24,10 @@ import (
 //   - 审计归档（ArchiveExpired 导出后删行）会让计数回落——活表现存行数即口径。
 
 // apiCallLimitFromPlanQuotas 从套餐预载的配额边里取 API_CALL 上限；无条目返回 ok=false。
-func apiCallLimitFromPlanQuotas(quotas []*ent.PlanQuota) (uint64, bool) {
+func apiCallLimitFromPlanQuotas(quotas []*ent.PlanQuota) (int64, bool) {
 	for _, q := range quotas {
 		if q.QuotaType != nil && *q.QuotaType == planquota.QuotaTypeApiCall && q.QuotaValue != nil {
-			return *q.QuotaValue, true
+			return int64(*q.QuotaValue), true
 		}
 	}
 	return 0, false
@@ -35,14 +35,14 @@ func apiCallLimitFromPlanQuotas(quotas []*ent.PlanQuota) (uint64, bool) {
 
 // checkApiCallQuota 纯判定（可测）：API_CALL 上限存在且当前计数已达上限 → 403。
 // 入口接线见 tenant_access_checker.go 的 CheckTenantAccess 第 4 步。
-func checkApiCallQuota(limit uint64, hasLimit bool, currentCount int) error {
+func checkApiCallQuota(limit int64, hasLimit bool, currentCount int) error {
 	if !hasLimit {
 		return nil // 套餐未设 API_CALL 配额 = 未限售
 	}
-	if uint64(currentCount) >= limit {
+	if int64(currentCount) >= limit {
 		return adminV1.ErrorForbidden(
 			"plan quota exceeded: %s limit %d reached (current %d)",
-			"API_CALL", limit, uint64(currentCount))
+			"API_CALL", limit, int64(currentCount))
 	}
 	return nil
 }

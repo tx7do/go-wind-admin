@@ -31,7 +31,7 @@ func TestRoleOrgUnitRepoSqlite_AssignListReplaceClean(t *testing.T) {
 
 	// 局部闭包直插 org_unit 父行：AssignOrgUnits 的租户一致性校验要求
 	// 单元真实存在且归属目标租户。包内不引入通用 helper，避免与并行测试文件的包级符号撞名。
-	createOrgUnitRowFor := func(tenantID uint64, name string) uint64 {
+	createOrgUnitRowFor := func(tenantID int64, name string) int64 {
 		row, err := repo.entClient.Client().OrgUnit.Create().
 			SetName(name).
 			SetTenantID(tenantID).
@@ -41,8 +41,8 @@ func TestRoleOrgUnitRepoSqlite_AssignListReplaceClean(t *testing.T) {
 	}
 
 	const (
-		tenantID = uint64(7001)
-		testRole = uint64(7101)
+		tenantID = int64(7001)
+		testRole = int64(7101)
 	)
 	unitA := createOrgUnitRowFor(tenantID, fmt.Sprintf("sqlite单元A-%d", 7001))
 	unitB := createOrgUnitRowFor(tenantID, fmt.Sprintf("sqlite单元B-%d", 7002))
@@ -52,7 +52,7 @@ func TestRoleOrgUnitRepoSqlite_AssignListReplaceClean(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.AssignOrgUnits(ctx, tx, tenantID, 0, testRole, []uint64{unitA, unitB}),
+	require.NoError(t, repo.AssignOrgUnits(ctx, tx, tenantID, 0, testRole, []int64{unitA, unitB}),
 		"给角色分配两个同租户单元应通过租户一致性校验")
 	require.NoError(t, tx.Commit())
 
@@ -64,23 +64,23 @@ func TestRoleOrgUnitRepoSqlite_AssignListReplaceClean(t *testing.T) {
 	// 按角色列出单元 ID
 	unitIDs, err := repo.ListOrgUnitIDs(ctx, testRole)
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{unitA, unitB}, unitIDs, "按角色查询应返回两条关联的单元 ID")
+	require.ElementsMatch(t, []int64{unitA, unitB}, unitIDs, "按角色查询应返回两条关联的单元 ID")
 
 	// 按角色列表分组查询
-	grouped, err := repo.ListOrgUnitIDsByRoleIDs(ctx, []uint64{testRole})
+	grouped, err := repo.ListOrgUnitIDsByRoleIDs(ctx, []int64{testRole})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{unitA, unitB}, grouped[testRole], "分组查询应返回该角色关联的单元 ID")
+	require.ElementsMatch(t, []int64{unitA, unitB}, grouped[testRole], "分组查询应返回该角色关联的单元 ID")
 
 	// 整体替换：仅保留 unitA
 	tx2, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
 	defer func() { _ = tx2.Rollback() }()
-	require.NoError(t, repo.ReplaceOrgUnits(ctx, tx2, tenantID, 0, testRole, []uint64{unitA}))
+	require.NoError(t, repo.ReplaceOrgUnits(ctx, tx2, tenantID, 0, testRole, []int64{unitA}))
 	require.NoError(t, tx2.Commit())
 
 	afterReplace, err := repo.ListOrgUnitIDs(ctx, testRole)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{unitA}, afterReplace, "整体替换后应仅保留新集合中的单元 ID")
+	require.Equal(t, []int64{unitA}, afterReplace, "整体替换后应仅保留新集合中的单元 ID")
 
 	rowCount, err = repo.entClient.Client().RoleOrgUnit.Query().Count(ctx)
 	require.NoError(t, err)
@@ -109,12 +109,12 @@ func TestRoleOrgUnitRepoSqlite_CrossTenantRejected(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		tenantA  = uint64(7003)
-		tenantB  = uint64(7004)
-		testRole = uint64(7102)
+		tenantA  = int64(7003)
+		tenantB  = int64(7004)
+		testRole = int64(7102)
 	)
 	// 局部闭包直插指定租户的 org_unit 父行（理由同上一测试）
-	createOrgUnitRowFor := func(tenantID uint64, name string) uint64 {
+	createOrgUnitRowFor := func(tenantID int64, name string) int64 {
 		row, err := repo.entClient.Client().OrgUnit.Create().
 			SetName(name).
 			SetTenantID(tenantID).
@@ -129,7 +129,7 @@ func TestRoleOrgUnitRepoSqlite_CrossTenantRejected(t *testing.T) {
 	tx, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
 	defer func() { _ = tx.Rollback() }()
-	require.Error(t, repo.AssignOrgUnits(ctx, tx, tenantA, 0, testRole, []uint64{unitInB}),
+	require.Error(t, repo.AssignOrgUnits(ctx, tx, tenantA, 0, testRole, []int64{unitInB}),
 		"分配不属于目标租户的单元应被拒绝")
 	_ = tx.Rollback()
 
@@ -137,7 +137,7 @@ func TestRoleOrgUnitRepoSqlite_CrossTenantRejected(t *testing.T) {
 	tx2, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
 	defer func() { _ = tx2.Rollback() }()
-	require.Error(t, repo.AssignOrgUnits(ctx, tx2, tenantA, 0, testRole, []uint64{unitInA, unitInB}),
+	require.Error(t, repo.AssignOrgUnits(ctx, tx2, tenantA, 0, testRole, []int64{unitInA, unitInB}),
 		"混合跨租户的单元集应被整体拒绝")
 	_ = tx2.Rollback()
 

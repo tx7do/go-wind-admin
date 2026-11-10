@@ -220,11 +220,11 @@ func (DeliveryStatus) EnumDescriptor() ([]byte, []int) {
 // 一条通知 × 一个渠道 × 一个收件人 = 一行投递台账
 type NotificationDelivery struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Id              *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                       // 台账ID
+	Id              *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                       // 台账ID
 	EventType       *EventType             `protobuf:"varint,2,opt,name=event_type,json=eventType,proto3,enum=notification.service.v1.EventType,oneof" json:"event_type,omitempty"` // 业务事件类型
 	Channel         *Channel               `protobuf:"varint,3,opt,name=channel,proto3,enum=notification.service.v1.Channel,oneof" json:"channel,omitempty"`                        // 投递渠道
-	ChannelId       *uint64                `protobuf:"varint,4,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"`                                        // 实际选中的渠道配置ID（sys_notification_channels.id）
-	RecipientUserId *uint64                `protobuf:"varint,5,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"`                    // 收件用户ID（直发模式可为空）
+	ChannelId       *int64                 `protobuf:"varint,4,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"`                                        // 实际选中的渠道配置ID（sys_notification_channels.id）
+	RecipientUserId *int64                 `protobuf:"varint,5,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"`                    // 收件用户ID（直发模式可为空）
 	// 脱敏后的投递目标（见 MaskTarget）：台账可查，但不得成为明文集邮地址的第二个真相源
 	Target    *string                `protobuf:"bytes,6,opt,name=target,proto3,oneof" json:"target,omitempty"`                                              // 投递目标（脱敏）
 	Status    *DeliveryStatus        `protobuf:"varint,7,opt,name=status,proto3,enum=notification.service.v1.DeliveryStatus,oneof" json:"status,omitempty"` // 投递状态
@@ -232,15 +232,15 @@ type NotificationDelivery struct {
 	SentAt    *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=sent_at,json=sentAt,proto3,oneof" json:"sent_at,omitempty"`                                // 投递完成时间
 	// 产生本条投递的业务对象主键，含义由 event_type 决定（INTERNAL_MESSAGE → sys_internal_messages.id）。
 	// 存在的理由：台账不存正文快照（见 §3.3），排障时要能跳回业务对象去看发了什么。
-	RelatedId *uint64 `protobuf:"varint,10,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	RelatedId *int64 `protobuf:"varint,10,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
 	// 一次派发意图的标识：调用方不传则服务端生成 UUID。唯一性按 (request_id, channel) 组合，
 	// 见 §3.3 与 ent schema 注释（今天没有调用方自传，它是"同一次意图不许两行"的提前落地）。
 	RequestId *string `protobuf:"bytes,11,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"` // 派发请求ID
 	// 已尝试投递次数（含首次）。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
 	// 因此 attempts>0 而 status 仍为 SENDING = 拨过号但没回写结论。
 	Attempts      *uint32                `protobuf:"varint,12,opt,name=attempts,proto3,oneof" json:"attempts,omitempty"` // 实际尝试次数
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -277,7 +277,7 @@ func (*NotificationDelivery) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *NotificationDelivery) GetId() uint64 {
+func (x *NotificationDelivery) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -298,14 +298,14 @@ func (x *NotificationDelivery) GetChannel() Channel {
 	return Channel_CHANNEL_UNSPECIFIED
 }
 
-func (x *NotificationDelivery) GetChannelId() uint64 {
+func (x *NotificationDelivery) GetChannelId() int64 {
 	if x != nil && x.ChannelId != nil {
 		return *x.ChannelId
 	}
 	return 0
 }
 
-func (x *NotificationDelivery) GetRecipientUserId() uint64 {
+func (x *NotificationDelivery) GetRecipientUserId() int64 {
 	if x != nil && x.RecipientUserId != nil {
 		return *x.RecipientUserId
 	}
@@ -340,7 +340,7 @@ func (x *NotificationDelivery) GetSentAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *NotificationDelivery) GetRelatedId() uint64 {
+func (x *NotificationDelivery) GetRelatedId() int64 {
 	if x != nil && x.RelatedId != nil {
 		return *x.RelatedId
 	}
@@ -361,14 +361,14 @@ func (x *NotificationDelivery) GetAttempts() uint32 {
 	return 0
 }
 
-func (x *NotificationDelivery) GetCreatedBy() uint64 {
+func (x *NotificationDelivery) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *NotificationDelivery) GetUpdatedBy() uint64 {
+func (x *NotificationDelivery) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
@@ -393,7 +393,7 @@ func (x *NotificationDelivery) GetUpdatedAt() *timestamppb.Timestamp {
 type ListNotificationDeliveryResponse struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Items         []*NotificationDelivery `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                   `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -435,7 +435,7 @@ func (x *ListNotificationDeliveryResponse) GetItems() []*NotificationDelivery {
 	return nil
 }
 
-func (x *ListNotificationDeliveryResponse) GetTotal() uint64 {
+func (x *ListNotificationDeliveryResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -445,7 +445,7 @@ func (x *ListNotificationDeliveryResponse) GetTotal() uint64 {
 // 查询投递台账详情 - 请求
 type GetNotificationDeliveryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -480,7 +480,7 @@ func (*GetNotificationDeliveryRequest) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetNotificationDeliveryRequest) GetId() uint64 {
+func (x *GetNotificationDeliveryRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -500,14 +500,14 @@ type SendDirectNotificationRequest struct {
 	Content string `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"` // 通知正文
 	// 显式指定渠道配置：测试邮件必须打到"正在调的那一条"，不能退化成"取第一个启用的"。
 	// 留空则由渠道选择策略取第一个启用的同类型渠道。
-	ChannelId *uint64 `protobuf:"varint,5,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"` // 指定渠道配置ID
+	ChannelId *int64 `protobuf:"varint,5,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"` // 指定渠道配置ID
 	// 服务商侧的消息/请求 ID（阿里云 RequestId、腾讯云 SerialNo 等，扩展渠道回执带回）
 	ProviderId      *string  `protobuf:"bytes,20,opt,name=provider_id,json=providerId,proto3,oneof" json:"provider_id,omitempty"`                  // 服务商消息 ID
 	Channel         *Channel `protobuf:"varint,6,opt,name=channel,proto3,enum=notification.service.v1.Channel,oneof" json:"channel,omitempty"`     // 投递渠道（留空由事件类型路由决定）
-	RecipientUserId *uint64  `protobuf:"varint,7,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"` // 收件用户ID（仅台账归类用）
-	OperatorUserId  *uint64  `protobuf:"varint,8,opt,name=operator_user_id,json=operatorUserId,proto3,oneof" json:"operator_user_id,omitempty"`    // 操作人用户ID（系统发起时留空）
+	RecipientUserId *int64   `protobuf:"varint,7,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"` // 收件用户ID（仅台账归类用）
+	OperatorUserId  *int64   `protobuf:"varint,8,opt,name=operator_user_id,json=operatorUserId,proto3,oneof" json:"operator_user_id,omitempty"`    // 操作人用户ID（系统发起时留空）
 	// 产生本次投递的业务对象主键，原样落到台账的 related_id（含义由 event_type 决定）。
-	RelatedId *uint64 `protobuf:"varint,9,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	RelatedId *int64 `protobuf:"varint,9,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
 	// 幂等锚，可选：调用方留空时服务端生成一个 UUID。调用方若自行传入（例如同一次用户提交
 	// 因网络重试而被打上两次），台账按 (request_id, channel) 唯一索引收敛。
 	RequestId *string `protobuf:"bytes,10,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"` // 派发请求ID
@@ -581,7 +581,7 @@ func (x *SendDirectNotificationRequest) GetContent() string {
 	return ""
 }
 
-func (x *SendDirectNotificationRequest) GetChannelId() uint64 {
+func (x *SendDirectNotificationRequest) GetChannelId() int64 {
 	if x != nil && x.ChannelId != nil {
 		return *x.ChannelId
 	}
@@ -602,21 +602,21 @@ func (x *SendDirectNotificationRequest) GetChannel() Channel {
 	return Channel_CHANNEL_UNSPECIFIED
 }
 
-func (x *SendDirectNotificationRequest) GetRecipientUserId() uint64 {
+func (x *SendDirectNotificationRequest) GetRecipientUserId() int64 {
 	if x != nil && x.RecipientUserId != nil {
 		return *x.RecipientUserId
 	}
 	return 0
 }
 
-func (x *SendDirectNotificationRequest) GetOperatorUserId() uint64 {
+func (x *SendDirectNotificationRequest) GetOperatorUserId() int64 {
 	if x != nil && x.OperatorUserId != nil {
 		return *x.OperatorUserId
 	}
 	return 0
 }
 
-func (x *SendDirectNotificationRequest) GetRelatedId() uint64 {
+func (x *SendDirectNotificationRequest) GetRelatedId() int64 {
 	if x != nil && x.RelatedId != nil {
 		return *x.RelatedId
 	}
@@ -654,7 +654,7 @@ func (x *SendDirectNotificationRequest) GetParams() map[string]string {
 // 直发通知 - 回应
 type SendNotificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeliveryId    uint64                 `protobuf:"varint,1,opt,name=delivery_id,json=deliveryId,proto3" json:"delivery_id,omitempty"`                   // 台账ID
+	DeliveryId    int64                  `protobuf:"varint,1,opt,name=delivery_id,json=deliveryId,proto3" json:"delivery_id,omitempty"`                   // 台账ID
 	Status        DeliveryStatus         `protobuf:"varint,2,opt,name=status,proto3,enum=notification.service.v1.DeliveryStatus" json:"status,omitempty"` // 投递结果
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -690,7 +690,7 @@ func (*SendNotificationResponse) Descriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *SendNotificationResponse) GetDeliveryId() uint64 {
+func (x *SendNotificationResponse) GetDeliveryId() int64 {
 	if x != nil {
 		return x.DeliveryId
 	}
@@ -711,13 +711,13 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"*notification/service/v1/notification.proto\x12\x17notification.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xe9\n" +
 	"\n" +
 	"\x14NotificationDelivery\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b台账IDH\x00R\x02id\x88\x01\x01\x12`\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b台账IDH\x00R\x02id\x88\x01\x01\x12`\n" +
 	"\n" +
 	"event_type\x18\x02 \x01(\x0e2\".notification.service.v1.EventTypeB\x18\xbaG\x15\x92\x02\x12业务事件类型H\x01R\teventType\x88\x01\x01\x12S\n" +
 	"\achannel\x18\x03 \x01(\x0e2 .notification.service.v1.ChannelB\x12\xbaG\x0f\x92\x02\f投递渠道H\x02R\achannel\x88\x01\x01\x12G\n" +
 	"\n" +
-	"channel_id\x18\x04 \x01(\x04B#\xbaG \x92\x02\x1d实际选中的渠道配置IDH\x03R\tchannelId\x88\x01\x01\x12`\n" +
-	"\x11recipient_user_id\x18\x05 \x01(\x04B/\xbaG,\x92\x02)收件用户ID（直发模式可为空）H\x04R\x0frecipientUserId\x88\x01\x01\x12;\n" +
+	"channel_id\x18\x04 \x01(\x03B#\xbaG \x92\x02\x1d实际选中的渠道配置IDH\x03R\tchannelId\x88\x01\x01\x12`\n" +
+	"\x11recipient_user_id\x18\x05 \x01(\x03B/\xbaG,\x92\x02)收件用户ID（直发模式可为空）H\x04R\x0frecipientUserId\x88\x01\x01\x12;\n" +
 	"\x06target\x18\x06 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18投递目标（脱敏）H\x05R\x06target\x88\x01\x01\x12X\n" +
 	"\x06status\x18\a \x01(\x0e2'.notification.service.v1.DeliveryStatusB\x12\xbaG\x0f\x92\x02\f投递状态H\x06R\x06status\x88\x01\x01\x12B\n" +
 	"\n" +
@@ -725,15 +725,15 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\asent_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12投递完成时间H\bR\x06sentAt\x88\x01\x01\x12Y\n" +
 	"\n" +
 	"related_id\x18\n" +
-	" \x01(\x04B5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\tR\trelatedId\x88\x01\x01\x12G\n" +
+	" \x01(\x03B5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\tR\trelatedId\x88\x01\x01\x12G\n" +
 	"\n" +
 	"request_id\x18\v \x01(\tB#\xbaG \x92\x02\x1d派发请求ID（幂等锚）H\n" +
 	"R\trequestId\x88\x01\x01\x12N\n" +
 	"\battempts\x18\f \x01(\rB-\xbaG*\x92\x02'实际尝试投递次数（含首次）H\vR\battempts\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04H\fR\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_by\x18d \x01(\x03H\fR\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04H\rR\tupdatedBy\x88\x01\x01\x12?\n" +
+	"updated_by\x18e \x01(\x03H\rR\tupdatedBy\x88\x01\x01\x12?\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0eR\tcreatedAt\x88\x01\x01\x12?\n" +
 	"\n" +
@@ -758,9 +758,9 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\v_updated_at\"}\n" +
 	" ListNotificationDeliveryResponse\x12C\n" +
 	"\x05items\x18\x01 \x03(\v2-.notification.service.v1.NotificationDeliveryR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"0\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"0\n" +
 	"\x1eGetNotificationDeliveryRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\"\xaa\r\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xaa\r\n" +
 	"\x1dSendDirectNotificationRequest\x12\x82\x01\n" +
 	"\n" +
 	"event_type\x18\x01 \x01(\x0e2\".notification.service.v1.EventTypeB?\xbaG<\x92\x029业务事件类型（决定渠道路由与台账分类）R\teventType\x12E\n" +
@@ -768,14 +768,14 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\x05title\x18\x03 \x01(\tB)\xbaG&\x92\x02#通知标题（邮件为 Subject）R\x05title\x12J\n" +
 	"\acontent\x18\x04 \x01(\tB0\xbaG-\x92\x02*通知正文（邮件为纯文本正文）R\acontent\x12\\\n" +
 	"\n" +
-	"channel_id\x18\x05 \x01(\x04B8\xbaG5\x92\x022指定渠道配置ID，留空取第一个启用的H\x00R\tchannelId\x88\x01\x01\x12P\n" +
+	"channel_id\x18\x05 \x01(\x03B8\xbaG5\x92\x022指定渠道配置ID，留空取第一个启用的H\x00R\tchannelId\x88\x01\x01\x12P\n" +
 	"\vprovider_id\x18\x14 \x01(\tB*\xbaG'\x92\x02$服务商侧消息 ID（对账用）H\x01R\n" +
 	"providerId\x88\x01\x01\x12w\n" +
 	"\achannel\x18\x06 \x01(\x0e2 .notification.service.v1.ChannelB6\xbaG3\x92\x020投递渠道，留空由事件类型路由决定H\x02R\achannel\x88\x01\x01\x12]\n" +
-	"\x11recipient_user_id\x18\a \x01(\x04B,\xbaG)\x92\x02&收件用户ID（仅台账归类用）H\x03R\x0frecipientUserId\x88\x01\x01\x12a\n" +
-	"\x10operator_user_id\x18\b \x01(\x04B2\xbaG/\x92\x02,操作人用户ID（系统发起时留空）H\x04R\x0eoperatorUserId\x88\x01\x01\x12Y\n" +
+	"\x11recipient_user_id\x18\a \x01(\x03B,\xbaG)\x92\x02&收件用户ID（仅台账归类用）H\x03R\x0frecipientUserId\x88\x01\x01\x12a\n" +
+	"\x10operator_user_id\x18\b \x01(\x03B2\xbaG/\x92\x02,操作人用户ID（系统发起时留空）H\x04R\x0eoperatorUserId\x88\x01\x01\x12Y\n" +
 	"\n" +
-	"related_id\x18\t \x01(\x04B5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\x05R\trelatedId\x88\x01\x01\x12V\n" +
+	"related_id\x18\t \x01(\x03B5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\x05R\trelatedId\x88\x01\x01\x12V\n" +
 	"\n" +
 	"request_id\x18\n" +
 	" \x01(\tB2\xbaG/\x92\x02,派发请求ID（留空则服务端生成）H\x06R\trequestId\x88\x01\x01\x12e\n" +
@@ -798,7 +798,7 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\v_request_idB\x10\n" +
 	"\x0e_template_code\"\xa0\x01\n" +
 	"\x18SendNotificationResponse\x12/\n" +
-	"\vdelivery_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b台账IDR\n" +
+	"\vdelivery_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b台账IDR\n" +
 	"deliveryId\x12S\n" +
 	"\x06status\x18\x02 \x01(\x0e2'.notification.service.v1.DeliveryStatusB\x12\xbaG\x0f\x92\x02\f投递结果R\x06status*Z\n" +
 	"\aChannel\x12\x17\n" +

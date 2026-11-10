@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.ScriptLog {
+func ID(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.ScriptLog {
+func IDEQ(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.ScriptLog {
+func IDNEQ(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.ScriptLog {
+func IDIn(ids ...int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.ScriptLog {
+func IDNotIn(ids ...int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.ScriptLog {
+func IDGT(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.ScriptLog {
+func IDGTE(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.ScriptLog {
+func IDLT(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.ScriptLog {
+func IDLTE(id int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,7 +70,7 @@ func DeletedAt(v time.Time) predicate.ScriptLog {
 }
 
 // ScriptID applies equality check predicate on the "script_id" field. It's identical to ScriptIDEQ.
-func ScriptID(v uint64) predicate.ScriptLog {
+func ScriptID(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldEQ(FieldScriptID, v))
 }
 
@@ -265,42 +265,42 @@ func DeletedAtNotNil() predicate.ScriptLog {
 }
 
 // ScriptIDEQ applies the EQ predicate on the "script_id" field.
-func ScriptIDEQ(v uint64) predicate.ScriptLog {
+func ScriptIDEQ(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldEQ(FieldScriptID, v))
 }
 
 // ScriptIDNEQ applies the NEQ predicate on the "script_id" field.
-func ScriptIDNEQ(v uint64) predicate.ScriptLog {
+func ScriptIDNEQ(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldNEQ(FieldScriptID, v))
 }
 
 // ScriptIDIn applies the In predicate on the "script_id" field.
-func ScriptIDIn(vs ...uint64) predicate.ScriptLog {
+func ScriptIDIn(vs ...int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldIn(FieldScriptID, vs...))
 }
 
 // ScriptIDNotIn applies the NotIn predicate on the "script_id" field.
-func ScriptIDNotIn(vs ...uint64) predicate.ScriptLog {
+func ScriptIDNotIn(vs ...int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldNotIn(FieldScriptID, vs...))
 }
 
 // ScriptIDGT applies the GT predicate on the "script_id" field.
-func ScriptIDGT(v uint64) predicate.ScriptLog {
+func ScriptIDGT(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldGT(FieldScriptID, v))
 }
 
 // ScriptIDGTE applies the GTE predicate on the "script_id" field.
-func ScriptIDGTE(v uint64) predicate.ScriptLog {
+func ScriptIDGTE(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldGTE(FieldScriptID, v))
 }
 
 // ScriptIDLT applies the LT predicate on the "script_id" field.
-func ScriptIDLT(v uint64) predicate.ScriptLog {
+func ScriptIDLT(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldLT(FieldScriptID, v))
 }
 
 // ScriptIDLTE applies the LTE predicate on the "script_id" field.
-func ScriptIDLTE(v uint64) predicate.ScriptLog {
+func ScriptIDLTE(v int64) predicate.ScriptLog {
 	return predicate.ScriptLog(sql.FieldLTE(FieldScriptID, v))
 }
 

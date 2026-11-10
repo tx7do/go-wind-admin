@@ -101,7 +101,7 @@ func TestTenantRepoSqlite_List(t *testing.T) {
 	// 无过滤：应返回全部 2 条
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条")
 	for _, item := range all.Items {
 		// 列表读视图：status/type 未显式指定、按列默认（ON/PAID）落库并经回填如实呈现；
@@ -118,7 +118,7 @@ func TestTenantRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetName(), "MARKERALPHA", "命中行应为含标记的那条")
 }
@@ -140,7 +140,7 @@ func TestTenantRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().Tenant.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetTenantRequest{
@@ -189,7 +189,7 @@ func TestTenantRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().Tenant.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	err = repo.Update(ctx, &identityV1.UpdateTenantRequest{
 		Id:         createdID,
@@ -219,7 +219,7 @@ func TestTenantRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().Tenant.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &identityV1.DeleteTenantRequest{
 		QueryBy: &identityV1.DeleteTenantRequest_Id{Id: createdID},
@@ -259,14 +259,14 @@ func TestTenantRepoSqlite_PlanIdEdgeBackfill(t *testing.T) {
 		SaveX(ctx)
 
 	got, err := repo.Get(ctx, &identityV1.GetTenantRequest{
-		QueryBy: &identityV1.GetTenantRequest_Id{Id: uint64(withPlan.ID)},
+		QueryBy: &identityV1.GetTenantRequest_Id{Id: int64(withPlan.ID)},
 	})
 	require.NoError(t, err, "Get 带套餐租户应成功")
 	require.NotNil(t, got.PlanId, "Get 应从 plan 边回填 PlanId")
-	require.Equal(t, uint64(plan.ID), *got.PlanId, "回填的 PlanId 应等于所绑套餐")
+	require.Equal(t, int64(plan.ID), *got.PlanId, "回填的 PlanId 应等于所绑套餐")
 
 	got, err = repo.Get(ctx, &identityV1.GetTenantRequest{
-		QueryBy: &identityV1.GetTenantRequest_Id{Id: uint64(noPlan.ID)},
+		QueryBy: &identityV1.GetTenantRequest_Id{Id: int64(noPlan.ID)},
 	})
 	require.NoError(t, err, "Get 无套餐租户应成功")
 	require.Nil(t, got.PlanId, "无套餐租户的 PlanId 应保持 nil")
@@ -277,16 +277,16 @@ func TestTenantRepoSqlite_PlanIdEdgeBackfill(t *testing.T) {
 	})
 	require.NoError(t, err, "Get 按 code 查询应成功")
 	require.NotNil(t, got.PlanId, "按 code 查询同样应回填 PlanId")
-	require.Equal(t, uint64(plan.ID), *got.PlanId)
+	require.Equal(t, int64(plan.ID), *got.PlanId)
 
 	list, err := repo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 	require.NoError(t, err, "List 应成功")
 	require.Len(t, list.Items, 2)
-	byId := make(map[uint64]*identityV1.Tenant, len(list.Items))
+	byId := make(map[int64]*identityV1.Tenant, len(list.Items))
 	for _, item := range list.Items {
 		byId[item.GetId()] = item
 	}
-	require.NotNil(t, byId[uint64(withPlan.ID)].PlanId, "List 应为带套餐租户回填 PlanId")
-	require.Equal(t, uint64(plan.ID), *byId[uint64(withPlan.ID)].PlanId)
-	require.Nil(t, byId[uint64(noPlan.ID)].PlanId, "无套餐租户的 PlanId 应保持 nil")
+	require.NotNil(t, byId[int64(withPlan.ID)].PlanId, "List 应为带套餐租户回填 PlanId")
+	require.Equal(t, int64(plan.ID), *byId[int64(withPlan.ID)].PlanId)
+	require.Nil(t, byId[int64(noPlan.ID)].PlanId, "无套餐租户的 PlanId 应保持 nil")
 }

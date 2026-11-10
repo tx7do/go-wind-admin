@@ -8,7 +8,7 @@ import (
 type PermissionApi struct {
 	mixin.AutoIncrementID64
 
-	PermissionId *uint64 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
+	PermissionId *int64 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
 	// 绑定存 (path, method) 端点快照而非 api_id：授权执行键，免疫端点删除重建
 	//（ent 栈同构，见 data/permission_api_repo.go 的 Endpoint 注释）。
 	Path   *string `gorm:"column:path;type:varchar(255);comment:接口路径（API身份键绑定快照）"`

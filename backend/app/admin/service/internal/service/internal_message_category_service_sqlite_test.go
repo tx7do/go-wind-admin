@@ -58,7 +58,7 @@ func TestInternalMessageCategoryService_CreateAndUpdateStamps(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.NotNil(t, created.GetCreatedBy())
-	require.Equal(t, uint64(81), created.GetCreatedBy(), "CreatedBy 应落操作人")
+	require.Equal(t, int64(81), created.GetCreatedBy(), "CreatedBy 应落操作人")
 
 	mask, err := fieldmaskpb.New(&internalMessageV1.InternalMessageCategory{}, "name")
 	require.NoError(t, err)
@@ -101,5 +101,5 @@ func TestInternalMessageCategoryService_DeletePassthrough(t *testing.T) {
 
 	resp, err := svc.List(opCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), resp.GetTotal(), "删除后列表应为空")
+	require.Equal(t, int64(0), resp.GetTotal(), "删除后列表应为空")
 }

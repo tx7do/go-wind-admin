@@ -8,14 +8,14 @@ import "identity/service/v1/types.proto";
 
 // 用户令牌载体
 message UserTokenPayload {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "uid",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
     }
   ]; // 用户ID
 
-  optional uint64 tenant_id = 2 [
+  optional int64 tenant_id = 2 [
     json_name = "tid",
     (gnostic.openapi.v3.property) = {
       description: "租户ID"
@@ -57,7 +57,7 @@ message UserTokenPayload {
     }
   ]; // 数据权限范围（旧单值字段，仅为令牌平滑过渡保留）
 
-  optional uint64 org_unit_id = 12 [
+  optional int64 org_unit_id = 12 [
     json_name = "ouid",
     (gnostic.openapi.v3.property) = {
       description: "当前组织单元ID"
@@ -71,7 +71,7 @@ message UserTokenPayload {
     }
   ]; // 数据权限范围类型集合（登录期由多角色配置聚合，ALL 主导，UNIT_* 已并入集合并集）
 
-  repeated uint64 data_scope_unit_ids = 14 [
+  repeated int64 data_scope_unit_ids = 14 [
     json_name = "dsu",
     (gnostic.openapi.v3.property) = {
       description: "UNIT 类数据范围的组织单元目标集（多角色并集，登录期展开）"

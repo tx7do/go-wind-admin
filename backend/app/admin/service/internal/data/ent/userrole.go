@@ -17,7 +17,7 @@ type UserRole struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,17 +25,17 @@ type UserRole struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 用户ID
-	UserID *uint64 `json:"user_id,omitempty"`
+	UserID *int64 `json:"user_id,omitempty"`
 	// 角色ID
-	RoleID *uint64 `json:"role_id,omitempty"`
+	RoleID *int64 `json:"role_id,omitempty"`
 	// 生效时间（UTC）
 	StartAt *time.Time `json:"start_at,omitempty"`
 	// 失效时间（UTC）
@@ -43,7 +43,7 @@ type UserRole struct {
 	// 分配时间（UTC）
 	AssignedAt *time.Time `json:"assigned_at,omitempty"`
 	// 分配者用户ID
-	AssignedBy *uint64 `json:"assigned_by,omitempty"`
+	AssignedBy *int64 `json:"assigned_by,omitempty"`
 	// 是否为主角色
 	IsPrimary *bool `json:"is_primary,omitempty"`
 	// 岗位状态
@@ -84,7 +84,7 @@ func (_m *UserRole) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case userrole.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -110,43 +110,43 @@ func (_m *UserRole) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case userrole.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case userrole.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case userrole.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case userrole.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint64)
-				*_m.UserID = uint64(value.Int64)
+				_m.UserID = new(int64)
+				*_m.UserID = value.Int64
 			}
 		case userrole.FieldRoleID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field role_id", values[i])
 			} else if value.Valid {
-				_m.RoleID = new(uint64)
-				*_m.RoleID = uint64(value.Int64)
+				_m.RoleID = new(int64)
+				*_m.RoleID = value.Int64
 			}
 		case userrole.FieldStartAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -173,8 +173,8 @@ func (_m *UserRole) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field assigned_by", values[i])
 			} else if value.Valid {
-				_m.AssignedBy = new(uint64)
-				*_m.AssignedBy = uint64(value.Int64)
+				_m.AssignedBy = new(int64)
+				*_m.AssignedBy = value.Int64
 			}
 		case userrole.FieldIsPrimary:
 			if value, ok := values[i].(*sql.NullBool); !ok {

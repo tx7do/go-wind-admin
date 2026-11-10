@@ -82,15 +82,15 @@ func (Config_ConfigValueType) EnumDescriptor() ([]byte, []int) {
 // 系统参数（动态 KV 运行时配置；区别于字典管理的业务枚举，本表只承载平台全局系统开关）
 type Config struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Id            *uint64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                              // 参数ID
+	Id            *int64                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                              // 参数ID
 	Name          *string                 `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                           // 参数名称
 	Key           *string                 `protobuf:"bytes,3,opt,name=key,proto3,oneof" json:"key,omitempty"`                                                                             // 参数键名
 	Value         *string                 `protobuf:"bytes,4,opt,name=value,proto3,oneof" json:"value,omitempty"`                                                                         // 参数键值
 	ValueType     *Config_ConfigValueType `protobuf:"varint,5,opt,name=value_type,json=valueType,proto3,enum=config.service.v1.Config_ConfigValueType,oneof" json:"value_type,omitempty"` // 参数值类型
 	IsBuiltIn     *bool                   `protobuf:"varint,6,opt,name=is_built_in,json=isBuiltIn,proto3,oneof" json:"is_built_in,omitempty"`                                             // 是否系统内置参数
-	CreatedBy     *uint64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                             // 创建者ID
-	UpdatedBy     *uint64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                             // 更新者ID
-	DeletedBy     *uint64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                             // 删除者用户ID
+	CreatedBy     *int64                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                             // 创建者ID
+	UpdatedBy     *int64                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                             // 更新者ID
+	DeletedBy     *int64                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                             // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp  `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                              // 创建时间
 	UpdatedAt     *timestamppb.Timestamp  `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                              // 更新时间
 	DeletedAt     *timestamppb.Timestamp  `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                              // 删除时间
@@ -128,7 +128,7 @@ func (*Config) Descriptor() ([]byte, []int) {
 	return file_config_service_v1_config_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Config) GetId() uint64 {
+func (x *Config) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -170,21 +170,21 @@ func (x *Config) GetIsBuiltIn() bool {
 	return false
 }
 
-func (x *Config) GetCreatedBy() uint64 {
+func (x *Config) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Config) GetUpdatedBy() uint64 {
+func (x *Config) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Config) GetDeletedBy() uint64 {
+func (x *Config) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -216,7 +216,7 @@ func (x *Config) GetDeletedAt() *timestamppb.Timestamp {
 type ListConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*Config              `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -258,7 +258,7 @@ func (x *ListConfigResponse) GetItems() []*Config {
 	return nil
 }
 
-func (x *ListConfigResponse) GetTotal() uint64 {
+func (x *ListConfigResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -314,7 +314,7 @@ func (x *GetConfigRequest) GetQueryBy() isGetConfigRequest_QueryBy {
 	return nil
 }
 
-func (x *GetConfigRequest) GetId() uint64 {
+func (x *GetConfigRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetConfigRequest_Id); ok {
 			return x.Id
@@ -335,7 +335,7 @@ type isGetConfigRequest_QueryBy interface {
 }
 
 type GetConfigRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetConfigRequest_Id) isGetConfigRequest_QueryBy() {}
@@ -388,7 +388,7 @@ func (x *CreateConfigRequest) GetData() *Config {
 // 更新系统参数 - 请求
 type UpdateConfigRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Config                `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -426,7 +426,7 @@ func (*UpdateConfigRequest) Descriptor() ([]byte, []int) {
 	return file_config_service_v1_config_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateConfigRequest) GetId() uint64 {
+func (x *UpdateConfigRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -502,7 +502,7 @@ func (x *DeleteConfigRequest) GetQueryBy() isDeleteConfigRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteConfigRequest) GetId() uint64 {
+func (x *DeleteConfigRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteConfigRequest_Id); ok {
 			return x.Id
@@ -516,14 +516,14 @@ type isDeleteConfigRequest_QueryBy interface {
 }
 
 type DeleteConfigRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteConfigRequest_Id) isDeleteConfigRequest_QueryBy() {}
 
 type CountConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -558,7 +558,7 @@ func (*CountConfigResponse) Descriptor() ([]byte, []int) {
 	return file_config_service_v1_config_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountConfigResponse) GetCount() uint64 {
+func (x *CountConfigResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -571,7 +571,7 @@ const file_config_service_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"\x1econfig/service/v1/config.proto\x12\x11config.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x95\t\n" +
 	"\x06Config\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b参数IDH\x00R\x02id\x88\x01\x01\x12:\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b参数IDH\x00R\x02id\x88\x01\x01\x12:\n" +
 	"\x04name\x18\x02 \x01(\tB!\xbaG\x1e\x92\x02\x1b参数名称（展示用）H\x01R\x04name\x88\x01\x01\x12P\n" +
 	"\x03key\x18\x03 \x01(\tB9\xbaG6\x92\x023参数键名，全局唯一，服务侧按键读取H\x02R\x03key\x88\x01\x01\x12-\n" +
 	"\x05value\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f参数键值H\x03R\x05value\x88\x01\x01\x12\xb2\x01\n" +
@@ -579,11 +579,11 @@ const file_config_service_v1_config_proto_rawDesc = "" +
 	"value_type\x18\x05 \x01(\x0e2).config.service.v1.Config.ConfigValueTypeBc\xbaG`\x92\x02]参数值类型（STRING/BOOL/INT），读取器按类型解析，类型不符回退默认值H\x04R\tvalueType\x88\x01\x01\x12^\n" +
 	"\vis_built_in\x18\x06 \x01(\bB9\xbaG6\x92\x023是否系统内置参数，内置参数禁止删除H\x05R\tisBuiltIn\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\x06R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x06R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -611,9 +611,9 @@ const file_config_service_v1_config_proto_rawDesc = "" +
 	"\v_deleted_at\"[\n" +
 	"\x12ListConfigResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.config.service.v1.ConfigR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc3\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xc3\x01\n" +
 	"\x10GetConfigRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -623,19 +623,19 @@ const file_config_service_v1_config_proto_rawDesc = "" +
 	"\x13CreateConfigRequest\x12-\n" +
 	"\x04data\x18\x01 \x01(\v2\x19.config.service.v1.ConfigR\x04data\"\x92\x03\n" +
 	"\x13UpdateConfigRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12-\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12-\n" +
 	"\x04data\x18\x02 \x01(\v2\x19.config.service.v1.ConfigR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"?\n" +
 	"\x13DeleteConfigRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"+\n" +
 	"\x13CountConfigResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xd6\x03\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xd6\x03\n" +
 	"\rConfigService\x12J\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a%.config.service.v1.ListConfigResponse\"\x00\x12L\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a&.config.service.v1.CountConfigResponse\"\x00\x12G\n" +

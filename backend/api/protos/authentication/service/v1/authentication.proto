@@ -129,7 +129,7 @@ message LoginRequest {
     (gnostic.openapi.v3.property) = {description: "跳转链接"}
   ]; // 跳转链接
 
-  optional uint64 user_id = 6 [
+  optional int64 user_id = 6 [
     json_name = "user_id",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
@@ -258,7 +258,7 @@ message LoginResponse {
 
 // 用户登出 - 请求
 message LogoutRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
@@ -296,7 +296,7 @@ message ValidateTokenRequest {
     }
   ];
 
-  optional uint64 user_id = 4 [
+  optional int64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
@@ -374,7 +374,7 @@ message ResetPasswordByCodeRequest {
 
 // 获取当前用户身份信息 - 响应
 message WhoAmIResponse {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "uid",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
@@ -390,7 +390,7 @@ message WhoAmIResponse {
 }
 
 message GetAccessTokensRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
@@ -416,7 +416,7 @@ message GetAccessTokensResponse {
 
 // 将指定令牌加入黑名单 / 拉黑（支持通过明文 token 或 token_id）
 message BlockTokenRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     (google.api.field_behavior) = REQUIRED,
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
@@ -452,7 +452,7 @@ message BlockTokenRequest {
 }
 
 message UnblockTokenRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     (google.api.field_behavior) = REQUIRED,
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
@@ -500,7 +500,7 @@ message RevokeTokenByIdRequest {
     }
   ]; // 撤销原因
 
-  optional uint64 user_id = 4 [
+  optional int64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {
       description: "可选：关联的用户ID，便于高效定位要撤销的令牌（向后兼容）"

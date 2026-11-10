@@ -71,7 +71,7 @@ func (r *PlanQuotaRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: List not implemented — ent .WithPlan/HasPlanWith/.Edges edge predicate has no go-crud/gorm primitive; see data/plan_quota_repo.go")
 }
 
-func (r *PlanQuotaRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PlanQuotaRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -114,7 +114,7 @@ func (r *PlanQuotaRepo) Update(ctx context.Context, req *identityV1.UpdatePlanQu
 	return identityV1.ErrorInternalServerError("gorm scaffold: Update not implemented — ent tx edge write has no go-crud/gorm primitive; see data/plan_quota_repo.go")
 }
 
-func (r *PlanQuotaRepo) Delete(ctx context.Context, id uint64) error {
+func (r *PlanQuotaRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}

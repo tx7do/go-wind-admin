@@ -139,7 +139,7 @@ func (RetentionPolicy) EnumDescriptor() ([]byte, []int) {
 type BusinessResource struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	ResourceType   *string                `protobuf:"bytes,1,opt,name=resource_type,json=resourceType,proto3,oneof" json:"resource_type,omitempty"` // 资源类型
-	ResourceKey    *uint64                `protobuf:"varint,2,opt,name=resource_key,json=resourceKey,proto3,oneof" json:"resource_key,omitempty"`   // 业务键
+	ResourceKey    *int64                 `protobuf:"varint,2,opt,name=resource_key,json=resourceKey,proto3,oneof" json:"resource_key,omitempty"`   // 业务键
 	AccessedFields []string               `protobuf:"bytes,3,rep,name=accessed_fields,json=accessedFields,proto3" json:"accessed_fields,omitempty"` // 访问字段列表
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -182,7 +182,7 @@ func (x *BusinessResource) GetResourceType() string {
 	return ""
 }
 
-func (x *BusinessResource) GetResourceKey() uint64 {
+func (x *BusinessResource) GetResourceKey() int64 {
 	if x != nil && x.ResourceKey != nil {
 		return *x.ResourceKey
 	}
@@ -256,7 +256,7 @@ const file_audit_service_v1_common_proto_rawDesc = "" +
 	"\x1daudit/service/v1/common.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17validate/validate.proto\"\xef\x01\n" +
 	"\x10BusinessResource\x12<\n" +
 	"\rresource_type\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f资源类型H\x00R\fresourceType\x88\x01\x01\x127\n" +
-	"\fresource_key\x18\x02 \x01(\x04B\x0f\xbaG\f\x92\x02\t业务键H\x01R\vresourceKey\x88\x01\x01\x12A\n" +
+	"\fresource_key\x18\x02 \x01(\x03B\x0f\xbaG\f\x92\x02\t业务键H\x01R\vresourceKey\x88\x01\x01\x12A\n" +
 	"\x0faccessed_fields\x18\x03 \x03(\tB\x18\xbaG\x15\x92\x02\x12访问字段列表R\x0eaccessedFieldsB\x10\n" +
 	"\x0e_resource_typeB\x0f\n" +
 	"\r_resource_key\"{\n" +

@@ -299,7 +299,7 @@ func (s *AiKnowledgeService) ListDocs(ctx context.Context, req *aiV1.ListAiDocsR
 	for _, entity := range entities {
 		dtos = append(dtos, s.repo.ToDocDTO(entity))
 	}
-	return &aiV1.ListAiDocsResponse{Items: dtos, Total: uint64(len(dtos))}, nil
+	return &aiV1.ListAiDocsResponse{Items: dtos, Total: int64(len(dtos))}, nil
 }
 
 func (s *AiKnowledgeService) DeleteDoc(ctx context.Context, req *aiV1.DeleteAiDocRequest) (*emptypb.Empty, error) {
@@ -339,7 +339,7 @@ func (s *AiKnowledgeService) Search(ctx context.Context, req *aiV1.SearchAiKnowl
 }
 
 // searchBase 向量化 query 并检索知识库（service 包装，供 Search RPC）。
-func (s *AiKnowledgeService) searchBase(ctx context.Context, operator *authenticationV1.UserTokenPayload, baseId uint64, query string, topK int) ([]*data.ChunkHit, error) {
+func (s *AiKnowledgeService) searchBase(ctx context.Context, operator *authenticationV1.UserTokenPayload, baseId int64, query string, topK int) ([]*data.ChunkHit, error) {
 	return searchKnowledgeBase(ctx, s.repo, s.providerRepo, s.usageLogRepo, s.log, operator, baseId, query, topK)
 }
 
@@ -347,7 +347,7 @@ func (s *AiKnowledgeService) searchBase(ctx context.Context, operator *authentic
 // tenantId=0（平台用户）可检索任意库，租户用户经 SQL 的 tenant 过滤兜底；
 // chat 主链路（RAG 注入）与本 service 共用。向量化消耗与 chat 同口径记入
 // 用量流水（usageLogRepo），配额体系对 embedding 消耗可见。
-func searchKnowledgeBase(ctx context.Context, knowledgeRepo *data.AiKnowledgeRepo, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, operator *authenticationV1.UserTokenPayload, baseId uint64, query string, topK int) ([]*data.ChunkHit, error) {
+func searchKnowledgeBase(ctx context.Context, knowledgeRepo *data.AiKnowledgeRepo, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, operator *authenticationV1.UserTokenPayload, baseId int64, query string, topK int) ([]*data.ChunkHit, error) {
 	base, err := knowledgeRepo.GetEntityByID(ctx, baseId)
 	if err != nil {
 		return nil, err
@@ -365,7 +365,7 @@ func searchKnowledgeBase(ctx context.Context, knowledgeRepo *data.AiKnowledgeRep
 // ── 向量化 ─────────────────────────────────────────────────────────
 
 // embedOneForBase 单文本向量化，返回 pgvector 字面量（包级，供检索与 chat 复用）。
-func embedOneForBase(ctx context.Context, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, userId, tenantId uint64, base *ent.AiKnowledgeBase, text string) (string, error) {
+func embedOneForBase(ctx context.Context, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, userId, tenantId int64, base *ent.AiKnowledgeBase, text string) (string, error) {
 	vectors, err := embedTextsForBase(ctx, providerRepo, usageLogRepo, log, userId, tenantId, base, []string{text})
 	if err != nil {
 		return "", err
@@ -376,7 +376,7 @@ func embedOneForBase(ctx context.Context, providerRepo *data.AiProviderRepo, usa
 // embedTextsForBase 批量向量化，返回与 texts 对齐的 pgvector 字面量数组。
 // userId/tenantId 为消耗归属（重索引等无操作者场景按知识库租户归属、userId=0）。
 // embedding 消耗与 chat 同口径记入用量流水；记量失败不阻断向量化，仅记日志。
-func embedTextsForBase(ctx context.Context, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, userId, tenantId uint64, base *ent.AiKnowledgeBase, texts []string) ([]string, error) {
+func embedTextsForBase(ctx context.Context, providerRepo *data.AiProviderRepo, usageLogRepo *data.AiUsageLogRepo, log *bLogger.Helper, userId, tenantId int64, base *ent.AiKnowledgeBase, texts []string) ([]string, error) {
 	provider, err := providerRepo.GetEntityByID(ctx, derefUint32(base.ProviderID))
 	if err != nil {
 		return nil, err
@@ -466,7 +466,7 @@ func splitIntoChunks(content string, size, overlap int) []string {
 }
 
 // derefUint32 nil 安全取值。
-func derefUint32[T ~uint32 | ~uint64](p *T) T {
+func derefUint32[T ~uint32 | ~int64](p *T) T {
 	if p == nil {
 		return 0
 	}
@@ -490,7 +490,7 @@ func (s *AiKnowledgeService) AsyncAiDocReindex(taskType string, data *task.AiDoc
 	// asynq ctx 不携带 viewer，租户隔离 mixin 会拒绝无 viewer 查询；重索引是平台操作，用系统查看器。
 	ctx := viewer.WithSystemContext(context.Background())
 
-	var baseIds []uint64
+	var baseIds []int64
 	if data != nil && data.BaseID > 0 {
 		baseIds = append(baseIds, data.BaseID)
 	} else {
@@ -515,7 +515,7 @@ func (s *AiKnowledgeService) AsyncAiDocReindex(taskType string, data *task.AiDoc
 }
 
 // reindexBase 对单个知识库分批重算全部切片向量，返回更新的切片数。
-func (s *AiKnowledgeService) reindexBase(ctx context.Context, baseId uint64) (int, error) {
+func (s *AiKnowledgeService) reindexBase(ctx context.Context, baseId int64) (int, error) {
 	base, err := s.repo.GetEntityByID(ctx, baseId)
 	if err != nil {
 		return 0, err

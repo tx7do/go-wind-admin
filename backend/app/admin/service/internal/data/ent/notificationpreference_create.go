@@ -65,13 +65,13 @@ func (_c *NotificationPreferenceCreate) SetNillableDeletedAt(v *time.Time) *Noti
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *NotificationPreferenceCreate) SetCreatedBy(v uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetCreatedBy(v int64) *NotificationPreferenceCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *NotificationPreferenceCreate) SetNillableCreatedBy(v *uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetNillableCreatedBy(v *int64) *NotificationPreferenceCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *NotificationPreferenceCreate) SetNillableCreatedBy(v *uint64) *Notific
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *NotificationPreferenceCreate) SetUpdatedBy(v uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetUpdatedBy(v int64) *NotificationPreferenceCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *NotificationPreferenceCreate) SetNillableUpdatedBy(v *uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetNillableUpdatedBy(v *int64) *NotificationPreferenceCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *NotificationPreferenceCreate) SetNillableUpdatedBy(v *uint64) *Notific
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *NotificationPreferenceCreate) SetDeletedBy(v uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetDeletedBy(v int64) *NotificationPreferenceCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *NotificationPreferenceCreate) SetNillableDeletedBy(v *uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetNillableDeletedBy(v *int64) *NotificationPreferenceCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,7 +107,7 @@ func (_c *NotificationPreferenceCreate) SetNillableDeletedBy(v *uint64) *Notific
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *NotificationPreferenceCreate) SetUserID(v uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetUserID(v int64) *NotificationPreferenceCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
@@ -155,13 +155,13 @@ func (_c *NotificationPreferenceCreate) SetNillableQuietEndMinute(v *int32) *Not
 }
 
 // SetMutedCategoryIds sets the "muted_category_ids" field.
-func (_c *NotificationPreferenceCreate) SetMutedCategoryIds(v []uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetMutedCategoryIds(v []int64) *NotificationPreferenceCreate {
 	_c.mutation.SetMutedCategoryIds(v)
 	return _c
 }
 
 // SetID sets the "id" field.
-func (_c *NotificationPreferenceCreate) SetID(v uint64) *NotificationPreferenceCreate {
+func (_c *NotificationPreferenceCreate) SetID(v int64) *NotificationPreferenceCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -250,7 +250,7 @@ func (_c *NotificationPreferenceCreate) sqlSave(ctx context.Context) (*Notificat
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -260,7 +260,7 @@ func (_c *NotificationPreferenceCreate) sqlSave(ctx context.Context) (*Notificat
 func (_c *NotificationPreferenceCreate) createSpec() (*NotificationPreference, *sqlgraph.CreateSpec) {
 	var (
 		_node = &NotificationPreference{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(notificationpreference.Table, sqlgraph.NewFieldSpec(notificationpreference.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(notificationpreference.Table, sqlgraph.NewFieldSpec(notificationpreference.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -280,19 +280,19 @@ func (_c *NotificationPreferenceCreate) createSpec() (*NotificationPreference, *
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationpreference.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationpreference.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationpreference.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationpreference.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationpreference.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(notificationpreference.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(notificationpreference.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(notificationpreference.FieldUserID, field.TypeInt64, value)
 		_node.UserID = value
 	}
 	if value, ok := _c.mutation.QuietEnabled(); ok {
@@ -400,7 +400,7 @@ func (u *NotificationPreferenceUpsert) ClearDeletedAt() *NotificationPreferenceU
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationPreferenceUpsert) SetCreatedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) SetCreatedBy(v int64) *NotificationPreferenceUpsert {
 	u.Set(notificationpreference.FieldCreatedBy, v)
 	return u
 }
@@ -412,7 +412,7 @@ func (u *NotificationPreferenceUpsert) UpdateCreatedBy() *NotificationPreference
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationPreferenceUpsert) AddCreatedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) AddCreatedBy(v int64) *NotificationPreferenceUpsert {
 	u.Add(notificationpreference.FieldCreatedBy, v)
 	return u
 }
@@ -424,7 +424,7 @@ func (u *NotificationPreferenceUpsert) ClearCreatedBy() *NotificationPreferenceU
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationPreferenceUpsert) SetUpdatedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) SetUpdatedBy(v int64) *NotificationPreferenceUpsert {
 	u.Set(notificationpreference.FieldUpdatedBy, v)
 	return u
 }
@@ -436,7 +436,7 @@ func (u *NotificationPreferenceUpsert) UpdateUpdatedBy() *NotificationPreference
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationPreferenceUpsert) AddUpdatedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) AddUpdatedBy(v int64) *NotificationPreferenceUpsert {
 	u.Add(notificationpreference.FieldUpdatedBy, v)
 	return u
 }
@@ -448,7 +448,7 @@ func (u *NotificationPreferenceUpsert) ClearUpdatedBy() *NotificationPreferenceU
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationPreferenceUpsert) SetDeletedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) SetDeletedBy(v int64) *NotificationPreferenceUpsert {
 	u.Set(notificationpreference.FieldDeletedBy, v)
 	return u
 }
@@ -460,7 +460,7 @@ func (u *NotificationPreferenceUpsert) UpdateDeletedBy() *NotificationPreference
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationPreferenceUpsert) AddDeletedBy(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) AddDeletedBy(v int64) *NotificationPreferenceUpsert {
 	u.Add(notificationpreference.FieldDeletedBy, v)
 	return u
 }
@@ -472,7 +472,7 @@ func (u *NotificationPreferenceUpsert) ClearDeletedBy() *NotificationPreferenceU
 }
 
 // SetUserID sets the "user_id" field.
-func (u *NotificationPreferenceUpsert) SetUserID(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) SetUserID(v int64) *NotificationPreferenceUpsert {
 	u.Set(notificationpreference.FieldUserID, v)
 	return u
 }
@@ -484,7 +484,7 @@ func (u *NotificationPreferenceUpsert) UpdateUserID() *NotificationPreferenceUps
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *NotificationPreferenceUpsert) AddUserID(v uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) AddUserID(v int64) *NotificationPreferenceUpsert {
 	u.Add(notificationpreference.FieldUserID, v)
 	return u
 }
@@ -538,7 +538,7 @@ func (u *NotificationPreferenceUpsert) AddQuietEndMinute(v int32) *NotificationP
 }
 
 // SetMutedCategoryIds sets the "muted_category_ids" field.
-func (u *NotificationPreferenceUpsert) SetMutedCategoryIds(v []uint64) *NotificationPreferenceUpsert {
+func (u *NotificationPreferenceUpsert) SetMutedCategoryIds(v []int64) *NotificationPreferenceUpsert {
 	u.Set(notificationpreference.FieldMutedCategoryIds, v)
 	return u
 }
@@ -649,14 +649,14 @@ func (u *NotificationPreferenceUpsertOne) ClearDeletedAt() *NotificationPreferen
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationPreferenceUpsertOne) SetCreatedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) SetCreatedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationPreferenceUpsertOne) AddCreatedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) AddCreatedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -677,14 +677,14 @@ func (u *NotificationPreferenceUpsertOne) ClearCreatedBy() *NotificationPreferen
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationPreferenceUpsertOne) SetUpdatedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) SetUpdatedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationPreferenceUpsertOne) AddUpdatedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) AddUpdatedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -705,14 +705,14 @@ func (u *NotificationPreferenceUpsertOne) ClearUpdatedBy() *NotificationPreferen
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationPreferenceUpsertOne) SetDeletedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) SetDeletedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationPreferenceUpsertOne) AddDeletedBy(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) AddDeletedBy(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -733,14 +733,14 @@ func (u *NotificationPreferenceUpsertOne) ClearDeletedBy() *NotificationPreferen
 }
 
 // SetUserID sets the "user_id" field.
-func (u *NotificationPreferenceUpsertOne) SetUserID(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) SetUserID(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *NotificationPreferenceUpsertOne) AddUserID(v uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) AddUserID(v int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddUserID(v)
 	})
@@ -810,7 +810,7 @@ func (u *NotificationPreferenceUpsertOne) UpdateQuietEndMinute() *NotificationPr
 }
 
 // SetMutedCategoryIds sets the "muted_category_ids" field.
-func (u *NotificationPreferenceUpsertOne) SetMutedCategoryIds(v []uint64) *NotificationPreferenceUpsertOne {
+func (u *NotificationPreferenceUpsertOne) SetMutedCategoryIds(v []int64) *NotificationPreferenceUpsertOne {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetMutedCategoryIds(v)
 	})
@@ -846,7 +846,7 @@ func (u *NotificationPreferenceUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *NotificationPreferenceUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *NotificationPreferenceUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -855,7 +855,7 @@ func (u *NotificationPreferenceUpsertOne) ID(ctx context.Context) (id uint64, er
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *NotificationPreferenceUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *NotificationPreferenceUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -912,7 +912,7 @@ func (_c *NotificationPreferenceCreateBulk) Save(ctx context.Context) ([]*Notifi
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1090,14 +1090,14 @@ func (u *NotificationPreferenceUpsertBulk) ClearDeletedAt() *NotificationPrefere
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationPreferenceUpsertBulk) SetCreatedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) SetCreatedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationPreferenceUpsertBulk) AddCreatedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) AddCreatedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1118,14 +1118,14 @@ func (u *NotificationPreferenceUpsertBulk) ClearCreatedBy() *NotificationPrefere
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationPreferenceUpsertBulk) SetUpdatedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) SetUpdatedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationPreferenceUpsertBulk) AddUpdatedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) AddUpdatedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1146,14 +1146,14 @@ func (u *NotificationPreferenceUpsertBulk) ClearUpdatedBy() *NotificationPrefere
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationPreferenceUpsertBulk) SetDeletedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) SetDeletedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationPreferenceUpsertBulk) AddDeletedBy(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) AddDeletedBy(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1174,14 +1174,14 @@ func (u *NotificationPreferenceUpsertBulk) ClearDeletedBy() *NotificationPrefere
 }
 
 // SetUserID sets the "user_id" field.
-func (u *NotificationPreferenceUpsertBulk) SetUserID(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) SetUserID(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *NotificationPreferenceUpsertBulk) AddUserID(v uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) AddUserID(v int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.AddUserID(v)
 	})
@@ -1251,7 +1251,7 @@ func (u *NotificationPreferenceUpsertBulk) UpdateQuietEndMinute() *NotificationP
 }
 
 // SetMutedCategoryIds sets the "muted_category_ids" field.
-func (u *NotificationPreferenceUpsertBulk) SetMutedCategoryIds(v []uint64) *NotificationPreferenceUpsertBulk {
+func (u *NotificationPreferenceUpsertBulk) SetMutedCategoryIds(v []int64) *NotificationPreferenceUpsertBulk {
 	return u.Update(func(s *NotificationPreferenceUpsert) {
 		s.SetMutedCategoryIds(v)
 	})

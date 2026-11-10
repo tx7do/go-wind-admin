@@ -97,7 +97,7 @@ func TestConfigService_CreateStampsOperator(t *testing.T) {
 		Only(sysCtx)
 	require.NoError(t, err)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(71), *row.CreatedBy, "CreatedBy 应落操作人")
+	require.Equal(t, int64(71), *row.CreatedBy, "CreatedBy 应落操作人")
 
 	// 守卫
 	_, err = svc.Create(opCtx, &configV1.CreateConfigRequest{})
@@ -147,7 +147,7 @@ func TestConfigService_UpdateStampsOperatorAndMask(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "2", derefStr(updated.Value), "掩码内 value 应更新")
 	require.NotNil(t, updated.UpdatedBy, "updated_by 应经追加掩码落库")
-	require.Equal(t, uint64(71), *updated.UpdatedBy, "谁改的参数必须可追溯")
+	require.Equal(t, int64(71), *updated.UpdatedBy, "谁改的参数必须可追溯")
 
 	// 守卫
 	_, err = svc.Update(opCtx, &configV1.UpdateConfigRequest{Id: row.ID})
@@ -172,7 +172,7 @@ func TestConfigService_ListGetDeletePassthrough(t *testing.T) {
 
 	resp, err := svc.List(opCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), resp.GetTotal())
+	require.Equal(t, int64(1), resp.GetTotal())
 
 	got, err := svc.Get(opCtx, &configV1.GetConfigRequest{
 		QueryBy: &configV1.GetConfigRequest_Id{Id: 1},
@@ -186,5 +186,5 @@ func TestConfigService_ListGetDeletePassthrough(t *testing.T) {
 	require.NoError(t, err)
 	resp, err = svc.List(opCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), resp.GetTotal(), "删除后列表应为空")
+	require.Equal(t, int64(0), resp.GetTotal(), "删除后列表应为空")
 }

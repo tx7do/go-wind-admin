@@ -52,7 +52,7 @@ func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlin
 		return nil, err
 	}
 	// 租户管理员只看本租户会话；平台管理员看全量
-	tenantFilter := uint64(0)
+	tenantFilter := int64(0)
 	if !operator.GetIsPlatformAdmin() {
 		tenantFilter = operator.GetTenantId()
 	}
@@ -98,7 +98,7 @@ func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlin
 		return items[i].GetLoginAt().AsTime().After(items[j].GetLoginAt().AsTime())
 	})
 
-	total := uint64(len(items))
+	total := int64(len(items))
 
 	// 内存分页：page 从 1 开始，缺省返回前 20 条
 	page := max(int(req.GetPage()), 1)
@@ -119,7 +119,7 @@ func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlin
 
 	return &onlineSessionV1.ListOnlineSessionResponse{
 		Items: items,
-		Total: total,
+		Total: int64(total),
 	}, nil
 }
 
@@ -168,7 +168,7 @@ func (s *OnlineSessionService) ListMyOnlineSession(ctx context.Context, req *onl
 
 	return &onlineSessionV1.ListOnlineSessionResponse{
 		Items: items,
-		Total: uint64(len(items)),
+		Total: int64(len(items)),
 	}, nil
 }
 

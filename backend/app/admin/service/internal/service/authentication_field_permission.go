@@ -19,8 +19,8 @@ import (
 // 配置变更最迟随下次刷新令牌生效。
 func (s *AuthenticationService) aggregateHiddenFields(
 	ctx context.Context,
-	tenantID uint64,
-	roleIDs []uint64,
+	tenantID int64,
+	roleIDs []int64,
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) {
 	if tenantID == 0 {

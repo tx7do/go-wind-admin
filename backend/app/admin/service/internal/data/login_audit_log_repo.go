@@ -121,7 +121,7 @@ func (r *LoginAuditLogRepo) List(ctx context.Context, req *paginationV1.PagingRe
 	}, nil
 }
 
-func (r *LoginAuditLogRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *LoginAuditLogRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().LoginAuditLog.Query().
 		Where(loginauditlog.IDEQ(id)).
 		Exist(ctx)

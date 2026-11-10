@@ -134,8 +134,8 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	if treeTravel {
 		dtos = pagination.BuildTree(
 			dtos,
-			func(node *permissionV1.Menu) *uint64 { return node.Id },
-			func(node *permissionV1.Menu) *uint64 { return node.ParentId },
+			func(node *permissionV1.Menu) *int64 { return node.Id },
+			func(node *permissionV1.Menu) *int64 { return node.ParentId },
 			func(node *permissionV1.Menu) *[]*permissionV1.Menu { return &node.Children },
 		)
 	}
@@ -146,12 +146,12 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	}
 
 	return &permissionV1.ListMenuResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *MenuRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *MenuRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Menu.Query().
 		Where(menu.IDEQ(id)).
 		Exist(ctx)
@@ -388,7 +388,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 
 // ensureAcyclicParent 校验把 nodeID 挂到 newParentID 下不会成环：从新父沿
 // parent 链上行，命中 nodeID 即拒绝。visited 防护让存量环脏数据也不会死循环。
-func (r *MenuRepo) ensureAcyclicParent(ctx context.Context, nodeID, newParentID uint64) error {
+func (r *MenuRepo) ensureAcyclicParent(ctx context.Context, nodeID, newParentID int64) error {
 	if newParentID == nodeID {
 		return permissionV1.ErrorBadRequest("cannot move menu under itself")
 	}
@@ -399,13 +399,13 @@ func (r *MenuRepo) ensureAcyclicParent(ctx context.Context, nodeID, newParentID 
 		r.log.Errorf(ctx, "query menus for parent acyclicity check failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("query menus failed")
 	}
-	parentOf := make(map[uint64]uint64, len(rows))
+	parentOf := make(map[int64]int64, len(rows))
 	for _, row := range rows {
 		if row.ParentID != nil && *row.ParentID > 0 {
 			parentOf[row.ID] = *row.ParentID
 		}
 	}
-	visited := make(map[uint64]struct{}, len(rows))
+	visited := make(map[int64]struct{}, len(rows))
 	cur := newParentID
 	for cur != 0 {
 		if cur == nodeID {
@@ -423,7 +423,7 @@ func (r *MenuRepo) ensureAcyclicParent(ctx context.Context, nodeID, newParentID 
 
 // refreshBindingFullPaths 移动/改名后把本节点及其子树的授权绑定快照从旧全路径
 // 改写为新全路径。子树按 parent 链内存收集（visited 防护，存量环不死循环）。
-func (r *MenuRepo) refreshBindingFullPaths(ctx context.Context, nodeID uint64, byIDBefore map[uint64]string, childrenOf map[uint64][]*ent.Menu) error {
+func (r *MenuRepo) refreshBindingFullPaths(ctx context.Context, nodeID int64, byIDBefore map[int64]string, childrenOf map[int64][]*ent.Menu) error {
 	_, byIDAfter, _, err := r.buildMenuFullPathIndex(ctx, r.entClient.Client())
 	if err != nil {
 		return err
@@ -474,7 +474,7 @@ func (r *MenuRepo) Truncate(ctx context.Context) error {
 //     更新不触碰 status：管理端手工停用的菜单不会被同步重新启用。
 //
 // 整个同步在单个事务内执行，任一步失败整体回滚，不会把菜单表留在半空状态。
-func (r *MenuRepo) SyncMenus(ctx context.Context, items []*permissionV1.Menu, mode permissionV1.SyncMenusRequest_Mode, operatorId uint64) (count int, err error) {
+func (r *MenuRepo) SyncMenus(ctx context.Context, items []*permissionV1.Menu, mode permissionV1.SyncMenusRequest_Mode, operatorId int64) (count int, err error) {
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
@@ -511,7 +511,7 @@ func (r *MenuRepo) SyncMenus(ctx context.Context, items []*permissionV1.Menu, mo
 }
 
 // syncInsertTree 递归插入菜单树：先插父节点拿 ID，再递归子节点（REPLACE 模式）
-func (r *MenuRepo) syncInsertTree(ctx context.Context, client *ent.Client, items []*permissionV1.Menu, parentID *uint64, operatorId uint64) (int, error) {
+func (r *MenuRepo) syncInsertTree(ctx context.Context, client *ent.Client, items []*permissionV1.Menu, parentID *int64, operatorId int64) (int, error) {
 	count := 0
 	for _, m := range items {
 		if m == nil {
@@ -552,10 +552,10 @@ func (r *MenuRepo) syncMergeTree(
 	ctx context.Context,
 	client *ent.Client,
 	items []*permissionV1.Menu,
-	parentID *uint64,
+	parentID *int64,
 	parentFullPath string,
 	existing map[string]*ent.Menu,
-	operatorId uint64,
+	operatorId int64,
 ) (int, error) {
 	count := 0
 	for _, m := range items {
@@ -569,7 +569,7 @@ func (r *MenuRepo) syncMergeTree(
 		}
 
 		exist := existing[fullPath]
-		var rowID uint64
+		var rowID int64
 		if exist != nil {
 			builder := client.Menu.Update().
 				Where(menu.IDEQ(exist.ID)).
@@ -656,14 +656,14 @@ func (r *MenuRepo) buildMenuFullPathMap(ctx context.Context, client *ent.Client)
 // 下 visited 防护正常收敛，不会打转挂死）。
 // 全路径是菜单的身份键：菜单同步 MERGE 按它保号，权限-菜单授权绑定存它的
 // 快照（sys_permission_menus.full_path）。
-func (r *MenuRepo) buildMenuFullPathIndex(ctx context.Context, client *ent.Client) (byPath map[string]*ent.Menu, byID map[uint64]string, childrenOf map[uint64][]*ent.Menu, err error) {
+func (r *MenuRepo) buildMenuFullPathIndex(ctx context.Context, client *ent.Client) (byPath map[string]*ent.Menu, byID map[int64]string, childrenOf map[int64][]*ent.Menu, err error) {
 	rows, err := client.Menu.Query().All(ctx)
 	if err != nil {
 		r.log.Errorf(ctx, "query existing menus failed: %s", err.Error())
 		return nil, nil, nil, permissionV1.ErrorInternalServerError("query existing menus failed")
 	}
 
-	childrenOf = make(map[uint64][]*ent.Menu, len(rows))
+	childrenOf = make(map[int64][]*ent.Menu, len(rows))
 	var roots []*ent.Menu
 	for _, row := range rows {
 		if row.ParentID == nil || *row.ParentID == 0 {
@@ -674,8 +674,8 @@ func (r *MenuRepo) buildMenuFullPathIndex(ctx context.Context, client *ent.Clien
 	}
 
 	byPath = make(map[string]*ent.Menu, len(rows))
-	byID = make(map[uint64]string, len(rows))
-	visited := make(map[uint64]bool, len(rows))
+	byID = make(map[int64]string, len(rows))
+	visited := make(map[int64]bool, len(rows))
 	var walk func(rows []*ent.Menu, parentFullPath string)
 	walk = func(rows []*ent.Menu, parentFullPath string) {
 		for _, row := range rows {
@@ -695,14 +695,14 @@ func (r *MenuRepo) buildMenuFullPathIndex(ctx context.Context, client *ent.Clien
 }
 
 // collectMenuSubtreeIDs 按 parent 链内存收集 rootID 及其全部后代（含自身）。
-func collectMenuSubtreeIDs(childrenOf map[uint64][]*ent.Menu, rootID uint64) []uint64 {
-	return collectTreeIDs(childrenOf, func(m *ent.Menu) uint64 { return m.ID }, rootID)
+func collectMenuSubtreeIDs(childrenOf map[int64][]*ent.Menu, rootID int64) []int64 {
+	return collectTreeIDs(childrenOf, func(m *ent.Menu) int64 { return m.ID }, rootID)
 }
 
 // ResolveMenuIDsByFullPaths 把授权绑定的菜单全路径快照反解回当前 sys_menus 的 id，
 // 供导航/回显链路使用。路径已不存在的快照（菜单被删除且无同路径重建）解析不出
 // id，防御性跳过。
-func (r *MenuRepo) ResolveMenuIDsByFullPaths(ctx context.Context, fullPaths []string) ([]uint64, error) {
+func (r *MenuRepo) ResolveMenuIDsByFullPaths(ctx context.Context, fullPaths []string) ([]int64, error) {
 	if len(fullPaths) == 0 {
 		return nil, nil
 	}
@@ -711,12 +711,12 @@ func (r *MenuRepo) ResolveMenuIDsByFullPaths(ctx context.Context, fullPaths []st
 		return nil, err
 	}
 	// 索引是 id→path，反着用：path→id
-	pathToID := make(map[string]uint64, len(byID))
+	pathToID := make(map[string]int64, len(byID))
 	for id, p := range byID {
 		pathToID[p] = id
 	}
-	ids := make([]uint64, 0, len(fullPaths))
-	seen := make(map[uint64]struct{}, len(fullPaths))
+	ids := make([]int64, 0, len(fullPaths))
+	seen := make(map[int64]struct{}, len(fullPaths))
 	for _, p := range fullPaths {
 		if id, ok := pathToID[p]; ok {
 			if _, dup := seen[id]; dup {
@@ -731,7 +731,7 @@ func (r *MenuRepo) ResolveMenuIDsByFullPaths(ctx context.Context, fullPaths []st
 
 // ListAllIDs 列出全部菜单行 id（模板权限播种期收敛引用用；菜单规模有界，
 // 全量拉取无分页必要）。
-func (r *MenuRepo) ListAllIDs(ctx context.Context) ([]uint64, error) {
+func (r *MenuRepo) ListAllIDs(ctx context.Context) ([]int64, error) {
 	intIDs, err := r.entClient.Client().Menu.Query().
 		Select(menu.FieldID).
 		Ints(ctx)
@@ -739,9 +739,9 @@ func (r *MenuRepo) ListAllIDs(ctx context.Context) ([]uint64, error) {
 		r.log.Errorf(ctx, "list all menu ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list all menu ids failed")
 	}
-	ids := make([]uint64, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint64(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }

@@ -107,7 +107,7 @@ func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	}, nil
 }
 
-func (r *TenantRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *TenantRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -230,7 +230,7 @@ func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExi
 	}, nil
 }
 
-func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint64) ([]*identityV1.Tenant, error) {
+func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []int64) ([]*identityV1.Tenant, error) {
 	if len(ids) == 0 {
 		return []*identityV1.Tenant{}, nil
 	}
@@ -261,6 +261,6 @@ func (r *TenantRepo) CreateWithTx(ctx context.Context, tx any, data *identityV1.
 }
 
 // AssignTenantAdmin — gorm scaffold stub: 跨仓储事务内的 admin_user_id 设置，见 data/tenant_repo.go。
-func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx any, tenantId uint64, userId uint64) error {
+func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx any, tenantId int64, userId int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignTenantAdmin not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/tenant_repo.go")
 }

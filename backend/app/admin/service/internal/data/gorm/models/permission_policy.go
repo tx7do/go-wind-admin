@@ -8,7 +8,7 @@ import (
 type PermissionPolicy struct {
 	mixin.AutoIncrementID64
 
-	PermissionId *uint64 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
+	PermissionId *int64 `gorm:"column:permission_id;type:int unsigned;comment:权限ID"`
 	PolicyEngine *string `gorm:"column:policy_engine;type:varchar(128);comment:策略引擎"`
 	Definition   *string `gorm:"column:definition;type:text;comment:策略定义"`
 	Version      *uint32 `gorm:"column:version;type:int unsigned;comment:版本"`

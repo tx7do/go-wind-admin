@@ -133,12 +133,12 @@ func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	}
 
 	return &identityV1.ListTenantResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *TenantRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *TenantRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Tenant.Query().
 		Where(tenant.IDEQ(id)).
 		Exist(ctx)
@@ -334,7 +334,7 @@ func (r *TenantRepo) Update(ctx context.Context, req *identityV1.UpdateTenantReq
 }
 
 // AssignTenantAdmin assigns an admin user to a tenant within a transaction.
-func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId uint64, userId uint64) error {
+func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId int64, userId int64) error {
 	_, err := tx.Tenant.Update().
 		Where(tenant.IDEQ(tenantId)).
 		SetAdminUserID(userId).
@@ -393,7 +393,7 @@ func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExi
 }
 
 // ListTenantsByIds gets tenants by a list of IDs.
-func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint64) ([]*identityV1.Tenant, error) {
+func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []int64) ([]*identityV1.Tenant, error) {
 	if len(ids) == 0 {
 		return []*identityV1.Tenant{}, nil
 	}

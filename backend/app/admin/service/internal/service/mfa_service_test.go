@@ -89,11 +89,11 @@ func TestTotpSkewWindow(t *testing.T) {
 	}
 }
 
-// TestParseFactorId 验证 credential_id 字符串到 uint64 主键的解析。
+// TestParseFactorId 验证 credential_id 字符串到 int64 主键的解析。
 func TestParseFactorId(t *testing.T) {
 	cases := []struct {
 		in      string
-		want    uint64
+		want    int64
 		wantErr bool
 	}{
 		{"1", 1, false},
@@ -101,7 +101,7 @@ func TestParseFactorId(t *testing.T) {
 		{"", 0, true},
 		{"abc", 0, true},
 		{"-1", 0, true},
-		{"4294967296", 0, true}, // 超 uint64
+		{"4294967296", 0, true}, // 超 int64
 	}
 	for _, c := range cases {
 		got, err := parseFactorId(c.in)

@@ -23,9 +23,9 @@ func (AiUsageLog) Annotations() []schema.Annotation {
 
 func (AiUsageLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("provider_id").Comment("提供商ID").Optional().Nillable(),
-		field.Uint64("conversation_id").Comment("会话ID（0=非对话调用）").Optional().Nillable(),
-		field.Uint64("user_id").Comment("发起用户ID").Optional().Nillable(),
+		field.Int64("provider_id").Comment("提供商ID").Optional().Nillable(),
+		field.Int64("conversation_id").Comment("会话ID（0=非对话调用）").Optional().Nillable(),
+		field.Int64("user_id").Comment("发起用户ID").Optional().Nillable(),
 		field.String("model_name").Comment("模型名称").Optional().Nillable(),
 		field.Uint32("prompt_tokens").Comment("输入 token 数").Optional().Nillable(),
 		field.Uint32("completion_tokens").Comment("输出 token 数").Optional().Nillable(),
@@ -38,7 +38,7 @@ func (AiUsageLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId64{},
 		mixin.CreatedAt{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

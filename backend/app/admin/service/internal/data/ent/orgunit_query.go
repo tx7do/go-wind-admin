@@ -132,8 +132,8 @@ func (_q *OrgUnitQuery) FirstX(ctx context.Context) *OrgUnit {
 
 // FirstID returns the first OrgUnit ID from the query.
 // Returns a *NotFoundError when no OrgUnit ID was found.
-func (_q *OrgUnitQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *OrgUnitQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -145,7 +145,7 @@ func (_q *OrgUnitQuery) FirstID(ctx context.Context) (id uint64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *OrgUnitQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *OrgUnitQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -183,8 +183,8 @@ func (_q *OrgUnitQuery) OnlyX(ctx context.Context) *OrgUnit {
 // OnlyID is like Only, but returns the only OrgUnit ID in the query.
 // Returns a *NotSingularError when more than one OrgUnit ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *OrgUnitQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *OrgUnitQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -200,7 +200,7 @@ func (_q *OrgUnitQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *OrgUnitQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *OrgUnitQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -228,7 +228,7 @@ func (_q *OrgUnitQuery) AllX(ctx context.Context) []*OrgUnit {
 }
 
 // IDs executes the query and returns a list of OrgUnit IDs.
-func (_q *OrgUnitQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *OrgUnitQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -240,7 +240,7 @@ func (_q *OrgUnitQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *OrgUnitQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *OrgUnitQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -458,8 +458,8 @@ func (_q *OrgUnitQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*OrgU
 }
 
 func (_q *OrgUnitQuery) loadParent(ctx context.Context, query *OrgUnitQuery, nodes []*OrgUnit, init func(*OrgUnit), assign func(*OrgUnit, *OrgUnit)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*OrgUnit)
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*OrgUnit)
 	for i := range nodes {
 		if nodes[i].ParentID == nil {
 			continue
@@ -491,7 +491,7 @@ func (_q *OrgUnitQuery) loadParent(ctx context.Context, query *OrgUnitQuery, nod
 }
 func (_q *OrgUnitQuery) loadChildren(ctx context.Context, query *OrgUnitQuery, nodes []*OrgUnit, init func(*OrgUnit), assign func(*OrgUnit, *OrgUnit)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*OrgUnit)
+	nodeids := make(map[int64]*OrgUnit)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -536,7 +536,7 @@ func (_q *OrgUnitQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *OrgUnitQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(orgunit.Table, orgunit.Columns, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

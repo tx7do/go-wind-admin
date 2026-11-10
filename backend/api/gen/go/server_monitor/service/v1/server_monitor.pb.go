@@ -97,10 +97,10 @@ type GoRuntimeInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Version       *string                `protobuf:"bytes,1,opt,name=version,proto3,oneof" json:"version,omitempty"`                                     // Go 版本
 	NumGoroutine  *uint32                `protobuf:"varint,2,opt,name=num_goroutine,json=numGoroutine,proto3,oneof" json:"num_goroutine,omitempty"`      // goroutine 数量
-	MemAllocBytes *uint64                `protobuf:"varint,3,opt,name=mem_alloc_bytes,json=memAllocBytes,proto3,oneof" json:"mem_alloc_bytes,omitempty"` // 堆内存分配
-	MemSysBytes   *uint64                `protobuf:"varint,4,opt,name=mem_sys_bytes,json=memSysBytes,proto3,oneof" json:"mem_sys_bytes,omitempty"`       // 系统内存占用
+	MemAllocBytes *int64                 `protobuf:"varint,3,opt,name=mem_alloc_bytes,json=memAllocBytes,proto3,oneof" json:"mem_alloc_bytes,omitempty"` // 堆内存分配
+	MemSysBytes   *int64                 `protobuf:"varint,4,opt,name=mem_sys_bytes,json=memSysBytes,proto3,oneof" json:"mem_sys_bytes,omitempty"`       // 系统内存占用
 	GcCycles      *uint32                `protobuf:"varint,5,opt,name=gc_cycles,json=gcCycles,proto3,oneof" json:"gc_cycles,omitempty"`                  // GC 次数
-	UptimeSeconds *uint64                `protobuf:"varint,6,opt,name=uptime_seconds,json=uptimeSeconds,proto3,oneof" json:"uptime_seconds,omitempty"`   // 运行时长
+	UptimeSeconds *int64                 `protobuf:"varint,6,opt,name=uptime_seconds,json=uptimeSeconds,proto3,oneof" json:"uptime_seconds,omitempty"`   // 运行时长
 	StartedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`                // 启动时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -150,14 +150,14 @@ func (x *GoRuntimeInfo) GetNumGoroutine() uint32 {
 	return 0
 }
 
-func (x *GoRuntimeInfo) GetMemAllocBytes() uint64 {
+func (x *GoRuntimeInfo) GetMemAllocBytes() int64 {
 	if x != nil && x.MemAllocBytes != nil {
 		return *x.MemAllocBytes
 	}
 	return 0
 }
 
-func (x *GoRuntimeInfo) GetMemSysBytes() uint64 {
+func (x *GoRuntimeInfo) GetMemSysBytes() int64 {
 	if x != nil && x.MemSysBytes != nil {
 		return *x.MemSysBytes
 	}
@@ -171,7 +171,7 @@ func (x *GoRuntimeInfo) GetGcCycles() uint32 {
 	return 0
 }
 
-func (x *GoRuntimeInfo) GetUptimeSeconds() uint64 {
+func (x *GoRuntimeInfo) GetUptimeSeconds() int64 {
 	if x != nil && x.UptimeSeconds != nil {
 		return *x.UptimeSeconds
 	}
@@ -397,10 +397,10 @@ const file_server_monitor_service_v1_server_monitor_proto_rawDesc = "" +
 	"\rGoRuntimeInfo\x12.\n" +
 	"\aversion\x18\x01 \x01(\tB\x0f\xbaG\f\x92\x02\tGo 版本H\x00R\aversion\x88\x01\x01\x12@\n" +
 	"\rnum_goroutine\x18\x02 \x01(\rB\x16\xbaG\x13\x92\x02\x10goroutine 数量H\x01R\fnumGoroutine\x88\x01\x01\x12K\n" +
-	"\x0fmem_alloc_bytes\x18\x03 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18堆内存分配字节数H\x02R\rmemAllocBytes\x88\x01\x01\x12P\n" +
-	"\rmem_sys_bytes\x18\x04 \x01(\x04B'\xbaG$\x92\x02!向系统申请的内存字节数H\x03R\vmemSysBytes\x88\x01\x01\x127\n" +
+	"\x0fmem_alloc_bytes\x18\x03 \x01(\x03B\x1e\xbaG\x1b\x92\x02\x18堆内存分配字节数H\x02R\rmemAllocBytes\x88\x01\x01\x12P\n" +
+	"\rmem_sys_bytes\x18\x04 \x01(\x03B'\xbaG$\x92\x02!向系统申请的内存字节数H\x03R\vmemSysBytes\x88\x01\x01\x127\n" +
 	"\tgc_cycles\x18\x05 \x01(\rB\x15\xbaG\x12\x92\x02\x0fGC 完成次数H\x04R\bgcCycles\x88\x01\x01\x12M\n" +
-	"\x0euptime_seconds\x18\x06 \x01(\x04B!\xbaG\x1e\x92\x02\x1b服务运行时长（秒）H\x05R\ruptimeSeconds\x88\x01\x01\x12X\n" +
+	"\x0euptime_seconds\x18\x06 \x01(\x03B!\xbaG\x1e\x92\x02\x1b服务运行时长（秒）H\x05R\ruptimeSeconds\x88\x01\x01\x12X\n" +
 	"\n" +
 	"started_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12进程启动时间H\x06R\tstartedAt\x88\x01\x01B\n" +
 	"\n" +

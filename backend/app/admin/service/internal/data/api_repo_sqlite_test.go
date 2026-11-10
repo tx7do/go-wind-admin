@@ -119,7 +119,7 @@ func TestApiRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 行")
 	require.Contains(t, *filtered.Items[0].Path, "markerghi", "命中行应是携带标记的行")
 
@@ -138,12 +138,12 @@ func TestApiRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), none.Total, "无命中 contains 应返回 Total=0")
+	require.Equal(t, int64(0), none.Total, "无命中 contains 应返回 Total=0")
 	require.Empty(t, none.Items)
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应返回全部 2 行")
+	require.Equal(t, int64(2), all.Total, "无过滤时应返回全部 2 行")
 	require.Len(t, all.Items, 2)
 	// 列表读视图：status/scope 未显式指定、均按列默认（ON/ADMIN）落库，经
 	// queryEnumsAndBackfill 如实回显；business_module 列为 NULL，无可回填值、
@@ -207,7 +207,7 @@ func TestApiRepoSqlite_Get(t *testing.T) {
 	require.Error(t, err, "空方法应返回 BadRequest")
 
 	// GetApiByIDs 命中/空集合
-	byIDs, err := repo.GetApiByIDs(ctx, []uint64{createdID})
+	byIDs, err := repo.GetApiByIDs(ctx, []int64{createdID})
 	require.NoError(t, err)
 	require.Len(t, byIDs, 1, "按存在的 ID 集合应返回 1 行")
 	// 读视图（GetApiByIDs 路径）：同上，列默认 status/scope 如实回显。

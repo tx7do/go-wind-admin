@@ -30,7 +30,7 @@ service AiConversationService {
 
 // AI 对话会话
 message AiConversation {
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {
       description: "会话ID"
@@ -42,17 +42,17 @@ message AiConversation {
     (gnostic.openapi.v3.property) = {description: "会话标题（默认取首条消息摘要）"}
   ]; // 会话标题
 
-  optional uint64 provider_id = 3 [
+  optional int64 provider_id = 3 [
     json_name = "providerId",
     (gnostic.openapi.v3.property) = {description: "会话使用的提供商ID（0 表示未指定）"}
   ]; // 提供商ID
 
-  optional uint64 user_id = 4 [
+  optional int64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "归属用户ID"}
   ]; // 归属用户ID
 
-  optional uint64 tenant_id = 5 [
+  optional int64 tenant_id = 5 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ]; // 租户ID
@@ -62,9 +62,9 @@ message AiConversation {
     (gnostic.openapi.v3.property) = {description: "最近一条消息时间"}
   ]; // 最近一条消息时间
 
-  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
-  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
-  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -74,13 +74,13 @@ message AiConversation {
 // 查询会话列表 - 回应
 message ListAiConversationResponse {
   repeated AiConversation items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询会话详情 - 请求
 message GetAiConversationRequest {
   oneof query_by {
-    uint64 id = 1;
+    int64 id = 1;
   }
 
   optional google.protobuf.FieldMask view_mask = 100 [
@@ -90,7 +90,7 @@ message GetAiConversationRequest {
 
 // 更新会话 - 请求
 message UpdateAiConversationRequest {
-  uint64 id = 1;
+  int64 id = 1;
 
   AiConversation data = 2;
 
@@ -106,10 +106,10 @@ message UpdateAiConversationRequest {
 // 删除会话 - 请求
 message DeleteAiConversationRequest {
   oneof query_by {
-    uint64 id = 1;
+    int64 id = 1;
   }
 }
 
 message CountAiConversationResponse {
-  uint64 count = 1; // 会话数量
+  int64 count = 1; // 会话数量
 }

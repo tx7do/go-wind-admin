@@ -116,7 +116,7 @@ func TestConfigRepoSqlite_ValueTypeReadView(t *testing.T) {
 		{nil, configV1.Config_STRING, sysconfig.ValueTypeString, "sys.readview.default", "x"},
 	}
 
-	createdIDs := make(map[string]uint64, len(cases))
+	createdIDs := make(map[string]int64, len(cases))
 	for _, c := range cases {
 		data := &configV1.Config{
 			Key:   trans.Ptr(c.key),

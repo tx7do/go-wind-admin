@@ -20,12 +20,12 @@ service AiChatService {
 
 // 发起对话 - 请求
 message ChatRequest {
-  optional uint64 conversation_id = 1 [
+  optional int64 conversation_id = 1 [
     json_name = "conversationId",
     (gnostic.openapi.v3.property) = {description: "会话ID；0 表示新建会话"}
   ]; // 会话ID，0=新建
 
-  optional uint64 provider_id = 2 [
+  optional int64 provider_id = 2 [
     json_name = "providerId",
     (gnostic.openapi.v3.property) = {description: "提供商ID；0 表示使用默认提供商"}
   ]; // 提供商ID，0=默认
@@ -35,7 +35,7 @@ message ChatRequest {
     (gnostic.openapi.v3.property) = {description: "用户输入内容"}
   ]; // 用户输入内容
 
-  optional uint64 knowledge_base_id = 4 [
+  optional int64 knowledge_base_id = 4 [
     json_name = "knowledgeBaseId",
     (gnostic.openapi.v3.property) = {description: "知识库ID；>0 时先检索该库并将相关片段注入 system 上下文（RAG）"}
   ]; // 知识库ID，0=不检索
@@ -54,7 +54,7 @@ message ChatResponse {
 //
 // 仅在服务层用于构造事件载荷，不挂 HTTP 路由。
 message ChatChunkEvent {
-  uint64 conversation_id = 1 [json_name = "conversationId"]; // 所属会话
+  int64 conversation_id = 1 [json_name = "conversationId"]; // 所属会话
   uint32 seq = 2;                                            // 片段序号（会话内单调递增，从 0 开始）
   string delta = 3;                                          // 增量文本片段
 }
@@ -65,7 +65,7 @@ message ChatChunkEvent {
 // 模型每发起一次本地工具调用并执行完成后推一帧，供前端展示
 // "模型正在调工具"；工具轮不进消息落库（落库的 assistant 消息只有最终答案）。
 message ChatToolEvent {
-  uint64 conversation_id = 1 [json_name = "conversationId"]; // 所属会话
+  int64 conversation_id = 1 [json_name = "conversationId"]; // 所属会话
   string name = 2;                                           // 工具名（如 get_current_time）
   string arguments = 3;                                      // 模型给出的请求参数 JSON 串
   string result = 4;                                         // 执行结果文本；执行失败为 "tool error: ..." 文本

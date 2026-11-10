@@ -37,13 +37,13 @@ func (_c *AiUsageLogCreate) SetNillableCreatedAt(v *time.Time) *AiUsageLogCreate
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiUsageLogCreate) SetTenantID(v uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetTenantID(v int64) *AiUsageLogCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiUsageLogCreate) SetNillableTenantID(v *uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetNillableTenantID(v *int64) *AiUsageLogCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -51,13 +51,13 @@ func (_c *AiUsageLogCreate) SetNillableTenantID(v *uint64) *AiUsageLogCreate {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_c *AiUsageLogCreate) SetProviderID(v uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetProviderID(v int64) *AiUsageLogCreate {
 	_c.mutation.SetProviderID(v)
 	return _c
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_c *AiUsageLogCreate) SetNillableProviderID(v *uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetNillableProviderID(v *int64) *AiUsageLogCreate {
 	if v != nil {
 		_c.SetProviderID(*v)
 	}
@@ -65,13 +65,13 @@ func (_c *AiUsageLogCreate) SetNillableProviderID(v *uint64) *AiUsageLogCreate {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_c *AiUsageLogCreate) SetConversationID(v uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetConversationID(v int64) *AiUsageLogCreate {
 	_c.mutation.SetConversationID(v)
 	return _c
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_c *AiUsageLogCreate) SetNillableConversationID(v *uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetNillableConversationID(v *int64) *AiUsageLogCreate {
 	if v != nil {
 		_c.SetConversationID(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *AiUsageLogCreate) SetNillableConversationID(v *uint64) *AiUsageLogCrea
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *AiUsageLogCreate) SetUserID(v uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetUserID(v int64) *AiUsageLogCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *AiUsageLogCreate) SetNillableUserID(v *uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetNillableUserID(v *int64) *AiUsageLogCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -163,7 +163,7 @@ func (_c *AiUsageLogCreate) SetNillableDurationMs(v *uint32) *AiUsageLogCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *AiUsageLogCreate) SetID(v uint64) *AiUsageLogCreate {
+func (_c *AiUsageLogCreate) SetID(v int64) *AiUsageLogCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -235,7 +235,7 @@ func (_c *AiUsageLogCreate) sqlSave(ctx context.Context) (*AiUsageLog, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -245,7 +245,7 @@ func (_c *AiUsageLogCreate) sqlSave(ctx context.Context) (*AiUsageLog, error) {
 func (_c *AiUsageLogCreate) createSpec() (*AiUsageLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiUsageLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aiusagelog.Table, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(aiusagelog.Table, sqlgraph.NewFieldSpec(aiusagelog.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -257,19 +257,19 @@ func (_c *AiUsageLogCreate) createSpec() (*AiUsageLog, *sqlgraph.CreateSpec) {
 		_node.CreatedAt = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aiusagelog.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(aiusagelog.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.ProviderID(); ok {
-		_spec.SetField(aiusagelog.FieldProviderID, field.TypeUint64, value)
+		_spec.SetField(aiusagelog.FieldProviderID, field.TypeInt64, value)
 		_node.ProviderID = &value
 	}
 	if value, ok := _c.mutation.ConversationID(); ok {
-		_spec.SetField(aiusagelog.FieldConversationID, field.TypeUint64, value)
+		_spec.SetField(aiusagelog.FieldConversationID, field.TypeInt64, value)
 		_node.ConversationID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(aiusagelog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aiusagelog.FieldUserID, field.TypeInt64, value)
 		_node.UserID = &value
 	}
 	if value, ok := _c.mutation.ModelName(); ok {
@@ -345,7 +345,7 @@ type (
 )
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiUsageLogUpsert) SetProviderID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) SetProviderID(v int64) *AiUsageLogUpsert {
 	u.Set(aiusagelog.FieldProviderID, v)
 	return u
 }
@@ -357,7 +357,7 @@ func (u *AiUsageLogUpsert) UpdateProviderID() *AiUsageLogUpsert {
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiUsageLogUpsert) AddProviderID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) AddProviderID(v int64) *AiUsageLogUpsert {
 	u.Add(aiusagelog.FieldProviderID, v)
 	return u
 }
@@ -369,7 +369,7 @@ func (u *AiUsageLogUpsert) ClearProviderID() *AiUsageLogUpsert {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (u *AiUsageLogUpsert) SetConversationID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) SetConversationID(v int64) *AiUsageLogUpsert {
 	u.Set(aiusagelog.FieldConversationID, v)
 	return u
 }
@@ -381,7 +381,7 @@ func (u *AiUsageLogUpsert) UpdateConversationID() *AiUsageLogUpsert {
 }
 
 // AddConversationID adds v to the "conversation_id" field.
-func (u *AiUsageLogUpsert) AddConversationID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) AddConversationID(v int64) *AiUsageLogUpsert {
 	u.Add(aiusagelog.FieldConversationID, v)
 	return u
 }
@@ -393,7 +393,7 @@ func (u *AiUsageLogUpsert) ClearConversationID() *AiUsageLogUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiUsageLogUpsert) SetUserID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) SetUserID(v int64) *AiUsageLogUpsert {
 	u.Set(aiusagelog.FieldUserID, v)
 	return u
 }
@@ -405,7 +405,7 @@ func (u *AiUsageLogUpsert) UpdateUserID() *AiUsageLogUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiUsageLogUpsert) AddUserID(v uint64) *AiUsageLogUpsert {
+func (u *AiUsageLogUpsert) AddUserID(v int64) *AiUsageLogUpsert {
 	u.Add(aiusagelog.FieldUserID, v)
 	return u
 }
@@ -585,14 +585,14 @@ func (u *AiUsageLogUpsertOne) Update(set func(*AiUsageLogUpsert)) *AiUsageLogUps
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiUsageLogUpsertOne) SetProviderID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) SetProviderID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiUsageLogUpsertOne) AddProviderID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) AddProviderID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddProviderID(v)
 	})
@@ -613,14 +613,14 @@ func (u *AiUsageLogUpsertOne) ClearProviderID() *AiUsageLogUpsertOne {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (u *AiUsageLogUpsertOne) SetConversationID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) SetConversationID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetConversationID(v)
 	})
 }
 
 // AddConversationID adds v to the "conversation_id" field.
-func (u *AiUsageLogUpsertOne) AddConversationID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) AddConversationID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddConversationID(v)
 	})
@@ -641,14 +641,14 @@ func (u *AiUsageLogUpsertOne) ClearConversationID() *AiUsageLogUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiUsageLogUpsertOne) SetUserID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) SetUserID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiUsageLogUpsertOne) AddUserID(v uint64) *AiUsageLogUpsertOne {
+func (u *AiUsageLogUpsertOne) AddUserID(v int64) *AiUsageLogUpsertOne {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddUserID(v)
 	})
@@ -817,7 +817,7 @@ func (u *AiUsageLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiUsageLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *AiUsageLogUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -826,7 +826,7 @@ func (u *AiUsageLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiUsageLogUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *AiUsageLogUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -883,7 +883,7 @@ func (_c *AiUsageLogCreateBulk) Save(ctx context.Context) ([]*AiUsageLog, error)
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1022,14 +1022,14 @@ func (u *AiUsageLogUpsertBulk) Update(set func(*AiUsageLogUpsert)) *AiUsageLogUp
 }
 
 // SetProviderID sets the "provider_id" field.
-func (u *AiUsageLogUpsertBulk) SetProviderID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) SetProviderID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetProviderID(v)
 	})
 }
 
 // AddProviderID adds v to the "provider_id" field.
-func (u *AiUsageLogUpsertBulk) AddProviderID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) AddProviderID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddProviderID(v)
 	})
@@ -1050,14 +1050,14 @@ func (u *AiUsageLogUpsertBulk) ClearProviderID() *AiUsageLogUpsertBulk {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (u *AiUsageLogUpsertBulk) SetConversationID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) SetConversationID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetConversationID(v)
 	})
 }
 
 // AddConversationID adds v to the "conversation_id" field.
-func (u *AiUsageLogUpsertBulk) AddConversationID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) AddConversationID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddConversationID(v)
 	})
@@ -1078,14 +1078,14 @@ func (u *AiUsageLogUpsertBulk) ClearConversationID() *AiUsageLogUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiUsageLogUpsertBulk) SetUserID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) SetUserID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiUsageLogUpsertBulk) AddUserID(v uint64) *AiUsageLogUpsertBulk {
+func (u *AiUsageLogUpsertBulk) AddUserID(v int64) *AiUsageLogUpsertBulk {
 	return u.Update(func(s *AiUsageLogUpsert) {
 		s.AddUserID(v)
 	})

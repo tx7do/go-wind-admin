@@ -51,7 +51,7 @@ func (r *DictEntryI18nRepo) init() {
 
 // Upsert 新增或更新字典类型多语言数据
 func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
-	tenantID, operatorID, entryID uint64,
+	tenantID, operatorID, entryID int64,
 	langCode string, data *dictV1.DictEntryI18N,
 ) error {
 	if data == nil {
@@ -67,12 +67,12 @@ func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
 }
 
 // ListByEntryID 根据字典项ID查询多语言数据列表
-func (r *DictEntryI18nRepo) ListByEntryID(ctx context.Context, entryID uint64) (map[string]*dictV1.DictEntryI18N, error) {
+func (r *DictEntryI18nRepo) ListByEntryID(ctx context.Context, entryID int64) (map[string]*dictV1.DictEntryI18N, error) {
 	return nil, dictV1.ErrorInternalServerError("gorm scaffold: ListByEntryID not implemented — ent .WithDictEntry/HasDictEntryWith edge predicate has no go-crud/gorm primitive; see data/dict_entry_i18n_repo.go")
 }
 
 // GetByEntryIDAndLangCode 根据字典项ID和语言代码查询多语言数据
-func (r *DictEntryI18nRepo) GetByEntryIDAndLangCode(ctx context.Context, entryID uint64, langCode string) (*dictV1.DictEntryI18N, error) {
+func (r *DictEntryI18nRepo) GetByEntryIDAndLangCode(ctx context.Context, entryID int64, langCode string) (*dictV1.DictEntryI18N, error) {
 	return nil, dictV1.ErrorInternalServerError("gorm scaffold: GetByEntryIDAndLangCode not implemented — ent .WithDictEntry/HasDictEntryWith edge predicate has no go-crud/gorm primitive; see data/dict_entry_i18n_repo.go")
 }
 
@@ -86,12 +86,12 @@ func (r *DictEntryI18nRepo) Truncate(ctx context.Context) error {
 }
 
 // CleanByEntryID 根据字典项ID清理多语言数据
-func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx interface{}, entryID uint64) error {
+func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx interface{}, entryID int64) error {
 	return dictV1.ErrorInternalServerError("gorm scaffold: CleanByEntryID not implemented — ent HasDictEntryWith edge predicate + tx has no go-crud/gorm primitive; see data/dict_entry_i18n_repo.go")
 }
 
 // CleanByEntryIDs 根据字典项ID清理多语言数据
-func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []uint64) error {
+func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []int64) error {
 	return dictV1.ErrorInternalServerError("gorm scaffold: CleanByEntryIDs not implemented — ent HasDictEntryWith edge predicate has no go-crud/gorm primitive; see data/dict_entry_i18n_repo.go")
 }
 
@@ -99,8 +99,8 @@ func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []uint
 func (r *DictEntryI18nRepo) ReplaceByEntryID(
 	ctx context.Context,
 	tx interface{},
-	tenantID, operatorID uint64,
-	entryID uint64, items map[string]*dictV1.DictEntryI18N,
+	tenantID, operatorID int64,
+	entryID int64, items map[string]*dictV1.DictEntryI18N,
 ) error {
 	return dictV1.ErrorInternalServerError("gorm scaffold: ReplaceByEntryID not implemented — ent HasDictEntryWith edge predicate + tx has no go-crud/gorm primitive; see data/dict_entry_i18n_repo.go")
 }

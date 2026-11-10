@@ -67,13 +67,13 @@ func (_c *AiDocCreate) SetNillableDeletedAt(v *time.Time) *AiDocCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AiDocCreate) SetCreatedBy(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetCreatedBy(v int64) *AiDocCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableCreatedBy(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableCreatedBy(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -81,13 +81,13 @@ func (_c *AiDocCreate) SetNillableCreatedBy(v *uint64) *AiDocCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AiDocCreate) SetUpdatedBy(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetUpdatedBy(v int64) *AiDocCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableUpdatedBy(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableUpdatedBy(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -95,13 +95,13 @@ func (_c *AiDocCreate) SetNillableUpdatedBy(v *uint64) *AiDocCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AiDocCreate) SetDeletedBy(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetDeletedBy(v int64) *AiDocCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableDeletedBy(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableDeletedBy(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -109,13 +109,13 @@ func (_c *AiDocCreate) SetNillableDeletedBy(v *uint64) *AiDocCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AiDocCreate) SetTenantID(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetTenantID(v int64) *AiDocCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableTenantID(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableTenantID(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -123,13 +123,13 @@ func (_c *AiDocCreate) SetNillableTenantID(v *uint64) *AiDocCreate {
 }
 
 // SetBaseID sets the "base_id" field.
-func (_c *AiDocCreate) SetBaseID(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetBaseID(v int64) *AiDocCreate {
 	_c.mutation.SetBaseID(v)
 	return _c
 }
 
 // SetNillableBaseID sets the "base_id" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableBaseID(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableBaseID(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetBaseID(*v)
 	}
@@ -193,13 +193,13 @@ func (_c *AiDocCreate) SetNillableErrorMessage(v *string) *AiDocCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *AiDocCreate) SetUserID(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetUserID(v int64) *AiDocCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_c *AiDocCreate) SetNillableUserID(v *uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetNillableUserID(v *int64) *AiDocCreate {
 	if v != nil {
 		_c.SetUserID(*v)
 	}
@@ -207,7 +207,7 @@ func (_c *AiDocCreate) SetNillableUserID(v *uint64) *AiDocCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *AiDocCreate) SetID(v uint64) *AiDocCreate {
+func (_c *AiDocCreate) SetID(v int64) *AiDocCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -218,14 +218,14 @@ func (_c *AiDocCreate) SetBase(v *AiKnowledgeBase) *AiDocCreate {
 }
 
 // AddChunkIDs adds the "chunks" edge to the AiChunk entity by IDs.
-func (_c *AiDocCreate) AddChunkIDs(ids ...uint64) *AiDocCreate {
+func (_c *AiDocCreate) AddChunkIDs(ids ...int64) *AiDocCreate {
 	_c.mutation.AddChunkIDs(ids...)
 	return _c
 }
 
 // AddChunks adds the "chunks" edges to the AiChunk entity.
 func (_c *AiDocCreate) AddChunks(v ...*AiChunk) *AiDocCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -299,7 +299,7 @@ func (_c *AiDocCreate) sqlSave(ctx context.Context) (*AiDoc, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -309,7 +309,7 @@ func (_c *AiDocCreate) sqlSave(ctx context.Context) (*AiDoc, error) {
 func (_c *AiDocCreate) createSpec() (*AiDoc, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AiDoc{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(aidoc.Table, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(aidoc.Table, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -329,19 +329,19 @@ func (_c *AiDocCreate) createSpec() (*AiDoc, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(aidoc.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(aidoc.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(aidoc.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -361,7 +361,7 @@ func (_c *AiDocCreate) createSpec() (*AiDoc, *sqlgraph.CreateSpec) {
 		_node.ErrorMessage = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(aidoc.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUserID, field.TypeInt64, value)
 		_node.UserID = &value
 	}
 	if nodes := _c.mutation.BaseIDs(); len(nodes) > 0 {
@@ -372,7 +372,7 @@ func (_c *AiDocCreate) createSpec() (*AiDoc, *sqlgraph.CreateSpec) {
 			Columns: []string{aidoc.BaseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -389,7 +389,7 @@ func (_c *AiDocCreate) createSpec() (*AiDoc, *sqlgraph.CreateSpec) {
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -486,7 +486,7 @@ func (u *AiDocUpsert) ClearDeletedAt() *AiDocUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiDocUpsert) SetCreatedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) SetCreatedBy(v int64) *AiDocUpsert {
 	u.Set(aidoc.FieldCreatedBy, v)
 	return u
 }
@@ -498,7 +498,7 @@ func (u *AiDocUpsert) UpdateCreatedBy() *AiDocUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiDocUpsert) AddCreatedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) AddCreatedBy(v int64) *AiDocUpsert {
 	u.Add(aidoc.FieldCreatedBy, v)
 	return u
 }
@@ -510,7 +510,7 @@ func (u *AiDocUpsert) ClearCreatedBy() *AiDocUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiDocUpsert) SetUpdatedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) SetUpdatedBy(v int64) *AiDocUpsert {
 	u.Set(aidoc.FieldUpdatedBy, v)
 	return u
 }
@@ -522,7 +522,7 @@ func (u *AiDocUpsert) UpdateUpdatedBy() *AiDocUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiDocUpsert) AddUpdatedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) AddUpdatedBy(v int64) *AiDocUpsert {
 	u.Add(aidoc.FieldUpdatedBy, v)
 	return u
 }
@@ -534,7 +534,7 @@ func (u *AiDocUpsert) ClearUpdatedBy() *AiDocUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiDocUpsert) SetDeletedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) SetDeletedBy(v int64) *AiDocUpsert {
 	u.Set(aidoc.FieldDeletedBy, v)
 	return u
 }
@@ -546,7 +546,7 @@ func (u *AiDocUpsert) UpdateDeletedBy() *AiDocUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiDocUpsert) AddDeletedBy(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) AddDeletedBy(v int64) *AiDocUpsert {
 	u.Add(aidoc.FieldDeletedBy, v)
 	return u
 }
@@ -558,7 +558,7 @@ func (u *AiDocUpsert) ClearDeletedBy() *AiDocUpsert {
 }
 
 // SetBaseID sets the "base_id" field.
-func (u *AiDocUpsert) SetBaseID(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) SetBaseID(v int64) *AiDocUpsert {
 	u.Set(aidoc.FieldBaseID, v)
 	return u
 }
@@ -654,7 +654,7 @@ func (u *AiDocUpsert) ClearErrorMessage() *AiDocUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiDocUpsert) SetUserID(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) SetUserID(v int64) *AiDocUpsert {
 	u.Set(aidoc.FieldUserID, v)
 	return u
 }
@@ -666,7 +666,7 @@ func (u *AiDocUpsert) UpdateUserID() *AiDocUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiDocUpsert) AddUserID(v uint64) *AiDocUpsert {
+func (u *AiDocUpsert) AddUserID(v int64) *AiDocUpsert {
 	u.Add(aidoc.FieldUserID, v)
 	return u
 }
@@ -774,14 +774,14 @@ func (u *AiDocUpsertOne) ClearDeletedAt() *AiDocUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiDocUpsertOne) SetCreatedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) SetCreatedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiDocUpsertOne) AddCreatedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) AddCreatedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -802,14 +802,14 @@ func (u *AiDocUpsertOne) ClearCreatedBy() *AiDocUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiDocUpsertOne) SetUpdatedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) SetUpdatedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiDocUpsertOne) AddUpdatedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) AddUpdatedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -830,14 +830,14 @@ func (u *AiDocUpsertOne) ClearUpdatedBy() *AiDocUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiDocUpsertOne) SetDeletedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) SetDeletedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiDocUpsertOne) AddDeletedBy(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) AddDeletedBy(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -858,7 +858,7 @@ func (u *AiDocUpsertOne) ClearDeletedBy() *AiDocUpsertOne {
 }
 
 // SetBaseID sets the "base_id" field.
-func (u *AiDocUpsertOne) SetBaseID(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) SetBaseID(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetBaseID(v)
 	})
@@ -970,14 +970,14 @@ func (u *AiDocUpsertOne) ClearErrorMessage() *AiDocUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiDocUpsertOne) SetUserID(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) SetUserID(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiDocUpsertOne) AddUserID(v uint64) *AiDocUpsertOne {
+func (u *AiDocUpsertOne) AddUserID(v int64) *AiDocUpsertOne {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddUserID(v)
 	})
@@ -1013,7 +1013,7 @@ func (u *AiDocUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AiDocUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *AiDocUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1022,7 +1022,7 @@ func (u *AiDocUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AiDocUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *AiDocUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1079,7 +1079,7 @@ func (_c *AiDocCreateBulk) Save(ctx context.Context) ([]*AiDoc, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1260,14 +1260,14 @@ func (u *AiDocUpsertBulk) ClearDeletedAt() *AiDocUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AiDocUpsertBulk) SetCreatedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) SetCreatedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AiDocUpsertBulk) AddCreatedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) AddCreatedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1288,14 +1288,14 @@ func (u *AiDocUpsertBulk) ClearCreatedBy() *AiDocUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AiDocUpsertBulk) SetUpdatedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) SetUpdatedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AiDocUpsertBulk) AddUpdatedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) AddUpdatedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1316,14 +1316,14 @@ func (u *AiDocUpsertBulk) ClearUpdatedBy() *AiDocUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AiDocUpsertBulk) SetDeletedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) SetDeletedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AiDocUpsertBulk) AddDeletedBy(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) AddDeletedBy(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1344,7 +1344,7 @@ func (u *AiDocUpsertBulk) ClearDeletedBy() *AiDocUpsertBulk {
 }
 
 // SetBaseID sets the "base_id" field.
-func (u *AiDocUpsertBulk) SetBaseID(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) SetBaseID(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetBaseID(v)
 	})
@@ -1456,14 +1456,14 @@ func (u *AiDocUpsertBulk) ClearErrorMessage() *AiDocUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AiDocUpsertBulk) SetUserID(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) SetUserID(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AiDocUpsertBulk) AddUserID(v uint64) *AiDocUpsertBulk {
+func (u *AiDocUpsertBulk) AddUserID(v int64) *AiDocUpsertBulk {
 	return u.Update(func(s *AiDocUpsert) {
 		s.AddUserID(v)
 	})

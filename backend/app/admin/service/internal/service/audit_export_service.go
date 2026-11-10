@@ -177,7 +177,7 @@ func (s *AuditExportService) ServeExport(w http.ResponseWriter, r *http.Request)
 
 func loginExportColumns() []exportColumn[*auditV1.LoginAuditLog] {
 	return []exportColumn[*auditV1.LoginAuditLog]{
-		{header: "id", value: func(r *auditV1.LoginAuditLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *auditV1.LoginAuditLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *auditV1.LoginAuditLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "username", value: func(r *auditV1.LoginAuditLog) string { return r.GetUsername() }},
 		{header: "tenantName", value: func(r *auditV1.LoginAuditLog) string { return r.GetTenantName() }},
@@ -195,7 +195,7 @@ func loginExportColumns() []exportColumn[*auditV1.LoginAuditLog] {
 
 func apiExportColumns() []exportColumn[*auditV1.ApiAuditLog] {
 	return []exportColumn[*auditV1.ApiAuditLog]{
-		{header: "id", value: func(r *auditV1.ApiAuditLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *auditV1.ApiAuditLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *auditV1.ApiAuditLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "username", value: func(r *auditV1.ApiAuditLog) string { return r.GetUsername() }},
 		{header: "tenantName", value: func(r *auditV1.ApiAuditLog) string { return r.GetTenantName() }},
@@ -209,7 +209,7 @@ func apiExportColumns() []exportColumn[*auditV1.ApiAuditLog] {
 
 func operationExportColumns() []exportColumn[*auditV1.OperationAuditLog] {
 	return []exportColumn[*auditV1.OperationAuditLog]{
-		{header: "id", value: func(r *auditV1.OperationAuditLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *auditV1.OperationAuditLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *auditV1.OperationAuditLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "username", value: func(r *auditV1.OperationAuditLog) string { return r.GetUsername() }},
 		{header: "tenantName", value: func(r *auditV1.OperationAuditLog) string { return r.GetTenantName() }},
@@ -224,7 +224,7 @@ func operationExportColumns() []exportColumn[*auditV1.OperationAuditLog] {
 
 func dataAccessExportColumns() []exportColumn[*auditV1.DataAccessAuditLog] {
 	return []exportColumn[*auditV1.DataAccessAuditLog]{
-		{header: "id", value: func(r *auditV1.DataAccessAuditLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *auditV1.DataAccessAuditLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *auditV1.DataAccessAuditLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "username", value: func(r *auditV1.DataAccessAuditLog) string { return r.GetUsername() }},
 		{header: "tenantName", value: func(r *auditV1.DataAccessAuditLog) string { return r.GetTenantName() }},
@@ -242,20 +242,20 @@ func dataAccessExportColumns() []exportColumn[*auditV1.DataAccessAuditLog] {
 // （logHash/signature 为完整性校验字段，页面不展示，不进导出）。
 func policyEvaluationExportColumns() []exportColumn[*permissionV1.PolicyEvaluationLog] {
 	return []exportColumn[*permissionV1.PolicyEvaluationLog]{
-		{header: "id", value: func(r *permissionV1.PolicyEvaluationLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *permissionV1.PolicyEvaluationLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *permissionV1.PolicyEvaluationLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "tenantId", value: func(r *permissionV1.PolicyEvaluationLog) string {
-			return strconv.FormatUint(uint64(r.GetTenantId()), 10)
+			return strconv.FormatInt(r.GetTenantId(), 10)
 		}},
-		{header: "userId", value: func(r *permissionV1.PolicyEvaluationLog) string { return strconv.FormatUint(uint64(r.GetUserId()), 10) }},
+		{header: "userId", value: func(r *permissionV1.PolicyEvaluationLog) string { return strconv.FormatInt(r.GetUserId(), 10) }},
 		{header: "membershipId", value: func(r *permissionV1.PolicyEvaluationLog) string {
-			return strconv.FormatUint(uint64(r.GetMembershipId()), 10)
+			return strconv.FormatInt(r.GetMembershipId(), 10)
 		}},
 		{header: "permissionId", value: func(r *permissionV1.PolicyEvaluationLog) string {
-			return strconv.FormatUint(uint64(r.GetPermissionId()), 10)
+			return strconv.FormatInt(r.GetPermissionId(), 10)
 		}},
 		{header: "policyId", value: func(r *permissionV1.PolicyEvaluationLog) string {
-			return strconv.FormatUint(uint64(r.GetPolicyId()), 10)
+			return strconv.FormatInt(r.GetPolicyId(), 10)
 		}},
 		{header: "requestPath", value: func(r *permissionV1.PolicyEvaluationLog) string { return r.GetRequestPath() }},
 		{header: "requestMethod", value: func(r *permissionV1.PolicyEvaluationLog) string { return r.GetRequestMethod() }},
@@ -270,7 +270,7 @@ func policyEvaluationExportColumns() []exportColumn[*permissionV1.PolicyEvaluati
 
 func permissionExportColumns() []exportColumn[*auditV1.PermissionAuditLog] {
 	return []exportColumn[*auditV1.PermissionAuditLog]{
-		{header: "id", value: func(r *auditV1.PermissionAuditLog) string { return strconv.FormatUint(uint64(r.GetId()), 10) }},
+		{header: "id", value: func(r *auditV1.PermissionAuditLog) string { return strconv.FormatInt(r.GetId(), 10) }},
 		{header: "createdAt", value: func(r *auditV1.PermissionAuditLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "operatorName", value: func(r *auditV1.PermissionAuditLog) string { return r.GetOperatorName() }},
 		{header: "targetType", value: func(r *auditV1.PermissionAuditLog) string { return r.GetTargetType() }},

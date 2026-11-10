@@ -65,13 +65,13 @@ func (_c *OrgUnitCreate) SetNillableDeletedAt(v *time.Time) *OrgUnitCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *OrgUnitCreate) SetCreatedBy(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetCreatedBy(v int64) *OrgUnitCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableCreatedBy(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableCreatedBy(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *OrgUnitCreate) SetNillableCreatedBy(v *uint64) *OrgUnitCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *OrgUnitCreate) SetUpdatedBy(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetUpdatedBy(v int64) *OrgUnitCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableUpdatedBy(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableUpdatedBy(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *OrgUnitCreate) SetNillableUpdatedBy(v *uint64) *OrgUnitCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *OrgUnitCreate) SetDeletedBy(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetDeletedBy(v int64) *OrgUnitCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableDeletedBy(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableDeletedBy(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -135,13 +135,13 @@ func (_c *OrgUnitCreate) SetNillableSortOrder(v *uint32) *OrgUnitCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *OrgUnitCreate) SetTenantID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetTenantID(v int64) *OrgUnitCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableTenantID(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableTenantID(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -177,13 +177,13 @@ func (_c *OrgUnitCreate) SetNillableDescription(v *string) *OrgUnitCreate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_c *OrgUnitCreate) SetParentID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetParentID(v int64) *OrgUnitCreate {
 	_c.mutation.SetParentID(v)
 	return _c
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableParentID(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableParentID(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetParentID(*v)
 	}
@@ -225,13 +225,13 @@ func (_c *OrgUnitCreate) SetNillableCode(v *string) *OrgUnitCreate {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (_c *OrgUnitCreate) SetLeaderID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetLeaderID(v int64) *OrgUnitCreate {
 	_c.mutation.SetLeaderID(v)
 	return _c
 }
 
 // SetNillableLeaderID sets the "leader_id" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableLeaderID(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableLeaderID(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetLeaderID(*v)
 	}
@@ -315,13 +315,13 @@ func (_c *OrgUnitCreate) SetNillableTaxID(v *string) *OrgUnitCreate {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (_c *OrgUnitCreate) SetLegalEntityOrgID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetLegalEntityOrgID(v int64) *OrgUnitCreate {
 	_c.mutation.SetLegalEntityOrgID(v)
 	return _c
 }
 
 // SetNillableLegalEntityOrgID sets the "legal_entity_org_id" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableLegalEntityOrgID(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableLegalEntityOrgID(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetLegalEntityOrgID(*v)
 	}
@@ -455,13 +455,13 @@ func (_c *OrgUnitCreate) SetNillableEndAt(v *time.Time) *OrgUnitCreate {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (_c *OrgUnitCreate) SetContactUserID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetContactUserID(v int64) *OrgUnitCreate {
 	_c.mutation.SetContactUserID(v)
 	return _c
 }
 
 // SetNillableContactUserID sets the "contact_user_id" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableContactUserID(v *uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetNillableContactUserID(v *int64) *OrgUnitCreate {
 	if v != nil {
 		_c.SetContactUserID(*v)
 	}
@@ -475,7 +475,7 @@ func (_c *OrgUnitCreate) SetPermissionTags(v []string) *OrgUnitCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *OrgUnitCreate) SetID(v uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) SetID(v int64) *OrgUnitCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -486,14 +486,14 @@ func (_c *OrgUnitCreate) SetParent(v *OrgUnit) *OrgUnitCreate {
 }
 
 // AddChildIDs adds the "children" edge to the OrgUnit entity by IDs.
-func (_c *OrgUnitCreate) AddChildIDs(ids ...uint64) *OrgUnitCreate {
+func (_c *OrgUnitCreate) AddChildIDs(ids ...int64) *OrgUnitCreate {
 	_c.mutation.AddChildIDs(ids...)
 	return _c
 }
 
 // AddChildren adds the "children" edges to the OrgUnit entity.
 func (_c *OrgUnitCreate) AddChildren(v ...*OrgUnit) *OrgUnitCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -612,7 +612,7 @@ func (_c *OrgUnitCreate) sqlSave(ctx context.Context) (*OrgUnit, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -622,7 +622,7 @@ func (_c *OrgUnitCreate) sqlSave(ctx context.Context) (*OrgUnit, error) {
 func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 	var (
 		_node = &OrgUnit{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(orgunit.Table, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(orgunit.Table, sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -642,15 +642,15 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(orgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(orgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -662,7 +662,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(orgunit.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -686,7 +686,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_node.Code = &value
 	}
 	if value, ok := _c.mutation.LeaderID(); ok {
-		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldLeaderID, field.TypeInt64, value)
 		_node.LeaderID = &value
 	}
 	if value, ok := _c.mutation.GetType(); ok {
@@ -714,7 +714,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_node.TaxID = &value
 	}
 	if value, ok := _c.mutation.LegalEntityOrgID(); ok {
-		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldLegalEntityOrgID, field.TypeInt64, value)
 		_node.LegalEntityOrgID = &value
 	}
 	if value, ok := _c.mutation.Address(); ok {
@@ -754,7 +754,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_node.EndAt = &value
 	}
 	if value, ok := _c.mutation.ContactUserID(); ok {
-		_spec.SetField(orgunit.FieldContactUserID, field.TypeUint64, value)
+		_spec.SetField(orgunit.FieldContactUserID, field.TypeInt64, value)
 		_node.ContactUserID = &value
 	}
 	if value, ok := _c.mutation.PermissionTags(); ok {
@@ -769,7 +769,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -786,7 +786,7 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 			Columns: []string{orgunit.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(orgunit.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -883,7 +883,7 @@ func (u *OrgUnitUpsert) ClearDeletedAt() *OrgUnitUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OrgUnitUpsert) SetCreatedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetCreatedBy(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldCreatedBy, v)
 	return u
 }
@@ -895,7 +895,7 @@ func (u *OrgUnitUpsert) UpdateCreatedBy() *OrgUnitUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OrgUnitUpsert) AddCreatedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddCreatedBy(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldCreatedBy, v)
 	return u
 }
@@ -907,7 +907,7 @@ func (u *OrgUnitUpsert) ClearCreatedBy() *OrgUnitUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OrgUnitUpsert) SetUpdatedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetUpdatedBy(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -919,7 +919,7 @@ func (u *OrgUnitUpsert) UpdateUpdatedBy() *OrgUnitUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OrgUnitUpsert) AddUpdatedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddUpdatedBy(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldUpdatedBy, v)
 	return u
 }
@@ -931,7 +931,7 @@ func (u *OrgUnitUpsert) ClearUpdatedBy() *OrgUnitUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OrgUnitUpsert) SetDeletedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetDeletedBy(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldDeletedBy, v)
 	return u
 }
@@ -943,7 +943,7 @@ func (u *OrgUnitUpsert) UpdateDeletedBy() *OrgUnitUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OrgUnitUpsert) AddDeletedBy(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddDeletedBy(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldDeletedBy, v)
 	return u
 }
@@ -1027,7 +1027,7 @@ func (u *OrgUnitUpsert) ClearDescription() *OrgUnitUpsert {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *OrgUnitUpsert) SetParentID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetParentID(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldParentID, v)
 	return u
 }
@@ -1093,7 +1093,7 @@ func (u *OrgUnitUpsert) ClearCode() *OrgUnitUpsert {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (u *OrgUnitUpsert) SetLeaderID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetLeaderID(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldLeaderID, v)
 	return u
 }
@@ -1105,7 +1105,7 @@ func (u *OrgUnitUpsert) UpdateLeaderID() *OrgUnitUpsert {
 }
 
 // AddLeaderID adds v to the "leader_id" field.
-func (u *OrgUnitUpsert) AddLeaderID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddLeaderID(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldLeaderID, v)
 	return u
 }
@@ -1219,7 +1219,7 @@ func (u *OrgUnitUpsert) ClearTaxID() *OrgUnitUpsert {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (u *OrgUnitUpsert) SetLegalEntityOrgID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetLegalEntityOrgID(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldLegalEntityOrgID, v)
 	return u
 }
@@ -1231,7 +1231,7 @@ func (u *OrgUnitUpsert) UpdateLegalEntityOrgID() *OrgUnitUpsert {
 }
 
 // AddLegalEntityOrgID adds v to the "legal_entity_org_id" field.
-func (u *OrgUnitUpsert) AddLegalEntityOrgID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddLegalEntityOrgID(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldLegalEntityOrgID, v)
 	return u
 }
@@ -1417,7 +1417,7 @@ func (u *OrgUnitUpsert) ClearEndAt() *OrgUnitUpsert {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (u *OrgUnitUpsert) SetContactUserID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) SetContactUserID(v int64) *OrgUnitUpsert {
 	u.Set(orgunit.FieldContactUserID, v)
 	return u
 }
@@ -1429,7 +1429,7 @@ func (u *OrgUnitUpsert) UpdateContactUserID() *OrgUnitUpsert {
 }
 
 // AddContactUserID adds v to the "contact_user_id" field.
-func (u *OrgUnitUpsert) AddContactUserID(v uint64) *OrgUnitUpsert {
+func (u *OrgUnitUpsert) AddContactUserID(v int64) *OrgUnitUpsert {
 	u.Add(orgunit.FieldContactUserID, v)
 	return u
 }
@@ -1555,14 +1555,14 @@ func (u *OrgUnitUpsertOne) ClearDeletedAt() *OrgUnitUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OrgUnitUpsertOne) SetCreatedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetCreatedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OrgUnitUpsertOne) AddCreatedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddCreatedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1583,14 +1583,14 @@ func (u *OrgUnitUpsertOne) ClearCreatedBy() *OrgUnitUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OrgUnitUpsertOne) SetUpdatedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetUpdatedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OrgUnitUpsertOne) AddUpdatedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddUpdatedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1611,14 +1611,14 @@ func (u *OrgUnitUpsertOne) ClearUpdatedBy() *OrgUnitUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OrgUnitUpsertOne) SetDeletedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetDeletedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OrgUnitUpsertOne) AddDeletedBy(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddDeletedBy(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1723,7 +1723,7 @@ func (u *OrgUnitUpsertOne) ClearDescription() *OrgUnitUpsertOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *OrgUnitUpsertOne) SetParentID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetParentID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetParentID(v)
 	})
@@ -1800,14 +1800,14 @@ func (u *OrgUnitUpsertOne) ClearCode() *OrgUnitUpsertOne {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (u *OrgUnitUpsertOne) SetLeaderID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetLeaderID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetLeaderID(v)
 	})
 }
 
 // AddLeaderID adds v to the "leader_id" field.
-func (u *OrgUnitUpsertOne) AddLeaderID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddLeaderID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddLeaderID(v)
 	})
@@ -1947,14 +1947,14 @@ func (u *OrgUnitUpsertOne) ClearTaxID() *OrgUnitUpsertOne {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (u *OrgUnitUpsertOne) SetLegalEntityOrgID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetLegalEntityOrgID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetLegalEntityOrgID(v)
 	})
 }
 
 // AddLegalEntityOrgID adds v to the "legal_entity_org_id" field.
-func (u *OrgUnitUpsertOne) AddLegalEntityOrgID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddLegalEntityOrgID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddLegalEntityOrgID(v)
 	})
@@ -2178,14 +2178,14 @@ func (u *OrgUnitUpsertOne) ClearEndAt() *OrgUnitUpsertOne {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (u *OrgUnitUpsertOne) SetContactUserID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) SetContactUserID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetContactUserID(v)
 	})
 }
 
 // AddContactUserID adds v to the "contact_user_id" field.
-func (u *OrgUnitUpsertOne) AddContactUserID(v uint64) *OrgUnitUpsertOne {
+func (u *OrgUnitUpsertOne) AddContactUserID(v int64) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddContactUserID(v)
 	})
@@ -2242,7 +2242,7 @@ func (u *OrgUnitUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *OrgUnitUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *OrgUnitUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -2251,7 +2251,7 @@ func (u *OrgUnitUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *OrgUnitUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *OrgUnitUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -2308,7 +2308,7 @@ func (_c *OrgUnitCreateBulk) Save(ctx context.Context) ([]*OrgUnit, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -2489,14 +2489,14 @@ func (u *OrgUnitUpsertBulk) ClearDeletedAt() *OrgUnitUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OrgUnitUpsertBulk) SetCreatedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetCreatedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OrgUnitUpsertBulk) AddCreatedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddCreatedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -2517,14 +2517,14 @@ func (u *OrgUnitUpsertBulk) ClearCreatedBy() *OrgUnitUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OrgUnitUpsertBulk) SetUpdatedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetUpdatedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OrgUnitUpsertBulk) AddUpdatedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddUpdatedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -2545,14 +2545,14 @@ func (u *OrgUnitUpsertBulk) ClearUpdatedBy() *OrgUnitUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OrgUnitUpsertBulk) SetDeletedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetDeletedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OrgUnitUpsertBulk) AddDeletedBy(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddDeletedBy(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -2657,7 +2657,7 @@ func (u *OrgUnitUpsertBulk) ClearDescription() *OrgUnitUpsertBulk {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *OrgUnitUpsertBulk) SetParentID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetParentID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetParentID(v)
 	})
@@ -2734,14 +2734,14 @@ func (u *OrgUnitUpsertBulk) ClearCode() *OrgUnitUpsertBulk {
 }
 
 // SetLeaderID sets the "leader_id" field.
-func (u *OrgUnitUpsertBulk) SetLeaderID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetLeaderID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetLeaderID(v)
 	})
 }
 
 // AddLeaderID adds v to the "leader_id" field.
-func (u *OrgUnitUpsertBulk) AddLeaderID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddLeaderID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddLeaderID(v)
 	})
@@ -2881,14 +2881,14 @@ func (u *OrgUnitUpsertBulk) ClearTaxID() *OrgUnitUpsertBulk {
 }
 
 // SetLegalEntityOrgID sets the "legal_entity_org_id" field.
-func (u *OrgUnitUpsertBulk) SetLegalEntityOrgID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetLegalEntityOrgID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetLegalEntityOrgID(v)
 	})
 }
 
 // AddLegalEntityOrgID adds v to the "legal_entity_org_id" field.
-func (u *OrgUnitUpsertBulk) AddLegalEntityOrgID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddLegalEntityOrgID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddLegalEntityOrgID(v)
 	})
@@ -3112,14 +3112,14 @@ func (u *OrgUnitUpsertBulk) ClearEndAt() *OrgUnitUpsertBulk {
 }
 
 // SetContactUserID sets the "contact_user_id" field.
-func (u *OrgUnitUpsertBulk) SetContactUserID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) SetContactUserID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.SetContactUserID(v)
 	})
 }
 
 // AddContactUserID adds v to the "contact_user_id" field.
-func (u *OrgUnitUpsertBulk) AddContactUserID(v uint64) *OrgUnitUpsertBulk {
+func (u *OrgUnitUpsertBulk) AddContactUserID(v int64) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.AddContactUserID(v)
 	})

@@ -18,7 +18,7 @@ type AiMessage struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,13 +26,13 @@ type AiMessage struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 消息角色
 	Role *aimessage.Role `json:"role,omitempty"`
 	// 消息正文（Markdown）
@@ -48,9 +48,9 @@ type AiMessage struct {
 	// 生成失败原因
 	ErrorMessage *string `json:"error_message,omitempty"`
 	// 归属用户ID
-	UserID *uint64 `json:"user_id,omitempty"`
+	UserID *int64 `json:"user_id,omitempty"`
 	// 所属会话ID（edge 外键）
-	ConversationID *uint64 `json:"conversation_id,omitempty"`
+	ConversationID *int64 `json:"conversation_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AiMessageQuery when eager-loading is set.
 	Edges        AiMessageEdges `json:"edges"`
@@ -108,7 +108,7 @@ func (_m *AiMessage) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case aimessage.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -134,29 +134,29 @@ func (_m *AiMessage) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case aimessage.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case aimessage.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case aimessage.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case aimessage.FieldRole:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -211,15 +211,15 @@ func (_m *AiMessage) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint64)
-				*_m.UserID = uint64(value.Int64)
+				_m.UserID = new(int64)
+				*_m.UserID = value.Int64
 			}
 		case aimessage.FieldConversationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field conversation_id", values[i])
 			} else if value.Valid {
-				_m.ConversationID = new(uint64)
-				*_m.ConversationID = uint64(value.Int64)
+				_m.ConversationID = new(int64)
+				*_m.ConversationID = value.Int64
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

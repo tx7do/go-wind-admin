@@ -40,7 +40,7 @@ func (_d *InternalMessageCategoryDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *InternalMessageCategoryDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(internalmessagecategory.Table, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewDeleteSpec(internalmessagecategory.Table, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

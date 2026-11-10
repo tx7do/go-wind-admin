@@ -46,7 +46,7 @@ func toNotificationPreferenceDTO(entity *ent.NotificationPreference) *notificati
 }
 
 // GetByUserID 读某用户的偏好；从未配置过时返回 (nil, nil)，由调用方决定默认值。
-func (r *NotificationPreferenceRepo) GetByUserID(ctx context.Context, userID uint64) (*notificationV1.NotificationPreference, error) {
+func (r *NotificationPreferenceRepo) GetByUserID(ctx context.Context, userID int64) (*notificationV1.NotificationPreference, error) {
 	entity, err := r.entClient.Client().NotificationPreference.Query().
 		Where(notificationpreference.UserIDEQ(userID)).
 		Only(ctx)
@@ -62,9 +62,9 @@ func (r *NotificationPreferenceRepo) GetByUserID(ctx context.Context, userID uin
 }
 
 // ListByUserIDs 批量读一组用户的偏好（广播按页处理受众时用），缺偏好的用户不在返回值里。
-func (r *NotificationPreferenceRepo) ListByUserIDs(ctx context.Context, userIDs []uint64) (map[uint64]*notificationV1.NotificationPreference, error) {
+func (r *NotificationPreferenceRepo) ListByUserIDs(ctx context.Context, userIDs []int64) (map[int64]*notificationV1.NotificationPreference, error) {
 	if len(userIDs) == 0 {
-		return map[uint64]*notificationV1.NotificationPreference{}, nil
+		return map[int64]*notificationV1.NotificationPreference{}, nil
 	}
 
 	entities, err := r.entClient.Client().NotificationPreference.Query().
@@ -75,7 +75,7 @@ func (r *NotificationPreferenceRepo) ListByUserIDs(ctx context.Context, userIDs 
 		return nil, adminV1.ErrorInternalServerError("query notification preferences failed")
 	}
 
-	result := make(map[uint64]*notificationV1.NotificationPreference, len(entities))
+	result := make(map[int64]*notificationV1.NotificationPreference, len(entities))
 	for _, entity := range entities {
 		result[entity.UserID] = toNotificationPreferenceDTO(entity)
 	}
@@ -83,7 +83,7 @@ func (r *NotificationPreferenceRepo) ListByUserIDs(ctx context.Context, userIDs 
 }
 
 // Upsert 按用户保存偏好（存在则更新，不存在则创建）；userID 由调用方从操作人钉定。
-func (r *NotificationPreferenceRepo) Upsert(ctx context.Context, userID uint64, pref *notificationV1.UpdateNotificationPreferenceRequest, operatorUserID uint64) (*notificationV1.NotificationPreference, error) {
+func (r *NotificationPreferenceRepo) Upsert(ctx context.Context, userID int64, pref *notificationV1.UpdateNotificationPreferenceRequest, operatorUserID int64) (*notificationV1.NotificationPreference, error) {
 	if pref == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -96,7 +96,7 @@ func (r *NotificationPreferenceRepo) Upsert(ctx context.Context, userID uint64, 
 		return nil, adminV1.ErrorInternalServerError("save notification preference failed")
 	}
 
-	muted := make([]uint64, 0, len(pref.GetMutedCategoryIds()))
+	muted := make([]int64, 0, len(pref.GetMutedCategoryIds()))
 	muted = append(muted, pref.GetMutedCategoryIds()...)
 
 	if existing == nil {
@@ -130,7 +130,7 @@ func (r *NotificationPreferenceRepo) Upsert(ctx context.Context, userID uint64, 
 	return toNotificationPreferenceDTO(entity), nil
 }
 
-func operatorUserIDOrNil(userID uint64) *uint64 {
+func operatorUserIDOrNil(userID int64) *int64 {
 	if userID == 0 {
 		return nil
 	}

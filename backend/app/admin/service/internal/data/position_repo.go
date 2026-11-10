@@ -115,7 +115,7 @@ func (r *PositionRepo) List(ctx context.Context, req *paginationV1.PagingRequest
 	}, nil
 }
 
-func (r *PositionRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PositionRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Position.Query().
 		Where(position.IDEQ(id)).
 		Exist(ctx)
@@ -191,7 +191,7 @@ func (r *PositionRepo) backfillEnumsFrom(items []*identityV1.Position, entities 
 	if len(items) == 0 || len(entities) == 0 {
 		return
 	}
-	types := make(map[uint64]position.Type, len(entities))
+	types := make(map[int64]position.Type, len(entities))
 	for _, e := range entities {
 		if e.Type != "" {
 			types[e.ID] = e.Type
@@ -208,7 +208,7 @@ func (r *PositionRepo) backfillEnumsFrom(items []*identityV1.Position, entities 
 }
 
 // ListPositionByIds 通过多个ID获取职位信息
-func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []uint64) ([]*identityV1.Position, error) {
+func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []int64) ([]*identityV1.Position, error) {
 	if len(ids) == 0 {
 		return []*identityV1.Position{}, nil
 	}

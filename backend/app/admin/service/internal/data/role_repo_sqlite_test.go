@@ -197,12 +197,12 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 2)
-	roleAID, roleBID := uint64(roles[0].ID), uint64(roles[1].ID)
+	roleAID, roleBID := int64(roles[0].ID), int64(roles[1].ID)
 
 	// 无过滤：应返回全部 2 条
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条")
 	// 列表读视图：status/type 为写入值，data_scope 未显式指定、按列默认（ALL）
 	// 落库——三者均经 queryEnumsAndBackfill 如实回显。
@@ -219,7 +219,7 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetName(), "MARKERALPHA", "命中行应为含标记的那条")
 
@@ -252,7 +252,7 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 	require.Error(t, err, "平台上下文按 code 查询角色应被拒绝")
 
 	// 按 ID 列表查询（角色与角色编码）
-	byIDs, err := repo.ListRolesByRoleIds(ctx, []uint64{roleAID, roleBID})
+	byIDs, err := repo.ListRolesByRoleIds(ctx, []int64{roleAID, roleBID})
 	require.NoError(t, err)
 	require.Len(t, byIDs, 2, "按 ID 列表应返回两条角色")
 	// 读视图（ListXxxByIds 路径）：status/type 为写入值、data_scope 为列默认，
@@ -262,7 +262,7 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 		require.Equal(t, permissionV1.Role_TENANT, item.GetType(), "按 ID 列表读视图应回填 type")
 		require.Equal(t, identityV1.DataScope_ALL, item.GetDataScope(), "按 ID 列表读视图应回填列默认 data_scope")
 	}
-	codes, err := repo.ListRoleCodesByRoleIds(ctx, []uint64{roleAID, roleBID})
+	codes, err := repo.ListRoleCodesByRoleIds(ctx, []int64{roleAID, roleBID})
 	require.NoError(t, err)
 	require.ElementsMatch(t, []string{
 		fmt.Sprintf("ROLE_SQLITE_%d", 12001),
@@ -302,7 +302,7 @@ func TestRoleRepoSqlite_Update(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 1)
-	createdID := uint64(roles[0].ID)
+	createdID := int64(roles[0].ID)
 
 	err = repo.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:         createdID,
@@ -335,7 +335,7 @@ func TestRoleRepoSqlite_Delete(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 1)
-	createdID := uint64(roles[0].ID)
+	createdID := int64(roles[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &permissionV1.DeleteRoleRequest{
 		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: createdID},
@@ -368,7 +368,7 @@ func TestRoleRepoSqlite_ProtectedDeleteRejected(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 1)
-	createdID := uint64(roles[0].ID)
+	createdID := int64(roles[0].ID)
 
 	require.Error(t, repo.Delete(ctx, &permissionV1.DeleteRoleRequest{
 		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: createdID},
@@ -397,7 +397,7 @@ func TestRoleRepoSqlite_CanAssignRole(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 1)
-	normalRoleID := uint64(roles[0].ID)
+	normalRoleID := int64(roles[0].ID)
 	ok, err := repo.CanAssignRole(ctx, normalRoleID)
 	require.NoError(t, err)
 	require.True(t, ok, "启用且非模板的普通角色应可分配")
@@ -414,10 +414,10 @@ func TestRoleRepoSqlite_CanAssignRole(t *testing.T) {
 	roles, err = repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 2)
-	var disabledRoleID uint64
+	var disabledRoleID int64
 	for _, r := range roles {
 		if r.Status != nil && *r.Status == entRole.StatusOff {
-			disabledRoleID = uint64(r.ID)
+			disabledRoleID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, disabledRoleID, "应找到停用角色")
@@ -436,10 +436,10 @@ func TestRoleRepoSqlite_CanAssignRole(t *testing.T) {
 	roles, err = repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 3)
-	var templateRoleID uint64
+	var templateRoleID int64
 	for _, r := range roles {
 		if r.Type != nil && *r.Type == entRole.TypeTemplate {
-			templateRoleID = uint64(r.ID)
+			templateRoleID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, templateRoleID, "应找到模板角色")
@@ -475,7 +475,7 @@ func TestRoleRepoSqlite_TemplateInstantiation(t *testing.T) {
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TEMPLATE.Enum(),
 			IsProtected: trans.Ptr(true),
-			ParentId:    trans.Ptr(uint64(anchorRoles[0].ID)),
+			ParentId:    trans.Ptr(int64(anchorRoles[0].ID)),
 		},
 	}))
 
@@ -555,13 +555,13 @@ func TestRoleRepoSqlite_ParentIDThreeState(t *testing.T) {
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 2)
-	var parentID, childID uint64
+	var parentID, childID int64
 	for _, r := range roles {
 		switch *r.Code {
 		case "ROLE_SQLITE_PARENT_TS":
-			parentID = uint64(r.ID)
+			parentID = int64(r.ID)
 		case "ROLE_SQLITE_CHILD_TS":
-			childID = uint64(r.ID)
+			childID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, parentID)
@@ -581,7 +581,7 @@ func TestRoleRepoSqlite_ParentIDThreeState(t *testing.T) {
 	// 2) 载荷显式 0 ⇒ 降级为根角色（落库 0，非 NULL）
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:         childID,
-		Data:       &permissionV1.Role{ParentId: trans.Ptr(uint64(0))},
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(int64(0))},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
 	}))
 	child, err = repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
@@ -633,7 +633,7 @@ func TestRoleRepoSqlite_DeleteDetachesChildren(t *testing.T) {
 			Code:        trans.Ptr("ROLE_SQLITE_DEL_PARENT"),
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TENANT.Enum(),
-			Permissions: []uint64{101, 102},
+			Permissions: []int64{101, 102},
 		},
 	}))
 	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
@@ -642,20 +642,20 @@ func TestRoleRepoSqlite_DeleteDetachesChildren(t *testing.T) {
 			Code:        trans.Ptr("ROLE_SQLITE_DEL_CHILD"),
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TENANT.Enum(),
-			Permissions: []uint64{101},
+			Permissions: []int64{101},
 		},
 	}))
 
 	roles, err := repo.entClient.Client().Role.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, roles, 2)
-	var parentID, childID uint64
+	var parentID, childID int64
 	for _, r := range roles {
 		switch *r.Code {
 		case "ROLE_SQLITE_DEL_PARENT":
-			parentID = uint64(r.ID)
+			parentID = int64(r.ID)
 		case "ROLE_SQLITE_DEL_CHILD":
-			childID = uint64(r.ID)
+			childID = int64(r.ID)
 		}
 	}
 	require.NotZero(t, parentID)
@@ -677,9 +677,9 @@ func TestRoleRepoSqlite_DeleteDetachesChildren(t *testing.T) {
 	child, err := repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
 	require.NoError(t, err)
 	require.Nil(t, child.ParentID, "删除父角色后子角色 parent_id 应被解除")
-	permIDs, err := repo.ListPermissionIDsByRoleIDs(ctx, []uint64{childID})
+	permIDs, err := repo.ListPermissionIDsByRoleIDs(ctx, []int64{childID})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{101}, permIDs, "子角色绑定权限应保持不变")
+	require.ElementsMatch(t, []int64{101}, permIDs, "子角色绑定权限应保持不变")
 }
 
 // TestRoleRepoSqlite_UpdatePermissionsAssociation 回归（Update 关联落库修复）：
@@ -704,25 +704,25 @@ func TestRoleRepoSqlite_UpdatePermissionsAssociation(t *testing.T) {
 			Code:        trans.Ptr("ROLE_ASSOC_UPD"),
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TENANT.Enum(),
-			Permissions: []uint64{p1.ID},
+			Permissions: []int64{p1.ID},
 		},
 	}), "带权限创建应成功")
 	role, err := repo.entClient.Client().Role.Query().Only(ctx)
 	require.NoError(t, err)
 
-	listPerms := func() []uint64 {
-		ids, lerr := repo.ListPermissionIDsByRoleIDs(ctx, []uint64{role.ID})
+	listPerms := func() []int64 {
+		ids, lerr := repo.ListPermissionIDsByRoleIDs(ctx, []int64{role.ID})
 		require.NoError(t, lerr)
 		return ids
 	}
-	require.Equal(t, []uint64{p1.ID}, listPerms(), "Create 侧权限应已落库")
+	require.Equal(t, []int64{p1.ID}, listPerms(), "Create 侧权限应已落库")
 
 	// ① 全量更新（无 mask）带 permissions=[p1,p2] → 替换落库
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:   role.ID,
-		Data: &permissionV1.Role{Name: trans.Ptr("关联更新角色"), Permissions: []uint64{p1.ID, p2.ID}},
+		Data: &permissionV1.Role{Name: trans.Ptr("关联更新角色"), Permissions: []int64{p1.ID, p2.ID}},
 	}), "全量更新带权限应成功")
-	require.ElementsMatch(t, []uint64{p1.ID, p2.ID}, listPerms(),
+	require.ElementsMatch(t, []int64{p1.ID, p2.ID}, listPerms(),
 		"全量更新的权限载荷应落库（此前被静默丢弃）")
 
 	// ② 全量更新未带 permissions（nil）→ 保持原值
@@ -730,20 +730,20 @@ func TestRoleRepoSqlite_UpdatePermissionsAssociation(t *testing.T) {
 		Id:   role.ID,
 		Data: &permissionV1.Role{Name: trans.Ptr("关联更新角色二")},
 	}), "全量更新不带权限应成功")
-	require.ElementsMatch(t, []uint64{p1.ID, p2.ID}, listPerms(), "未声明权限时应保持原值")
+	require.ElementsMatch(t, []int64{p1.ID, p2.ID}, listPerms(), "未声明权限时应保持原值")
 
 	// ③ mask 声明 permissions=[p2] → 替换落库
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:         role.ID,
-		Data:       &permissionV1.Role{Permissions: []uint64{p2.ID}},
+		Data:       &permissionV1.Role{Permissions: []int64{p2.ID}},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
 	}), "掩码声明权限应成功")
-	require.Equal(t, []uint64{p2.ID}, listPerms(), "掩码路径权限应落库")
+	require.Equal(t, []int64{p2.ID}, listPerms(), "掩码路径权限应落库")
 
 	// ④ mask 声明 permissions + 显式空数组 → 清空
 	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
 		Id:         role.ID,
-		Data:       &permissionV1.Role{Permissions: []uint64{}},
+		Data:       &permissionV1.Role{Permissions: []int64{}},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
 	}), "掩码清空权限应成功")
 	require.Empty(t, listPerms(), "显式空数组应清空关联")

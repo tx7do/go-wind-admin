@@ -47,7 +47,7 @@ import (
 
 // akAdminCtx 造平台管理员操作者上下文：AK 写入口已加
 // requireTenantOrPlatformAdmin 服务内闸门，写路径用例一律以此调用。
-func akAdminCtx(ctx context.Context, userId uint64) context.Context {
+func akAdminCtx(ctx context.Context, userId int64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
 		UserId:          userId,
 		IsPlatformAdmin: trans.Ptr(true),
@@ -86,7 +86,7 @@ func accessKeySha256Hex(secret string) string {
 }
 
 // createAccessKeyViaService 经服务层创建一枚启用中的凭证，返回 (id, ak, sk)。
-func createAccessKeyViaService(t *testing.T, svc *AccessKeyService, opCtx context.Context, name string) (uint64, string, string) {
+func createAccessKeyViaService(t *testing.T, svc *AccessKeyService, opCtx context.Context, name string) (int64, string, string) {
 	t.Helper()
 	resp, err := svc.Create(opCtx, &accesskeyV1.CreateAccessKeyRequest{
 		Data: &accesskeyV1.AccessKey{Name: trans.Ptr(name)},
@@ -150,7 +150,7 @@ func TestAccessKeyServiceSqlite_CreateAndGetAndCount(t *testing.T) {
 	// List / Count 全量统计。
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listResp.GetTotal())
+	require.Equal(t, int64(2), listResp.GetTotal())
 	names := map[string]bool{}
 	for _, item := range listResp.GetItems() {
 		names[item.GetName()] = true
@@ -159,7 +159,7 @@ func TestAccessKeyServiceSqlite_CreateAndGetAndCount(t *testing.T) {
 
 	countResp, err := svc.Count(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), countResp.GetCount(), "Count 应统计两枚凭证")
+	require.Equal(t, int64(2), countResp.GetCount(), "Count 应统计两枚凭证")
 
 	// 服务层入参守卫。
 	_, err = svc.Create(nil, nil)
@@ -182,7 +182,7 @@ func TestAccessKeyServiceSqlite_UpdateNilMaskKeepsImmutableFields(t *testing.T) 
 
 	_, err := svc.Update(opCtx, &accesskeyV1.UpdateAccessKeyRequest{
 		Id:   id,
-		Data: &accesskeyV1.AccessKey{Name: trans.Ptr("更新后凭证名"), AccessKey: trans.Ptr("ak-attacker"), TenantId: trans.Ptr(uint64(999))},
+		Data: &accesskeyV1.AccessKey{Name: trans.Ptr("更新后凭证名"), AccessKey: trans.Ptr("ak-attacker"), TenantId: trans.Ptr(int64(999))},
 	})
 	require.NoError(t, err, "nil 掩码更新应成功")
 
@@ -229,7 +229,7 @@ func TestAccessKeyServiceSqlite_UpdateWithMaskImmutableStripped(t *testing.T) {
 		Data: &accesskeyV1.AccessKey{
 			Name:      trans.Ptr("合法更新名"),
 			AccessKey: trans.Ptr("ATTACKER_KEY"),
-			TenantId:  trans.Ptr(uint64(999)),
+			TenantId:  trans.Ptr(int64(999)),
 		},
 	})
 	require.NoError(t, err, "不可变字段剔除后掩码更新应成功")

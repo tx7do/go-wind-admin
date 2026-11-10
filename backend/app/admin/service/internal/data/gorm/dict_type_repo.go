@@ -86,7 +86,7 @@ func (r *DictTypeRepo) List(ctx context.Context, req *paginationV1.PagingRequest
 	}, nil
 }
 
-func (r *DictTypeRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *DictTypeRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -168,7 +168,7 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 	return nil
 }
 
-func (r *DictTypeRepo) Delete(ctx context.Context, id uint64) error {
+func (r *DictTypeRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
@@ -183,7 +183,7 @@ func (r *DictTypeRepo) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (r *DictTypeRepo) BatchDelete(ctx context.Context, ids []uint64) error {
+func (r *DictTypeRepo) BatchDelete(ctx context.Context, ids []int64) error {
 	if len(ids) == 0 {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}

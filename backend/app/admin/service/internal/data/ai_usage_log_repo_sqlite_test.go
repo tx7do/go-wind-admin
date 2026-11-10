@@ -28,7 +28,7 @@ import (
 // seedUsageLog 直插一条指定租户/总量/时间的用量行：repo 的 Create 只写 now，
 // 而时间下界聚合的窗口前老账需要钉死的历史时间（Update builder 保护 created_at
 // 不可改，只能建行时显式 SetCreatedAt）。
-func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID uint64, totalTokens uint32, createdAt time.Time) uint64 {
+func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, tenantID int64, totalTokens uint32, createdAt time.Time) int64 {
 	t.Helper()
 	entity, err := entClient.Client().AiUsageLog.Create().
 		SetTenantID(tenantID).
@@ -41,11 +41,11 @@ func seedUsageLog(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx c
 }
 
 // newUsageLog 构造一条用量流水载荷，字段可按需覆盖。
-func newUsageLog(tenantID uint64, totalTokens uint32) *aiV1.AiUsageLog {
+func newUsageLog(tenantID int64, totalTokens uint32) *aiV1.AiUsageLog {
 	return &aiV1.AiUsageLog{
-		ProviderId:       trans.Ptr(uint64(11)),
-		ConversationId:   trans.Ptr(uint64(22)),
-		UserId:           trans.Ptr(uint64(33)),
+		ProviderId:       trans.Ptr(int64(11)),
+		ConversationId:   trans.Ptr(int64(22)),
+		UserId:           trans.Ptr(int64(33)),
 		TenantId:         trans.Ptr(tenantID),
 		ModelName:        trans.Ptr("qwen-max"),
 		PromptTokens:     trans.Ptr(totalTokens / 2),
@@ -68,10 +68,10 @@ func TestAiUsageLogRepoSqlite_Create(t *testing.T) {
 
 	row, err := entClient.Client().AiUsageLog.Query().First(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(11), *row.ProviderID, "provider_id 应按载荷落库")
-	require.Equal(t, uint64(22), *row.ConversationID)
-	require.Equal(t, uint64(33), *row.UserID)
-	require.Equal(t, uint64(7), *row.TenantID, "租户归属必须落库：配额聚合按它分组")
+	require.Equal(t, int64(11), *row.ProviderID, "provider_id 应按载荷落库")
+	require.Equal(t, int64(22), *row.ConversationID)
+	require.Equal(t, int64(33), *row.UserID)
+	require.Equal(t, int64(7), *row.TenantID, "租户归属必须落库：配额聚合按它分组")
 	require.Equal(t, "qwen-max", *row.ModelName)
 	require.Equal(t, uint32(250), *row.PromptTokens)
 	require.Equal(t, uint32(250), *row.CompletionTokens)
@@ -81,14 +81,14 @@ func TestAiUsageLogRepoSqlite_Create(t *testing.T) {
 
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), cnt.GetCount())
+	require.Equal(t, int64(3), cnt.GetCount())
 
 	require.Error(t, repo.Create(ctx, nil), "nil 载荷应返回 BadRequest")
 
 	// List：total 口径与 Count 一致
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), all.GetTotal())
+	require.Equal(t, int64(3), all.GetTotal())
 	require.Len(t, all.GetItems(), 3)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -97,7 +97,7 @@ func TestAiUsageLogRepoSqlite_Create(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), filtered.GetTotal(), "contains 过滤应命中全部 qwen 行")
+	require.Equal(t, int64(3), filtered.GetTotal(), "contains 过滤应命中全部 qwen 行")
 	require.Len(t, filtered.GetItems(), 3)
 
 	filtered, err = repo.List(ctx, &paginationV1.PagingRequest{
@@ -106,7 +106,7 @@ func TestAiUsageLogRepoSqlite_Create(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), filtered.GetTotal(), "不含关键词的 contains 过滤应为 0 行")
+	require.Equal(t, int64(0), filtered.GetTotal(), "不含关键词的 contains 过滤应为 0 行")
 
 	_, err = repo.List(ctx, nil)
 	require.Error(t, err, "nil 分页请求应返回 BadRequest")
@@ -129,15 +129,15 @@ func TestAiUsageLogRepoSqlite_SumTokensByTenantSince(t *testing.T) {
 
 	sum, err := repo.SumTokensByTenantSince(ctx, 7, cutoff)
 	require.NoError(t, err)
-	require.Equal(t, uint64(300), sum, "只应累加租户 7 在 since 之后的 300，窗口前的 500 不算")
+	require.Equal(t, int64(300), sum, "只应累加租户 7 在 since 之后的 300，窗口前的 500 不算")
 
 	sum, err = repo.SumTokensByTenantSince(ctx, 8, cutoff)
 	require.NoError(t, err)
-	require.Equal(t, uint64(100), sum, "租户 8 的账不能串到租户 7 头上")
+	require.Equal(t, int64(100), sum, "租户 8 的账不能串到租户 7 头上")
 
 	sum, err = repo.SumTokensByTenantSince(ctx, 999, cutoff)
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), sum, "没有流水的租户求和应为 0 而不是报错")
+	require.Equal(t, int64(0), sum, "没有流水的租户求和应为 0 而不是报错")
 }
 
 // TestAiUsageLogRepoSqlite_MonthStats 验证月度摘要的两种口径：租户管理员只算本租户、
@@ -160,18 +160,18 @@ func TestAiUsageLogRepoSqlite_MonthStats(t *testing.T) {
 
 	tokens, calls, err := repo.MonthStats(ctx, 7, monthStart)
 	require.NoError(t, err)
-	require.Equal(t, uint64(800), tokens, "租户 7 本月 tokens 只含窗口内两行（老账 9000 不算）")
-	require.Equal(t, uint64(2), calls, "调用次数按行数计，窗口外不计")
+	require.Equal(t, int64(800), tokens, "租户 7 本月 tokens 只含窗口内两行（老账 9000 不算）")
+	require.Equal(t, int64(2), calls, "调用次数按行数计，窗口外不计")
 
 	tokens, calls, err = repo.MonthStats(ctx, 0, monthStart)
 	require.NoError(t, err)
-	require.Equal(t, uint64(900), tokens, "平台管理员（tenantId=0）应统计全租户的窗口内行")
-	require.Equal(t, uint64(3), calls)
+	require.Equal(t, int64(900), tokens, "平台管理员（tenantId=0）应统计全租户的窗口内行")
+	require.Equal(t, int64(3), calls)
 
 	tokens, calls, err = repo.MonthStats(ctx, 999, monthStart)
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), tokens, "无流水租户的月度摘要应为 0")
-	require.Equal(t, uint64(0), calls)
+	require.Equal(t, int64(0), tokens, "无流水租户的月度摘要应为 0")
+	require.Equal(t, int64(0), calls)
 }
 
 // TestAiUsageLogRepoSqlite_FetchTenantTokenQuotaLimit 验证四态：tenantId=0 直接放行、
@@ -186,7 +186,7 @@ func TestAiUsageLogRepoSqlite_FetchTenantTokenQuotaLimit(t *testing.T) {
 	limit, configured, err := repo.FetchTenantTokenQuotaLimit(ctx, 0)
 	require.NoError(t, err)
 	require.False(t, configured, "平台身份（tenantId=0）应视为不限量")
-	require.Equal(t, uint64(0), limit)
+	require.Equal(t, int64(0), limit)
 
 	// 无套餐租户：未配置
 	tenantNoPlan, err := entClient.Client().Tenant.Create().
@@ -197,7 +197,7 @@ func TestAiUsageLogRepoSqlite_FetchTenantTokenQuotaLimit(t *testing.T) {
 	limit, configured, err = repo.FetchTenantTokenQuotaLimit(ctx, tenantNoPlan.ID)
 	require.NoError(t, err)
 	require.False(t, configured, "无套餐租户应视为不限量")
-	require.Equal(t, uint64(0), limit)
+	require.Equal(t, int64(0), limit)
 
 	// 有套餐但没配 AI_TOKENS 维度：未配置
 	planNoTokens, err := entClient.Client().Plan.Create().
@@ -240,11 +240,11 @@ func TestAiUsageLogRepoSqlite_FetchTenantTokenQuotaLimit(t *testing.T) {
 	limit, configured, err = repo.FetchTenantTokenQuotaLimit(ctx, tenantWithQuota.ID)
 	require.NoError(t, err)
 	require.True(t, configured, "配了 AI_TOKENS 配额应返回已配置")
-	require.Equal(t, uint64(123456), limit, "上限应取套餐配额的配值")
+	require.Equal(t, int64(123456), limit, "上限应取套餐配额的配值")
 
 	// 不存在的租户：视同未配置（NotFound 被吞成 (0,false,nil)，让配额检查按不限量放行而非报错）
 	limit, configured, err = repo.FetchTenantTokenQuotaLimit(ctx, 987654)
 	require.NoError(t, err)
 	require.False(t, configured, "租户行不存在应视为未配置而不是错误")
-	require.Equal(t, uint64(0), limit)
+	require.Equal(t, int64(0), limit)
 }

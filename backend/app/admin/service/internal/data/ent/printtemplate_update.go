@@ -70,14 +70,14 @@ func (_u *PrintTemplateUpdate) ClearDeletedAt() *PrintTemplateUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PrintTemplateUpdate) SetCreatedBy(v uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetCreatedBy(v int64) *PrintTemplateUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdate) SetNillableCreatedBy(v *uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetNillableCreatedBy(v *int64) *PrintTemplateUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *PrintTemplateUpdate) ClearCreatedBy() *PrintTemplateUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PrintTemplateUpdate) SetUpdatedBy(v uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetUpdatedBy(v int64) *PrintTemplateUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdate) SetNillableUpdatedBy(v *uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetNillableUpdatedBy(v *int64) *PrintTemplateUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *PrintTemplateUpdate) ClearUpdatedBy() *PrintTemplateUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PrintTemplateUpdate) SetDeletedBy(v uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetDeletedBy(v int64) *PrintTemplateUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdate) SetNillableDeletedBy(v *uint64) *PrintTemplateUpdate {
+func (_u *PrintTemplateUpdate) SetNillableDeletedBy(v *int64) *PrintTemplateUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -376,7 +376,7 @@ func (_u *PrintTemplateUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (_u *PrintTemplateUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(printtemplate.Table, printtemplate.Columns, sqlgraph.NewFieldSpec(printtemplate.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(printtemplate.Table, printtemplate.Columns, sqlgraph.NewFieldSpec(printtemplate.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -400,31 +400,31 @@ func (_u *PrintTemplateUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(printtemplate.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(printtemplate.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(printtemplate.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(printtemplate.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(printtemplate.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(printtemplate.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(printtemplate.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(printtemplate.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(printtemplate.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(printtemplate.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(printtemplate.FieldIsEnabled, field.TypeBool, value)
@@ -442,7 +442,7 @@ func (_u *PrintTemplateUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(printtemplate.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(printtemplate.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(printtemplate.FieldName, field.TypeString, value)
@@ -549,14 +549,14 @@ func (_u *PrintTemplateUpdateOne) ClearDeletedAt() *PrintTemplateUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PrintTemplateUpdateOne) SetCreatedBy(v uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetCreatedBy(v int64) *PrintTemplateUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdateOne) SetNillableCreatedBy(v *uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetNillableCreatedBy(v *int64) *PrintTemplateUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -576,14 +576,14 @@ func (_u *PrintTemplateUpdateOne) ClearCreatedBy() *PrintTemplateUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PrintTemplateUpdateOne) SetUpdatedBy(v uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetUpdatedBy(v int64) *PrintTemplateUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdateOne) SetNillableUpdatedBy(v *uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetNillableUpdatedBy(v *int64) *PrintTemplateUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -603,14 +603,14 @@ func (_u *PrintTemplateUpdateOne) ClearUpdatedBy() *PrintTemplateUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PrintTemplateUpdateOne) SetDeletedBy(v uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetDeletedBy(v int64) *PrintTemplateUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PrintTemplateUpdateOne) SetNillableDeletedBy(v *uint64) *PrintTemplateUpdateOne {
+func (_u *PrintTemplateUpdateOne) SetNillableDeletedBy(v *int64) *PrintTemplateUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -868,7 +868,7 @@ func (_u *PrintTemplateUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)
 }
 
 func (_u *PrintTemplateUpdateOne) sqlSave(ctx context.Context) (_node *PrintTemplate, err error) {
-	_spec := sqlgraph.NewUpdateSpec(printtemplate.Table, printtemplate.Columns, sqlgraph.NewFieldSpec(printtemplate.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(printtemplate.Table, printtemplate.Columns, sqlgraph.NewFieldSpec(printtemplate.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PrintTemplate.id" for update`)}
@@ -909,31 +909,31 @@ func (_u *PrintTemplateUpdateOne) sqlSave(ctx context.Context) (_node *PrintTemp
 		_spec.ClearField(printtemplate.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(printtemplate.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(printtemplate.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(printtemplate.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(printtemplate.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(printtemplate.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(printtemplate.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(printtemplate.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(printtemplate.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(printtemplate.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(printtemplate.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(printtemplate.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(printtemplate.FieldIsEnabled, field.TypeBool, value)
@@ -951,7 +951,7 @@ func (_u *PrintTemplateUpdateOne) sqlSave(ctx context.Context) (_node *PrintTemp
 		_spec.ClearField(printtemplate.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(printtemplate.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(printtemplate.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(printtemplate.FieldName, field.TypeString, value)

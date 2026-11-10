@@ -15,8 +15,8 @@ type SysConfig struct {
 	Value     *string    `gorm:"column:value;type:varchar(1024);comment:参数键值"`
 	ValueType *string    `gorm:"column:value_type;type:varchar(64);default:'STRING';comment:参数值类型：STRING/BOOL/INT"`
 	IsBuiltIn *bool      `gorm:"column:is_built_in;type:TINYINT;default:0;comment:是否系统内置参数（内置参数禁止删除）"`
-	CreatedBy *uint64    `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
-	UpdatedBy *uint64    `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
+	CreatedBy *int64    `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
+	UpdatedBy *int64    `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:datetime;comment:创建时间"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:datetime;comment:更新时间"`
 }

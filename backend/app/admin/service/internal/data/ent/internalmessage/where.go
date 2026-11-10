@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.InternalMessage {
+func ID(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.InternalMessage {
+func IDEQ(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.InternalMessage {
+func IDNEQ(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.InternalMessage {
+func IDIn(ids ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.InternalMessage {
+func IDNotIn(ids ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.InternalMessage {
+func IDGT(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.InternalMessage {
+func IDGTE(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.InternalMessage {
+func IDLT(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.InternalMessage {
+func IDLTE(id int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,22 +70,22 @@ func DeletedAt(v time.Time) predicate.InternalMessage {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.InternalMessage {
+func CreatedBy(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.InternalMessage {
+func UpdatedBy(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.InternalMessage {
+func DeletedBy(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.InternalMessage {
+func TenantID(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldTenantID, v))
 }
 
@@ -100,12 +100,12 @@ func Content(v string) predicate.InternalMessage {
 }
 
 // SenderID applies equality check predicate on the "sender_id" field. It's identical to SenderIDEQ.
-func SenderID(v uint64) predicate.InternalMessage {
+func SenderID(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldSenderID, v))
 }
 
 // CategoryID applies equality check predicate on the "category_id" field. It's identical to CategoryIDEQ.
-func CategoryID(v uint64) predicate.InternalMessage {
+func CategoryID(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldCategoryID, v))
 }
 
@@ -260,42 +260,42 @@ func DeletedAtNotNil() predicate.InternalMessage {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.InternalMessage {
+func CreatedByEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.InternalMessage {
+func CreatedByNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.InternalMessage {
+func CreatedByIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.InternalMessage {
+func CreatedByNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.InternalMessage {
+func CreatedByGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.InternalMessage {
+func CreatedByGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.InternalMessage {
+func CreatedByLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.InternalMessage {
+func CreatedByLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -310,42 +310,42 @@ func CreatedByNotNil() predicate.InternalMessage {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.InternalMessage {
+func UpdatedByEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.InternalMessage {
+func UpdatedByNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.InternalMessage {
+func UpdatedByIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.InternalMessage {
+func UpdatedByNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.InternalMessage {
+func UpdatedByGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.InternalMessage {
+func UpdatedByGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.InternalMessage {
+func UpdatedByLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.InternalMessage {
+func UpdatedByLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -360,42 +360,42 @@ func UpdatedByNotNil() predicate.InternalMessage {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.InternalMessage {
+func DeletedByEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.InternalMessage {
+func DeletedByNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.InternalMessage {
+func DeletedByIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.InternalMessage {
+func DeletedByNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.InternalMessage {
+func DeletedByGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.InternalMessage {
+func DeletedByGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.InternalMessage {
+func DeletedByLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.InternalMessage {
+func DeletedByLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -410,42 +410,42 @@ func DeletedByNotNil() predicate.InternalMessage {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.InternalMessage {
+func TenantIDEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.InternalMessage {
+func TenantIDNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.InternalMessage {
+func TenantIDIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.InternalMessage {
+func TenantIDNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.InternalMessage {
+func TenantIDGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.InternalMessage {
+func TenantIDGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.InternalMessage {
+func TenantIDLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.InternalMessage {
+func TenantIDLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -610,82 +610,82 @@ func ContentContainsFold(v string) predicate.InternalMessage {
 }
 
 // SenderIDEQ applies the EQ predicate on the "sender_id" field.
-func SenderIDEQ(v uint64) predicate.InternalMessage {
+func SenderIDEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldSenderID, v))
 }
 
 // SenderIDNEQ applies the NEQ predicate on the "sender_id" field.
-func SenderIDNEQ(v uint64) predicate.InternalMessage {
+func SenderIDNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldSenderID, v))
 }
 
 // SenderIDIn applies the In predicate on the "sender_id" field.
-func SenderIDIn(vs ...uint64) predicate.InternalMessage {
+func SenderIDIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldSenderID, vs...))
 }
 
 // SenderIDNotIn applies the NotIn predicate on the "sender_id" field.
-func SenderIDNotIn(vs ...uint64) predicate.InternalMessage {
+func SenderIDNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldSenderID, vs...))
 }
 
 // SenderIDGT applies the GT predicate on the "sender_id" field.
-func SenderIDGT(v uint64) predicate.InternalMessage {
+func SenderIDGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldSenderID, v))
 }
 
 // SenderIDGTE applies the GTE predicate on the "sender_id" field.
-func SenderIDGTE(v uint64) predicate.InternalMessage {
+func SenderIDGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldSenderID, v))
 }
 
 // SenderIDLT applies the LT predicate on the "sender_id" field.
-func SenderIDLT(v uint64) predicate.InternalMessage {
+func SenderIDLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldSenderID, v))
 }
 
 // SenderIDLTE applies the LTE predicate on the "sender_id" field.
-func SenderIDLTE(v uint64) predicate.InternalMessage {
+func SenderIDLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldSenderID, v))
 }
 
 // CategoryIDEQ applies the EQ predicate on the "category_id" field.
-func CategoryIDEQ(v uint64) predicate.InternalMessage {
+func CategoryIDEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldCategoryID, v))
 }
 
 // CategoryIDNEQ applies the NEQ predicate on the "category_id" field.
-func CategoryIDNEQ(v uint64) predicate.InternalMessage {
+func CategoryIDNEQ(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNEQ(FieldCategoryID, v))
 }
 
 // CategoryIDIn applies the In predicate on the "category_id" field.
-func CategoryIDIn(vs ...uint64) predicate.InternalMessage {
+func CategoryIDIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldIn(FieldCategoryID, vs...))
 }
 
 // CategoryIDNotIn applies the NotIn predicate on the "category_id" field.
-func CategoryIDNotIn(vs ...uint64) predicate.InternalMessage {
+func CategoryIDNotIn(vs ...int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldNotIn(FieldCategoryID, vs...))
 }
 
 // CategoryIDGT applies the GT predicate on the "category_id" field.
-func CategoryIDGT(v uint64) predicate.InternalMessage {
+func CategoryIDGT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGT(FieldCategoryID, v))
 }
 
 // CategoryIDGTE applies the GTE predicate on the "category_id" field.
-func CategoryIDGTE(v uint64) predicate.InternalMessage {
+func CategoryIDGTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldGTE(FieldCategoryID, v))
 }
 
 // CategoryIDLT applies the LT predicate on the "category_id" field.
-func CategoryIDLT(v uint64) predicate.InternalMessage {
+func CategoryIDLT(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLT(FieldCategoryID, v))
 }
 
 // CategoryIDLTE applies the LTE predicate on the "category_id" field.
-func CategoryIDLTE(v uint64) predicate.InternalMessage {
+func CategoryIDLTE(v int64) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldCategoryID, v))
 }
 

@@ -58,17 +58,17 @@ message InternalMessageRecipient {
     DELETED = 4;   // (接收者动作) 接收者删除该消息
   }
 
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "记录ID" }
   ]; // 记录ID
 
-  optional uint64 message_id = 2 [
+  optional int64 message_id = 2 [
     json_name = "messageId",
     (gnostic.openapi.v3.property) = { description: "站内信内容ID" }
   ]; // 站内信内容ID
 
-  optional uint64 recipient_user_id = 3 [
+  optional int64 recipient_user_id = 3 [
     json_name = "recipientUserId",
     (gnostic.openapi.v3.property) = { description: "接收者用户ID" }
   ]; // 接收者用户ID
@@ -91,7 +91,7 @@ message InternalMessageRecipient {
     (gnostic.openapi.v3.property) = { description: "消息内容" }
   ]; // 消息内容
 
-  optional uint64 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
   ];  // 租户ID，0代表系统全局角色
@@ -100,9 +100,9 @@ message InternalMessageRecipient {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
 
-  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
-  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
-  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -112,18 +112,18 @@ message InternalMessageRecipient {
 // 查询站内信消息收件箱列表 - 回应
 message ListInternalMessageRecipientResponse {
   repeated InternalMessageRecipient items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 message ListUserInboxResponse {
   repeated InternalMessageRecipient items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询站内信消息收件箱详情 - 请求
 message GetInternalMessageRecipientRequest {
   oneof query_by {
-    uint64 id = 1 [
+    int64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
@@ -144,7 +144,7 @@ message CreateInternalMessageRecipientRequest {
 
 // 更新站内信消息收件箱 - 请求
 message UpdateInternalMessageRecipientRequest {
-  uint64 id = 1;
+  int64 id = 1;
 
   InternalMessageRecipient data = 2;
 
@@ -165,7 +165,7 @@ message UpdateInternalMessageRecipientRequest {
 // 删除站内信消息收件箱 - 请求
 message DeleteInternalMessageRecipientRequest {
   oneof query_by {
-    uint64 id = 1 [
+    int64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
@@ -174,43 +174,43 @@ message DeleteInternalMessageRecipientRequest {
 
 // 根据IDs批量获取站内信消息收件箱列表 - 请求
 message GetInternalMessageRecipientsByIdsRequest {
-  repeated uint64 ids = 1;
+  repeated int64 ids = 1;
 }
 
 message DeleteNotificationFromInboxRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
 
   // 收件箱记录ID列表；为空表示清空该用户收件箱（与 MarkNotificationAsRead 空 ids 语义一致）。
-  repeated uint64 recipient_ids = 2 [
+  repeated int64 recipient_ids = 2 [
     json_name = "recipientIds",
     (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表，为空表示清空收件箱" }
   ]; // 收件箱记录ID列表
 }
 
 message MarkNotificationAsReadRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
 
   // 收件箱记录ID列表；为空表示标记该用户全部未读通知（服务端按用户维度兜底，
   // 前端"全部已读"入口只加载了当前页数据，无法枚举全部ID）。
-  repeated uint64 recipient_ids = 2 [
+  repeated int64 recipient_ids = 2 [
     json_name = "recipientIds",
     (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表，为空表示全部未读" }
   ]; // 收件箱记录ID列表
 }
 
 message MarkNotificationsStatusRequest {
-  uint64 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
 
-  repeated uint64 recipient_ids = 2 [
+  repeated int64 recipient_ids = 2 [
     json_name = "recipientIds",
     (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表" }
   ]; // 收件箱记录ID列表
@@ -222,5 +222,5 @@ message MarkNotificationsStatusRequest {
 }
 
 message CountInternalMessageRecipientResponse {
-  uint64 count = 1;
+  int64 count = 1;
 }

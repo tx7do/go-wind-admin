@@ -122,17 +122,17 @@ func (RolePermission_Status) EnumDescriptor() ([]byte, []int) {
 // 角色权限关联
 type RolePermission struct {
 	state         protoimpl.MessageState          `protogen:"open.v1"`
-	Id            *uint64                         `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                   // ID
-	RoleId        *uint64                         `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                             // 角色ID
-	PermissionId  *uint64                         `protobuf:"varint,3,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`                           // 权限点ID
+	Id            *int64                          `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                   // ID
+	RoleId        *int64                          `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                             // 角色ID
+	PermissionId  *int64                          `protobuf:"varint,3,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`                           // 权限点ID
 	Effect        *RolePermission_EffectiveStatus `protobuf:"varint,4,opt,name=effect,proto3,enum=permission.service.v1.RolePermission_EffectiveStatus,oneof" json:"effect,omitempty"` // 权限点ID
 	Priority      *int32                          `protobuf:"varint,5,opt,name=priority,proto3,oneof" json:"priority,omitempty"`                                                       // 优先级（-100~100，值越大优先级越高）
 	Status        *RolePermission_Status          `protobuf:"varint,6,opt,name=status,proto3,enum=permission.service.v1.RolePermission_Status,oneof" json:"status,omitempty"`          // 状态
-	TenantId      *uint64                         `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                      // 租户ID，0代表系统全局角色
+	TenantId      *int64                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                      // 租户ID，0代表系统全局角色
 	TenantName    *string                         `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                 // 租户名称
-	CreatedBy     *uint64                         `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                  // 创建者ID
-	UpdatedBy     *uint64                         `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                  // 更新者ID
-	DeletedBy     *uint64                         `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                  // 删除者用户ID
+	CreatedBy     *int64                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                  // 创建者ID
+	UpdatedBy     *int64                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                  // 更新者ID
+	DeletedBy     *int64                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                  // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp          `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                   // 创建时间
 	UpdatedAt     *timestamppb.Timestamp          `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                   // 更新时间
 	DeletedAt     *timestamppb.Timestamp          `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                   // 删除时间
@@ -170,21 +170,21 @@ func (*RolePermission) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_role_permission_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *RolePermission) GetId() uint64 {
+func (x *RolePermission) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *RolePermission) GetRoleId() uint64 {
+func (x *RolePermission) GetRoleId() int64 {
 	if x != nil && x.RoleId != nil {
 		return *x.RoleId
 	}
 	return 0
 }
 
-func (x *RolePermission) GetPermissionId() uint64 {
+func (x *RolePermission) GetPermissionId() int64 {
 	if x != nil && x.PermissionId != nil {
 		return *x.PermissionId
 	}
@@ -212,7 +212,7 @@ func (x *RolePermission) GetStatus() RolePermission_Status {
 	return RolePermission_OFF
 }
 
-func (x *RolePermission) GetTenantId() uint64 {
+func (x *RolePermission) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -226,21 +226,21 @@ func (x *RolePermission) GetTenantName() string {
 	return ""
 }
 
-func (x *RolePermission) GetCreatedBy() uint64 {
+func (x *RolePermission) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *RolePermission) GetUpdatedBy() uint64 {
+func (x *RolePermission) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *RolePermission) GetDeletedBy() uint64 {
+func (x *RolePermission) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -275,21 +275,21 @@ const file_permission_service_v1_role_permission_proto_rawDesc = "" +
 	"+permission/service/v1/role_permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\n" +
 	"\n" +
 	"\x0eRolePermission\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\x04B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
-	"\arole_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x03 \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限点IDH\x02R\fpermissionId\x88\x01\x01\x12f\n" +
+	"\x02id\x18\x01 \x01(\x03B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
+	"\arole_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
+	"\rpermission_id\x18\x03 \x01(\x03B\x11\xbaG\x0e\x92\x02\v权限点IDH\x02R\fpermissionId\x88\x01\x01\x12f\n" +
 	"\x06effect\x18\x04 \x01(\x0e25.permission.service.v1.RolePermission.EffectiveStatusB\x12\xbaG\x0f\x92\x02\f生效方式H\x03R\x06effect\x88\x01\x01\x12Y\n" +
 	"\bpriority\x18\x05 \x01(\x05B8\xbaG5\x92\x022优先级（-100~100，值越大优先级越高）H\x04R\bpriority\x88\x01\x01\x12W\n" +
 	"\x06status\x18\x06 \x01(\x0e2,.permission.service.v1.RolePermission.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18( \x01(\x03B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\aR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
 	"R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +

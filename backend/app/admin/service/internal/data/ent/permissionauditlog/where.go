@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.PermissionAuditLog {
+func ID(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.PermissionAuditLog {
+func IDEQ(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.PermissionAuditLog {
+func IDNEQ(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.PermissionAuditLog {
+func IDIn(ids ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.PermissionAuditLog {
+func IDNotIn(ids ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.PermissionAuditLog {
+func IDGT(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.PermissionAuditLog {
+func IDGTE(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.PermissionAuditLog {
+func IDLT(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.PermissionAuditLog {
+func IDLTE(id int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -60,12 +60,12 @@ func CreatedAt(v time.Time) predicate.PermissionAuditLog {
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.PermissionAuditLog {
+func TenantID(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // OperatorID applies equality check predicate on the "operator_id" field. It's identical to OperatorIDEQ.
-func OperatorID(v uint64) predicate.PermissionAuditLog {
+func OperatorID(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldOperatorID, v))
 }
 
@@ -175,42 +175,42 @@ func CreatedAtNotNil() predicate.PermissionAuditLog {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.PermissionAuditLog {
+func TenantIDEQ(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.PermissionAuditLog {
+func TenantIDNEQ(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.PermissionAuditLog {
+func TenantIDIn(vs ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.PermissionAuditLog {
+func TenantIDNotIn(vs ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.PermissionAuditLog {
+func TenantIDGT(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.PermissionAuditLog {
+func TenantIDGTE(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.PermissionAuditLog {
+func TenantIDLT(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.PermissionAuditLog {
+func TenantIDLTE(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -225,42 +225,42 @@ func TenantIDNotNil() predicate.PermissionAuditLog {
 }
 
 // OperatorIDEQ applies the EQ predicate on the "operator_id" field.
-func OperatorIDEQ(v uint64) predicate.PermissionAuditLog {
+func OperatorIDEQ(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldOperatorID, v))
 }
 
 // OperatorIDNEQ applies the NEQ predicate on the "operator_id" field.
-func OperatorIDNEQ(v uint64) predicate.PermissionAuditLog {
+func OperatorIDNEQ(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldOperatorID, v))
 }
 
 // OperatorIDIn applies the In predicate on the "operator_id" field.
-func OperatorIDIn(vs ...uint64) predicate.PermissionAuditLog {
+func OperatorIDIn(vs ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldIn(FieldOperatorID, vs...))
 }
 
 // OperatorIDNotIn applies the NotIn predicate on the "operator_id" field.
-func OperatorIDNotIn(vs ...uint64) predicate.PermissionAuditLog {
+func OperatorIDNotIn(vs ...int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldOperatorID, vs...))
 }
 
 // OperatorIDGT applies the GT predicate on the "operator_id" field.
-func OperatorIDGT(v uint64) predicate.PermissionAuditLog {
+func OperatorIDGT(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGT(FieldOperatorID, v))
 }
 
 // OperatorIDGTE applies the GTE predicate on the "operator_id" field.
-func OperatorIDGTE(v uint64) predicate.PermissionAuditLog {
+func OperatorIDGTE(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGTE(FieldOperatorID, v))
 }
 
 // OperatorIDLT applies the LT predicate on the "operator_id" field.
-func OperatorIDLT(v uint64) predicate.PermissionAuditLog {
+func OperatorIDLT(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLT(FieldOperatorID, v))
 }
 
 // OperatorIDLTE applies the LTE predicate on the "operator_id" field.
-func OperatorIDLTE(v uint64) predicate.PermissionAuditLog {
+func OperatorIDLTE(v int64) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLTE(FieldOperatorID, v))
 }
 

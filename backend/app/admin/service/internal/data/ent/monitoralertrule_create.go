@@ -65,13 +65,13 @@ func (_c *MonitorAlertRuleCreate) SetNillableDeletedAt(v *time.Time) *MonitorAle
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *MonitorAlertRuleCreate) SetCreatedBy(v uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetCreatedBy(v int64) *MonitorAlertRuleCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *MonitorAlertRuleCreate) SetNillableCreatedBy(v *uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetNillableCreatedBy(v *int64) *MonitorAlertRuleCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *MonitorAlertRuleCreate) SetNillableCreatedBy(v *uint64) *MonitorAlertR
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *MonitorAlertRuleCreate) SetUpdatedBy(v uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetUpdatedBy(v int64) *MonitorAlertRuleCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *MonitorAlertRuleCreate) SetNillableUpdatedBy(v *uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetNillableUpdatedBy(v *int64) *MonitorAlertRuleCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *MonitorAlertRuleCreate) SetNillableUpdatedBy(v *uint64) *MonitorAlertR
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *MonitorAlertRuleCreate) SetDeletedBy(v uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetDeletedBy(v int64) *MonitorAlertRuleCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *MonitorAlertRuleCreate) SetNillableDeletedBy(v *uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetNillableDeletedBy(v *int64) *MonitorAlertRuleCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -275,7 +275,7 @@ func (_c *MonitorAlertRuleCreate) SetNillableLastAlertedAt(v *time.Time) *Monito
 }
 
 // SetID sets the "id" field.
-func (_c *MonitorAlertRuleCreate) SetID(v uint64) *MonitorAlertRuleCreate {
+func (_c *MonitorAlertRuleCreate) SetID(v int64) *MonitorAlertRuleCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -386,7 +386,7 @@ func (_c *MonitorAlertRuleCreate) sqlSave(ctx context.Context) (*MonitorAlertRul
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -396,7 +396,7 @@ func (_c *MonitorAlertRuleCreate) sqlSave(ctx context.Context) (*MonitorAlertRul
 func (_c *MonitorAlertRuleCreate) createSpec() (*MonitorAlertRule, *sqlgraph.CreateSpec) {
 	var (
 		_node = &MonitorAlertRule{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(monitoralertrule.Table, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(monitoralertrule.Table, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -416,15 +416,15 @@ func (_c *MonitorAlertRuleCreate) createSpec() (*MonitorAlertRule, *sqlgraph.Cre
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -564,7 +564,7 @@ func (u *MonitorAlertRuleUpsert) ClearDeletedAt() *MonitorAlertRuleUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MonitorAlertRuleUpsert) SetCreatedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) SetCreatedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Set(monitoralertrule.FieldCreatedBy, v)
 	return u
 }
@@ -576,7 +576,7 @@ func (u *MonitorAlertRuleUpsert) UpdateCreatedBy() *MonitorAlertRuleUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MonitorAlertRuleUpsert) AddCreatedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) AddCreatedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Add(monitoralertrule.FieldCreatedBy, v)
 	return u
 }
@@ -588,7 +588,7 @@ func (u *MonitorAlertRuleUpsert) ClearCreatedBy() *MonitorAlertRuleUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MonitorAlertRuleUpsert) SetUpdatedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) SetUpdatedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Set(monitoralertrule.FieldUpdatedBy, v)
 	return u
 }
@@ -600,7 +600,7 @@ func (u *MonitorAlertRuleUpsert) UpdateUpdatedBy() *MonitorAlertRuleUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MonitorAlertRuleUpsert) AddUpdatedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) AddUpdatedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Add(monitoralertrule.FieldUpdatedBy, v)
 	return u
 }
@@ -612,7 +612,7 @@ func (u *MonitorAlertRuleUpsert) ClearUpdatedBy() *MonitorAlertRuleUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MonitorAlertRuleUpsert) SetDeletedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) SetDeletedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Set(monitoralertrule.FieldDeletedBy, v)
 	return u
 }
@@ -624,7 +624,7 @@ func (u *MonitorAlertRuleUpsert) UpdateDeletedBy() *MonitorAlertRuleUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MonitorAlertRuleUpsert) AddDeletedBy(v uint64) *MonitorAlertRuleUpsert {
+func (u *MonitorAlertRuleUpsert) AddDeletedBy(v int64) *MonitorAlertRuleUpsert {
 	u.Add(monitoralertrule.FieldDeletedBy, v)
 	return u
 }
@@ -945,14 +945,14 @@ func (u *MonitorAlertRuleUpsertOne) ClearDeletedAt() *MonitorAlertRuleUpsertOne 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MonitorAlertRuleUpsertOne) SetCreatedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) SetCreatedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MonitorAlertRuleUpsertOne) AddCreatedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) AddCreatedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -973,14 +973,14 @@ func (u *MonitorAlertRuleUpsertOne) ClearCreatedBy() *MonitorAlertRuleUpsertOne 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MonitorAlertRuleUpsertOne) SetUpdatedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) SetUpdatedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MonitorAlertRuleUpsertOne) AddUpdatedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) AddUpdatedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1001,14 +1001,14 @@ func (u *MonitorAlertRuleUpsertOne) ClearUpdatedBy() *MonitorAlertRuleUpsertOne 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MonitorAlertRuleUpsertOne) SetDeletedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) SetDeletedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MonitorAlertRuleUpsertOne) AddDeletedBy(v uint64) *MonitorAlertRuleUpsertOne {
+func (u *MonitorAlertRuleUpsertOne) AddDeletedBy(v int64) *MonitorAlertRuleUpsertOne {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1296,7 +1296,7 @@ func (u *MonitorAlertRuleUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *MonitorAlertRuleUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *MonitorAlertRuleUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1305,7 +1305,7 @@ func (u *MonitorAlertRuleUpsertOne) ID(ctx context.Context) (id uint64, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *MonitorAlertRuleUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *MonitorAlertRuleUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1362,7 +1362,7 @@ func (_c *MonitorAlertRuleCreateBulk) Save(ctx context.Context) ([]*MonitorAlert
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1540,14 +1540,14 @@ func (u *MonitorAlertRuleUpsertBulk) ClearDeletedAt() *MonitorAlertRuleUpsertBul
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *MonitorAlertRuleUpsertBulk) SetCreatedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) SetCreatedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *MonitorAlertRuleUpsertBulk) AddCreatedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) AddCreatedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1568,14 +1568,14 @@ func (u *MonitorAlertRuleUpsertBulk) ClearCreatedBy() *MonitorAlertRuleUpsertBul
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *MonitorAlertRuleUpsertBulk) SetUpdatedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) SetUpdatedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *MonitorAlertRuleUpsertBulk) AddUpdatedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) AddUpdatedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1596,14 +1596,14 @@ func (u *MonitorAlertRuleUpsertBulk) ClearUpdatedBy() *MonitorAlertRuleUpsertBul
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *MonitorAlertRuleUpsertBulk) SetDeletedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) SetDeletedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *MonitorAlertRuleUpsertBulk) AddDeletedBy(v uint64) *MonitorAlertRuleUpsertBulk {
+func (u *MonitorAlertRuleUpsertBulk) AddDeletedBy(v int64) *MonitorAlertRuleUpsertBulk {
 	return u.Update(func(s *MonitorAlertRuleUpsert) {
 		s.AddDeletedBy(v)
 	})

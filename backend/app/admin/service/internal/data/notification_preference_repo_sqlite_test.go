@@ -28,19 +28,19 @@ func TestNotificationPreferenceRepoSqlite_UpsertRoundtrip(t *testing.T) {
 		QuietEnabled:     trans.Ptr(true),
 		QuietStartMinute: trans.Ptr(int32(1320)),
 		QuietEndMinute:   trans.Ptr(int32(480)),
-		MutedCategoryIds: []uint64{7, 9},
+		MutedCategoryIds: []int64{7, 9},
 	}, 1001)
 	require.NoError(t, err, "首次保存应创建成功")
-	require.Equal(t, uint64(1001), saved.GetUserId())
+	require.Equal(t, int64(1001), saved.GetUserId())
 	require.True(t, saved.GetQuietEnabled())
-	require.Equal(t, []uint64{7, 9}, saved.GetMutedCategoryIds())
+	require.Equal(t, []int64{7, 9}, saved.GetMutedCategoryIds())
 
 	// 再次保存：更新同一行
 	saved, err = repo.Upsert(ctx, 1001, &notificationV1.UpdateNotificationPreferenceRequest{
 		QuietEnabled:     trans.Ptr(false),
 		QuietStartMinute: trans.Ptr(int32(1260)), // 21:00
 		QuietEndMinute:   trans.Ptr(int32(360)),  // 06:00
-		MutedCategoryIds: []uint64{9},
+		MutedCategoryIds: []int64{9},
 	}, 1001)
 	require.NoError(t, err, "再次保存应更新成功")
 
@@ -48,7 +48,7 @@ func TestNotificationPreferenceRepoSqlite_UpsertRoundtrip(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "两次保存应只占一行（按 user_id upsert）")
 	require.False(t, rows[0].QuietEnabled, "静音开关应被更新为 false")
-	require.Equal(t, []uint64{9}, rows[0].MutedCategoryIds, "退订列表应被整体替换")
+	require.Equal(t, []int64{9}, rows[0].MutedCategoryIds, "退订列表应被整体替换")
 
 	got, err := repo.GetByUserID(ctx, 1001)
 	require.NoError(t, err)
@@ -70,9 +70,9 @@ func TestNotificationPreferenceRepoSqlite_ListByUserIDs(t *testing.T) {
 	}, 2001)
 	require.NoError(t, err)
 
-	prefs, err := repo.ListByUserIDs(ctx, []uint64{2001, 2002, 2003})
+	prefs, err := repo.ListByUserIDs(ctx, []int64{2001, 2002, 2003})
 	require.NoError(t, err)
 	require.Len(t, prefs, 1, "只有配置过偏好的用户出现在结果里")
-	require.Contains(t, prefs, uint64(2001))
+	require.Contains(t, prefs, int64(2001))
 	require.True(t, prefs[2001].GetQuietEnabled())
 }

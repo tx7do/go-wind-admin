@@ -40,7 +40,7 @@ func (_d *ScriptLogDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *ScriptLogDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(scriptlog.Table, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewDeleteSpec(scriptlog.Table, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

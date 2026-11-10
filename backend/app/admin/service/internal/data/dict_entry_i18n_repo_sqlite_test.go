@@ -166,7 +166,7 @@ func TestDictEntryI18nRepoSqlite_CleanByEntryIDs(t *testing.T) {
 		require.NoError(t, seedTx.Commit())
 	}
 
-	rowCount := func(entryID uint64) int {
+	rowCount := func(entryID int64) int {
 		rows, err := entClient.Client().DictEntryI18n.Query().
 			Where(dictentryi18n.HasDictEntryWith(dictentry.IDEQ(entryID))).
 			All(ctx)
@@ -176,7 +176,7 @@ func TestDictEntryI18nRepoSqlite_CleanByEntryIDs(t *testing.T) {
 	require.Equal(t, 1, rowCount(entryA.ID))
 	require.Equal(t, 1, rowCount(entryB.ID))
 
-	require.NoError(t, repo.CleanByEntryIDs(ctx, []uint64{entryA.ID}), "CleanByEntryIDs 应成功")
+	require.NoError(t, repo.CleanByEntryIDs(ctx, []int64{entryA.ID}), "CleanByEntryIDs 应成功")
 	require.Zero(t, rowCount(entryA.ID), "指定项的翻译应被清除")
 	require.Equal(t, 1, rowCount(entryB.ID), "未指定项的翻译应保留")
 }

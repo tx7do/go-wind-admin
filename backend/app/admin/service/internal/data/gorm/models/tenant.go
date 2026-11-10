@@ -15,7 +15,7 @@ type Tenant struct {
 	LogoURL          *string    `gorm:"column:logo_url;type:varchar(255);comment:租户logo地址"`
 	Domain           *string    `gorm:"column:domain;type:varchar(255);comment:租户域名"`
 	Industry         *string    `gorm:"column:industry;type:varchar(255);comment:所属行业"`
-	AdminUserID      *uint64    `gorm:"column:admin_user_id;type:int unsigned;comment:管理员用户ID;index:idx_sys_tenant_admin_user_id"`
+	AdminUserID      *int64    `gorm:"column:admin_user_id;type:int unsigned;comment:管理员用户ID;index:idx_sys_tenant_admin_user_id"`
 	Status           *string    `gorm:"column:status;type:varchar(128);comment:租户状态;index:idx_sys_tenant_status_audit_status,priority:1"`
 	Type             *string    `gorm:"column:type;type:varchar(128);comment:租户类型"`
 	AuditStatus      *string    `gorm:"column:audit_status;type:varchar(128);comment:审核状态;index:idx_sys_tenant_status_audit_status,priority:2"`

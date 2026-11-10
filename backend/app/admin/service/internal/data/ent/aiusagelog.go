@@ -17,17 +17,17 @@ type AiUsageLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 提供商ID
-	ProviderID *uint64 `json:"provider_id,omitempty"`
+	ProviderID *int64 `json:"provider_id,omitempty"`
 	// 会话ID（0=非对话调用）
-	ConversationID *uint64 `json:"conversation_id,omitempty"`
+	ConversationID *int64 `json:"conversation_id,omitempty"`
 	// 发起用户ID
-	UserID *uint64 `json:"user_id,omitempty"`
+	UserID *int64 `json:"user_id,omitempty"`
 	// 模型名称
 	ModelName *string `json:"model_name,omitempty"`
 	// 输入 token 数
@@ -72,7 +72,7 @@ func (_m *AiUsageLog) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case aiusagelog.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -84,29 +84,29 @@ func (_m *AiUsageLog) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case aiusagelog.FieldProviderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field provider_id", values[i])
 			} else if value.Valid {
-				_m.ProviderID = new(uint64)
-				*_m.ProviderID = uint64(value.Int64)
+				_m.ProviderID = new(int64)
+				*_m.ProviderID = value.Int64
 			}
 		case aiusagelog.FieldConversationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field conversation_id", values[i])
 			} else if value.Valid {
-				_m.ConversationID = new(uint64)
-				*_m.ConversationID = uint64(value.Int64)
+				_m.ConversationID = new(int64)
+				*_m.ConversationID = value.Int64
 			}
 		case aiusagelog.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint64)
-				*_m.UserID = uint64(value.Int64)
+				_m.UserID = new(int64)
+				*_m.UserID = value.Int64
 			}
 		case aiusagelog.FieldModelName:
 			if value, ok := values[i].(*sql.NullString); !ok {

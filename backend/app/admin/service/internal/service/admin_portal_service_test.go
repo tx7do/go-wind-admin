@@ -16,7 +16,7 @@ import (
 
 func TestMenuListToQueryString(t *testing.T) {
 	type args struct {
-		menus []uint64
+		menus []int64
 	}
 	tests := []struct {
 		name string
@@ -25,22 +25,22 @@ func TestMenuListToQueryString(t *testing.T) {
 	}{
 		{
 			name: "Single menu ID",
-			args: args{menus: []uint64{1}},
+			args: args{menus: []int64{1}},
 			want: `{"id__in":"[\"1\"]","status":"ON","type__not":"BUTTON"}`,
 		},
 		{
 			name: "Multiple menu IDs",
-			args: args{menus: []uint64{1, 2, 3}},
+			args: args{menus: []int64{1, 2, 3}},
 			want: `{"id__in":"[\"1\", \"2\", \"3\"]","status":"ON","type__not":"BUTTON"}`,
 		},
 		{
 			name: "No menu IDs",
-			args: args{menus: []uint64{}},
+			args: args{menus: []int64{}},
 			want: `{"id__in":"[]","status":"ON","type__not":"BUTTON"}`,
 		},
 		{
 			name: "Large menu IDs",
-			args: args{menus: []uint64{1234567890, 987654321}},
+			args: args{menus: []int64{1234567890, 987654321}},
 			want: `{"id__in":"[\"1234567890\", \"987654321\"]","status":"ON","type__not":"BUTTON"}`,
 		},
 	}

@@ -92,7 +92,7 @@ func TestNewUserTokenPayloadWithClaims_OptionalFieldsRoundTrip(t *testing.T) {
 }
 
 // TestNewUserTokenPayloadWithClaims_DataScopeUnitsParsing dsu 声明是
-// 逗号连接的十进制串：非法片段（非数字、负号、超 uint64）必须被跳过，
+// 逗号连接的十进制串：非法片段（非数字、负号、超 int64）必须被跳过，
 // 合法片段保序还原。UNIT 类数据范围的越界片段混入不应导致整条解析失败。
 func TestNewUserTokenPayloadWithClaims_DataScopeUnitsParsing(t *testing.T) {
 	claims := &authn.AuthClaims{
@@ -100,7 +100,7 @@ func TestNewUserTokenPayloadWithClaims_DataScopeUnitsParsing(t *testing.T) {
 	}
 	payload, err := NewUserTokenPayloadWithClaims(claims)
 	require.NoError(t, err)
-	assert.Equal(t, []uint64{12, 34, 7}, payload.GetDataScopeUnitIds(),
+	assert.Equal(t, []int64{12, 34, 7}, payload.GetDataScopeUnitIds(),
 		"仅合法十进制片段应被还原，非法片段跳过")
 }
 

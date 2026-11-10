@@ -98,7 +98,7 @@ func (s *aiChatPublisherStub) named(name string) []aiChatPublishedEvent {
 
 // aiChatSeedProvider 直插一个提供商行，按需覆盖启用/默认形态（密钥/模型名固定，
 // 全局加密器在测试进程未初始化，api_key 明文直通）。
-func aiChatSeedProvider(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name, baseURL string, enabled, isDefault bool) uint64 {
+func aiChatSeedProvider(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name, baseURL string, enabled, isDefault bool) int64 {
 	t.Helper()
 	row, err := entClient.Client().AiProvider.Create().
 		SetNillableName(trans.Ptr(name)).
@@ -115,19 +115,19 @@ func aiChatSeedProvider(t *testing.T, entClient *entCrud.EntClient[*ent.Client],
 }
 
 // aiChatSeedConversation 直插一个归属指定用户的会话行。
-func aiChatSeedConversation(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, title string, userID uint64) uint64 {
+func aiChatSeedConversation(t *testing.T, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, title string, userID int64) int64 {
 	t.Helper()
 	row, err := entClient.Client().AiConversation.Create().
 		SetNillableTitle(trans.Ptr(title)).
 		SetNillableUserID(trans.Ptr(userID)).
-		SetNillableTenantID(trans.Ptr(uint64(0))).
+		SetNillableTenantID(trans.Ptr(int64(0))).
 		Save(ctx)
 	require.NoError(t, err, "种子会话应直插成功")
 	return row.ID
 }
 
 // aiChatNewOperator 构造指定用户/租户的操作者上下文。
-func aiChatNewOperator(ctx context.Context, userID uint64, tenantID ...uint64) context.Context {
+func aiChatNewOperator(ctx context.Context, userID int64, tenantID ...int64) context.Context {
 	payload := &authenticationV1.UserTokenPayload{UserId: userID}
 	if len(tenantID) > 0 {
 		payload.TenantId = trans.Ptr(tenantID[0])
@@ -217,7 +217,7 @@ func TestAiChatService_ChatGuards(t *testing.T) {
 	require.Contains(t, err.Error(), "ai provider is disabled")
 
 	// 显式指定不存在的提供商
-	_, err = svc.Chat(opCtx, &aiV1.ChatRequest{Content: trans.Ptr("hi"), ProviderId: trans.Ptr(uint64(424242))})
+	_, err = svc.Chat(opCtx, &aiV1.ChatRequest{Content: trans.Ptr("hi"), ProviderId: trans.Ptr(int64(424242))})
 	require.Error(t, err, "不存在提供商上的对话必须被拒绝")
 	require.Contains(t, err.Error(), "ai provider not found")
 }
@@ -259,7 +259,7 @@ func TestAiChatService_ResolveConversation(t *testing.T) {
 	svc := newAiChatServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
 	providerID := aiChatSeedProvider(t, entClient, ctx, "归属校验提供商", "http://127.0.0.1:9/v1", true, false)
-	operator := &authenticationV1.UserTokenPayload{UserId: 81, TenantId: trans.Ptr(uint64(5))}
+	operator := &authenticationV1.UserTokenPayload{UserId: 81, TenantId: trans.Ptr(int64(5))}
 
 	// 他人会话：归属校验失败必须 NotFound（把越权读藏进 404，不暴露会话存在性）
 	othersConv := aiChatSeedConversation(t, entClient, ctx, "张三的会话", 44)
@@ -284,8 +284,8 @@ func TestAiChatService_ResolveConversation(t *testing.T) {
 	require.NotZero(t, created.ID, "新建会话应落库并拿到 ID")
 	require.Len(t, []rune(*created.Title), conversationTitleMaxRunes, "标题应按 30 字符截断")
 	require.Equal(t, providerID, *created.ProviderID, "新会话应绑定本次解析出的提供商")
-	require.Equal(t, uint64(81), *created.UserID, "会话必须归属操作者")
-	require.Equal(t, uint64(5), *created.TenantID, "会话必须归属操作者租户")
+	require.Equal(t, int64(81), *created.UserID, "会话必须归属操作者")
+	require.Equal(t, int64(5), *created.TenantID, "会话必须归属操作者租户")
 }
 
 // TestAiChatService_CheckAiTokenQuota 验证 AI_TOKENS 月度配额闸门四态：
@@ -402,7 +402,7 @@ func TestAiChatService_ChatRoundTrip(t *testing.T) {
 	}
 	require.NotNil(t, userRow, "应存在 USER 消息行")
 	require.Equal(t, "打个招呼", *userRow.Content)
-	require.Equal(t, uint64(81), *userRow.UserID, "消息必须归属操作者：消息列表的越权兜底全靠它")
+	require.Equal(t, int64(81), *userRow.UserID, "消息必须归属操作者：消息列表的越权兜底全靠它")
 	require.NotNil(t, assistantRow, "应存在 ASSISTANT 消息行")
 	require.Equal(t, "你好，世界", *assistantRow.Content)
 	require.Equal(t, uint32(11), *assistantRow.PromptTokens, "assistant 消息应快照 usage 的输入 token")
@@ -477,7 +477,7 @@ func TestAiChatService_PublishEvents(t *testing.T) {
 
 	var first aiV1.ChatChunkEvent
 	require.NoError(t, protojson.Unmarshal(chunks[0].data, &first))
-	require.Equal(t, uint64(7), first.GetConversationId())
+	require.Equal(t, int64(7), first.GetConversationId())
 	require.Equal(t, uint32(0), first.GetSeq())
 	require.Equal(t, "第一帧", first.GetDelta())
 
@@ -490,7 +490,7 @@ func TestAiChatService_PublishEvents(t *testing.T) {
 	require.Len(t, tools, 1, "工具执行完成应推一帧 tool 事件")
 	var tool aiV1.ChatToolEvent
 	require.NoError(t, protojson.Unmarshal(tools[0].data, &tool))
-	require.Equal(t, uint64(7), tool.GetConversationId())
+	require.Equal(t, int64(7), tool.GetConversationId())
 	require.Equal(t, "get_current_time", tool.GetName())
 	require.Equal(t, "{}", tool.GetArguments())
 	require.Equal(t, "2026-01-01 00:00:00", tool.GetResult())

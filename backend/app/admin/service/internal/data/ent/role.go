@@ -17,7 +17,7 @@ type Role struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,11 +25,11 @@ type Role struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
 	// 描述
@@ -37,7 +37,7 @@ type Role struct {
 	// 排序值（越小越靠前）
 	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 状态
 	Status *role.Status `json:"status,omitempty"`
 	// 角色名称
@@ -51,7 +51,7 @@ type Role struct {
 	// 数据权限范围
 	DataScope *role.DataScope `json:"data_scope,omitempty"`
 	// 父角色ID，0表示无父级
-	ParentID     *uint64 `json:"parent_id,omitempty"`
+	ParentID     *int64 `json:"parent_id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -88,7 +88,7 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case role.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -114,22 +114,22 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case role.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case role.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case role.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -156,8 +156,8 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case role.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -205,8 +205,8 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				_m.ParentID = new(uint64)
-				*_m.ParentID = uint64(value.Int64)
+				_m.ParentID = new(int64)
+				*_m.ParentID = value.Int64
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.MembershipRole {
+func ID(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.MembershipRole {
+func IDEQ(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.MembershipRole {
+func IDNEQ(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.MembershipRole {
+func IDIn(ids ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.MembershipRole {
+func IDNotIn(ids ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.MembershipRole {
+func IDGT(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.MembershipRole {
+func IDGTE(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.MembershipRole {
+func IDLT(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.MembershipRole {
+func IDLTE(id int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,32 +70,32 @@ func DeletedAt(v time.Time) predicate.MembershipRole {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.MembershipRole {
+func CreatedBy(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.MembershipRole {
+func UpdatedBy(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.MembershipRole {
+func DeletedBy(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.MembershipRole {
+func TenantID(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldTenantID, v))
 }
 
 // MembershipID applies equality check predicate on the "membership_id" field. It's identical to MembershipIDEQ.
-func MembershipID(v uint64) predicate.MembershipRole {
+func MembershipID(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldMembershipID, v))
 }
 
 // RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
-func RoleID(v uint64) predicate.MembershipRole {
+func RoleID(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldRoleID, v))
 }
 
@@ -115,7 +115,7 @@ func AssignedAt(v time.Time) predicate.MembershipRole {
 }
 
 // AssignedBy applies equality check predicate on the "assigned_by" field. It's identical to AssignedByEQ.
-func AssignedBy(v uint64) predicate.MembershipRole {
+func AssignedBy(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldAssignedBy, v))
 }
 
@@ -275,42 +275,42 @@ func DeletedAtNotNil() predicate.MembershipRole {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.MembershipRole {
+func CreatedByEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.MembershipRole {
+func CreatedByNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.MembershipRole {
+func CreatedByIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.MembershipRole {
+func CreatedByNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.MembershipRole {
+func CreatedByGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.MembershipRole {
+func CreatedByGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.MembershipRole {
+func CreatedByLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.MembershipRole {
+func CreatedByLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -325,42 +325,42 @@ func CreatedByNotNil() predicate.MembershipRole {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.MembershipRole {
+func UpdatedByEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.MembershipRole {
+func UpdatedByNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.MembershipRole {
+func UpdatedByIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.MembershipRole {
+func UpdatedByNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.MembershipRole {
+func UpdatedByGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.MembershipRole {
+func UpdatedByGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.MembershipRole {
+func UpdatedByLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.MembershipRole {
+func UpdatedByLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -375,42 +375,42 @@ func UpdatedByNotNil() predicate.MembershipRole {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.MembershipRole {
+func DeletedByEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.MembershipRole {
+func DeletedByNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.MembershipRole {
+func DeletedByIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.MembershipRole {
+func DeletedByNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.MembershipRole {
+func DeletedByGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.MembershipRole {
+func DeletedByGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.MembershipRole {
+func DeletedByLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.MembershipRole {
+func DeletedByLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -425,42 +425,42 @@ func DeletedByNotNil() predicate.MembershipRole {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.MembershipRole {
+func TenantIDEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.MembershipRole {
+func TenantIDNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.MembershipRole {
+func TenantIDIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.MembershipRole {
+func TenantIDNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.MembershipRole {
+func TenantIDGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.MembershipRole {
+func TenantIDGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.MembershipRole {
+func TenantIDLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.MembershipRole {
+func TenantIDLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -475,82 +475,82 @@ func TenantIDNotNil() predicate.MembershipRole {
 }
 
 // MembershipIDEQ applies the EQ predicate on the "membership_id" field.
-func MembershipIDEQ(v uint64) predicate.MembershipRole {
+func MembershipIDEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldMembershipID, v))
 }
 
 // MembershipIDNEQ applies the NEQ predicate on the "membership_id" field.
-func MembershipIDNEQ(v uint64) predicate.MembershipRole {
+func MembershipIDNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldMembershipID, v))
 }
 
 // MembershipIDIn applies the In predicate on the "membership_id" field.
-func MembershipIDIn(vs ...uint64) predicate.MembershipRole {
+func MembershipIDIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldMembershipID, vs...))
 }
 
 // MembershipIDNotIn applies the NotIn predicate on the "membership_id" field.
-func MembershipIDNotIn(vs ...uint64) predicate.MembershipRole {
+func MembershipIDNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldMembershipID, vs...))
 }
 
 // MembershipIDGT applies the GT predicate on the "membership_id" field.
-func MembershipIDGT(v uint64) predicate.MembershipRole {
+func MembershipIDGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldMembershipID, v))
 }
 
 // MembershipIDGTE applies the GTE predicate on the "membership_id" field.
-func MembershipIDGTE(v uint64) predicate.MembershipRole {
+func MembershipIDGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldMembershipID, v))
 }
 
 // MembershipIDLT applies the LT predicate on the "membership_id" field.
-func MembershipIDLT(v uint64) predicate.MembershipRole {
+func MembershipIDLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldMembershipID, v))
 }
 
 // MembershipIDLTE applies the LTE predicate on the "membership_id" field.
-func MembershipIDLTE(v uint64) predicate.MembershipRole {
+func MembershipIDLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldMembershipID, v))
 }
 
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
-func RoleIDEQ(v uint64) predicate.MembershipRole {
+func RoleIDEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldRoleID, v))
 }
 
 // RoleIDNEQ applies the NEQ predicate on the "role_id" field.
-func RoleIDNEQ(v uint64) predicate.MembershipRole {
+func RoleIDNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldRoleID, v))
 }
 
 // RoleIDIn applies the In predicate on the "role_id" field.
-func RoleIDIn(vs ...uint64) predicate.MembershipRole {
+func RoleIDIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldRoleID, vs...))
 }
 
 // RoleIDNotIn applies the NotIn predicate on the "role_id" field.
-func RoleIDNotIn(vs ...uint64) predicate.MembershipRole {
+func RoleIDNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
 // RoleIDGT applies the GT predicate on the "role_id" field.
-func RoleIDGT(v uint64) predicate.MembershipRole {
+func RoleIDGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldRoleID, v))
 }
 
 // RoleIDGTE applies the GTE predicate on the "role_id" field.
-func RoleIDGTE(v uint64) predicate.MembershipRole {
+func RoleIDGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldRoleID, v))
 }
 
 // RoleIDLT applies the LT predicate on the "role_id" field.
-func RoleIDLT(v uint64) predicate.MembershipRole {
+func RoleIDLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldRoleID, v))
 }
 
 // RoleIDLTE applies the LTE predicate on the "role_id" field.
-func RoleIDLTE(v uint64) predicate.MembershipRole {
+func RoleIDLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldRoleID, v))
 }
 
@@ -705,42 +705,42 @@ func AssignedAtNotNil() predicate.MembershipRole {
 }
 
 // AssignedByEQ applies the EQ predicate on the "assigned_by" field.
-func AssignedByEQ(v uint64) predicate.MembershipRole {
+func AssignedByEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldEQ(FieldAssignedBy, v))
 }
 
 // AssignedByNEQ applies the NEQ predicate on the "assigned_by" field.
-func AssignedByNEQ(v uint64) predicate.MembershipRole {
+func AssignedByNEQ(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNEQ(FieldAssignedBy, v))
 }
 
 // AssignedByIn applies the In predicate on the "assigned_by" field.
-func AssignedByIn(vs ...uint64) predicate.MembershipRole {
+func AssignedByIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldIn(FieldAssignedBy, vs...))
 }
 
 // AssignedByNotIn applies the NotIn predicate on the "assigned_by" field.
-func AssignedByNotIn(vs ...uint64) predicate.MembershipRole {
+func AssignedByNotIn(vs ...int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldNotIn(FieldAssignedBy, vs...))
 }
 
 // AssignedByGT applies the GT predicate on the "assigned_by" field.
-func AssignedByGT(v uint64) predicate.MembershipRole {
+func AssignedByGT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGT(FieldAssignedBy, v))
 }
 
 // AssignedByGTE applies the GTE predicate on the "assigned_by" field.
-func AssignedByGTE(v uint64) predicate.MembershipRole {
+func AssignedByGTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldGTE(FieldAssignedBy, v))
 }
 
 // AssignedByLT applies the LT predicate on the "assigned_by" field.
-func AssignedByLT(v uint64) predicate.MembershipRole {
+func AssignedByLT(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLT(FieldAssignedBy, v))
 }
 
 // AssignedByLTE applies the LTE predicate on the "assigned_by" field.
-func AssignedByLTE(v uint64) predicate.MembershipRole {
+func AssignedByLTE(v int64) predicate.MembershipRole {
 	return predicate.MembershipRole(sql.FieldLTE(FieldAssignedBy, v))
 }
 

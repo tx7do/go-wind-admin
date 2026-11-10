@@ -78,7 +78,7 @@ func (r *LoginPolicyRepo) init() {
 
 // EffectivePolicy 登录闸门用的策略条目（ent 实体的精简视图，避免服务层依赖生成代码）。
 type EffectivePolicy struct {
-	TargetID uint64 // 0 表示全局策略（不限定用户）
+	TargetID int64 // 0 表示全局策略（不限定用户）
 	Value    string
 	Type     string // BLACKLIST / WHITELIST
 	Method   string // IP / MAC / REGION / TIME / DEVICE
@@ -88,7 +88,7 @@ type EffectivePolicy struct {
 // ListForLogin 拉取租户内全部登录策略，供登录闸门在内存中按
 // 全局（target_id 为空）/ 用户定向（target_id = userId）两批匹配。
 // 策略量级小（管理配置项），全量拉取 + 内存过滤即可，无需按用户建索引。
-func (r *LoginPolicyRepo) ListForLogin(ctx context.Context, tenantID uint64) ([]EffectivePolicy, error) {
+func (r *LoginPolicyRepo) ListForLogin(ctx context.Context, tenantID int64) ([]EffectivePolicy, error) {
 	entities, err := r.entClient.Client().LoginPolicy.Query().
 		Where(loginpolicy.TenantIDEQ(tenantID)).
 		All(ctx)
@@ -109,7 +109,7 @@ func (r *LoginPolicyRepo) ListForLogin(ctx context.Context, tenantID uint64) ([]
 	return policies, nil
 }
 
-func derefUint32[T ~uint32 | ~uint64](p *T) T {
+func derefUint32[T ~uint32 | ~int64](p *T) T {
 	if p == nil {
 		return 0
 	}
@@ -159,7 +159,7 @@ func (r *LoginPolicyRepo) List(ctx context.Context, req *paginationV1.PagingRequ
 	}, nil
 }
 
-func (r *LoginPolicyRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *LoginPolicyRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().LoginPolicy.Query().
 		Where(loginpolicy.IDEQ(id)).
 		Exist(ctx)

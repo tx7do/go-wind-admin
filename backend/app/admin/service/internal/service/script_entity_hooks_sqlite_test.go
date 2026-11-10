@@ -73,11 +73,11 @@ func TestMutationOpName(t *testing.T) {
 // 未覆写方法一旦被调用即 nil 接口 panic，本用例只调用 ID）。
 type idMutationStub struct {
 	ent.Mutation
-	id  uint64
+	id  int64
 	has bool
 }
 
-func (s *idMutationStub) ID() (uint64, bool) { return s.id, s.has }
+func (s *idMutationStub) ID() (int64, bool) { return s.id, s.has }
 
 // noIDMutationStub 无 ID() 实现的假 mutation。
 type noIDMutationStub struct {
@@ -86,11 +86,11 @@ type noIDMutationStub struct {
 
 // TestMutationID 验证 mutationID 的尽力提取：带 ID() 的取其值，否则 0。
 func TestMutationID(t *testing.T) {
-	require.Equal(t, uint64(77), mutationID(&idMutationStub{id: 77, has: true}),
+	require.Equal(t, int64(77), mutationID(&idMutationStub{id: 77, has: true}),
 		"带 ID() 的 mutation 应提取其 ID")
-	require.Equal(t, uint64(0), mutationID(&idMutationStub{has: false}),
+	require.Equal(t, int64(0), mutationID(&idMutationStub{has: false}),
 		"ID() 不存在值时提取 0")
-	require.Equal(t, uint64(0), mutationID(&noIDMutationStub{}),
+	require.Equal(t, int64(0), mutationID(&noIDMutationStub{}),
 		"未实现 ID() 的 mutation 提取 0")
 }
 

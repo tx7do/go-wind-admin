@@ -130,7 +130,7 @@ func TestMenuRepoSyncMenus_RebuildReplace(t *testing.T) {
 	require.NotEqual(t, oldID, fresh.ID)
 }
 
-func mustMenuIDByName(t *testing.T, repo *MenuRepo, ctx context.Context, name string) uint64 {
+func mustMenuIDByName(t *testing.T, repo *MenuRepo, ctx context.Context, name string) int64 {
 	t.Helper()
 	row, err := repo.entClient.Client().Menu.Query().Where(menu.NameEQ(name)).Only(ctx)
 	require.NoError(t, err)

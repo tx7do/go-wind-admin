@@ -275,8 +275,8 @@ func backfillPermissionMenuFullPaths(ctx context.Context, db *sql.DB, dialect st
 			return fmt.Errorf("scan menu row: %w", err)
 		}
 		menus = append(menus, migrateMenuRow{
-			id:       uint64(id.Int64),
-			parentID: uint64(parentID.Int64),
+			id:       int64(id.Int64),
+			parentID: int64(parentID.Int64),
 			path:     path.String,
 		})
 	}
@@ -297,8 +297,8 @@ WHERE full_path IS NULL OR full_path = ''`)
 	}
 	type binding struct {
 		id           int64
-		permissionID uint64
-		menuID       uint64
+		permissionID int64
+		menuID       int64
 	}
 	var bindings []binding
 	for rows.Next() {
@@ -313,8 +313,8 @@ WHERE full_path IS NULL OR full_path = ''`)
 		}
 		bindings = append(bindings, binding{
 			id:           id.Int64,
-			permissionID: uint64(perm.Int64),
-			menuID:       uint64(mid.Int64),
+			permissionID: int64(perm.Int64),
+			menuID:       int64(mid.Int64),
 		})
 	}
 	if err = rows.Err(); err != nil {
@@ -370,8 +370,8 @@ WHERE full_path IS NULL OR full_path = ''`)
 
 // migrateMenuRow 迁移期菜单行的最小字段集。
 type migrateMenuRow struct {
-	id       uint64
-	parentID uint64
+	id       int64
+	parentID int64
 	path     string
 }
 
@@ -396,8 +396,8 @@ func joinMenuFullPathCanonical(parentFullPath, path string) string {
 // walkMenuFullPaths 对原始菜单行做树遍历，产出 id→全路径映射。
 // 拼接规则必须与 menu_repo.joinMenuFullPath 逐字一致（身份键两侧同源）。
 // 成环脏数据防护同款（visited 集合）。
-func walkMenuFullPaths(rows []migrateMenuRow) map[uint64]string {
-	childrenOf := make(map[uint64][]int, len(rows))
+func walkMenuFullPaths(rows []migrateMenuRow) map[int64]string {
+	childrenOf := make(map[int64][]int, len(rows))
 	var rootIdx []int
 	for i, r := range rows {
 		if r.parentID == 0 {
@@ -407,8 +407,8 @@ func walkMenuFullPaths(rows []migrateMenuRow) map[uint64]string {
 		}
 	}
 
-	byID := make(map[uint64]string, len(rows))
-	visited := make(map[uint64]bool, len(rows))
+	byID := make(map[int64]string, len(rows))
+	visited := make(map[int64]bool, len(rows))
 	var walk func(idx []int, parentFullPath string)
 	walk = func(idx []int, parentFullPath string) {
 		for _, i := range idx {

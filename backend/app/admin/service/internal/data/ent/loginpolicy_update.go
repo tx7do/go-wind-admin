@@ -70,14 +70,14 @@ func (_u *LoginPolicyUpdate) ClearDeletedAt() *LoginPolicyUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LoginPolicyUpdate) SetCreatedBy(v uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetCreatedBy(v int64) *LoginPolicyUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdate) SetNillableCreatedBy(v *uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetNillableCreatedBy(v *int64) *LoginPolicyUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *LoginPolicyUpdate) ClearCreatedBy() *LoginPolicyUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LoginPolicyUpdate) SetUpdatedBy(v uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetUpdatedBy(v int64) *LoginPolicyUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdate) SetNillableUpdatedBy(v *uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetNillableUpdatedBy(v *int64) *LoginPolicyUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *LoginPolicyUpdate) ClearUpdatedBy() *LoginPolicyUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LoginPolicyUpdate) SetDeletedBy(v uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetDeletedBy(v int64) *LoginPolicyUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdate) SetNillableDeletedBy(v *uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetNillableDeletedBy(v *int64) *LoginPolicyUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -151,14 +151,14 @@ func (_u *LoginPolicyUpdate) ClearDeletedBy() *LoginPolicyUpdate {
 }
 
 // SetTargetID sets the "target_id" field.
-func (_u *LoginPolicyUpdate) SetTargetID(v uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetTargetID(v int64) *LoginPolicyUpdate {
 	_u.mutation.ResetTargetID()
 	_u.mutation.SetTargetID(v)
 	return _u
 }
 
 // SetNillableTargetID sets the "target_id" field if the given value is not nil.
-func (_u *LoginPolicyUpdate) SetNillableTargetID(v *uint64) *LoginPolicyUpdate {
+func (_u *LoginPolicyUpdate) SetNillableTargetID(v *int64) *LoginPolicyUpdate {
 	if v != nil {
 		_u.SetTargetID(*v)
 	}
@@ -314,7 +314,7 @@ func (_u *LoginPolicyUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(loginpolicy.Table, loginpolicy.Columns, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(loginpolicy.Table, loginpolicy.Columns, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -338,43 +338,43 @@ func (_u *LoginPolicyUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(loginpolicy.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(loginpolicy.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(loginpolicy.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(loginpolicy.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(loginpolicy.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(loginpolicy.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(loginpolicy.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(loginpolicy.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.TargetID(); ok {
-		_spec.SetField(loginpolicy.FieldTargetID, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldTargetID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTargetID(); ok {
-		_spec.AddField(loginpolicy.FieldTargetID, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldTargetID, field.TypeInt64, value)
 	}
 	if _u.mutation.TargetIDCleared() {
-		_spec.ClearField(loginpolicy.FieldTargetID, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldTargetID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Value(); ok {
 		_spec.SetField(loginpolicy.FieldValue, field.TypeString, value)
@@ -463,14 +463,14 @@ func (_u *LoginPolicyUpdateOne) ClearDeletedAt() *LoginPolicyUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LoginPolicyUpdateOne) SetCreatedBy(v uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetCreatedBy(v int64) *LoginPolicyUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdateOne) SetNillableCreatedBy(v *uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetNillableCreatedBy(v *int64) *LoginPolicyUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -490,14 +490,14 @@ func (_u *LoginPolicyUpdateOne) ClearCreatedBy() *LoginPolicyUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LoginPolicyUpdateOne) SetUpdatedBy(v uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetUpdatedBy(v int64) *LoginPolicyUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdateOne) SetNillableUpdatedBy(v *uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetNillableUpdatedBy(v *int64) *LoginPolicyUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -517,14 +517,14 @@ func (_u *LoginPolicyUpdateOne) ClearUpdatedBy() *LoginPolicyUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LoginPolicyUpdateOne) SetDeletedBy(v uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetDeletedBy(v int64) *LoginPolicyUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LoginPolicyUpdateOne) SetNillableDeletedBy(v *uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetNillableDeletedBy(v *int64) *LoginPolicyUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -544,14 +544,14 @@ func (_u *LoginPolicyUpdateOne) ClearDeletedBy() *LoginPolicyUpdateOne {
 }
 
 // SetTargetID sets the "target_id" field.
-func (_u *LoginPolicyUpdateOne) SetTargetID(v uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetTargetID(v int64) *LoginPolicyUpdateOne {
 	_u.mutation.ResetTargetID()
 	_u.mutation.SetTargetID(v)
 	return _u
 }
 
 // SetNillableTargetID sets the "target_id" field if the given value is not nil.
-func (_u *LoginPolicyUpdateOne) SetNillableTargetID(v *uint64) *LoginPolicyUpdateOne {
+func (_u *LoginPolicyUpdateOne) SetNillableTargetID(v *int64) *LoginPolicyUpdateOne {
 	if v != nil {
 		_u.SetTargetID(*v)
 	}
@@ -720,7 +720,7 @@ func (_u *LoginPolicyUpdateOne) sqlSave(ctx context.Context) (_node *LoginPolicy
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(loginpolicy.Table, loginpolicy.Columns, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(loginpolicy.Table, loginpolicy.Columns, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "LoginPolicy.id" for update`)}
@@ -761,43 +761,43 @@ func (_u *LoginPolicyUpdateOne) sqlSave(ctx context.Context) (_node *LoginPolicy
 		_spec.ClearField(loginpolicy.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(loginpolicy.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(loginpolicy.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(loginpolicy.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(loginpolicy.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(loginpolicy.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(loginpolicy.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(loginpolicy.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.TargetID(); ok {
-		_spec.SetField(loginpolicy.FieldTargetID, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldTargetID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTargetID(); ok {
-		_spec.AddField(loginpolicy.FieldTargetID, field.TypeUint64, value)
+		_spec.AddField(loginpolicy.FieldTargetID, field.TypeInt64, value)
 	}
 	if _u.mutation.TargetIDCleared() {
-		_spec.ClearField(loginpolicy.FieldTargetID, field.TypeUint64)
+		_spec.ClearField(loginpolicy.FieldTargetID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Value(); ok {
 		_spec.SetField(loginpolicy.FieldValue, field.TypeString, value)

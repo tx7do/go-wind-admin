@@ -97,8 +97,8 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	if treeTravel {
 		dtos = pagination.BuildTree(
 			dtos,
-			func(node *permissionV1.Menu) *uint64 { return node.Id },
-			func(node *permissionV1.Menu) *uint64 { return node.ParentId },
+			func(node *permissionV1.Menu) *int64 { return node.Id },
+			func(node *permissionV1.Menu) *int64 { return node.ParentId },
 			func(node *permissionV1.Menu) *[]*permissionV1.Menu { return &node.Children },
 		)
 	}
@@ -109,12 +109,12 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	}
 
 	return &permissionV1.ListMenuResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *MenuRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *MenuRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})

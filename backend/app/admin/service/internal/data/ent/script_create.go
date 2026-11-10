@@ -65,13 +65,13 @@ func (_c *ScriptCreate) SetNillableDeletedAt(v *time.Time) *ScriptCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *ScriptCreate) SetCreatedBy(v uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetCreatedBy(v int64) *ScriptCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *ScriptCreate) SetNillableCreatedBy(v *uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetNillableCreatedBy(v *int64) *ScriptCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *ScriptCreate) SetNillableCreatedBy(v *uint64) *ScriptCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *ScriptCreate) SetUpdatedBy(v uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetUpdatedBy(v int64) *ScriptCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *ScriptCreate) SetNillableUpdatedBy(v *uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetNillableUpdatedBy(v *int64) *ScriptCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *ScriptCreate) SetNillableUpdatedBy(v *uint64) *ScriptCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *ScriptCreate) SetDeletedBy(v uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetDeletedBy(v int64) *ScriptCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *ScriptCreate) SetNillableDeletedBy(v *uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetNillableDeletedBy(v *int64) *ScriptCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -233,7 +233,7 @@ func (_c *ScriptCreate) SetNillableVersion(v *uint32) *ScriptCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *ScriptCreate) SetID(v uint64) *ScriptCreate {
+func (_c *ScriptCreate) SetID(v int64) *ScriptCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -323,7 +323,7 @@ func (_c *ScriptCreate) sqlSave(ctx context.Context) (*Script, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -333,7 +333,7 @@ func (_c *ScriptCreate) sqlSave(ctx context.Context) (*Script, error) {
 func (_c *ScriptCreate) createSpec() (*Script, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Script{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(script.Table, sqlgraph.NewFieldSpec(script.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(script.Table, sqlgraph.NewFieldSpec(script.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -353,15 +353,15 @@ func (_c *ScriptCreate) createSpec() (*Script, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(script.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(script.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(script.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(script.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(script.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(script.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -489,7 +489,7 @@ func (u *ScriptUpsert) ClearDeletedAt() *ScriptUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ScriptUpsert) SetCreatedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) SetCreatedBy(v int64) *ScriptUpsert {
 	u.Set(script.FieldCreatedBy, v)
 	return u
 }
@@ -501,7 +501,7 @@ func (u *ScriptUpsert) UpdateCreatedBy() *ScriptUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ScriptUpsert) AddCreatedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) AddCreatedBy(v int64) *ScriptUpsert {
 	u.Add(script.FieldCreatedBy, v)
 	return u
 }
@@ -513,7 +513,7 @@ func (u *ScriptUpsert) ClearCreatedBy() *ScriptUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ScriptUpsert) SetUpdatedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) SetUpdatedBy(v int64) *ScriptUpsert {
 	u.Set(script.FieldUpdatedBy, v)
 	return u
 }
@@ -525,7 +525,7 @@ func (u *ScriptUpsert) UpdateUpdatedBy() *ScriptUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ScriptUpsert) AddUpdatedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) AddUpdatedBy(v int64) *ScriptUpsert {
 	u.Add(script.FieldUpdatedBy, v)
 	return u
 }
@@ -537,7 +537,7 @@ func (u *ScriptUpsert) ClearUpdatedBy() *ScriptUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ScriptUpsert) SetDeletedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) SetDeletedBy(v int64) *ScriptUpsert {
 	u.Set(script.FieldDeletedBy, v)
 	return u
 }
@@ -549,7 +549,7 @@ func (u *ScriptUpsert) UpdateDeletedBy() *ScriptUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ScriptUpsert) AddDeletedBy(v uint64) *ScriptUpsert {
+func (u *ScriptUpsert) AddDeletedBy(v int64) *ScriptUpsert {
 	u.Add(script.FieldDeletedBy, v)
 	return u
 }
@@ -828,14 +828,14 @@ func (u *ScriptUpsertOne) ClearDeletedAt() *ScriptUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ScriptUpsertOne) SetCreatedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) SetCreatedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ScriptUpsertOne) AddCreatedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) AddCreatedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -856,14 +856,14 @@ func (u *ScriptUpsertOne) ClearCreatedBy() *ScriptUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ScriptUpsertOne) SetUpdatedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) SetUpdatedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ScriptUpsertOne) AddUpdatedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) AddUpdatedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -884,14 +884,14 @@ func (u *ScriptUpsertOne) ClearUpdatedBy() *ScriptUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ScriptUpsertOne) SetDeletedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) SetDeletedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ScriptUpsertOne) AddDeletedBy(v uint64) *ScriptUpsertOne {
+func (u *ScriptUpsertOne) AddDeletedBy(v int64) *ScriptUpsertOne {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1130,7 +1130,7 @@ func (u *ScriptUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ScriptUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *ScriptUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1139,7 +1139,7 @@ func (u *ScriptUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ScriptUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *ScriptUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1196,7 +1196,7 @@ func (_c *ScriptCreateBulk) Save(ctx context.Context) ([]*Script, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1374,14 +1374,14 @@ func (u *ScriptUpsertBulk) ClearDeletedAt() *ScriptUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ScriptUpsertBulk) SetCreatedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) SetCreatedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ScriptUpsertBulk) AddCreatedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) AddCreatedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1402,14 +1402,14 @@ func (u *ScriptUpsertBulk) ClearCreatedBy() *ScriptUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ScriptUpsertBulk) SetUpdatedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) SetUpdatedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ScriptUpsertBulk) AddUpdatedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) AddUpdatedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1430,14 +1430,14 @@ func (u *ScriptUpsertBulk) ClearUpdatedBy() *ScriptUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ScriptUpsertBulk) SetDeletedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) SetDeletedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ScriptUpsertBulk) AddDeletedBy(v uint64) *ScriptUpsertBulk {
+func (u *ScriptUpsertBulk) AddDeletedBy(v int64) *ScriptUpsertBulk {
 	return u.Update(func(s *ScriptUpsert) {
 		s.AddDeletedBy(v)
 	})

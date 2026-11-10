@@ -40,7 +40,7 @@ func (_d *AiDocDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *AiDocDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(aidoc.Table, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewDeleteSpec(aidoc.Table, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

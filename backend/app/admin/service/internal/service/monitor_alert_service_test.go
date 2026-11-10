@@ -62,7 +62,7 @@ func newMonitorAlertEnv(t *testing.T) *monitorAlertEnv {
 		notifier: notifier,
 		ctx:      viewer.WithSystemContext(context.Background()),
 		serverInfo: &serverMonitorV1.ServerMonitorInfo{
-			Go:       &serverMonitorV1.GoRuntimeInfo{NumGoroutine: trans.Ptr(uint32(100)), MemAllocBytes: trans.Ptr(uint64(512 << 20))},
+			Go:       &serverMonitorV1.GoRuntimeInfo{NumGoroutine: trans.Ptr(uint32(100)), MemAllocBytes: trans.Ptr(int64(512 << 20))},
 			Database: &serverMonitorV1.DatabaseInfo{PingOk: trans.Ptr(true), OpenConnections: trans.Ptr(uint32(10))},
 		},
 		redisInfo: &redisCacheV1.RedisCacheMonitorInfo{DbSize: 500},

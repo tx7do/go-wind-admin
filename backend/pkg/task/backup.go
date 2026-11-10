@@ -11,7 +11,7 @@ type BackupTaskData struct {
 }
 
 // CreateBackupTaskID creates a unique task ID for a backup task based on the lottery details.
-func CreateBackupTaskID(taskId uint64) string {
+func CreateBackupTaskID(taskId int64) string {
 	return fmt.Sprintf("%s:%d",
 		BackupTaskType, taskId,
 	)

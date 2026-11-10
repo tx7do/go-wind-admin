@@ -54,14 +54,14 @@ func TestFileServiceSqlite_CreateUpdateStampsOperatorAndSizeFormat(t *testing.T)
 			FileName:     trans.Ptr("头像.png"),
 			SaveFileName: trans.Ptr("uuid.png"),
 			Size:         trans.Ptr(uint64(1536)),
-			CreatedBy:    trans.Ptr(uint64(1)), // 客户端伪造，应被盖章覆盖
+			CreatedBy:    trans.Ptr(int64(1)), // 客户端伪造，应被盖章覆盖
 		},
 	})
 	require.NoError(t, err, "合法创建应成功")
 
 	row, err := entClient.Client().File.Query().Only(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(61), *row.CreatedBy, "created_by 应取令牌操作人（客户端伪造无效）")
+	require.Equal(t, int64(61), *row.CreatedBy, "created_by 应取令牌操作人（客户端伪造无效）")
 	require.NotNil(t, row.SizeFormat)
 	require.Equal(t, "1.5KB", *row.SizeFormat, "size_format 应由 size 派生（列表直显口径）")
 
@@ -80,8 +80,8 @@ func TestFileServiceSqlite_CreateUpdateStampsOperatorAndSizeFormat(t *testing.T)
 	require.NoError(t, err)
 	require.Equal(t, "改名后的头像.png", *row.FileName)
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(62), *row.UpdatedBy, "updated_by 应记修改人")
-	require.Equal(t, uint64(61), *row.CreatedBy, "created_by 必须保持上传者：更新改写它即审计错乱")
+	require.Equal(t, int64(62), *row.UpdatedBy, "updated_by 应记修改人")
+	require.Equal(t, int64(61), *row.CreatedBy, "created_by 必须保持上传者：更新改写它即审计错乱")
 
 	// 入参守卫与缺操作人
 	_, err = svc.Create(opCtx, nil)
@@ -110,7 +110,7 @@ func TestFileServiceSqlite_ListGetDeleteGuards(t *testing.T) {
 
 	list, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), list.GetTotal())
+	require.Equal(t, int64(1), list.GetTotal())
 
 	_, err = svc.List(ctx, nil)
 	require.Error(t, err, "nil 分页请求应返回 BadRequest")

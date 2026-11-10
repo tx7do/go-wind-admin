@@ -80,7 +80,7 @@ func (PrintTemplate) Mixin() []ent.Mixin {
 		mixin.OperatorID64{},
 		mixin.IsEnabled{},
 		mixin.SortOrder{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

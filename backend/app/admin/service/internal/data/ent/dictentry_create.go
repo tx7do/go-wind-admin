@@ -67,13 +67,13 @@ func (_c *DictEntryCreate) SetNillableDeletedAt(v *time.Time) *DictEntryCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *DictEntryCreate) SetCreatedBy(v uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetCreatedBy(v int64) *DictEntryCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableCreatedBy(v *uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableCreatedBy(v *int64) *DictEntryCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -81,13 +81,13 @@ func (_c *DictEntryCreate) SetNillableCreatedBy(v *uint64) *DictEntryCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *DictEntryCreate) SetUpdatedBy(v uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetUpdatedBy(v int64) *DictEntryCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableUpdatedBy(v *uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableUpdatedBy(v *int64) *DictEntryCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -95,13 +95,13 @@ func (_c *DictEntryCreate) SetNillableUpdatedBy(v *uint64) *DictEntryCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *DictEntryCreate) SetDeletedBy(v uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetDeletedBy(v int64) *DictEntryCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableDeletedBy(v *uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableDeletedBy(v *int64) *DictEntryCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -137,13 +137,13 @@ func (_c *DictEntryCreate) SetNillableIsEnabled(v *bool) *DictEntryCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *DictEntryCreate) SetTenantID(v uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetTenantID(v int64) *DictEntryCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableTenantID(v *uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableTenantID(v *int64) *DictEntryCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -171,19 +171,19 @@ func (_c *DictEntryCreate) SetNillableNumericValue(v *int32) *DictEntryCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *DictEntryCreate) SetID(v uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetID(v int64) *DictEntryCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
-func (_c *DictEntryCreate) SetDictTypeID(id uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetDictTypeID(id int64) *DictEntryCreate {
 	_c.mutation.SetDictTypeID(id)
 	return _c
 }
 
 // SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableDictTypeID(id *uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableDictTypeID(id *int64) *DictEntryCreate {
 	if id != nil {
 		_c = _c.SetDictTypeID(*id)
 	}
@@ -196,14 +196,14 @@ func (_c *DictEntryCreate) SetDictType(v *DictType) *DictEntryCreate {
 }
 
 // AddI18nIDs adds the "i18ns" edge to the DictEntryI18n entity by IDs.
-func (_c *DictEntryCreate) AddI18nIDs(ids ...uint64) *DictEntryCreate {
+func (_c *DictEntryCreate) AddI18nIDs(ids ...int64) *DictEntryCreate {
 	_c.mutation.AddI18nIDs(ids...)
 	return _c
 }
 
 // AddI18ns adds the "i18ns" edges to the DictEntryI18n entity.
 func (_c *DictEntryCreate) AddI18ns(v ...*DictEntryI18n) *DictEntryCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -293,7 +293,7 @@ func (_c *DictEntryCreate) sqlSave(ctx context.Context) (*DictEntry, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -303,7 +303,7 @@ func (_c *DictEntryCreate) sqlSave(ctx context.Context) (*DictEntry, error) {
 func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 	var (
 		_node = &DictEntry{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(dictentry.Table, sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(dictentry.Table, sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -323,15 +323,15 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(dictentry.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(dictentry.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(dictentry.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(dictentry.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(dictentry.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(dictentry.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
@@ -343,7 +343,7 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_node.IsEnabled = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(dictentry.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(dictentry.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.EntryValue(); ok {
@@ -362,7 +362,7 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -379,7 +379,7 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 			Columns: []string{dictentry.I18nsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -476,7 +476,7 @@ func (u *DictEntryUpsert) ClearDeletedAt() *DictEntryUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *DictEntryUpsert) SetCreatedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) SetCreatedBy(v int64) *DictEntryUpsert {
 	u.Set(dictentry.FieldCreatedBy, v)
 	return u
 }
@@ -488,7 +488,7 @@ func (u *DictEntryUpsert) UpdateCreatedBy() *DictEntryUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *DictEntryUpsert) AddCreatedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) AddCreatedBy(v int64) *DictEntryUpsert {
 	u.Add(dictentry.FieldCreatedBy, v)
 	return u
 }
@@ -500,7 +500,7 @@ func (u *DictEntryUpsert) ClearCreatedBy() *DictEntryUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *DictEntryUpsert) SetUpdatedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) SetUpdatedBy(v int64) *DictEntryUpsert {
 	u.Set(dictentry.FieldUpdatedBy, v)
 	return u
 }
@@ -512,7 +512,7 @@ func (u *DictEntryUpsert) UpdateUpdatedBy() *DictEntryUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *DictEntryUpsert) AddUpdatedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) AddUpdatedBy(v int64) *DictEntryUpsert {
 	u.Add(dictentry.FieldUpdatedBy, v)
 	return u
 }
@@ -524,7 +524,7 @@ func (u *DictEntryUpsert) ClearUpdatedBy() *DictEntryUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *DictEntryUpsert) SetDeletedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) SetDeletedBy(v int64) *DictEntryUpsert {
 	u.Set(dictentry.FieldDeletedBy, v)
 	return u
 }
@@ -536,7 +536,7 @@ func (u *DictEntryUpsert) UpdateDeletedBy() *DictEntryUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *DictEntryUpsert) AddDeletedBy(v uint64) *DictEntryUpsert {
+func (u *DictEntryUpsert) AddDeletedBy(v int64) *DictEntryUpsert {
 	u.Add(dictentry.FieldDeletedBy, v)
 	return u
 }
@@ -722,14 +722,14 @@ func (u *DictEntryUpsertOne) ClearDeletedAt() *DictEntryUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *DictEntryUpsertOne) SetCreatedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) SetCreatedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *DictEntryUpsertOne) AddCreatedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) AddCreatedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -750,14 +750,14 @@ func (u *DictEntryUpsertOne) ClearCreatedBy() *DictEntryUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *DictEntryUpsertOne) SetUpdatedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) SetUpdatedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *DictEntryUpsertOne) AddUpdatedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) AddUpdatedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -778,14 +778,14 @@ func (u *DictEntryUpsertOne) ClearUpdatedBy() *DictEntryUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *DictEntryUpsertOne) SetDeletedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) SetDeletedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *DictEntryUpsertOne) AddDeletedBy(v uint64) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) AddDeletedBy(v int64) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -912,7 +912,7 @@ func (u *DictEntryUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *DictEntryUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *DictEntryUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -921,7 +921,7 @@ func (u *DictEntryUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *DictEntryUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *DictEntryUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -978,7 +978,7 @@ func (_c *DictEntryCreateBulk) Save(ctx context.Context) ([]*DictEntry, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1159,14 +1159,14 @@ func (u *DictEntryUpsertBulk) ClearDeletedAt() *DictEntryUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *DictEntryUpsertBulk) SetCreatedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) SetCreatedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *DictEntryUpsertBulk) AddCreatedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) AddCreatedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1187,14 +1187,14 @@ func (u *DictEntryUpsertBulk) ClearCreatedBy() *DictEntryUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *DictEntryUpsertBulk) SetUpdatedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) SetUpdatedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *DictEntryUpsertBulk) AddUpdatedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) AddUpdatedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1215,14 +1215,14 @@ func (u *DictEntryUpsertBulk) ClearUpdatedBy() *DictEntryUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *DictEntryUpsertBulk) SetDeletedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) SetDeletedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *DictEntryUpsertBulk) AddDeletedBy(v uint64) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) AddDeletedBy(v int64) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddDeletedBy(v)
 	})

@@ -76,18 +76,18 @@ func (Permission_Status) EnumDescriptor() ([]byte, []int) {
 // 权限点
 type Permission struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                      // 权限点ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                      // 权限点ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                   // 权限点名称（如：删除用户）
 	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                   // 权限点唯一编码（如：user.delete）
 	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`                                     // 描述
 	Status        *Permission_Status     `protobuf:"varint,5,opt,name=status,proto3,enum=permission.service.v1.Permission_Status,oneof" json:"status,omitempty"` // 状态
-	GroupId       *uint64                `protobuf:"varint,6,opt,name=group_id,json=groupId,proto3,oneof" json:"group_id,omitempty"`                             // 分组ID
+	GroupId       *int64                 `protobuf:"varint,6,opt,name=group_id,json=groupId,proto3,oneof" json:"group_id,omitempty"`                             // 分组ID
 	GroupName     *string                `protobuf:"bytes,7,opt,name=group_name,json=groupName,proto3,oneof" json:"group_name,omitempty"`                        // 分组名称
-	MenuIds       []uint64               `protobuf:"varint,10,rep,packed,name=menu_ids,json=menuIds,proto3" json:"menu_ids,omitempty"`                           // 关联的菜单ID
-	ApiIds        []uint64               `protobuf:"varint,11,rep,packed,name=api_ids,json=apiIds,proto3" json:"api_ids,omitempty"`                              // 关联的API资源ID
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                     // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                     // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                     // 删除者用户ID
+	MenuIds       []int64                `protobuf:"varint,10,rep,packed,name=menu_ids,json=menuIds,proto3" json:"menu_ids,omitempty"`                           // 关联的菜单ID
+	ApiIds        []int64                `protobuf:"varint,11,rep,packed,name=api_ids,json=apiIds,proto3" json:"api_ids,omitempty"`                              // 关联的API资源ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                     // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                     // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                     // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                      // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                      // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                      // 删除时间
@@ -125,7 +125,7 @@ func (*Permission) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Permission) GetId() uint64 {
+func (x *Permission) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -160,7 +160,7 @@ func (x *Permission) GetStatus() Permission_Status {
 	return Permission_OFF
 }
 
-func (x *Permission) GetGroupId() uint64 {
+func (x *Permission) GetGroupId() int64 {
 	if x != nil && x.GroupId != nil {
 		return *x.GroupId
 	}
@@ -174,35 +174,35 @@ func (x *Permission) GetGroupName() string {
 	return ""
 }
 
-func (x *Permission) GetMenuIds() []uint64 {
+func (x *Permission) GetMenuIds() []int64 {
 	if x != nil {
 		return x.MenuIds
 	}
 	return nil
 }
 
-func (x *Permission) GetApiIds() []uint64 {
+func (x *Permission) GetApiIds() []int64 {
 	if x != nil {
 		return x.ApiIds
 	}
 	return nil
 }
 
-func (x *Permission) GetCreatedBy() uint64 {
+func (x *Permission) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Permission) GetUpdatedBy() uint64 {
+func (x *Permission) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Permission) GetDeletedBy() uint64 {
+func (x *Permission) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -234,7 +234,7 @@ func (x *Permission) GetDeletedAt() *timestamppb.Timestamp {
 type ListPermissionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*Permission          `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -276,7 +276,7 @@ func (x *ListPermissionResponse) GetItems() []*Permission {
 	return nil
 }
 
-func (x *ListPermissionResponse) GetTotal() uint64 {
+func (x *ListPermissionResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -333,7 +333,7 @@ func (x *GetPermissionRequest) GetQueryBy() isGetPermissionRequest_QueryBy {
 	return nil
 }
 
-func (x *GetPermissionRequest) GetId() uint64 {
+func (x *GetPermissionRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPermissionRequest_Id); ok {
 			return x.Id
@@ -363,7 +363,7 @@ type isGetPermissionRequest_QueryBy interface {
 }
 
 type GetPermissionRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type GetPermissionRequest_Code struct {
@@ -422,7 +422,7 @@ func (x *CreatePermissionRequest) GetData() *Permission {
 // 更新 - 请求
 type UpdatePermissionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Permission            `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -460,7 +460,7 @@ func (*UpdatePermissionRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePermissionRequest) GetId() uint64 {
+func (x *UpdatePermissionRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -538,7 +538,7 @@ func (x *DeletePermissionRequest) GetQueryBy() isDeletePermissionRequest_QueryBy
 	return nil
 }
 
-func (x *DeletePermissionRequest) GetId() uint64 {
+func (x *DeletePermissionRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePermissionRequest_Id); ok {
 			return x.Id
@@ -556,7 +556,7 @@ func (x *DeletePermissionRequest) GetCode() string {
 	return ""
 }
 
-func (x *DeletePermissionRequest) GetGroupId() uint64 {
+func (x *DeletePermissionRequest) GetGroupId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePermissionRequest_GroupId); ok {
 			return x.GroupId
@@ -570,7 +570,7 @@ type isDeletePermissionRequest_QueryBy interface {
 }
 
 type DeletePermissionRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type DeletePermissionRequest_Code struct {
@@ -578,7 +578,7 @@ type DeletePermissionRequest_Code struct {
 }
 
 type DeletePermissionRequest_GroupId struct {
-	GroupId uint64 `protobuf:"varint,3,opt,name=group_id,json=groupId,proto3,oneof"` // 权限分组
+	GroupId int64 `protobuf:"varint,3,opt,name=group_id,json=groupId,proto3,oneof"` // 权限分组
 }
 
 func (*DeletePermissionRequest_Id) isDeletePermissionRequest_QueryBy() {}
@@ -589,7 +589,7 @@ func (*DeletePermissionRequest_GroupId) isDeletePermissionRequest_QueryBy() {}
 
 type CountPermissionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -624,7 +624,7 @@ func (*CountPermissionResponse) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountPermissionResponse) GetCount() uint64 {
+func (x *CountPermissionResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -638,23 +638,23 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"&permission/service/v1/permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x93\t\n" +
 	"\n" +
 	"Permission\x12&\n" +
-	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v权限点IDH\x00R\x02id\x88\x01\x01\x12F\n" +
+	"\x02id\x18\x01 \x01(\x03B\x11\xbaG\x0e\x92\x02\v权限点IDH\x00R\x02id\x88\x01\x01\x12F\n" +
 	"\x04name\x18\x02 \x01(\tB-\xbaG*\x92\x02'权限点名称（如：删除用户）H\x01R\x04name\x88\x01\x01\x12K\n" +
 	"\x04code\x18\x03 \x01(\tB2\xbaG/\x92\x02,权限点唯一编码（如：user.delete）H\x02R\x04code\x88\x01\x01\x123\n" +
 	"\vdescription\x18\x04 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x03R\vdescription\x88\x01\x01\x12S\n" +
 	"\x06status\x18\x05 \x01(\x0e2(.permission.service.v1.Permission.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x12.\n" +
-	"\bgroup_id\x18\x06 \x01(\x04B\x0e\xbaG\v\x92\x02\b分组IDH\x05R\agroupId\x88\x01\x01\x126\n" +
+	"\bgroup_id\x18\x06 \x01(\x03B\x0e\xbaG\v\x92\x02\b分组IDH\x05R\agroupId\x88\x01\x01\x126\n" +
 	"\n" +
 	"group_name\x18\a \x01(\tB\x12\xbaG\x0f\x92\x02\f分组名称H\x06R\tgroupName\x88\x01\x01\x122\n" +
 	"\bmenu_ids\x18\n" +
-	" \x03(\x04B\x17\xbaG\x14\x92\x02\x11关联的菜单IDR\amenuIds\x123\n" +
-	"\aapi_ids\x18\v \x03(\x04B\x1a\xbaG\x17\x92\x02\x14关联的API资源IDR\x06apiIds\x125\n" +
+	" \x03(\x03B\x17\xbaG\x14\x92\x02\x11关联的菜单IDR\amenuIds\x123\n" +
+	"\aapi_ids\x18\v \x03(\x03B\x1a\xbaG\x17\x92\x02\x14关联的API资源IDR\x06apiIds\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\aR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\aR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
 	"R\tcreatedAt\x88\x01\x01\x12S\n" +
@@ -680,9 +680,9 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\v_deleted_at\"g\n" +
 	"\x16ListPermissionResponse\x127\n" +
 	"\x05items\x18\x01 \x03(\v2!.permission.service.v1.PermissionR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xf6\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xf6\x01\n" +
 	"\x14GetPermissionRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12-\n" +
 	"\x04code\x18\x02 \x01(\tB\x17\xbaG\x14\x18\x01\x92\x02\x0f权限点编码H\x00R\x04code\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
@@ -693,21 +693,21 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\x17CreatePermissionRequest\x125\n" +
 	"\x04data\x18\x01 \x01(\v2!.permission.service.v1.PermissionR\x04data\"\x9e\x03\n" +
 	"\x17UpdatePermissionRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x125\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x125\n" +
 	"\x04data\x18\x02 \x01(\v2!.permission.service.v1.PermissionR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"\xa5\x01\n" +
 	"\x17DeletePermissionRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12-\n" +
 	"\x04code\x18\x02 \x01(\tB\x17\xbaG\x14\x18\x01\x92\x02\x0f权限点编码H\x00R\x04code\x121\n" +
-	"\bgroup_id\x18\x03 \x01(\x04B\x14\xbaG\x11\x18\x01\x92\x02\f权限分组H\x00R\agroupIdB\n" +
+	"\bgroup_id\x18\x03 \x01(\x03B\x14\xbaG\x11\x18\x01\x92\x02\f权限分组H\x00R\agroupIdB\n" +
 	"\n" +
 	"\bquery_by\"/\n" +
 	"\x17CountPermissionResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xd7\x04\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xd7\x04\n" +
 	"\x11PermissionService\x12R\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a-.permission.service.v1.ListPermissionResponse\"\x00\x12T\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a..permission.service.v1.CountPermissionResponse\"\x00\x12W\n" +

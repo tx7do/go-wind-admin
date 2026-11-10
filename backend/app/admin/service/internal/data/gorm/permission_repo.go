@@ -94,11 +94,11 @@ func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequ
 	}
 
 	return &permissionV1.CountPermissionResponse{
-		Count: uint64(count),
+		Count: int64(count),
 	}, nil
 }
 
-func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint64) ([]string, error) {
+func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []int64) ([]string, error) {
 	var codes []string
 	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
 		Where("id IN ?", ids).
@@ -109,8 +109,8 @@ func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint
 	return codes, nil
 }
 
-func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]uint64, error) {
-	var ids []uint64
+func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]int64, error) {
+	var ids []int64
 	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
 		Where("code IN ?", codes).
 		Pluck("id", &ids).Error; err != nil {
@@ -120,7 +120,7 @@ func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []st
 	return ids, nil
 }
 
-func (r *PermissionRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PermissionRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -203,7 +203,7 @@ func (r *PermissionRepo) ListBizPermissions(ctx context.Context) ([]*permissionV
 
 // UpdateForSync 权限同步 MERGE 的更新段：原位更新名称/分组，不触碰 status。
 // 与 data 栈同名方法语义一致。
-func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint64, derived *permissionV1.Permission) error {
+func (r *PermissionRepo) UpdateForSync(ctx context.Context, id int64, derived *permissionV1.Permission) error {
 	updates := map[string]any{"updated_at": time.Now()}
 	if derived.Name != nil {
 		updates["name"] = *derived.Name
@@ -221,7 +221,7 @@ func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint64, derived *
 
 // AssignSyncBindings 权限同步 MERGE 的绑定替换段：按派生集整体替换端点/菜单
 // 快照绑定。与 data 栈同名方法语义一致。
-func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint64, apiIDs, menuIDs []uint64) error {
+func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id int64, apiIDs, menuIDs []int64) error {
 	if err := r.permissionApiRepo.AssignApis(ctx, id, apiIDs); err != nil {
 		return err
 	}
@@ -230,7 +230,7 @@ func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint64, apiI
 
 // DeleteByIDs 按 id 集合删除权限行并级联清理全部从属绑定。与 data 栈同名方法
 // 语义一致。
-func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint64) error {
+func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []int64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
@@ -244,7 +244,7 @@ func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint64
 
 // cascadeCleanByPermissionIDs 权限行删除后的级联清理：接口/菜单快照绑定、
 // 角色授权绑定、策略联动行（sys_permission_policies）。与 data 栈同构。
-func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permissionIDs []uint64) error {
+func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permissionIDs []int64) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
@@ -268,12 +268,12 @@ func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permis
 
 // ListApiEndpointsByPermissionIDs 列出权限关联的端点快照（(path, method)，
 // 授权执行键；绑定表即真相，不回查 sys_apis）。与 data 栈同名方法语义一致。
-func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []uint64) ([]Endpoint, error) {
+func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []int64) ([]Endpoint, error) {
 	return r.permissionApiRepo.ListEndpoints(ctx, permissionIDs)
 }
 
 // ListMenuFullPathsByPermissionIDs 列出权限关联的菜单全路径快照（菜单身份键；
 // 绑定表即真相，导航/回显链路自行反解回 id）。与 data 栈同名方法语义一致。
-func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []uint64) ([]string, error) {
+func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []int64) ([]string, error) {
 	return r.permissionMenuRepo.ListMenuFullPaths(ctx, permissionIDs)
 }

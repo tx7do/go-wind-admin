@@ -59,7 +59,7 @@ func (r *UserOrgUnitRepo) init() {
 }
 
 // CleanRelationsByUserID 清理用户组织单元关联
-func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, userID uint64) error {
+func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, userID int64) error {
 	if userID == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, userID uin
 }
 
 // CleanRelationsByUserIDs 清理多个用户组织单元关联
-func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []uint64) error {
+func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []int64) error {
 	if len(userIDs) == 0 {
 		return nil
 	}
@@ -89,7 +89,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs [
 }
 
 // CleanRelationsByOrgUnitID 清理组织单元的用户关联
-func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnitID uint64) error {
+func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnitID int64) error {
 	if orgUnitID == 0 {
 		return nil
 	}
@@ -104,7 +104,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnit
 }
 
 // CleanRelationsByOrgUnitIDs 清理组织单元的用户关联
-func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUnitIDs []uint64) error {
+func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUnitIDs []int64) error {
 	if len(orgUnitIDs) == 0 {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUni
 }
 
 // RemoveOrgUnitsFromUser 从用户移除组织单元
-func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID uint64, orgUnitIDs []uint64) error {
+func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID int64, orgUnitIDs []int64) error {
 	if len(orgUnitIDs) == 0 || userID == 0 {
 		return nil
 	}
@@ -153,7 +153,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 
 // AssignUserOrgUnits 分配组织单元给用户
 func (r *UserOrgUnitRepo) AssignUserOrgUnits(
-	ctx context.Context, userID uint64,
+	ctx context.Context, userID int64,
 	datas []*identityV1.UserOrgUnit,
 ) error {
 	if len(datas) == 0 || userID == 0 {
@@ -174,9 +174,9 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 }
 
 // ListOrgUnitIDs 列出角色关联的组织单元ID列表
-func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID int64, excludeExpired bool) ([]int64, error) {
 	if userID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.UserOrgUnit{}).Where("user_id = ?", userID)
@@ -186,7 +186,7 @@ func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint64, exc
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("org_unit_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query orgUnit ids by user id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit ids by user id failed")
@@ -195,9 +195,9 @@ func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint64, exc
 }
 
 // ListUserIDs 列出组织单元关联的用户ID列表
-func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID int64, excludeExpired bool) ([]int64, error) {
 	if orgUnitID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.UserOrgUnit{}).Where("org_unit_id = ?", orgUnitID)
@@ -207,7 +207,7 @@ func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint64, exc
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by orgUnit id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit id failed")
@@ -216,7 +216,7 @@ func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint64, exc
 }
 
 // ListUserIDsByOrgUnitIDs 列出多个组织单元关联的用户ID列表
-func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []int64, excludeExpired bool) ([]int64, error) {
 	if len(orgUnitIDs) == 0 {
 		return nil, nil
 	}
@@ -228,7 +228,7 @@ func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitID
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by orgUnit ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit ids failed")

@@ -70,14 +70,14 @@ func (_u *InternalMessageCategoryUpdate) ClearDeletedAt() *InternalMessageCatego
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *InternalMessageCategoryUpdate) SetCreatedBy(v uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetCreatedBy(v int64) *InternalMessageCategoryUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdate) SetNillableCreatedBy(v *uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetNillableCreatedBy(v *int64) *InternalMessageCategoryUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *InternalMessageCategoryUpdate) ClearCreatedBy() *InternalMessageCatego
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *InternalMessageCategoryUpdate) SetUpdatedBy(v uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetUpdatedBy(v int64) *InternalMessageCategoryUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdate) SetNillableUpdatedBy(v *uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetNillableUpdatedBy(v *int64) *InternalMessageCategoryUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *InternalMessageCategoryUpdate) ClearUpdatedBy() *InternalMessageCatego
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *InternalMessageCategoryUpdate) SetDeletedBy(v uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetDeletedBy(v int64) *InternalMessageCategoryUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdate) SetNillableDeletedBy(v *uint64) *InternalMessageCategoryUpdate {
+func (_u *InternalMessageCategoryUpdate) SetNillableDeletedBy(v *int64) *InternalMessageCategoryUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -334,7 +334,7 @@ func (_u *InternalMessageCategoryUpdate) sqlSave(ctx context.Context) (_node int
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -358,31 +358,31 @@ func (_u *InternalMessageCategoryUpdate) sqlSave(ctx context.Context) (_node int
 		_spec.ClearField(internalmessagecategory.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(internalmessagecategory.FieldIsEnabled, field.TypeBool, value)
@@ -406,7 +406,7 @@ func (_u *InternalMessageCategoryUpdate) sqlSave(ctx context.Context) (_node int
 		_spec.ClearField(internalmessagecategory.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(internalmessagecategory.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(internalmessagecategory.FieldName, field.TypeString, value)
@@ -489,14 +489,14 @@ func (_u *InternalMessageCategoryUpdateOne) ClearDeletedAt() *InternalMessageCat
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *InternalMessageCategoryUpdateOne) SetCreatedBy(v uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetCreatedBy(v int64) *InternalMessageCategoryUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdateOne) SetNillableCreatedBy(v *uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetNillableCreatedBy(v *int64) *InternalMessageCategoryUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -516,14 +516,14 @@ func (_u *InternalMessageCategoryUpdateOne) ClearCreatedBy() *InternalMessageCat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *InternalMessageCategoryUpdateOne) SetUpdatedBy(v uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetUpdatedBy(v int64) *InternalMessageCategoryUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdateOne) SetNillableUpdatedBy(v *uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetNillableUpdatedBy(v *int64) *InternalMessageCategoryUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -543,14 +543,14 @@ func (_u *InternalMessageCategoryUpdateOne) ClearUpdatedBy() *InternalMessageCat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *InternalMessageCategoryUpdateOne) SetDeletedBy(v uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetDeletedBy(v int64) *InternalMessageCategoryUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *InternalMessageCategoryUpdateOne) SetNillableDeletedBy(v *uint64) *InternalMessageCategoryUpdateOne {
+func (_u *InternalMessageCategoryUpdateOne) SetNillableDeletedBy(v *int64) *InternalMessageCategoryUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -766,7 +766,7 @@ func (_u *InternalMessageCategoryUpdateOne) sqlSave(ctx context.Context) (_node 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(internalmessagecategory.Table, internalmessagecategory.Columns, sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "InternalMessageCategory.id" for update`)}
@@ -807,31 +807,31 @@ func (_u *InternalMessageCategoryUpdateOne) sqlSave(ctx context.Context) (_node 
 		_spec.ClearField(internalmessagecategory.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(internalmessagecategory.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(internalmessagecategory.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(internalmessagecategory.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(internalmessagecategory.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(internalmessagecategory.FieldIsEnabled, field.TypeBool, value)
@@ -855,7 +855,7 @@ func (_u *InternalMessageCategoryUpdateOne) sqlSave(ctx context.Context) (_node 
 		_spec.ClearField(internalmessagecategory.FieldRemark, field.TypeString)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(internalmessagecategory.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(internalmessagecategory.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(internalmessagecategory.FieldName, field.TypeString, value)

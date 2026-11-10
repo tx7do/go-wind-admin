@@ -68,13 +68,13 @@ func (_c *PlanCreate) SetNillableDeletedAt(v *time.Time) *PlanCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *PlanCreate) SetCreatedBy(v uint64) *PlanCreate {
+func (_c *PlanCreate) SetCreatedBy(v int64) *PlanCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *PlanCreate) SetNillableCreatedBy(v *uint64) *PlanCreate {
+func (_c *PlanCreate) SetNillableCreatedBy(v *int64) *PlanCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -82,13 +82,13 @@ func (_c *PlanCreate) SetNillableCreatedBy(v *uint64) *PlanCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *PlanCreate) SetUpdatedBy(v uint64) *PlanCreate {
+func (_c *PlanCreate) SetUpdatedBy(v int64) *PlanCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *PlanCreate) SetNillableUpdatedBy(v *uint64) *PlanCreate {
+func (_c *PlanCreate) SetNillableUpdatedBy(v *int64) *PlanCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -96,13 +96,13 @@ func (_c *PlanCreate) SetNillableUpdatedBy(v *uint64) *PlanCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *PlanCreate) SetDeletedBy(v uint64) *PlanCreate {
+func (_c *PlanCreate) SetDeletedBy(v int64) *PlanCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *PlanCreate) SetNillableDeletedBy(v *uint64) *PlanCreate {
+func (_c *PlanCreate) SetNillableDeletedBy(v *int64) *PlanCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -194,20 +194,20 @@ func (_c *PlanCreate) SetNillableDescription(v *string) *PlanCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *PlanCreate) SetID(v uint64) *PlanCreate {
+func (_c *PlanCreate) SetID(v int64) *PlanCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_c *PlanCreate) AddTenantIDs(ids ...uint64) *PlanCreate {
+func (_c *PlanCreate) AddTenantIDs(ids ...int64) *PlanCreate {
 	_c.mutation.AddTenantIDs(ids...)
 	return _c
 }
 
 // AddTenants adds the "tenants" edges to the Tenant entity.
 func (_c *PlanCreate) AddTenants(v ...*Tenant) *PlanCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -215,14 +215,14 @@ func (_c *PlanCreate) AddTenants(v ...*Tenant) *PlanCreate {
 }
 
 // AddQuotaIDs adds the "quotas" edge to the PlanQuota entity by IDs.
-func (_c *PlanCreate) AddQuotaIDs(ids ...uint64) *PlanCreate {
+func (_c *PlanCreate) AddQuotaIDs(ids ...int64) *PlanCreate {
 	_c.mutation.AddQuotaIDs(ids...)
 	return _c
 }
 
 // AddQuotas adds the "quotas" edges to the PlanQuota entity.
 func (_c *PlanCreate) AddQuotas(v ...*PlanQuota) *PlanCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -230,14 +230,14 @@ func (_c *PlanCreate) AddQuotas(v ...*PlanQuota) *PlanCreate {
 }
 
 // AddModuleIDs adds the "modules" edge to the PlanModule entity by IDs.
-func (_c *PlanCreate) AddModuleIDs(ids ...uint64) *PlanCreate {
+func (_c *PlanCreate) AddModuleIDs(ids ...int64) *PlanCreate {
 	_c.mutation.AddModuleIDs(ids...)
 	return _c
 }
 
 // AddModules adds the "modules" edges to the PlanModule entity.
 func (_c *PlanCreate) AddModules(v ...*PlanModule) *PlanCreate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -327,7 +327,7 @@ func (_c *PlanCreate) sqlSave(ctx context.Context) (*Plan, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -337,7 +337,7 @@ func (_c *PlanCreate) sqlSave(ctx context.Context) (*Plan, error) {
 func (_c *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Plan{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(plan.Table, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(plan.Table, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -357,15 +357,15 @@ func (_c *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(plan.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(plan.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(plan.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -400,7 +400,7 @@ func (_c *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -416,7 +416,7 @@ func (_c *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -432,7 +432,7 @@ func (_c *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -529,7 +529,7 @@ func (u *PlanUpsert) ClearDeletedAt() *PlanUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PlanUpsert) SetCreatedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) SetCreatedBy(v int64) *PlanUpsert {
 	u.Set(plan.FieldCreatedBy, v)
 	return u
 }
@@ -541,7 +541,7 @@ func (u *PlanUpsert) UpdateCreatedBy() *PlanUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PlanUpsert) AddCreatedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) AddCreatedBy(v int64) *PlanUpsert {
 	u.Add(plan.FieldCreatedBy, v)
 	return u
 }
@@ -553,7 +553,7 @@ func (u *PlanUpsert) ClearCreatedBy() *PlanUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PlanUpsert) SetUpdatedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) SetUpdatedBy(v int64) *PlanUpsert {
 	u.Set(plan.FieldUpdatedBy, v)
 	return u
 }
@@ -565,7 +565,7 @@ func (u *PlanUpsert) UpdateUpdatedBy() *PlanUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PlanUpsert) AddUpdatedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) AddUpdatedBy(v int64) *PlanUpsert {
 	u.Add(plan.FieldUpdatedBy, v)
 	return u
 }
@@ -577,7 +577,7 @@ func (u *PlanUpsert) ClearUpdatedBy() *PlanUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PlanUpsert) SetDeletedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) SetDeletedBy(v int64) *PlanUpsert {
 	u.Set(plan.FieldDeletedBy, v)
 	return u
 }
@@ -589,7 +589,7 @@ func (u *PlanUpsert) UpdateDeletedBy() *PlanUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PlanUpsert) AddDeletedBy(v uint64) *PlanUpsert {
+func (u *PlanUpsert) AddDeletedBy(v int64) *PlanUpsert {
 	u.Add(plan.FieldDeletedBy, v)
 	return u
 }
@@ -808,14 +808,14 @@ func (u *PlanUpsertOne) ClearDeletedAt() *PlanUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PlanUpsertOne) SetCreatedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) SetCreatedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PlanUpsertOne) AddCreatedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) AddCreatedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -836,14 +836,14 @@ func (u *PlanUpsertOne) ClearCreatedBy() *PlanUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PlanUpsertOne) SetUpdatedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) SetUpdatedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PlanUpsertOne) AddUpdatedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) AddUpdatedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -864,14 +864,14 @@ func (u *PlanUpsertOne) ClearUpdatedBy() *PlanUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PlanUpsertOne) SetDeletedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) SetDeletedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PlanUpsertOne) AddDeletedBy(v uint64) *PlanUpsertOne {
+func (u *PlanUpsertOne) AddDeletedBy(v int64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1040,7 +1040,7 @@ func (u *PlanUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PlanUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *PlanUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1049,7 +1049,7 @@ func (u *PlanUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PlanUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *PlanUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1106,7 +1106,7 @@ func (_c *PlanCreateBulk) Save(ctx context.Context) ([]*Plan, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1284,14 +1284,14 @@ func (u *PlanUpsertBulk) ClearDeletedAt() *PlanUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *PlanUpsertBulk) SetCreatedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) SetCreatedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *PlanUpsertBulk) AddCreatedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) AddCreatedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1312,14 +1312,14 @@ func (u *PlanUpsertBulk) ClearCreatedBy() *PlanUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *PlanUpsertBulk) SetUpdatedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) SetUpdatedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *PlanUpsertBulk) AddUpdatedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) AddUpdatedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1340,14 +1340,14 @@ func (u *PlanUpsertBulk) ClearUpdatedBy() *PlanUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *PlanUpsertBulk) SetDeletedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) SetDeletedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *PlanUpsertBulk) AddDeletedBy(v uint64) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) AddDeletedBy(v int64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.AddDeletedBy(v)
 	})

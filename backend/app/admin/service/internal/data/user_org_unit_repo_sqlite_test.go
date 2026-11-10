@@ -39,9 +39,9 @@ func TestUserOrgUnitRepoSqlite_AssignListAndClean(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint64(3101)
-		testUnitA  = uint64(4101)
-		testUnitB  = uint64(4102)
+		testUserID = int64(3101)
+		testUnitA  = int64(4101)
+		testUnitB  = int64(4102)
 	)
 
 	// 单条分配（无预清理语义）
@@ -79,15 +79,15 @@ func TestUserOrgUnitRepoSqlite_AssignListAndClean(t *testing.T) {
 	// 正向：按用户列出单元 ID
 	unitIDs, err := repo.ListOrgUnitIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint64{testUnitA, testUnitB}, unitIDs, "按用户查询应返回两条关联的单元 ID")
+	require.ElementsMatch(t, []int64{testUnitA, testUnitB}, unitIDs, "按用户查询应返回两条关联的单元 ID")
 
 	// 反向：按单元列出用户 ID（含多单元批量变体，按单元逐个收集不去重）
 	userIDs, err := repo.ListUserIDs(ctx, testUnitA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, userIDs, "按单元查询应返回关联的用户 ID")
-	userIDsByUnits, err := repo.ListUserIDsByOrgUnitIDs(ctx, []uint64{testUnitA, testUnitB}, false)
+	require.Equal(t, []int64{testUserID}, userIDs, "按单元查询应返回关联的用户 ID")
+	userIDsByUnits, err := repo.ListUserIDsByOrgUnitIDs(ctx, []int64{testUnitA, testUnitB}, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID, testUserID}, userIDsByUnits, "按单元列表查询应每单元各返回一份关联")
+	require.Equal(t, []int64{testUserID, testUserID}, userIDsByUnits, "按单元列表查询应每单元各返回一份关联")
 
 	// 清理：按用户删除全部关联
 	tx3, err := repo.entClient.Client().Tx(ctx)
@@ -114,9 +114,9 @@ func TestUserOrgUnitRepoSqlite_RemoveAndCleanByOrgUnit(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint64(3102)
-		testUnitA  = uint64(4103)
-		testUnitB  = uint64(4104)
+		testUserID = int64(3102)
+		testUnitA  = int64(4103)
+		testUnitB  = int64(4104)
 	)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
@@ -133,11 +133,11 @@ func TestUserOrgUnitRepoSqlite_RemoveAndCleanByOrgUnit(t *testing.T) {
 	require.NoError(t, tx.Commit())
 
 	// 单向解除 unitA：仅剩 unitB
-	require.NoError(t, repo.RemoveOrgUnitsFromUser(ctx, testUserID, []uint64{testUnitA}))
+	require.NoError(t, repo.RemoveOrgUnitsFromUser(ctx, testUserID, []int64{testUnitA}))
 
 	unitIDs, err := repo.ListOrgUnitIDs(ctx, testUserID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUnitB}, unitIDs, "解除后应仅保留未被移除的关联")
+	require.Equal(t, []int64{testUnitB}, unitIDs, "解除后应仅保留未被移除的关联")
 
 	// 按单元清理：unitB 的关联被整体删除
 	tx2, err := repo.entClient.Client().Tx(ctx)
@@ -145,7 +145,7 @@ func TestUserOrgUnitRepoSqlite_RemoveAndCleanByOrgUnit(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByOrgUnitIDs(ctx, tx2, []uint64{testUnitB}))
+	require.NoError(t, repo.CleanRelationsByOrgUnitIDs(ctx, tx2, []int64{testUnitB}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().UserOrgUnit.Query().Count(ctx)
@@ -160,9 +160,9 @@ func TestUserOrgUnitRepoSqlite_ExcludeExpired(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint64(3103)
-		testUnitOK = uint64(4105)
-		testUnitEx = uint64(4106)
+		testUserID = int64(3103)
+		testUnitOK = int64(4105)
+		testUnitEx = int64(4106)
 	)
 
 	past := timestamppb.New(time.Now().Add(-1 * time.Hour))
@@ -187,7 +187,7 @@ func TestUserOrgUnitRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 过滤过期：仅剩未过期那条
 	active, err := repo.ListOrgUnitIDs(ctx, testUserID, true)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUnitOK}, active, "过滤过期后应仅返回未过期关联")
+	require.Equal(t, []int64{testUnitOK}, active, "过滤过期后应仅返回未过期关联")
 
 	// 反向过滤同理
 	activeUsers, err := repo.ListUserIDs(ctx, testUnitEx, true)
@@ -200,7 +200,7 @@ func TestUserOrgUnitRepoSqlite_ExcludeExpired(t *testing.T) {
 	// 无论断言成败都释放事务连接：Commit 成功后 Rollback 返回 ErrTxDone 被忽略；
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
-	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []uint64{testUserID}))
+	require.NoError(t, repo.CleanRelationsByUserIDs(ctx, tx2, []int64{testUserID}))
 	require.NoError(t, tx2.Commit())
 
 	rowCount, err := repo.entClient.Client().UserOrgUnit.Query().Count(ctx)

@@ -411,7 +411,7 @@ func (x *GetDownloadInfoRequest) GetSelector() isGetDownloadInfoRequest_Selector
 	return nil
 }
 
-func (x *GetDownloadInfoRequest) GetFileId() uint64 {
+func (x *GetDownloadInfoRequest) GetFileId() int64 {
 	if x != nil {
 		if x, ok := x.Selector.(*GetDownloadInfoRequest_FileId); ok {
 			return x.FileId
@@ -485,7 +485,7 @@ type isGetDownloadInfoRequest_Selector interface {
 }
 
 type GetDownloadInfoRequest_FileId struct {
-	FileId uint64 `protobuf:"varint,1,opt,name=file_id,json=fileId,proto3,oneof"` // 服务端内部文件 ID
+	FileId int64 `protobuf:"varint,1,opt,name=file_id,json=fileId,proto3,oneof"` // 服务端内部文件 ID
 }
 
 type GetDownloadInfoRequest_StorageObject struct {
@@ -894,7 +894,7 @@ const file_storage_service_v1_oss_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x0e\n" +
 	"\f_bucket_name\"\xc6\b\n" +
 	"\x16GetDownloadInfoRequest\x129\n" +
-	"\afile_id\x18\x01 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12h\n" +
+	"\afile_id\x18\x01 \x01(\x03B\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12h\n" +
 	"\x0estorage_object\x18\x02 \x01(\v2!.storage.service.v1.StorageObjectB\x1c\xbaG\x19\x92\x02\x16bucket + object 定位H\x00R\rstorageObject\x12\\\n" +
 	"\fdownload_url\x18\x03 \x01(\tB7\xbaG4\x92\x021直接的外部 URL（可用于代理或验证）H\x00R\vdownloadUrl\x12P\n" +
 	"\vrange_start\x18\x04 \x01(\x03B*\xbaG'\x92\x02$下载范围开始区域，闭区间H\x01R\n" +

@@ -17,7 +17,7 @@ import (
 // （阈值是 >=）；limit==0 且 used>0 视为命中，0/0 不命中。
 func TestQuotaWatermarkExceeded(t *testing.T) {
 	cases := []struct {
-		used, limit uint64
+		used, limit int64
 		want        bool
 	}{
 		{8, 10, true},
@@ -37,8 +37,8 @@ func TestQuotaWatermarkExceeded(t *testing.T) {
 // TestRatioPct 百分数：四舍五入；limit==0 且 used>0 为 100，0/0 为 0。
 func TestRatioPct(t *testing.T) {
 	cases := []struct {
-		used, limit uint64
-		want        uint64
+		used, limit int64
+		want        int64
 	}{
 		{8, 10, 80},
 		{7, 10, 70},
@@ -129,9 +129,9 @@ func TestScanQuotaWatermarksSqlite(t *testing.T) {
 	h := hits[0]
 	require.Equal(t, tenantHit.ID, h.TenantID)
 	require.Equal(t, "水位租户甲", h.TenantName)
-	require.Equal(t, uint64(77), h.AdminUserID)
+	require.Equal(t, int64(77), h.AdminUserID)
 	require.Equal(t, "API_CALL", h.QuotaType)
-	require.Equal(t, uint64(2), h.Used)
-	require.Equal(t, uint64(2), h.Limit)
-	require.Equal(t, uint64(100), h.RatioPct)
+	require.Equal(t, int64(2), h.Used)
+	require.Equal(t, int64(2), h.Limit)
+	require.Equal(t, int64(100), h.RatioPct)
 }

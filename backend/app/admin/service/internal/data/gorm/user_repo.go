@@ -106,7 +106,7 @@ func (r *UserRepo) UserExists(ctx context.Context, req *identityV1.UserExistsReq
 	}, nil
 }
 
-func (r *UserRepo) ListUsersByIds(ctx context.Context, ids []uint64) ([]*identityV1.User, error) {
+func (r *UserRepo) ListUsersByIds(ctx context.Context, ids []int64) ([]*identityV1.User, error) {
 	if len(ids) == 0 {
 		return []*identityV1.User{}, nil
 	}
@@ -125,8 +125,8 @@ func (r *UserRepo) ListUsersByIds(ctx context.Context, ids []uint64) ([]*identit
 	return dtos, nil
 }
 
-func (r *UserRepo) CountByTenantIDs(ctx context.Context, tenantIDs []uint64) (map[uint64]int, error) {
-	result := make(map[uint64]int, len(tenantIDs))
+func (r *UserRepo) CountByTenantIDs(ctx context.Context, tenantIDs []int64) (map[int64]int, error) {
+	result := make(map[int64]int, len(tenantIDs))
 	if len(tenantIDs) == 0 {
 		return result, nil
 	}
@@ -169,42 +169,42 @@ func (r *UserRepo) Delete(ctx context.Context, req *identityV1.DeleteUserRequest
 	return identityV1.ErrorInternalServerError("gorm scaffold: Delete not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserRole(ctx context.Context, userID uint64, roleID uint64) error {
+func (r *UserRepo) AssignUserRole(ctx context.Context, userID int64, roleID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserRole not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserRoles(ctx context.Context, userID uint64, roleIDs []uint64) error {
+func (r *UserRepo) AssignUserRoles(ctx context.Context, userID int64, roleIDs []int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserRoles not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserOrgUnit(ctx context.Context, userID uint64, orgUnitID uint64) error {
+func (r *UserRepo) AssignUserOrgUnit(ctx context.Context, userID int64, orgUnitID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserOrgUnit not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserOrgUnits(ctx context.Context, userID uint64, orgUnitIDs []uint64) error {
+func (r *UserRepo) AssignUserOrgUnits(ctx context.Context, userID int64, orgUnitIDs []int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserOrgUnits not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserPosition(ctx context.Context, userID uint64, positionID uint64) error {
+func (r *UserRepo) AssignUserPosition(ctx context.Context, userID int64, positionID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserPosition not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) AssignUserPositions(ctx context.Context, userID uint64, positionIDs []uint64) error {
+func (r *UserRepo) AssignUserPositions(ctx context.Context, userID int64, positionIDs []int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignUserPositions not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) ListRoleIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *UserRepo) ListRoleIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListRoleIDsByUserID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) ListPositionIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *UserRepo) ListPositionIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListPositionIDsByUserID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) ListOrgUnitIDsByUserID(ctx context.Context, userID uint64) ([]uint64, error) {
+func (r *UserRepo) ListOrgUnitIDsByUserID(ctx context.Context, userID int64) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListOrgUnitIDsByUserID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }
 
-func (r *UserRepo) ListUserRelationIDs(ctx context.Context, userID uint64) (roleIDs []uint64, positionIDs []uint64, orgUnitIDs []uint64, err error) {
+func (r *UserRepo) ListUserRelationIDs(ctx context.Context, userID int64) (roleIDs []int64, positionIDs []int64, orgUnitIDs []int64, err error) {
 	return nil, nil, nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserRelationIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/user_repo.go")
 }

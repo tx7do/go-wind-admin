@@ -194,7 +194,7 @@ func (Tenant_AuditStatus) EnumDescriptor() ([]byte, []int) {
 // 租户
 type Tenant struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                   // 租户ID
+	Id               *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                   // 租户ID
 	Name             *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                                // 租户名称
 	Code             *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                                                // 租户编码
 	Domain           *string                `protobuf:"bytes,4,opt,name=domain,proto3,oneof" json:"domain,omitempty"`                                                                            // 租户专属域名
@@ -202,19 +202,19 @@ type Tenant struct {
 	Industry         *string                `protobuf:"bytes,6,opt,name=industry,proto3,oneof" json:"industry,omitempty"`                                                                        // 所属行业
 	Type             *Tenant_Type           `protobuf:"varint,7,opt,name=type,proto3,enum=identity.service.v1.Tenant_Type,oneof" json:"type,omitempty"`                                          // 租户类型
 	Remark           *string                `protobuf:"bytes,8,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                            // 备注
-	AdminUserId      *uint64                `protobuf:"varint,10,opt,name=admin_user_id,json=adminUserId,proto3,oneof" json:"admin_user_id,omitempty"`                                           // 管理员用户ID
+	AdminUserId      *int64                 `protobuf:"varint,10,opt,name=admin_user_id,json=adminUserId,proto3,oneof" json:"admin_user_id,omitempty"`                                           // 管理员用户ID
 	AdminUserName    *string                `protobuf:"bytes,11,opt,name=admin_user_name,json=adminUserName,proto3,oneof" json:"admin_user_name,omitempty"`                                      // 管理员用户名
 	SubscriptionAt   *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=subscription_at,json=subscriptionAt,proto3,oneof" json:"subscription_at,omitempty"`                                     // 订阅时间（首次订阅/续费时间，NULL表示未订阅）
 	UnsubscribeAt    *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=unsubscribe_at,json=unsubscribeAt,proto3,oneof" json:"unsubscribe_at,omitempty"`                                        // 取消订阅时间（NULL表示未取消）
 	ExpiredAt        *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=expired_at,json=expiredAt,proto3,oneof" json:"expired_at,omitempty"`                                                    // 租户有效期（NULL表示永久，过期后状态自动改为“过期”）
 	SubscriptionPlan *string                `protobuf:"bytes,23,opt,name=subscription_plan,json=subscriptionPlan,proto3,oneof" json:"subscription_plan,omitempty"`                               // 订阅套餐（如“企业版1年”“基础版3个月”）
-	PlanId           *uint64                `protobuf:"varint,24,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                                                            // 订阅套餐ID（引用套餐目录）
+	PlanId           *int64                 `protobuf:"varint,24,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                                                            // 订阅套餐ID（引用套餐目录）
 	MemberCount      *int32                 `protobuf:"varint,30,opt,name=member_count,json=memberCount,proto3,oneof" json:"member_count,omitempty"`                                             // 成员数量
 	Status           *Tenant_Status         `protobuf:"varint,31,opt,name=status,proto3,enum=identity.service.v1.Tenant_Status,oneof" json:"status,omitempty"`                                   // 租户状态
 	AuditStatus      *Tenant_AuditStatus    `protobuf:"varint,32,opt,name=audit_status,json=auditStatus,proto3,enum=identity.service.v1.Tenant_AuditStatus,oneof" json:"audit_status,omitempty"` // 审核状态
-	CreatedBy        *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                  // 创建者ID
-	UpdatedBy        *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                  // 更新者ID
-	DeletedBy        *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                  // 删除者用户ID
+	CreatedBy        *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                  // 创建者ID
+	UpdatedBy        *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                  // 更新者ID
+	DeletedBy        *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                  // 删除者用户ID
 	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                   // 创建时间
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                   // 更新时间
 	DeletedAt        *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                   // 删除时间
@@ -252,7 +252,7 @@ func (*Tenant) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Tenant) GetId() uint64 {
+func (x *Tenant) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -308,7 +308,7 @@ func (x *Tenant) GetRemark() string {
 	return ""
 }
 
-func (x *Tenant) GetAdminUserId() uint64 {
+func (x *Tenant) GetAdminUserId() int64 {
 	if x != nil && x.AdminUserId != nil {
 		return *x.AdminUserId
 	}
@@ -350,7 +350,7 @@ func (x *Tenant) GetSubscriptionPlan() string {
 	return ""
 }
 
-func (x *Tenant) GetPlanId() uint64 {
+func (x *Tenant) GetPlanId() int64 {
 	if x != nil && x.PlanId != nil {
 		return *x.PlanId
 	}
@@ -378,21 +378,21 @@ func (x *Tenant) GetAuditStatus() Tenant_AuditStatus {
 	return Tenant_TENANT_AUDIT_STATUS_UNSPECIFIED
 }
 
-func (x *Tenant) GetCreatedBy() uint64 {
+func (x *Tenant) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Tenant) GetUpdatedBy() uint64 {
+func (x *Tenant) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Tenant) GetDeletedBy() uint64 {
+func (x *Tenant) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -424,7 +424,7 @@ func (x *Tenant) GetDeletedAt() *timestamppb.Timestamp {
 type ListTenantResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*Tenant              `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -466,7 +466,7 @@ func (x *ListTenantResponse) GetItems() []*Tenant {
 	return nil
 }
 
-func (x *ListTenantResponse) GetTotal() uint64 {
+func (x *ListTenantResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -524,7 +524,7 @@ func (x *GetTenantRequest) GetQueryBy() isGetTenantRequest_QueryBy {
 	return nil
 }
 
-func (x *GetTenantRequest) GetId() uint64 {
+func (x *GetTenantRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetTenantRequest_Id); ok {
 			return x.Id
@@ -563,7 +563,7 @@ type isGetTenantRequest_QueryBy interface {
 }
 
 type GetTenantRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type GetTenantRequest_Code struct {
@@ -628,7 +628,7 @@ func (x *CreateTenantRequest) GetData() *Tenant {
 // 更新租户 -请求
 type UpdateTenantRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Tenant                `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -666,7 +666,7 @@ func (*UpdateTenantRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateTenantRequest) GetId() uint64 {
+func (x *UpdateTenantRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -742,7 +742,7 @@ func (x *DeleteTenantRequest) GetQueryBy() isDeleteTenantRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteTenantRequest) GetId() uint64 {
+func (x *DeleteTenantRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteTenantRequest_Id); ok {
 			return x.Id
@@ -756,7 +756,7 @@ type isDeleteTenantRequest_QueryBy interface {
 }
 
 type DeleteTenantRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteTenantRequest_Id) isDeleteTenantRequest_QueryBy() {}
@@ -1010,7 +1010,7 @@ func (x *CreateTenantWithAdminUserRequest) GetPassword() string {
 
 type CountTenantResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1045,7 +1045,7 @@ func (*CountTenantResponse) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *CountTenantResponse) GetCount() uint64 {
+func (x *CountTenantResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -1054,8 +1054,8 @@ func (x *CountTenantResponse) GetCount() uint64 {
 
 type AssignTenantAdminRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TenantId      uint64                 `protobuf:"varint,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"` // 租户ID
-	UserId        uint64                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`       // 用户ID
+	TenantId      int64                  `protobuf:"varint,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"` // 租户ID
+	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`       // 用户ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1090,14 +1090,14 @@ func (*AssignTenantAdminRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *AssignTenantAdminRequest) GetTenantId() uint64 {
+func (x *AssignTenantAdminRequest) GetTenantId() int64 {
 	if x != nil {
 		return x.TenantId
 	}
 	return 0
 }
 
-func (x *AssignTenantAdminRequest) GetUserId() uint64 {
+func (x *AssignTenantAdminRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
@@ -1107,7 +1107,7 @@ func (x *AssignTenantAdminRequest) GetUserId() uint64 {
 // 查询租户用量 - 请求
 type GetTenantUsageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 租户ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 租户ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1142,7 +1142,7 @@ func (*GetTenantUsageRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *GetTenantUsageRequest) GetId() uint64 {
+func (x *GetTenantUsageRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -1205,11 +1205,11 @@ func (x *QuotaUsage) GetQuotaValue() uint64 {
 // 租户用量与配额
 type TenantUsage struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	TenantId         uint64                 `protobuf:"varint,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`                           // 租户ID
-	UserCount        uint64                 `protobuf:"varint,2,opt,name=user_count,json=userCount,proto3" json:"user_count,omitempty"`                        // 当前用户数
-	StorageUsedBytes uint64                 `protobuf:"varint,3,opt,name=storage_used_bytes,json=storageUsedBytes,proto3" json:"storage_used_bytes,omitempty"` // 存储占用字节数
-	ApiCallCount     uint64                 `protobuf:"varint,4,opt,name=api_call_count,json=apiCallCount,proto3" json:"api_call_count,omitempty"`             // API 调用次数
-	PlanId           *uint64                `protobuf:"varint,5,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                           // 订阅套餐ID
+	TenantId         int64                  `protobuf:"varint,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`                           // 租户ID
+	UserCount        int64                  `protobuf:"varint,2,opt,name=user_count,json=userCount,proto3" json:"user_count,omitempty"`                        // 当前用户数
+	StorageUsedBytes int64                  `protobuf:"varint,3,opt,name=storage_used_bytes,json=storageUsedBytes,proto3" json:"storage_used_bytes,omitempty"` // 存储占用字节数
+	ApiCallCount     int64                  `protobuf:"varint,4,opt,name=api_call_count,json=apiCallCount,proto3" json:"api_call_count,omitempty"`             // API 调用次数
+	PlanId           *int64                 `protobuf:"varint,5,opt,name=plan_id,json=planId,proto3,oneof" json:"plan_id,omitempty"`                           // 订阅套餐ID
 	PlanName         *string                `protobuf:"bytes,6,opt,name=plan_name,json=planName,proto3,oneof" json:"plan_name,omitempty"`                      // 订阅套餐名称
 	Quotas           []*QuotaUsage          `protobuf:"bytes,7,rep,name=quotas,proto3" json:"quotas,omitempty"`                                                // 配额上限列表
 	unknownFields    protoimpl.UnknownFields
@@ -1246,35 +1246,35 @@ func (*TenantUsage) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *TenantUsage) GetTenantId() uint64 {
+func (x *TenantUsage) GetTenantId() int64 {
 	if x != nil {
 		return x.TenantId
 	}
 	return 0
 }
 
-func (x *TenantUsage) GetUserCount() uint64 {
+func (x *TenantUsage) GetUserCount() int64 {
 	if x != nil {
 		return x.UserCount
 	}
 	return 0
 }
 
-func (x *TenantUsage) GetStorageUsedBytes() uint64 {
+func (x *TenantUsage) GetStorageUsedBytes() int64 {
 	if x != nil {
 		return x.StorageUsedBytes
 	}
 	return 0
 }
 
-func (x *TenantUsage) GetApiCallCount() uint64 {
+func (x *TenantUsage) GetApiCallCount() int64 {
 	if x != nil {
 		return x.ApiCallCount
 	}
 	return 0
 }
 
-func (x *TenantUsage) GetPlanId() uint64 {
+func (x *TenantUsage) GetPlanId() int64 {
 	if x != nil && x.PlanId != nil {
 		return *x.PlanId
 	}
@@ -1298,7 +1298,7 @@ func (x *TenantUsage) GetQuotas() []*QuotaUsage {
 // 清理租户数据 - 请求
 type CleanupTenantDataRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 租户ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 租户ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1333,7 +1333,7 @@ func (*CleanupTenantDataRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *CleanupTenantDataRequest) GetId() uint64 {
+func (x *CleanupTenantDataRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -1346,7 +1346,7 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\n" +
 	" identity/service/v1/tenant.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1eidentity/service/v1/user.proto\x1a$identity/service/v1/plan_quota.proto\"\x99\x13\n" +
 	"\x06Tenant\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x00R\x02id\x88\x01\x01\x12+\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x01R\x04name\x88\x01\x01\x12+\n" +
 	"\x04code\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户编码H\x02R\x04code\x88\x01\x01\x125\n" +
 	"\x06domain\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12租户专属域名H\x03R\x06domain\x88\x01\x01\x126\n" +
@@ -1355,7 +1355,7 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\x04type\x18\a \x01(\x0e2 .identity.service.v1.Tenant.TypeB\x12\xbaG\x0f\x92\x02\f租户类型H\x06R\x04type\x88\x01\x01\x12)\n" +
 	"\x06remark\x18\b \x01(\tB\f\xbaG\t\x92\x02\x06备注H\aR\x06remark\x88\x01\x01\x12@\n" +
 	"\radmin_user_id\x18\n" +
-	" \x01(\x04B\x17\xbaG\x14\x92\x02\x11管理员用户IDH\bR\vadminUserId\x88\x01\x01\x12E\n" +
+	" \x01(\x03B\x17\xbaG\x14\x92\x02\x11管理员用户IDH\bR\vadminUserId\x88\x01\x01\x12E\n" +
 	"\x0fadmin_user_name\x18\v \x01(\tB\x18\xbaG\x15\x92\x02\x12管理员用户名H\tR\radminUserName\x88\x01\x01\x12\x91\x01\n" +
 	"\x0fsubscription_at\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampBG\xbaGD\x92\x02A订阅时间（首次订阅/续费时间，NULL表示未订阅）H\n" +
 	"R\x0esubscriptionAt\x88\x01\x01\x12`\n" +
@@ -1363,16 +1363,16 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\n" +
 	"expired_at\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampBU\xbaGR\x92\x02O租户有效期（NULL表示永久，过期后状态自动改为“过期”）H\fR\texpiredAt\x88\x01\x01\x12v\n" +
 	"\x11subscription_plan\x18\x17 \x01(\tBD\xbaGA\x92\x02>订阅套餐（如“企业版1年”“基础版3个月”）H\rR\x10subscriptionPlan\x88\x01\x01\x12J\n" +
-	"\aplan_id\x18\x18 \x01(\x04B,\xbaG)\x92\x02&订阅套餐ID（引用套餐目录）H\x0eR\x06planId\x88\x01\x01\x12:\n" +
+	"\aplan_id\x18\x18 \x01(\x03B,\xbaG)\x92\x02&订阅套餐ID（引用套餐目录）H\x0eR\x06planId\x88\x01\x01\x12:\n" +
 	"\fmember_count\x18\x1e \x01(\x05B\x12\xbaG\x0f\x92\x02\f成员数量H\x0fR\vmemberCount\x88\x01\x01\x12S\n" +
 	"\x06status\x18\x1f \x01(\x0e2\".identity.service.v1.Tenant.StatusB\x12\xbaG\x0f\x92\x02\f租户状态H\x10R\x06status\x88\x01\x01\x12c\n" +
 	"\faudit_status\x18  \x01(\x0e2'.identity.service.v1.Tenant.AuditStatusB\x12\xbaG\x0f\x92\x02\f审核状态H\x11R\vauditStatus\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\x12R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x12R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x13R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x13R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x14R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x14R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x15R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -1425,9 +1425,9 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\v_deleted_at\"]\n" +
 	"\x12ListTenantResponse\x121\n" +
 	"\x05items\x18\x01 \x03(\v2\x1b.identity.service.v1.TenantR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\x9b\x02\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\x9b\x02\n" +
 	"\x10GetTenantRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12*\n" +
 	"\x04code\x18\x02 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f租户编码H\x00R\x04code\x12*\n" +
 	"\x04name\x18\x03 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f租户名称H\x00R\x04name\x12w\n" +
@@ -1439,14 +1439,14 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\x13CreateTenantRequest\x12/\n" +
 	"\x04data\x18\x01 \x01(\v2\x1b.identity.service.v1.TenantR\x04data\"\x94\x03\n" +
 	"\x13UpdateTenantRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12/\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12/\n" +
 	"\x04data\x18\x02 \x01(\v2\x1b.identity.service.v1.TenantR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"?\n" +
 	"\x13DeleteTenantRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"N\n" +
@@ -1465,12 +1465,12 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\x04user\x18\x02 \x01(\v2\x19.identity.service.v1.UserR\x04user\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\"+\n" +
 	"\x13CountTenantResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count\"p\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count\"p\n" +
 	"\x18AssignTenantAdminRequest\x12+\n" +
-	"\ttenant_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\btenantId\x12'\n" +
-	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\"9\n" +
+	"\ttenant_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDR\btenantId\x12'\n" +
+	"\auser_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\"9\n" +
 	"\x15GetTenantUsageRequest\x12 \n" +
-	"\x02id\x18\x01 \x01(\x04B\x10\xbaG\r\x18\x01\x92\x02\b租户IDR\x02id\"\xa1\x01\n" +
+	"\x02id\x18\x01 \x01(\x03B\x10\xbaG\r\x18\x01\x92\x02\b租户IDR\x02id\"\xa1\x01\n" +
 	"\n" +
 	"QuotaUsage\x12[\n" +
 	"\n" +
@@ -1478,12 +1478,12 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\vquota_value\x18\x02 \x01(\x04B\x15\xbaG\x12\x92\x02\x0f配额上限值R\n" +
 	"quotaValue\"\xd6\x03\n" +
 	"\vTenantUsage\x12+\n" +
-	"\ttenant_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\btenantId\x124\n" +
+	"\ttenant_id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDR\btenantId\x124\n" +
 	"\n" +
-	"user_count\x18\x02 \x01(\x04B\x15\xbaG\x12\x92\x02\x0f当前用户数R\tuserCount\x12I\n" +
-	"\x12storage_used_bytes\x18\x03 \x01(\x04B\x1b\xbaG\x18\x92\x02\x15存储占用字节数R\x10storageUsedBytes\x12<\n" +
-	"\x0eapi_call_count\x18\x04 \x01(\x04B\x16\xbaG\x13\x92\x02\x10API 调用次数R\fapiCallCount\x122\n" +
-	"\aplan_id\x18\x05 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e订阅套餐IDH\x00R\x06planId\x88\x01\x01\x12:\n" +
+	"user_count\x18\x02 \x01(\x03B\x15\xbaG\x12\x92\x02\x0f当前用户数R\tuserCount\x12I\n" +
+	"\x12storage_used_bytes\x18\x03 \x01(\x03B\x1b\xbaG\x18\x92\x02\x15存储占用字节数R\x10storageUsedBytes\x12<\n" +
+	"\x0eapi_call_count\x18\x04 \x01(\x03B\x16\xbaG\x13\x92\x02\x10API 调用次数R\fapiCallCount\x122\n" +
+	"\aplan_id\x18\x05 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e订阅套餐IDH\x00R\x06planId\x88\x01\x01\x12:\n" +
 	"\tplan_name\x18\x06 \x01(\tB\x18\xbaG\x15\x92\x02\x12订阅套餐名称H\x01R\bplanName\x88\x01\x01\x12Q\n" +
 	"\x06quotas\x18\a \x03(\v2\x1f.identity.service.v1.QuotaUsageB\x18\xbaG\x15\x92\x02\x12配额上限列表R\x06quotasB\n" +
 	"\n" +
@@ -1491,7 +1491,7 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\n" +
 	"_plan_name\"<\n" +
 	"\x18CleanupTenantDataRequest\x12 \n" +
-	"\x02id\x18\x01 \x01(\x04B\x10\xbaG\r\x18\x01\x92\x02\b租户IDR\x02id2\xcf\a\n" +
+	"\x02id\x18\x01 \x01(\x03B\x10\xbaG\r\x18\x01\x92\x02\b租户IDR\x02id2\xcf\a\n" +
 	"\rTenantService\x12L\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a'.identity.service.v1.ListTenantResponse\"\x00\x12N\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a(.identity.service.v1.CountTenantResponse\"\x00\x12K\n" +

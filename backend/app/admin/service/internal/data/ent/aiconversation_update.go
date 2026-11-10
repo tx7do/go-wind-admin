@@ -71,14 +71,14 @@ func (_u *AiConversationUpdate) ClearDeletedAt() *AiConversationUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiConversationUpdate) SetCreatedBy(v uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetCreatedBy(v int64) *AiConversationUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiConversationUpdate) SetNillableCreatedBy(v *uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetNillableCreatedBy(v *int64) *AiConversationUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -98,14 +98,14 @@ func (_u *AiConversationUpdate) ClearCreatedBy() *AiConversationUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiConversationUpdate) SetUpdatedBy(v uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetUpdatedBy(v int64) *AiConversationUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiConversationUpdate) SetNillableUpdatedBy(v *uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetNillableUpdatedBy(v *int64) *AiConversationUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -125,14 +125,14 @@ func (_u *AiConversationUpdate) ClearUpdatedBy() *AiConversationUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiConversationUpdate) SetDeletedBy(v uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetDeletedBy(v int64) *AiConversationUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiConversationUpdate) SetNillableDeletedBy(v *uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetNillableDeletedBy(v *int64) *AiConversationUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -172,14 +172,14 @@ func (_u *AiConversationUpdate) ClearTitle() *AiConversationUpdate {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_u *AiConversationUpdate) SetProviderID(v uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetProviderID(v int64) *AiConversationUpdate {
 	_u.mutation.ResetProviderID()
 	_u.mutation.SetProviderID(v)
 	return _u
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_u *AiConversationUpdate) SetNillableProviderID(v *uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetNillableProviderID(v *int64) *AiConversationUpdate {
 	if v != nil {
 		_u.SetProviderID(*v)
 	}
@@ -199,14 +199,14 @@ func (_u *AiConversationUpdate) ClearProviderID() *AiConversationUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiConversationUpdate) SetUserID(v uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetUserID(v int64) *AiConversationUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiConversationUpdate) SetNillableUserID(v *uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) SetNillableUserID(v *int64) *AiConversationUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -246,14 +246,14 @@ func (_u *AiConversationUpdate) ClearLastMessageAt() *AiConversationUpdate {
 }
 
 // AddMessageIDs adds the "messages" edge to the AiMessage entity by IDs.
-func (_u *AiConversationUpdate) AddMessageIDs(ids ...uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) AddMessageIDs(ids ...int64) *AiConversationUpdate {
 	_u.mutation.AddMessageIDs(ids...)
 	return _u
 }
 
 // AddMessages adds the "messages" edges to the AiMessage entity.
 func (_u *AiConversationUpdate) AddMessages(v ...*AiMessage) *AiConversationUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -272,14 +272,14 @@ func (_u *AiConversationUpdate) ClearMessages() *AiConversationUpdate {
 }
 
 // RemoveMessageIDs removes the "messages" edge to AiMessage entities by IDs.
-func (_u *AiConversationUpdate) RemoveMessageIDs(ids ...uint64) *AiConversationUpdate {
+func (_u *AiConversationUpdate) RemoveMessageIDs(ids ...int64) *AiConversationUpdate {
 	_u.mutation.RemoveMessageIDs(ids...)
 	return _u
 }
 
 // RemoveMessages removes "messages" edges to AiMessage entities.
 func (_u *AiConversationUpdate) RemoveMessages(v ...*AiMessage) *AiConversationUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -320,7 +320,7 @@ func (_u *AiConversationUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aiconversation.Table, aiconversation.Columns, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aiconversation.Table, aiconversation.Columns, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -344,34 +344,34 @@ func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.ClearField(aiconversation.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiconversation.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiconversation.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiconversation.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiconversation.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiconversation.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiconversation.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiconversation.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(aiconversation.FieldTitle, field.TypeString, value)
@@ -380,22 +380,22 @@ func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.ClearField(aiconversation.FieldTitle, field.TypeString)
 	}
 	if value, ok := _u.mutation.ProviderID(); ok {
-		_spec.SetField(aiconversation.FieldProviderID, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldProviderID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedProviderID(); ok {
-		_spec.AddField(aiconversation.FieldProviderID, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldProviderID, field.TypeInt64, value)
 	}
 	if _u.mutation.ProviderIDCleared() {
-		_spec.ClearField(aiconversation.FieldProviderID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldProviderID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aiconversation.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aiconversation.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aiconversation.FieldUserID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.LastMessageAt(); ok {
 		_spec.SetField(aiconversation.FieldLastMessageAt, field.TypeTime, value)
@@ -411,7 +411,7 @@ func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err err
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -424,7 +424,7 @@ func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err err
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -440,7 +440,7 @@ func (_u *AiConversationUpdate) sqlSave(ctx context.Context) (_node int, err err
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -511,14 +511,14 @@ func (_u *AiConversationUpdateOne) ClearDeletedAt() *AiConversationUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiConversationUpdateOne) SetCreatedBy(v uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetCreatedBy(v int64) *AiConversationUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiConversationUpdateOne) SetNillableCreatedBy(v *uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetNillableCreatedBy(v *int64) *AiConversationUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -538,14 +538,14 @@ func (_u *AiConversationUpdateOne) ClearCreatedBy() *AiConversationUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiConversationUpdateOne) SetUpdatedBy(v uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetUpdatedBy(v int64) *AiConversationUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiConversationUpdateOne) SetNillableUpdatedBy(v *uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetNillableUpdatedBy(v *int64) *AiConversationUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -565,14 +565,14 @@ func (_u *AiConversationUpdateOne) ClearUpdatedBy() *AiConversationUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiConversationUpdateOne) SetDeletedBy(v uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetDeletedBy(v int64) *AiConversationUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiConversationUpdateOne) SetNillableDeletedBy(v *uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetNillableDeletedBy(v *int64) *AiConversationUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -612,14 +612,14 @@ func (_u *AiConversationUpdateOne) ClearTitle() *AiConversationUpdateOne {
 }
 
 // SetProviderID sets the "provider_id" field.
-func (_u *AiConversationUpdateOne) SetProviderID(v uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetProviderID(v int64) *AiConversationUpdateOne {
 	_u.mutation.ResetProviderID()
 	_u.mutation.SetProviderID(v)
 	return _u
 }
 
 // SetNillableProviderID sets the "provider_id" field if the given value is not nil.
-func (_u *AiConversationUpdateOne) SetNillableProviderID(v *uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetNillableProviderID(v *int64) *AiConversationUpdateOne {
 	if v != nil {
 		_u.SetProviderID(*v)
 	}
@@ -639,14 +639,14 @@ func (_u *AiConversationUpdateOne) ClearProviderID() *AiConversationUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiConversationUpdateOne) SetUserID(v uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetUserID(v int64) *AiConversationUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiConversationUpdateOne) SetNillableUserID(v *uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) SetNillableUserID(v *int64) *AiConversationUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -686,14 +686,14 @@ func (_u *AiConversationUpdateOne) ClearLastMessageAt() *AiConversationUpdateOne
 }
 
 // AddMessageIDs adds the "messages" edge to the AiMessage entity by IDs.
-func (_u *AiConversationUpdateOne) AddMessageIDs(ids ...uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) AddMessageIDs(ids ...int64) *AiConversationUpdateOne {
 	_u.mutation.AddMessageIDs(ids...)
 	return _u
 }
 
 // AddMessages adds the "messages" edges to the AiMessage entity.
 func (_u *AiConversationUpdateOne) AddMessages(v ...*AiMessage) *AiConversationUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -712,14 +712,14 @@ func (_u *AiConversationUpdateOne) ClearMessages() *AiConversationUpdateOne {
 }
 
 // RemoveMessageIDs removes the "messages" edge to AiMessage entities by IDs.
-func (_u *AiConversationUpdateOne) RemoveMessageIDs(ids ...uint64) *AiConversationUpdateOne {
+func (_u *AiConversationUpdateOne) RemoveMessageIDs(ids ...int64) *AiConversationUpdateOne {
 	_u.mutation.RemoveMessageIDs(ids...)
 	return _u
 }
 
 // RemoveMessages removes "messages" edges to AiMessage entities.
 func (_u *AiConversationUpdateOne) RemoveMessages(v ...*AiMessage) *AiConversationUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -773,7 +773,7 @@ func (_u *AiConversationUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConversation, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aiconversation.Table, aiconversation.Columns, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aiconversation.Table, aiconversation.Columns, sqlgraph.NewFieldSpec(aiconversation.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiConversation.id" for update`)}
@@ -814,34 +814,34 @@ func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConver
 		_spec.ClearField(aiconversation.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aiconversation.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aiconversation.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aiconversation.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aiconversation.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aiconversation.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aiconversation.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aiconversation.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(aiconversation.FieldTitle, field.TypeString, value)
@@ -850,22 +850,22 @@ func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConver
 		_spec.ClearField(aiconversation.FieldTitle, field.TypeString)
 	}
 	if value, ok := _u.mutation.ProviderID(); ok {
-		_spec.SetField(aiconversation.FieldProviderID, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldProviderID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedProviderID(); ok {
-		_spec.AddField(aiconversation.FieldProviderID, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldProviderID, field.TypeInt64, value)
 	}
 	if _u.mutation.ProviderIDCleared() {
-		_spec.ClearField(aiconversation.FieldProviderID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldProviderID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aiconversation.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aiconversation.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aiconversation.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(aiconversation.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aiconversation.FieldUserID, field.TypeUint64)
+		_spec.ClearField(aiconversation.FieldUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.LastMessageAt(); ok {
 		_spec.SetField(aiconversation.FieldLastMessageAt, field.TypeTime, value)
@@ -881,7 +881,7 @@ func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConver
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -894,7 +894,7 @@ func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConver
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -910,7 +910,7 @@ func (_u *AiConversationUpdateOne) sqlSave(ctx context.Context) (_node *AiConver
 			Columns: []string{aiconversation.MessagesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aimessage.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

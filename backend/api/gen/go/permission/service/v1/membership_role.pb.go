@@ -83,23 +83,23 @@ func (MembershipRole_Status) EnumDescriptor() ([]byte, []int) {
 // 成员与角色关联关系
 type MembershipRole struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
-	Id           *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                          // ID
-	MembershipId *uint64                `protobuf:"varint,2,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                  // 成员ID
-	TenantId     *uint64                `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                              // 租户ID
-	RoleId       *uint64                `protobuf:"varint,4,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                    // 角色ID
+	Id           *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                          // ID
+	MembershipId *int64                 `protobuf:"varint,2,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                  // 成员ID
+	TenantId     *int64                 `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                              // 租户ID
+	RoleId       *int64                 `protobuf:"varint,4,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                    // 角色ID
 	IsPrimary    *bool                  `protobuf:"varint,6,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                           // 是否主角色
 	Status       *MembershipRole_Status `protobuf:"varint,7,opt,name=status,proto3,enum=permission.service.v1.MembershipRole_Status,oneof" json:"status,omitempty"` // 状态
 	AssignedAt   *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=assigned_at,json=assignedAt,proto3,oneof" json:"assigned_at,omitempty"`                        // 分配时间（UTC）
-	AssignedBy   *uint64                `protobuf:"varint,11,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`                       // 分配者用户 ID
+	AssignedBy   *int64                 `protobuf:"varint,11,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`                       // 分配者用户 ID
 	StartAt      *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`                                 // 生效时间
 	EndAt        *timestamppb.Timestamp `protobuf:"bytes,51,opt,name=end_at,json=endAt,proto3,oneof" json:"end_at,omitempty"`                                       // 失效时间
 	// 【遗留·未接线】assignment 级数据范围是早期"用户-角色"维度授权的设计残留，
 	// 无存储落表、无读写链路（V1 数据范围见 role.proto 的 Role.data_scope）。
 	// 字段号保留防止复用；接入前先补 assignment 级覆盖语义的完整设计。
 	DataScope     *v1.DataScope          `protobuf:"varint,80,opt,name=data_scope,json=dataScope,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                   // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                   // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                   // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                   // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                   // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                   // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                    // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                    // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                    // 删除时间
@@ -137,28 +137,28 @@ func (*MembershipRole) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_membership_role_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *MembershipRole) GetId() uint64 {
+func (x *MembershipRole) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *MembershipRole) GetMembershipId() uint64 {
+func (x *MembershipRole) GetMembershipId() int64 {
 	if x != nil && x.MembershipId != nil {
 		return *x.MembershipId
 	}
 	return 0
 }
 
-func (x *MembershipRole) GetTenantId() uint64 {
+func (x *MembershipRole) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *MembershipRole) GetRoleId() uint64 {
+func (x *MembershipRole) GetRoleId() int64 {
 	if x != nil && x.RoleId != nil {
 		return *x.RoleId
 	}
@@ -186,7 +186,7 @@ func (x *MembershipRole) GetAssignedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *MembershipRole) GetAssignedBy() uint64 {
+func (x *MembershipRole) GetAssignedBy() int64 {
 	if x != nil && x.AssignedBy != nil {
 		return *x.AssignedBy
 	}
@@ -214,21 +214,21 @@ func (x *MembershipRole) GetDataScope() v1.DataScope {
 	return v1.DataScope(0)
 }
 
-func (x *MembershipRole) GetCreatedBy() uint64 {
+func (x *MembershipRole) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *MembershipRole) GetUpdatedBy() uint64 {
+func (x *MembershipRole) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *MembershipRole) GetDeletedBy() uint64 {
+func (x *MembershipRole) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -262,17 +262,17 @@ const file_permission_service_v1_membership_role_proto_rawDesc = "" +
 	"\n" +
 	"+permission/service/v1/membership_role.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fidentity/service/v1/types.proto\"\xf6\v\n" +
 	"\x0eMembershipRole\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\x04B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x128\n" +
-	"\rmembership_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b成员IDH\x01R\fmembershipId\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x12,\n" +
-	"\arole_id\x18\x04 \x01(\x04B\x0e\xbaG\v\x92\x02\b角色IDH\x03R\x06roleId\x88\x01\x01\x129\n" +
+	"\x02id\x18\x01 \x01(\x03B\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x128\n" +
+	"\rmembership_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b成员IDH\x01R\fmembershipId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x03 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x12,\n" +
+	"\arole_id\x18\x04 \x01(\x03B\x0e\xbaG\v\x92\x02\b角色IDH\x03R\x06roleId\x88\x01\x01\x129\n" +
 	"\n" +
 	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主角色H\x04R\tisPrimary\x88\x01\x01\x12W\n" +
 	"\x06status\x18\a \x01(\x0e2,.permission.service.v1.MembershipRole.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x12]\n" +
 	"\vassigned_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15分配时间（UTC）H\x06R\n" +
 	"assignedAt\x88\x01\x01\x12>\n" +
-	"\vassigned_by\x18\v \x01(\x04B\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\aR\n" +
+	"\vassigned_by\x18\v \x01(\x03B\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\aR\n" +
 	"assignedBy\x88\x01\x01\x12W\n" +
 	"\bstart_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15生效时间（UTC）H\bR\astartAt\x88\x01\x01\x12S\n" +
 	"\x06end_at\x183 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15失效时间（UTC）H\tR\x05endAt\x88\x01\x01\x12\\\n" +
@@ -280,11 +280,11 @@ const file_permission_service_v1_membership_role_proto_rawDesc = "" +
 	"data_scope\x18P \x01(\x0e2\x1e.identity.service.v1.DataScopeB\x18\xbaG\x15\x92\x02\x12数据权限范围H\n" +
 	"R\tdataScope\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x0eR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +

@@ -69,7 +69,7 @@ func (r *BiDashboardRepo) init() {
 	r.mapper.AppendConverters(r.kindConverter.NewConverterPair())
 }
 
-func (r *BiDashboardRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (uint64, error) {
+func (r *BiDashboardRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int64, error) {
 	builder := r.entClient.Client().BiDashboard.Query()
 
 	whereSelectors, _, _ := r.repository.BuildListSelectorWithPaging(builder, req)
@@ -83,7 +83,7 @@ func (r *BiDashboardRepo) Count(ctx context.Context, req *paginationV1.PagingReq
 		return 0, adminV1.ErrorInternalServerError("query bi dashboard count failed")
 	}
 
-	return uint64(count), nil
+	return int64(count), nil
 }
 
 func (r *BiDashboardRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*biV1.ListBiDashboardResponse, error) {
@@ -107,7 +107,7 @@ func (r *BiDashboardRepo) List(ctx context.Context, req *paginationV1.PagingRequ
 	}, nil
 }
 
-func (r *BiDashboardRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *BiDashboardRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().BiDashboard.Query().
 		Where(bidashboard.IDEQ(id)).
 		Exist(ctx)

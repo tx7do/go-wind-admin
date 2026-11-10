@@ -56,7 +56,7 @@ message InternalMessage {
     GROUP = 2; // 群聊
   }
 
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "消息ID" }
@@ -82,7 +82,7 @@ message InternalMessage {
     (gnostic.openapi.v3.property) = { description: "消息类型" }
   ]; // 消息类型
 
-  optional uint64 sender_id = 6 [
+  optional int64 sender_id = 6 [
     json_name = "senderId",
     (gnostic.openapi.v3.property) = { description: "发送者 ID（用户 ID，系统消息为0）" }
   ]; // 发送者 ID（用户 ID，系统消息为0）
@@ -92,7 +92,7 @@ message InternalMessage {
     (gnostic.openapi.v3.property) = { description: "发送者名称" }
   ]; // 发送者名称
 
-  optional uint64 category_id = 8 [
+  optional int64 category_id = 8 [
     json_name = "categoryId",
     (gnostic.openapi.v3.property) = { description: "分类ID" }
   ]; // 分类ID
@@ -102,7 +102,7 @@ message InternalMessage {
     (gnostic.openapi.v3.property) = { description: "分类名称" }
   ]; // 分类名称
 
-  optional uint64 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
   ];  // 租户ID，0代表系统全局角色
@@ -111,9 +111,9 @@ message InternalMessage {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
 
-  optional uint64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
-  optional uint64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
-  optional uint64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
@@ -123,13 +123,13 @@ message InternalMessage {
 // 查询站内信消息列表 - 回应
 message ListInternalMessageResponse {
   repeated InternalMessage items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询站内信消息详情 - 请求
 message GetInternalMessageRequest {
   oneof query_by {
-    uint64 id = 1 [
+    int64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
@@ -150,7 +150,7 @@ message CreateInternalMessageRequest {
 
 // 更新站内信消息 - 请求
 message UpdateInternalMessageRequest {
-  uint64 id = 1;
+  int64 id = 1;
 
   InternalMessage data = 2;
 
@@ -171,7 +171,7 @@ message UpdateInternalMessageRequest {
 // 删除站内信消息 - 请求
 message DeleteInternalMessageRequest {
   oneof query_by {
-    uint64 id = 1 [
+    int64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
@@ -184,22 +184,22 @@ message SendMessageRequest {
     (gnostic.openapi.v3.property) = { description: "消息类型" }
   ]; // 消息类型
 
-  optional uint64 recipient_user_id = 2 [
+  optional int64 recipient_user_id = 2 [
     json_name = "recipientUserId",
     (gnostic.openapi.v3.property) = { description: "接收者用户ID" }
   ]; // 接收者用户ID
 
-  optional uint64 conversation_id = 3 [
+  optional int64 conversation_id = 3 [
     json_name = "conversationId",
     (gnostic.openapi.v3.property) = { description: "会话ID" }
   ]; // 会话ID
 
-  optional uint64 category_id = 4 [
+  optional int64 category_id = 4 [
     json_name = "categoryId",
     (gnostic.openapi.v3.property) = { description: "分类ID" }
   ]; // 分类ID
 
-  repeated uint64 target_user_ids = 6 [
+  repeated int64 target_user_ids = 6 [
     json_name = "targetUserIds",
     (gnostic.openapi.v3.property) = { description: "定向发送用户ID列表" }
   ]; // 定向发送用户ID列表
@@ -221,21 +221,21 @@ message SendMessageRequest {
 }
 
 message SendMessageResponse {
-  uint64 message_id = 1 [
+  int64 message_id = 1 [
     json_name = "messageId",
     (gnostic.openapi.v3.property) = { description: "消息ID" }
   ]; // 消息ID
 }
 
 message RevokeMessageRequest {
-  uint64 message_id = 1 [
+  int64 message_id = 1 [
     json_name = "messageId",
     (gnostic.openapi.v3.property) = { description: "消息ID" }
   ]; // 消息ID
 
   // 用户ID：0 为全局撤销（删除消息本体与全部收件记录，同一事务）；
   // 大于 0 为单用户撤销（仅删除该用户收件记录，消息本体与其他收件人不受影响）。
-  uint64 user_id = 2 [
+  int64 user_id = 2 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID，0表示全局撤销" }
   ]; // 用户ID

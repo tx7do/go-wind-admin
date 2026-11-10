@@ -84,18 +84,18 @@ func TestMembershipRepoSqlite_AssignAndRelationPropagation(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		testUserID = uint64(17001)
-		testRoleA  = uint64(18001)
-		testRoleB  = uint64(18002)
-		testUnitA  = uint64(19001)
-		testPosA   = uint64(20001)
+		testUserID = int64(17001)
+		testRoleA  = int64(18001)
+		testRoleB  = int64(18002)
+		testUnitA  = int64(19001)
+		testPosA   = int64(20001)
 	)
 
 	require.NoError(t, repo.AssignTenantMembershipWith(ctx, &identityV1.Membership{
 		UserId:      trans.Ptr(testUserID),
-		RoleIds:     []uint64{testRoleA, testRoleB},
-		OrgUnitIds:  []uint64{testUnitA},
-		PositionIds: []uint64{testPosA},
+		RoleIds:     []int64{testRoleA, testRoleB},
+		OrgUnitIds:  []int64{testUnitA},
+		PositionIds: []int64{testPosA},
 		Status:      trans.Ptr(identityV1.Membership_ACTIVE),
 	}), "分配租户成员关系（含角色/单元/岗位关联）应成功")
 
@@ -103,7 +103,7 @@ func TestMembershipRepoSqlite_AssignAndRelationPropagation(t *testing.T) {
 	membershipRows, err := repo.entClient.Client().Membership.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, membershipRows, 1, "sys_memberships 应有 1 条记录")
-	membershipID := uint64(membershipRows[0].ID)
+	membershipID := int64(membershipRows[0].ID)
 	require.Equal(t, testUserID, *membershipRows[0].UserID, "user_id 应按载荷落库")
 	require.NotNil(t, membershipRows[0].Status, "status 应经转换器落库")
 	require.Equal(t, entMembership.StatusActive, *membershipRows[0].Status, "proto Membership_ACTIVE 应映射为 ent StatusActive")
@@ -122,26 +122,26 @@ func TestMembershipRepoSqlite_AssignAndRelationPropagation(t *testing.T) {
 	// 交叉验证：按关联键回查用户 ID（经 membershipRepo 的聚合查询路径）
 	usersByRole, err := repo.ListUserIDsByRoleID(ctx, testRoleA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByRole, "按角色 A 回查应命中该成员的用户 ID")
+	require.Equal(t, []int64{testUserID}, usersByRole, "按角色 A 回查应命中该成员的用户 ID")
 	// 聚合路径按 membership 行取 user_id：两条角色关联都指向同一条 membership，
 	// 最终按 membership 行去重后只返回一份该用户的 ID。
-	usersByRoles, err := repo.ListUserIDsByRoleIDs(ctx, []uint64{testRoleA, testRoleB}, false)
+	usersByRoles, err := repo.ListUserIDsByRoleIDs(ctx, []int64{testRoleA, testRoleB}, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByRoles, "按角色列表聚合回查应返回关联用户 ID（按 membership 行去重）")
+	require.Equal(t, []int64{testUserID}, usersByRoles, "按角色列表聚合回查应返回关联用户 ID（按 membership 行去重）")
 	usersByUnit, err := repo.ListUserIDsByOrgUnitID(ctx, testUnitA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByUnit, "按单元回查应命中该成员的用户 ID")
+	require.Equal(t, []int64{testUserID}, usersByUnit, "按单元回查应命中该成员的用户 ID")
 	usersByPosition, err := repo.ListUserIDsByPositionID(ctx, testPosA, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByPosition, "按岗位回查应命中该成员的用户 ID")
+	require.Equal(t, []int64{testUserID}, usersByPosition, "按岗位回查应命中该成员的用户 ID")
 
 	// 按 membershipID 的直查路径
 	usersByMembership, err := repo.ListUserIDs(ctx, membershipID, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByMembership, "按 membershipID 查询应返回关联用户 ID")
-	usersByMemberships, err := repo.ListUserIDsByMembershipIDs(ctx, []uint64{membershipID}, false)
+	require.Equal(t, []int64{testUserID}, usersByMembership, "按 membershipID 查询应返回关联用户 ID")
+	usersByMemberships, err := repo.ListUserIDsByMembershipIDs(ctx, []int64{membershipID}, false)
 	require.NoError(t, err)
-	require.Equal(t, []uint64{testUserID}, usersByMemberships, "按 membershipID 列表查询应返回关联用户 ID")
+	require.Equal(t, []int64{testUserID}, usersByMemberships, "按 membershipID 列表查询应返回关联用户 ID")
 
 	// 非成员查询路径：按不存在的关联键查询应返回空
 	noneUsers, err := repo.ListUserIDsByRoleID(ctx, 99999, false)
@@ -155,7 +155,7 @@ func TestMembershipRepoSqlite_GetMembershipByUserTenantAndActive(t *testing.T) {
 	repo := newMembershipRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const testUserID = uint64(17002)
+	const testUserID = int64(17002)
 
 	require.NoError(t, repo.AssignTenantMembershipWith(ctx, &identityV1.Membership{
 		UserId: trans.Ptr(testUserID),
@@ -165,7 +165,7 @@ func TestMembershipRepoSqlite_GetMembershipByUserTenantAndActive(t *testing.T) {
 	rows, err := repo.entClient.Client().Membership.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	membershipID := uint64(rows[0].ID)
+	membershipID := int64(rows[0].ID)
 
 	// 命中：按用户 + 租户（0）
 	got, err := repo.GetMembershipByUserTenant(ctx, testUserID, 0)
@@ -197,7 +197,7 @@ func TestMembershipRepoSqlite_UpsertIdempotent(t *testing.T) {
 	repo := newMembershipRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const testUserID = uint64(17003)
+	const testUserID = int64(17003)
 
 	require.NoError(t, repo.AssignTenantMembershipWith(ctx, &identityV1.Membership{
 		UserId: trans.Ptr(testUserID),
@@ -219,7 +219,7 @@ func TestMembershipRepoSqlite_SetUserFields(t *testing.T) {
 	repo := newMembershipRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const testUserID = uint64(17004)
+	const testUserID = int64(17004)
 
 	require.NoError(t, repo.AssignTenantMembershipWith(ctx, &identityV1.Membership{
 		UserId: trans.Ptr(testUserID),
@@ -242,11 +242,11 @@ func TestMembershipRepoSqlite_SetUserFields(t *testing.T) {
 	row, err := repo.entClient.Client().Membership.Query().Only(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, row.RoleID, "role_id 应已被更新")
-	require.Equal(t, uint64(42), *row.RoleID, "role_id 应更新为 42")
+	require.Equal(t, int64(42), *row.RoleID, "role_id 应更新为 42")
 	require.NotNil(t, row.PositionID, "position_id 应已被更新")
-	require.Equal(t, uint64(43), *row.PositionID, "position_id 应更新为 43")
+	require.Equal(t, int64(43), *row.PositionID, "position_id 应更新为 43")
 	require.NotNil(t, row.OrgUnitID, "org_unit_id 应已被更新")
-	require.Equal(t, uint64(44), *row.OrgUnitID, "org_unit_id 应更新为 44")
+	require.Equal(t, int64(44), *row.OrgUnitID, "org_unit_id 应更新为 44")
 	require.NotNil(t, row.Status, "status 应已被更新")
 	require.Equal(t, entMembership.StatusDisabled, *row.Status, "proto Membership_DISABLED 应映射为 ent StatusDisabled")
 
@@ -271,7 +271,7 @@ func TestMembershipRepoSqlite_TenantScopeGuard(t *testing.T) {
 	repo := newMembershipRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const testUserID = uint64(17005)
+	const testUserID = int64(17005)
 
 	// GetMembershipIDByUserID：需要租户范围
 	_, err := repo.GetMembershipIDByUserID(ctx, testUserID)

@@ -60,9 +60,9 @@ func TestServer_InjectsUserContextFromOperatorMetadata(t *testing.T) {
 	tests := []struct {
 		name         string
 		op           *authenticationV1.OperatorMetadata
-		wantUID      uint64
-		wantTID      uint64
-		wantOUID     uint64
+		wantUID      int64
+		wantTID      int64
+		wantOUID     int64
 		wantScopes   []viewer.DataScope
 		wantPlatform bool
 		wantTenant   bool
@@ -74,7 +74,7 @@ func TestServer_InjectsUserContextFromOperatorMetadata(t *testing.T) {
 				TenantId:         7,
 				OrgUnitId:        9,
 				DataScopes:       []identityV1.DataScope{identityV1.DataScope_ALL},
-				DataScopeUnitIds: []uint64{7, 8},
+				DataScopeUnitIds: []int64{7, 8},
 			},
 			wantUID:      42,
 			wantTID:      7,
@@ -106,12 +106,12 @@ func TestServer_InjectsUserContextFromOperatorMetadata(t *testing.T) {
 				TenantId:         2,
 				OrgUnitId:        3,
 				DataScopes:       []identityV1.DataScope{identityV1.DataScope_UNIT_ONLY},
-				DataScopeUnitIds: []uint64{5},
+				DataScopeUnitIds: []int64{5},
 			},
 			wantUID:      1,
 			wantTID:      2,
 			wantOUID:     3,
-			wantScopes:   []viewer.DataScope{{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []uint64{5}}},
+			wantScopes:   []viewer.DataScope{{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []int64{5}}},
 			wantPlatform: false,
 			wantTenant:   true,
 		},
@@ -122,12 +122,12 @@ func TestServer_InjectsUserContextFromOperatorMetadata(t *testing.T) {
 				TenantId:         2,
 				OrgUnitId:        3,
 				DataScopes:       []identityV1.DataScope{identityV1.DataScope_DATA_SCOPE_UNSPECIFIED, identityV1.DataScope_SELF, identityV1.DataScope_UNIT_AND_CHILD},
-				DataScopeUnitIds: []uint64{3},
+				DataScopeUnitIds: []int64{3},
 			},
 			wantUID:      1,
 			wantTID:      2,
 			wantOUID:     3,
-			wantScopes:   []viewer.DataScope{{ScopeType: viewer.ScopeTypeSelf}, {ScopeType: viewer.ScopeTypeUnit, TargetIDs: []uint64{3}}},
+			wantScopes:   []viewer.DataScope{{ScopeType: viewer.ScopeTypeSelf}, {ScopeType: viewer.ScopeTypeUnit, TargetIDs: []int64{3}}},
 			wantPlatform: false,
 			wantTenant:   true,
 		},
@@ -217,7 +217,7 @@ func TestServer_PropagatesOtelTraceID(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, tid.String(), vc.TraceID(),
 		"有效 SpanContext 的 TraceID 必须透传到 viewer，供审计日志关联")
-	require.Equal(t, uint64(1), vc.UserID(), "身份注入不因 SpanContext 存在而丢失")
+	require.Equal(t, int64(1), vc.UserID(), "身份注入不因 SpanContext 存在而丢失")
 }
 
 // TestServer_PassthroughWithoutOperatorMetadata 表驱动验证：ctx 没有合法

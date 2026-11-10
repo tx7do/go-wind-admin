@@ -31,7 +31,7 @@ func (ScriptLog) Annotations() []schema.Annotation {
 // Fields of the ScriptLog.
 func (ScriptLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("script_id").
+		field.Int64("script_id").
 			Comment("脚本ID（试运行草稿为 0）").
 			Default(0).
 			Optional().

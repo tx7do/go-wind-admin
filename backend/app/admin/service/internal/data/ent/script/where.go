@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.Script {
+func ID(id int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.Script {
+func IDEQ(id int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.Script {
+func IDNEQ(id int64) predicate.Script {
 	return predicate.Script(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.Script {
+func IDIn(ids ...int64) predicate.Script {
 	return predicate.Script(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.Script {
+func IDNotIn(ids ...int64) predicate.Script {
 	return predicate.Script(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.Script {
+func IDGT(id int64) predicate.Script {
 	return predicate.Script(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.Script {
+func IDGTE(id int64) predicate.Script {
 	return predicate.Script(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.Script {
+func IDLT(id int64) predicate.Script {
 	return predicate.Script(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.Script {
+func IDLTE(id int64) predicate.Script {
 	return predicate.Script(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,17 +70,17 @@ func DeletedAt(v time.Time) predicate.Script {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.Script {
+func CreatedBy(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.Script {
+func UpdatedBy(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.Script {
+func DeletedBy(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldDeletedBy, v))
 }
 
@@ -275,42 +275,42 @@ func DeletedAtNotNil() predicate.Script {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.Script {
+func CreatedByEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.Script {
+func CreatedByNEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.Script {
+func CreatedByIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.Script {
+func CreatedByNotIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.Script {
+func CreatedByGT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.Script {
+func CreatedByGTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.Script {
+func CreatedByLT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.Script {
+func CreatedByLTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -325,42 +325,42 @@ func CreatedByNotNil() predicate.Script {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.Script {
+func UpdatedByEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.Script {
+func UpdatedByNEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.Script {
+func UpdatedByIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.Script {
+func UpdatedByNotIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.Script {
+func UpdatedByGT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.Script {
+func UpdatedByGTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.Script {
+func UpdatedByLT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.Script {
+func UpdatedByLTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -375,42 +375,42 @@ func UpdatedByNotNil() predicate.Script {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.Script {
+func DeletedByEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.Script {
+func DeletedByNEQ(v int64) predicate.Script {
 	return predicate.Script(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.Script {
+func DeletedByIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.Script {
+func DeletedByNotIn(vs ...int64) predicate.Script {
 	return predicate.Script(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.Script {
+func DeletedByGT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.Script {
+func DeletedByGTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.Script {
+func DeletedByLT(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.Script {
+func DeletedByLTE(v int64) predicate.Script {
 	return predicate.Script(sql.FieldLTE(FieldDeletedBy, v))
 }
 

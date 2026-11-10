@@ -71,7 +71,7 @@ var (
 	// DefaultIsAsync holds the default value on creation for the "is_async" field.
 	DefaultIsAsync bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // EventType defines the type for the "event_type" enum field.

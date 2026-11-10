@@ -23,7 +23,7 @@ type AccessTokenChecker interface {
 type TenantAccessChecker interface {
 	// CheckTenantAccess 检查当前租户用户是否可访问指定资源。
 	// 返回 nil 表示放行，返回 error 表示拒绝（由中间件终止请求）。
-	CheckTenantAccess(ctx context.Context, tenantId uint64, path string, method string) error
+	CheckTenantAccess(ctx context.Context, tenantId int64, path string, method string) error
 }
 
 type AccessTokenCheckerFunc func(ctx context.Context, accessToken string, skipRedis bool) (bool, *authenticationV1.UserTokenPayload)

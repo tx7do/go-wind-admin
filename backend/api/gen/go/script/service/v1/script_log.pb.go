@@ -28,8 +28,8 @@ const (
 // 脚本执行日志
 type ScriptLog struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                     // 日志ID
-	ScriptId      *uint64                `protobuf:"varint,2,opt,name=script_id,json=scriptId,proto3,oneof" json:"script_id,omitempty"`         // 脚本ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                     // 日志ID
+	ScriptId      *int64                 `protobuf:"varint,2,opt,name=script_id,json=scriptId,proto3,oneof" json:"script_id,omitempty"`         // 脚本ID
 	ScriptName    *string                `protobuf:"bytes,3,opt,name=script_name,json=scriptName,proto3,oneof" json:"script_name,omitempty"`    // 脚本名称
 	Language      *string                `protobuf:"bytes,4,opt,name=language,proto3,oneof" json:"language,omitempty"`                          // 脚本语言
 	TriggerType   *string                `protobuf:"bytes,5,opt,name=trigger_type,json=triggerType,proto3,oneof" json:"trigger_type,omitempty"` // 触发方式
@@ -73,14 +73,14 @@ func (*ScriptLog) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ScriptLog) GetId() uint64 {
+func (x *ScriptLog) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *ScriptLog) GetScriptId() uint64 {
+func (x *ScriptLog) GetScriptId() int64 {
 	if x != nil && x.ScriptId != nil {
 		return *x.ScriptId
 	}
@@ -154,7 +154,7 @@ func (x *ScriptLog) GetCreatedAt() *timestamppb.Timestamp {
 type ListScriptLogsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*ScriptLog           `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -196,7 +196,7 @@ func (x *ListScriptLogsResponse) GetItems() []*ScriptLog {
 	return nil
 }
 
-func (x *ListScriptLogsResponse) GetTotal() uint64 {
+func (x *ListScriptLogsResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -205,7 +205,7 @@ func (x *ListScriptLogsResponse) GetTotal() uint64 {
 
 type CountScriptLogsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 日志数量
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 日志数量
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -240,7 +240,7 @@ func (*CountScriptLogsResponse) Descriptor() ([]byte, []int) {
 	return file_script_service_v1_script_log_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CountScriptLogsResponse) GetCount() uint64 {
+func (x *CountScriptLogsResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -343,8 +343,8 @@ const file_script_service_v1_script_log_proto_rawDesc = "" +
 	"\n" +
 	"\"script/service/v1/script_log.proto\x12\x11script.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xe7\x06\n" +
 	"\tScriptLog\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x12G\n" +
-	"\tscript_id\x18\x02 \x01(\x04B%\xbaG\"\x92\x02\x1f脚本ID，试运行草稿为 0H\x01R\bscriptId\x88\x01\x01\x128\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x12G\n" +
+	"\tscript_id\x18\x02 \x01(\x03B%\xbaG\"\x92\x02\x1f脚本ID，试运行草稿为 0H\x01R\bscriptId\x88\x01\x01\x128\n" +
 	"\vscript_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f脚本名称H\x02R\n" +
 	"scriptName\x88\x01\x01\x123\n" +
 	"\blanguage\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f脚本语言H\x03R\blanguage\x88\x01\x01\x12R\n" +
@@ -376,9 +376,9 @@ const file_script_service_v1_script_log_proto_rawDesc = "" +
 	"\v_created_at\"b\n" +
 	"\x16ListScriptLogsResponse\x122\n" +
 	"\x05items\x18\x01 \x03(\v2\x1c.script.service.v1.ScriptLogR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"/\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"/\n" +
 	"\x17CountScriptLogsResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count\"r\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count\"r\n" +
 	"\x16PurgeScriptLogsRequest\x12X\n" +
 	"\x06before\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB$\xbaG!\x92\x02\x1e删除该时间之前的日志R\x06before\"3\n" +
 	"\x17PurgeScriptLogsResponse\x12\x18\n" +

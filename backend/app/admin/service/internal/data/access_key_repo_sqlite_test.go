@@ -45,7 +45,7 @@ func TestAccessKeyRepoSqlite_Create(t *testing.T) {
 	createdDefault, err := repo.Create(ctx, &accesskeyV1.CreateAccessKeyRequest{},
 		&accesskeyV1.AccessKey{
 			Name:     trans.Ptr("默认状态凭证"),
-			TenantId: trans.Ptr(uint64(7)),
+			TenantId: trans.Ptr(int64(7)),
 		},
 		"AKSQLITE-DEFAULT-ON", "sh-default")
 	require.NoError(t, err, "Create（未指定状态）应成功")
@@ -100,7 +100,7 @@ func TestAccessKeyRepoSqlite_StatusEnumPairs(t *testing.T) {
 
 	listed, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listed.Total, "List 应返回全部 2 行")
+	require.Equal(t, int64(2), listed.Total, "List 应返回全部 2 行")
 	actualProto := map[int32]int{}
 	for _, item := range listed.Items {
 		require.NotNil(t, item.Status, "DTO 的 status 应被 converter 回填")
@@ -131,7 +131,7 @@ func TestAccessKeyRepoSqlite_StatusReadView(t *testing.T) {
 		{accesskeyV1.AccessKey_OFF, entAccessKey.StatusOff, "读视图凭证-停用"},
 	}
 
-	createdIDs := make(map[accesskeyV1.AccessKey_Status]uint64, len(cases))
+	createdIDs := make(map[accesskeyV1.AccessKey_Status]int64, len(cases))
 	for _, c := range cases {
 		created, err := repo.Create(ctx, &accesskeyV1.CreateAccessKeyRequest{},
 			&accesskeyV1.AccessKey{
@@ -333,7 +333,7 @@ func TestAccessKeyRepoSqlite_ListCountPagingAndDelete(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -351,20 +351,20 @@ func TestAccessKeyRepoSqlite_ListCountPagingAndDelete(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetName(), "MARKEROMICRON", "命中行应为含标记的那条")
 
 	countResp, err := repo.Count(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), countResp.GetCount(), "无过滤 Count 应为全量 2")
+	require.Equal(t, int64(2), countResp.GetCount(), "无过滤 Count 应为全量 2")
 
 	page1, err := repo.List(ctx, &paginationV1.PagingRequest{
 		Page:     trans.Ptr(uint32(1)),
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page1.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page1.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page1.Items, 1, "pageSize=1 第一页应只含 1 行")
 
 	page2, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -372,10 +372,10 @@ func TestAccessKeyRepoSqlite_ListCountPagingAndDelete(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint64{firstID, secondID},
-		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []int64{firstID, secondID},
+		[]int64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 
 	// Delete：删除后计数归零；删除不存在的 ID 无命中不报错
 	require.NoError(t, repo.Delete(ctx, &accesskeyV1.DeleteAccessKeyRequest{

@@ -191,7 +191,7 @@ func TestNotificationChannelServiceSqlite_ListHasPasswordFlag(t *testing.T) {
 
 	listResp, err := svc.ListNotificationChannel(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listResp.GetTotal())
+	require.Equal(t, int64(2), listResp.GetTotal())
 	require.Len(t, listResp.GetItems(), 2)
 	for _, item := range listResp.GetItems() {
 		switch item.GetName() {

@@ -17,7 +17,7 @@ type UserPosition struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,19 +25,19 @@ type UserPosition struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
 	// 用户ID
-	UserID *uint64 `json:"user_id,omitempty"`
+	UserID *int64 `json:"user_id,omitempty"`
 	// 岗位ID
-	PositionID *uint64 `json:"position_id,omitempty"`
+	PositionID *int64 `json:"position_id,omitempty"`
 	// 是否主岗位
 	IsPrimary *bool `json:"is_primary,omitempty"`
 	// 生效时间
@@ -47,7 +47,7 @@ type UserPosition struct {
 	// 岗位分配时间
 	AssignedAt *time.Time `json:"assigned_at,omitempty"`
 	// 分配者用户 ID
-	AssignedBy *uint64 `json:"assigned_by,omitempty"`
+	AssignedBy *int64 `json:"assigned_by,omitempty"`
 	// 岗位状态
 	Status       userposition.Status `json:"status,omitempty"`
 	selectValues sql.SelectValues
@@ -86,7 +86,7 @@ func (_m *UserPosition) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case userposition.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -112,29 +112,29 @@ func (_m *UserPosition) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case userposition.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case userposition.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case userposition.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case userposition.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -147,15 +147,15 @@ func (_m *UserPosition) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uint64)
-				*_m.UserID = uint64(value.Int64)
+				_m.UserID = new(int64)
+				*_m.UserID = value.Int64
 			}
 		case userposition.FieldPositionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field position_id", values[i])
 			} else if value.Valid {
-				_m.PositionID = new(uint64)
-				*_m.PositionID = uint64(value.Int64)
+				_m.PositionID = new(int64)
+				*_m.PositionID = value.Int64
 			}
 		case userposition.FieldIsPrimary:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -189,8 +189,8 @@ func (_m *UserPosition) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field assigned_by", values[i])
 			} else if value.Valid {
-				_m.AssignedBy = new(uint64)
-				*_m.AssignedBy = uint64(value.Int64)
+				_m.AssignedBy = new(int64)
+				*_m.AssignedBy = value.Int64
 			}
 		case userposition.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {

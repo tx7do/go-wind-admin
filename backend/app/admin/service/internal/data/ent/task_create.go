@@ -66,13 +66,13 @@ func (_c *TaskCreate) SetNillableDeletedAt(v *time.Time) *TaskCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *TaskCreate) SetCreatedBy(v uint64) *TaskCreate {
+func (_c *TaskCreate) SetCreatedBy(v int64) *TaskCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *TaskCreate) SetNillableCreatedBy(v *uint64) *TaskCreate {
+func (_c *TaskCreate) SetNillableCreatedBy(v *int64) *TaskCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *TaskCreate) SetNillableCreatedBy(v *uint64) *TaskCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *TaskCreate) SetUpdatedBy(v uint64) *TaskCreate {
+func (_c *TaskCreate) SetUpdatedBy(v int64) *TaskCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *TaskCreate) SetNillableUpdatedBy(v *uint64) *TaskCreate {
+func (_c *TaskCreate) SetNillableUpdatedBy(v *int64) *TaskCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *TaskCreate) SetNillableUpdatedBy(v *uint64) *TaskCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *TaskCreate) SetDeletedBy(v uint64) *TaskCreate {
+func (_c *TaskCreate) SetDeletedBy(v int64) *TaskCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *TaskCreate) SetNillableDeletedBy(v *uint64) *TaskCreate {
+func (_c *TaskCreate) SetNillableDeletedBy(v *int64) *TaskCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -122,13 +122,13 @@ func (_c *TaskCreate) SetNillableRemark(v *string) *TaskCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *TaskCreate) SetTenantID(v uint64) *TaskCreate {
+func (_c *TaskCreate) SetTenantID(v int64) *TaskCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *TaskCreate) SetNillableTenantID(v *uint64) *TaskCreate {
+func (_c *TaskCreate) SetNillableTenantID(v *int64) *TaskCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -212,7 +212,7 @@ func (_c *TaskCreate) SetNillableEnable(v *bool) *TaskCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *TaskCreate) SetID(v uint64) *TaskCreate {
+func (_c *TaskCreate) SetID(v int64) *TaskCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -302,7 +302,7 @@ func (_c *TaskCreate) sqlSave(ctx context.Context) (*Task, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -312,7 +312,7 @@ func (_c *TaskCreate) sqlSave(ctx context.Context) (*Task, error) {
 func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Task{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(task.Table, sqlgraph.NewFieldSpec(task.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(task.Table, sqlgraph.NewFieldSpec(task.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -332,15 +332,15 @@ func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(task.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(task.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(task.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(task.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(task.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(task.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -348,7 +348,7 @@ func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 		_node.Remark = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(task.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(task.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.GetType(); ok {
@@ -464,7 +464,7 @@ func (u *TaskUpsert) ClearDeletedAt() *TaskUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *TaskUpsert) SetCreatedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) SetCreatedBy(v int64) *TaskUpsert {
 	u.Set(task.FieldCreatedBy, v)
 	return u
 }
@@ -476,7 +476,7 @@ func (u *TaskUpsert) UpdateCreatedBy() *TaskUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *TaskUpsert) AddCreatedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) AddCreatedBy(v int64) *TaskUpsert {
 	u.Add(task.FieldCreatedBy, v)
 	return u
 }
@@ -488,7 +488,7 @@ func (u *TaskUpsert) ClearCreatedBy() *TaskUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *TaskUpsert) SetUpdatedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) SetUpdatedBy(v int64) *TaskUpsert {
 	u.Set(task.FieldUpdatedBy, v)
 	return u
 }
@@ -500,7 +500,7 @@ func (u *TaskUpsert) UpdateUpdatedBy() *TaskUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *TaskUpsert) AddUpdatedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) AddUpdatedBy(v int64) *TaskUpsert {
 	u.Add(task.FieldUpdatedBy, v)
 	return u
 }
@@ -512,7 +512,7 @@ func (u *TaskUpsert) ClearUpdatedBy() *TaskUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *TaskUpsert) SetDeletedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) SetDeletedBy(v int64) *TaskUpsert {
 	u.Set(task.FieldDeletedBy, v)
 	return u
 }
@@ -524,7 +524,7 @@ func (u *TaskUpsert) UpdateDeletedBy() *TaskUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *TaskUpsert) AddDeletedBy(v uint64) *TaskUpsert {
+func (u *TaskUpsert) AddDeletedBy(v int64) *TaskUpsert {
 	u.Add(task.FieldDeletedBy, v)
 	return u
 }
@@ -758,14 +758,14 @@ func (u *TaskUpsertOne) ClearDeletedAt() *TaskUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *TaskUpsertOne) SetCreatedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) SetCreatedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *TaskUpsertOne) AddCreatedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) AddCreatedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -786,14 +786,14 @@ func (u *TaskUpsertOne) ClearCreatedBy() *TaskUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *TaskUpsertOne) SetUpdatedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) SetUpdatedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *TaskUpsertOne) AddUpdatedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) AddUpdatedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -814,14 +814,14 @@ func (u *TaskUpsertOne) ClearUpdatedBy() *TaskUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *TaskUpsertOne) SetDeletedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) SetDeletedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *TaskUpsertOne) AddDeletedBy(v uint64) *TaskUpsertOne {
+func (u *TaskUpsertOne) AddDeletedBy(v int64) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1004,7 +1004,7 @@ func (u *TaskUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *TaskUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *TaskUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1013,7 +1013,7 @@ func (u *TaskUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *TaskUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *TaskUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1070,7 +1070,7 @@ func (_c *TaskCreateBulk) Save(ctx context.Context) ([]*Task, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1251,14 +1251,14 @@ func (u *TaskUpsertBulk) ClearDeletedAt() *TaskUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *TaskUpsertBulk) SetCreatedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) SetCreatedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *TaskUpsertBulk) AddCreatedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) AddCreatedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1279,14 +1279,14 @@ func (u *TaskUpsertBulk) ClearCreatedBy() *TaskUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *TaskUpsertBulk) SetUpdatedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) SetUpdatedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *TaskUpsertBulk) AddUpdatedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) AddUpdatedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1307,14 +1307,14 @@ func (u *TaskUpsertBulk) ClearUpdatedBy() *TaskUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *TaskUpsertBulk) SetDeletedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) SetDeletedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *TaskUpsertBulk) AddDeletedBy(v uint64) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) AddDeletedBy(v int64) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.AddDeletedBy(v)
 	})

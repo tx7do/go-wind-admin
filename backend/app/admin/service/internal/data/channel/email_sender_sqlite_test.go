@@ -45,7 +45,7 @@ func newEmailSenderEnv(t *testing.T) *emailSenderEnv {
 }
 
 // create 落一条渠道配置并返回其主键。
-func (e *emailSenderEnv) create(t *testing.T, row *notificationChannelV1.NotificationChannel) uint64 {
+func (e *emailSenderEnv) create(t *testing.T, row *notificationChannelV1.NotificationChannel) int64 {
 	t.Helper()
 
 	id, err := e.repo.Create(e.ctx, &notificationChannelV1.CreateNotificationChannelRequest{Data: row}, 1)
@@ -57,7 +57,7 @@ func req() *SendRequest {
 	return &SendRequest{Target: "bob@example.com", Title: "重置验证码", Content: "您的验证码是 123456"}
 }
 
-func itoa(v uint64) string { return strconv.FormatUint(uint64(v), 10) }
+func itoa(v int64) string { return strconv.FormatInt(v, 10) }
 
 // TestEmailSenderSqlite_AutoPickNamesRealChannel 自选渠道：失败文本里必须是实际命中的
 // 那条配置 ID；账号拿到了、只是 host 没填 → 普通投递失败（FAILED），不是配置缺失。

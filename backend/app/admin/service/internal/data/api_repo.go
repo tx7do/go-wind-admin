@@ -115,7 +115,7 @@ func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*
 	}
 
 	return &permissionV1.CountApiResponse{
-		Count: uint64(count),
+		Count: int64(count),
 	}, nil
 }
 
@@ -140,7 +140,7 @@ func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*p
 	}, nil
 }
 
-func (r *ApiRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *ApiRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Api.Query().
 		Where(api.IDEQ(id)).
 		Exist(ctx)
@@ -199,7 +199,7 @@ func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*p
 }
 
 // GetApiByIDs 根据ID列表获取API资源
-func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint64) ([]*permissionV1.Api, error) {
+func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []int64) ([]*permissionV1.Api, error) {
 	if len(ids) == 0 {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
@@ -379,7 +379,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 
 // ListAllIDs 列出全部 API 行 id（模板权限播种期收敛引用用；接口规模有界，
 // 全量拉取无分页必要）。
-func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint64, error) {
+func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]int64, error) {
 	intIDs, err := r.entClient.Client().Api.Query().
 		Select(api.FieldID).
 		Ints(ctx)
@@ -387,9 +387,9 @@ func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint64, error) {
 		r.log.Errorf(ctx, "list all api ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list all api ids failed")
 	}
-	ids := make([]uint64, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint64(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
@@ -428,7 +428,7 @@ func (r *ApiRepo) CascadeDeleteBindings(ctx context.Context, path, method string
 // 与旧 Truncate + 顺序重编号的两点本质差别：同步窗口不再全表清空（租户闸门
 // fail-closed 的全租户 403 窗口缩到毫秒级事务）；id 与键永不漂移（授权零漂移）。
 // operatorId 为 0 表示系统身份（启动期播种）。
-func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, operatorID uint64) (added, updated, removed int, err error) {
+func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, operatorID int64) (added, updated, removed int, err error) {
 	if r.permissionApi == nil {
 		return 0, 0, 0, permissionV1.ErrorInternalServerError("permission api repo not wired")
 	}
@@ -584,7 +584,7 @@ func (r *ApiRepo) apiMetadataEqual(entity *ent.Api, dto *permissionV1.Api) bool 
 }
 
 // nillableOperator operatorID 为 0（系统身份）时不落 updated_by/created_by。
-func nillableOperator(operatorID uint64) *uint64 {
+func nillableOperator(operatorID int64) *int64 {
 	if operatorID == 0 {
 		return nil
 	}

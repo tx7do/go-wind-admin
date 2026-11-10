@@ -73,14 +73,14 @@ func (_u *PlanUpdate) ClearDeletedAt() *PlanUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PlanUpdate) SetCreatedBy(v uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetCreatedBy(v int64) *PlanUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PlanUpdate) SetNillableCreatedBy(v *uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetNillableCreatedBy(v *int64) *PlanUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -100,14 +100,14 @@ func (_u *PlanUpdate) ClearCreatedBy() *PlanUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PlanUpdate) SetUpdatedBy(v uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetUpdatedBy(v int64) *PlanUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PlanUpdate) SetNillableUpdatedBy(v *uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetNillableUpdatedBy(v *int64) *PlanUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -127,14 +127,14 @@ func (_u *PlanUpdate) ClearUpdatedBy() *PlanUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PlanUpdate) SetDeletedBy(v uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetDeletedBy(v int64) *PlanUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PlanUpdate) SetNillableDeletedBy(v *uint64) *PlanUpdate {
+func (_u *PlanUpdate) SetNillableDeletedBy(v *int64) *PlanUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -281,14 +281,14 @@ func (_u *PlanUpdate) ClearDescription() *PlanUpdate {
 }
 
 // AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_u *PlanUpdate) AddTenantIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) AddTenantIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.AddTenantIDs(ids...)
 	return _u
 }
 
 // AddTenants adds the "tenants" edges to the Tenant entity.
 func (_u *PlanUpdate) AddTenants(v ...*Tenant) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -296,14 +296,14 @@ func (_u *PlanUpdate) AddTenants(v ...*Tenant) *PlanUpdate {
 }
 
 // AddQuotaIDs adds the "quotas" edge to the PlanQuota entity by IDs.
-func (_u *PlanUpdate) AddQuotaIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) AddQuotaIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.AddQuotaIDs(ids...)
 	return _u
 }
 
 // AddQuotas adds the "quotas" edges to the PlanQuota entity.
 func (_u *PlanUpdate) AddQuotas(v ...*PlanQuota) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -311,14 +311,14 @@ func (_u *PlanUpdate) AddQuotas(v ...*PlanQuota) *PlanUpdate {
 }
 
 // AddModuleIDs adds the "modules" edge to the PlanModule entity by IDs.
-func (_u *PlanUpdate) AddModuleIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) AddModuleIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.AddModuleIDs(ids...)
 	return _u
 }
 
 // AddModules adds the "modules" edges to the PlanModule entity.
 func (_u *PlanUpdate) AddModules(v ...*PlanModule) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -337,14 +337,14 @@ func (_u *PlanUpdate) ClearTenants() *PlanUpdate {
 }
 
 // RemoveTenantIDs removes the "tenants" edge to Tenant entities by IDs.
-func (_u *PlanUpdate) RemoveTenantIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) RemoveTenantIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.RemoveTenantIDs(ids...)
 	return _u
 }
 
 // RemoveTenants removes "tenants" edges to Tenant entities.
 func (_u *PlanUpdate) RemoveTenants(v ...*Tenant) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -358,14 +358,14 @@ func (_u *PlanUpdate) ClearQuotas() *PlanUpdate {
 }
 
 // RemoveQuotaIDs removes the "quotas" edge to PlanQuota entities by IDs.
-func (_u *PlanUpdate) RemoveQuotaIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) RemoveQuotaIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.RemoveQuotaIDs(ids...)
 	return _u
 }
 
 // RemoveQuotas removes "quotas" edges to PlanQuota entities.
 func (_u *PlanUpdate) RemoveQuotas(v ...*PlanQuota) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -379,14 +379,14 @@ func (_u *PlanUpdate) ClearModules() *PlanUpdate {
 }
 
 // RemoveModuleIDs removes the "modules" edge to PlanModule entities by IDs.
-func (_u *PlanUpdate) RemoveModuleIDs(ids ...uint64) *PlanUpdate {
+func (_u *PlanUpdate) RemoveModuleIDs(ids ...int64) *PlanUpdate {
 	_u.mutation.RemoveModuleIDs(ids...)
 	return _u
 }
 
 // RemoveModules removes "modules" edges to PlanModule entities.
 func (_u *PlanUpdate) RemoveModules(v ...*PlanModule) *PlanUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -450,7 +450,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -474,31 +474,31 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(plan.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(plan.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(plan.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(plan.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(plan.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(plan.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(plan.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(plan.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(plan.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(plan.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(plan.FieldRemark, field.TypeString, value)
@@ -547,7 +547,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -560,7 +560,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -576,7 +576,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -592,7 +592,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -605,7 +605,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -621,7 +621,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -637,7 +637,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -650,7 +650,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -666,7 +666,7 @@ func (_u *PlanUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -737,14 +737,14 @@ func (_u *PlanUpdateOne) ClearDeletedAt() *PlanUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *PlanUpdateOne) SetCreatedBy(v uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetCreatedBy(v int64) *PlanUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *PlanUpdateOne) SetNillableCreatedBy(v *uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetNillableCreatedBy(v *int64) *PlanUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -764,14 +764,14 @@ func (_u *PlanUpdateOne) ClearCreatedBy() *PlanUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *PlanUpdateOne) SetUpdatedBy(v uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetUpdatedBy(v int64) *PlanUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *PlanUpdateOne) SetNillableUpdatedBy(v *uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetNillableUpdatedBy(v *int64) *PlanUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -791,14 +791,14 @@ func (_u *PlanUpdateOne) ClearUpdatedBy() *PlanUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *PlanUpdateOne) SetDeletedBy(v uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetDeletedBy(v int64) *PlanUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *PlanUpdateOne) SetNillableDeletedBy(v *uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) SetNillableDeletedBy(v *int64) *PlanUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -945,14 +945,14 @@ func (_u *PlanUpdateOne) ClearDescription() *PlanUpdateOne {
 }
 
 // AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_u *PlanUpdateOne) AddTenantIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) AddTenantIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.AddTenantIDs(ids...)
 	return _u
 }
 
 // AddTenants adds the "tenants" edges to the Tenant entity.
 func (_u *PlanUpdateOne) AddTenants(v ...*Tenant) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -960,14 +960,14 @@ func (_u *PlanUpdateOne) AddTenants(v ...*Tenant) *PlanUpdateOne {
 }
 
 // AddQuotaIDs adds the "quotas" edge to the PlanQuota entity by IDs.
-func (_u *PlanUpdateOne) AddQuotaIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) AddQuotaIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.AddQuotaIDs(ids...)
 	return _u
 }
 
 // AddQuotas adds the "quotas" edges to the PlanQuota entity.
 func (_u *PlanUpdateOne) AddQuotas(v ...*PlanQuota) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -975,14 +975,14 @@ func (_u *PlanUpdateOne) AddQuotas(v ...*PlanQuota) *PlanUpdateOne {
 }
 
 // AddModuleIDs adds the "modules" edge to the PlanModule entity by IDs.
-func (_u *PlanUpdateOne) AddModuleIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) AddModuleIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.AddModuleIDs(ids...)
 	return _u
 }
 
 // AddModules adds the "modules" edges to the PlanModule entity.
 func (_u *PlanUpdateOne) AddModules(v ...*PlanModule) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1001,14 +1001,14 @@ func (_u *PlanUpdateOne) ClearTenants() *PlanUpdateOne {
 }
 
 // RemoveTenantIDs removes the "tenants" edge to Tenant entities by IDs.
-func (_u *PlanUpdateOne) RemoveTenantIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) RemoveTenantIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.RemoveTenantIDs(ids...)
 	return _u
 }
 
 // RemoveTenants removes "tenants" edges to Tenant entities.
 func (_u *PlanUpdateOne) RemoveTenants(v ...*Tenant) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1022,14 +1022,14 @@ func (_u *PlanUpdateOne) ClearQuotas() *PlanUpdateOne {
 }
 
 // RemoveQuotaIDs removes the "quotas" edge to PlanQuota entities by IDs.
-func (_u *PlanUpdateOne) RemoveQuotaIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) RemoveQuotaIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.RemoveQuotaIDs(ids...)
 	return _u
 }
 
 // RemoveQuotas removes "quotas" edges to PlanQuota entities.
 func (_u *PlanUpdateOne) RemoveQuotas(v ...*PlanQuota) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1043,14 +1043,14 @@ func (_u *PlanUpdateOne) ClearModules() *PlanUpdateOne {
 }
 
 // RemoveModuleIDs removes the "modules" edge to PlanModule entities by IDs.
-func (_u *PlanUpdateOne) RemoveModuleIDs(ids ...uint64) *PlanUpdateOne {
+func (_u *PlanUpdateOne) RemoveModuleIDs(ids ...int64) *PlanUpdateOne {
 	_u.mutation.RemoveModuleIDs(ids...)
 	return _u
 }
 
 // RemoveModules removes "modules" edges to PlanModule entities.
 func (_u *PlanUpdateOne) RemoveModules(v ...*PlanModule) *PlanUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1127,7 +1127,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Plan.id" for update`)}
@@ -1168,31 +1168,31 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 		_spec.ClearField(plan.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(plan.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(plan.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(plan.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(plan.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(plan.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(plan.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(plan.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(plan.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(plan.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(plan.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(plan.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(plan.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(plan.FieldRemark, field.TypeString, value)
@@ -1241,7 +1241,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1254,7 +1254,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1270,7 +1270,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.TenantsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1286,7 +1286,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1299,7 +1299,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1315,7 +1315,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.QuotasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planquota.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1331,7 +1331,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1344,7 +1344,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1360,7 +1360,7 @@ func (_u *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {
 			Columns: []string{plan.ModulesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(planmodule.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

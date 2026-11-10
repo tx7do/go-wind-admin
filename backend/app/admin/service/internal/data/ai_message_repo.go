@@ -79,12 +79,12 @@ func (r *AiMessageRepo) Count(ctx context.Context, req *paginationV1.PagingReque
 		return nil, aiV1.ErrorInternalServerError("query ai message count failed")
 	}
 
-	return &aiV1.CountAiMessageResponse{Count: uint64(count)}, nil
+	return &aiV1.CountAiMessageResponse{Count: int64(count)}, nil
 }
 
 // List 按分页条件查询；ownerUserID > 0 时强制只返回该用户的消息（service 层已校验会话归属，
 // 这里再兜一层，防 filter 注入越权读他人在其他会话里的消息）。
-func (r *AiMessageRepo) List(ctx context.Context, req *paginationV1.PagingRequest, ownerUserID uint64) (*aiV1.ListAiMessageResponse, error) {
+func (r *AiMessageRepo) List(ctx context.Context, req *paginationV1.PagingRequest, ownerUserID int64) (*aiV1.ListAiMessageResponse, error) {
 	if req == nil {
 		return nil, aiV1.ErrorBadRequest("invalid parameter")
 	}
@@ -106,7 +106,7 @@ func (r *AiMessageRepo) List(ctx context.Context, req *paginationV1.PagingReques
 }
 
 // ListRecentByConversation 取会话内最近 N 条消息（按创建时间升序返回，供 LLM 上下文裁剪）。
-func (r *AiMessageRepo) ListRecentByConversation(ctx context.Context, conversationId uint64, limit int) ([]*ent.AiMessage, error) {
+func (r *AiMessageRepo) ListRecentByConversation(ctx context.Context, conversationId int64, limit int) ([]*ent.AiMessage, error) {
 	if limit <= 0 {
 		limit = 20
 	}
@@ -192,7 +192,7 @@ func (r *AiMessageRepo) ToDTO(entity *ent.AiMessage) *aiV1.AiMessage {
 }
 
 // GetEntityByID 取消息实体（service 层做归属校验用）。
-func (r *AiMessageRepo) GetEntityByID(ctx context.Context, id uint64) (*ent.AiMessage, error) {
+func (r *AiMessageRepo) GetEntityByID(ctx context.Context, id int64) (*ent.AiMessage, error) {
 	entity, err := r.entClient.Client().AiMessage.Query().
 		Where(aimessage.IDEQ(id)).
 		Only(ctx)

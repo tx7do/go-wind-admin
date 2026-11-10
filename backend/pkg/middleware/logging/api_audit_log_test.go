@@ -109,8 +109,8 @@ func TestApiAuditLogHandleFieldMapping(t *testing.T) {
 	assert.Equal(t, body, rec.GetRequestBody(), "RequestBody ← 快照重放后的完整 JSON 体")
 
 	// 令牌身份映射（uid/tid/sub → UserId/TenantId/Username）。
-	assert.Equal(t, uint64(42), rec.GetUserId())
-	assert.Equal(t, uint64(7), rec.GetTenantId())
+	assert.Equal(t, int64(42), rec.GetUserId())
+	assert.Equal(t, int64(7), rec.GetTenantId())
 	assert.Equal(t, "alice", rec.GetUsername())
 
 	// 地理位置映射（私网 IP → 局域网，GeoLite 库内建分支）。
@@ -230,8 +230,8 @@ func TestApiAuditLogHandleInputSanitization(t *testing.T) {
 		rec := env.capture.api[0]
 		// 载荷无 sub：GetSubject 报错走日志分支，数字身份照常映射、用户名不落。
 		assert.Empty(t, rec.GetUsername())
-		assert.Equal(t, uint64(42), rec.GetUserId())
-		assert.Equal(t, uint64(7), rec.GetTenantId())
+		assert.Equal(t, int64(42), rec.GetUserId())
+		assert.Equal(t, int64(7), rec.GetTenantId())
 	})
 
 	t.Run("角色声明类型非法令牌", func(t *testing.T) {
@@ -350,8 +350,8 @@ func TestApiAuditLogHashAndSignatureEdges(t *testing.T) {
 // apiSignContentReplica 复刻生产签名的载荷结构（字段名与顺序须与
 // auditutil.SignLogContent 的签名载荷结构完全一致），用于回验签名内容。
 type apiSignContentReplica struct {
-	TenantID uint64 `json:"tenant_id"`
-	UserID   uint64 `json:"user_id"`
+	TenantID int64 `json:"tenant_id"`
+	UserID   int64 `json:"user_id"`
 	Sec      int64  `json:"sec"`
 	Nanos    int32  `json:"nanos"`
 	LogHash  string `json:"log_hash"`

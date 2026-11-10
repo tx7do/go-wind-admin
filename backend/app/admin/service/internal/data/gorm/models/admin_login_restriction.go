@@ -11,7 +11,7 @@ type LoginPolicy struct {
 	mixin.OperatorID64
 	mixin.TenantID64
 
-	TargetID *uint64 `gorm:"column:target_id;type:int unsigned;comment:目标用户ID"`
+	TargetID *int64 `gorm:"column:target_id;type:int unsigned;comment:目标用户ID"`
 	Value    *string `gorm:"column:value;type:varchar(255);comment:限制值（如IP地址、MAC地址或地区代码）"`
 	Reason   *string `gorm:"column:reason;type:varchar(255);comment:限制原因"`
 

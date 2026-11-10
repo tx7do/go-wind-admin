@@ -64,7 +64,7 @@ func (r *PrintTemplateRepo) init() {
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 }
 
-func (r *PrintTemplateRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (uint64, error) {
+func (r *PrintTemplateRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int64, error) {
 	builder := r.entClient.Client().PrintTemplate.Query()
 
 	whereSelectors, _, _ := r.repository.BuildListSelectorWithPaging(builder, req)
@@ -78,7 +78,7 @@ func (r *PrintTemplateRepo) Count(ctx context.Context, req *paginationV1.PagingR
 		return 0, adminV1.ErrorInternalServerError("query print template count failed")
 	}
 
-	return uint64(count), nil
+	return int64(count), nil
 }
 
 func (r *PrintTemplateRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*printV1.ListPrintTemplateResponse, error) {
@@ -102,7 +102,7 @@ func (r *PrintTemplateRepo) List(ctx context.Context, req *paginationV1.PagingRe
 	}, nil
 }
 
-func (r *PrintTemplateRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *PrintTemplateRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().PrintTemplate.Query().
 		Where(printtemplate.IDEQ(id)).
 		Exist(ctx)
@@ -155,7 +155,7 @@ func (r *PrintTemplateRepo) Create(ctx context.Context, req *printV1.CreatePrint
 
 // CountByTenant 统计指定租户的打印模板数（builtin 行 tenant_id=0 不计入）。
 // 模板数配额（TEMPLATE_COUNT）的资源计数 accessor。
-func (r *PrintTemplateRepo) CountByTenant(ctx context.Context, tenantID uint64) (int64, error) {
+func (r *PrintTemplateRepo) CountByTenant(ctx context.Context, tenantID int64) (int64, error) {
 	n, err := r.entClient.Client().PrintTemplate.Query().
 		Where(printtemplate.TenantIDEQ(tenantID)).
 		Count(ctx)

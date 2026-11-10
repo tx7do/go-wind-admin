@@ -52,7 +52,7 @@ func (r *UserRoleRepo) init() {
 }
 
 // CleanRelationsByUserID 删除会员的所有角色关联
-func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, userID uint64) error {
+func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, userID int64) error {
 	if userID == 0 {
 		return nil
 	}
@@ -67,7 +67,7 @@ func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, userID uint64
 }
 
 // CleanRelationsByUserIDs 删除多个会员的所有角色关联
-func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []uint64) error {
+func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []int64) error {
 	if len(userIDs) == 0 {
 		return nil
 	}
@@ -82,7 +82,7 @@ func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []ui
 }
 
 // CleanRelationsByRoleID 删除角色的所有用户关联
-func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID uint64) error {
+func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID int64) error {
 	if roleID == 0 {
 		return nil
 	}
@@ -97,7 +97,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID uint64
 }
 
 // CleanRelationsByRoleIDs 删除多个角色的所有用户关联
-func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []uint64) error {
+func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []int64) error {
 	if len(roleIDs) == 0 {
 		return nil
 	}
@@ -112,7 +112,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []ui
 }
 
 // RemoveRolesFromUser 从用户移除角色
-func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint64, roleIDs []uint64) error {
+func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID int64, roleIDs []int64) error {
 	if len(roleIDs) == 0 || userID == 0 {
 		return nil
 	}
@@ -143,7 +143,7 @@ func (r *UserRoleRepo) AssignUserRole(ctx context.Context, data *permissionV1.Us
 }
 
 // AssignUserRoles 分配角色
-func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, userID uint64, datas []*permissionV1.UserRole) error {
+func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, userID int64, datas []*permissionV1.UserRole) error {
 	if len(datas) == 0 || userID == 0 {
 		return nil
 	}
@@ -162,9 +162,9 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, userID uint64, datas
 }
 
 // ListRoleIDs 获取用户关联的角色ID列表
-func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID int64, excludeExpired bool) ([]int64, error) {
 	if userID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.UserRole{}).Where("user_id = ?", userID)
@@ -174,7 +174,7 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint64, excludeEx
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("role_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query role ids by user id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids by user id failed")
@@ -183,9 +183,9 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint64, excludeEx
 }
 
 // ListUserIDs 获取角色关联的用户ID列表
-func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID int64, excludeExpired bool) ([]int64, error) {
 	if roleID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.UserRole{}).Where("role_id = ?", roleID)
@@ -195,7 +195,7 @@ func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint64, excludeEx
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role id failed")
@@ -204,9 +204,9 @@ func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint64, excludeEx
 }
 
 // ListUserIDsByRoleIDs 获取多个角色关联的用户ID列表
-func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []int64, excludeExpired bool) ([]int64, error) {
 	if len(roleIDs) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.UserRole{}).Where("role_id IN ?", roleIDs)
@@ -216,7 +216,7 @@ func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint6
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role ids failed")

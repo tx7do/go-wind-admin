@@ -46,7 +46,7 @@ func newBiDashboardServiceForTest(t *testing.T) (*BiDashboardService, *entCrud.E
 }
 
 // biSvcOpCtx 造带操作人的上下文。
-func biSvcOpCtx(ctx context.Context, userID uint64) context.Context {
+func biSvcOpCtx(ctx context.Context, userID int64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: userID})
 }
 
@@ -62,7 +62,7 @@ func TestBiDashboardServiceSqlite_CreateStampsOperator(t *testing.T) {
 		Data: &biV1.BiDashboard{
 			Name:      trans.Ptr("服务层建盘"),
 			Code:      trans.Ptr("svc-create"),
-			CreatedBy: trans.Ptr(uint64(999)),
+			CreatedBy: trans.Ptr(int64(999)),
 		},
 	})
 	require.NoError(t, err, "合法创建应成功")
@@ -72,7 +72,7 @@ func TestBiDashboardServiceSqlite_CreateStampsOperator(t *testing.T) {
 		Only(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(71), *row.CreatedBy, "created_by 应取令牌操作人，客户端伪造无效")
+	require.Equal(t, int64(71), *row.CreatedBy, "created_by 应取令牌操作人，客户端伪造无效")
 
 	// 入参守卫
 	_, err = svc.Create(opCtx, nil)
@@ -123,7 +123,7 @@ func TestBiDashboardServiceSqlite_UpdateCASPassthrough(t *testing.T) {
 	require.Equal(t, "新名称", *row.Name, "掩码内 name 应更新")
 	require.Equal(t, uint32(2), *row.Version, "命中 CAS 后版本号应 +1")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(72), *row.UpdatedBy, "updated_by 应取令牌操作人")
+	require.Equal(t, int64(72), *row.UpdatedBy, "updated_by 应取令牌操作人")
 	require.Equal(t, src.ID, row.ID, "Data.Id 应从 req.Id 回填，更新落在目标行")
 
 	// stale 版本：拿旧版本 1 再来保存 → Conflict 原样穿透
@@ -179,7 +179,7 @@ func TestBiDashboardServiceSqlite_ListGetDeletePassthrough(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), list.GetTotal(), "contains 过滤应只命中 marker 行")
+	require.Equal(t, int64(1), list.GetTotal(), "contains 过滤应只命中 marker 行")
 	require.Equal(t, "pass-a", list.GetItems()[0].GetCode())
 
 	rowA, err := entClient.Client().BiDashboard.Query().
@@ -261,7 +261,7 @@ func TestBiDashboardServiceSqlite_CopyDerivesNewRow(t *testing.T) {
 		require.Equal(t, bidashboard.KindSCREEN, *c.Kind, "kind 应随源")
 		require.Equal(t, uint32(1), *c.Version, "副本版本应归 1：派生行从零开始计数")
 		require.NotNil(t, c.CreatedBy)
-		require.Equal(t, uint64(74), *c.CreatedBy, "副本创建人应为令牌操作人")
+		require.Equal(t, int64(74), *c.CreatedBy, "副本创建人应为令牌操作人")
 	}
 
 	// 显式名称/编码：按请求生效

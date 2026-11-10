@@ -127,9 +127,9 @@ func TestTenantUsageRepoSqlite_GetUsageWithPlanAndData(t *testing.T) {
 		int32(identityV1.PlanQuota_STORAGE):    20,
 		int32(identityV1.PlanQuota_API_CALL):   30,
 	}, quotaByType, "配额上限应按 quota_type 映射回填（USER_LIMIT/STORAGE/API_CALL）")
-	require.Equal(t, uint64(2), usageA.GetUserCount(), "租户 A 的用户计数应为 2")
-	require.Equal(t, uint64(300), usageA.GetStorageUsedBytes(), "租户 A 的存储字节数应为 100+200=300")
-	require.Equal(t, uint64(2), usageA.GetApiCallCount(), "租户 A 的 API 调用计数应为 2")
+	require.Equal(t, int64(2), usageA.GetUserCount(), "租户 A 的用户计数应为 2")
+	require.Equal(t, int64(300), usageA.GetStorageUsedBytes(), "租户 A 的存储字节数应为 100+200=300")
+	require.Equal(t, int64(2), usageA.GetApiCallCount(), "租户 A 的 API 调用计数应为 2")
 
 	// 租户 B 的用量：无套餐回填，聚合只含本租户数据（不串入 A 的数据）
 	usageB, err := repo.GetUsage(ctx, tenantB.ID)
@@ -137,9 +137,9 @@ func TestTenantUsageRepoSqlite_GetUsageWithPlanAndData(t *testing.T) {
 	require.Equal(t, tenantB.ID, usageB.GetTenantId())
 	require.Zero(t, usageB.GetPlanId(), "租户 B 无套餐，PlanId 不应回填")
 	require.Empty(t, usageB.GetQuotas(), "租户 B 无套餐，Quotas 应为空")
-	require.Equal(t, uint64(1), usageB.GetUserCount(), "租户 B 的用户计数应只统计本租户的 1 个")
-	require.Equal(t, uint64(50), usageB.GetStorageUsedBytes(), "租户 B 的存储字节数应只统计本租户的 50")
-	require.Equal(t, uint64(1), usageB.GetApiCallCount(), "租户 B 的 API 调用计数应只统计本租户的 1 条")
+	require.Equal(t, int64(1), usageB.GetUserCount(), "租户 B 的用户计数应只统计本租户的 1 个")
+	require.Equal(t, int64(50), usageB.GetStorageUsedBytes(), "租户 B 的存储字节数应只统计本租户的 50")
+	require.Equal(t, int64(1), usageB.GetApiCallCount(), "租户 B 的 API 调用计数应只统计本租户的 1 条")
 }
 
 // TestTenantUsageRepoSqlite_CleanupTenantData 验证清理：
@@ -179,7 +179,7 @@ func TestTenantUsageRepoSqlite_CleanupTenantData(t *testing.T) {
 
 	require.NoError(t, repo.CleanupTenantData(ctx, tid), "清理租户数据应成功")
 
-	fileCountByTenant := map[uint64]int{}
+	fileCountByTenant := map[int64]int{}
 	fileRows, err := client.File.Query().All(ctx)
 	require.NoError(t, err)
 	for _, f := range fileRows {
@@ -231,9 +231,9 @@ func TestTenantUsageRepoSqlite_EnforceExpiryPolicies(t *testing.T) {
 		require.NoError(t, err, "建租户 %s 应成功", name)
 		return row
 	}
-	linkPlan := func(tid uint64, policy *entPlan.ExpiryPolicy) {
+	linkPlan := func(tid int64, policy *entPlan.ExpiryPolicy) {
 		builder := client.Plan.Create().SetNillableName(
-			trans.Ptr("sqlite_expiry_plan_" + strconv.FormatUint(uint64(tid), 10)))
+			trans.Ptr("sqlite_expiry_plan_" + strconv.FormatInt(tid, 10)))
 		if policy != nil {
 			builder = builder.SetExpiryPolicy(*policy)
 		}
@@ -263,7 +263,7 @@ func TestTenantUsageRepoSqlite_EnforceExpiryPolicies(t *testing.T) {
 	require.NoError(t, err, "到期扫描应成功")
 	require.Equal(t, 2, enforced, "仅 BLOCK_LOGIN 与 FREEZE 两个租户被改状态")
 
-	statusOf := func(id uint64) entTenant.Status {
+	statusOf := func(id int64) entTenant.Status {
 		row, err := client.Tenant.Query().Where(entTenant.IDEQ(id)).Only(ctx)
 		require.NoError(t, err)
 		require.NotNil(t, row.Status)

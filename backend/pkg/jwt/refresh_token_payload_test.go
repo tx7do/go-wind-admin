@@ -17,7 +17,7 @@ import (
 func TestNewRefreshTokenAuthClaims_Validation(t *testing.T) {
 	cases := []struct {
 		name   string
-		userId uint64
+		userId int64
 		jti    string
 		errMsg string
 	}{
@@ -111,9 +111,9 @@ func TestParseRefreshTokenClaims_RejectsIncomplete(t *testing.T) {
 		{"nil claims", nil},
 		{"empty claims", &authn.AuthClaims{}},
 		{"uid wrong type", &authn.AuthClaims{ClaimFieldUserID: "not-a-number"}},
-		{"jti missing", &authn.AuthClaims{ClaimFieldUserID: uint64(3)}},
-		{"jti wrong type", &authn.AuthClaims{ClaimFieldUserID: uint64(3), authn.ClaimFieldJwtID: 42}},
-		{"jti empty", &authn.AuthClaims{ClaimFieldUserID: uint64(3), authn.ClaimFieldJwtID: ""}},
+		{"jti missing", &authn.AuthClaims{ClaimFieldUserID: int64(3)}},
+		{"jti wrong type", &authn.AuthClaims{ClaimFieldUserID: int64(3), authn.ClaimFieldJwtID: 42}},
+		{"jti empty", &authn.AuthClaims{ClaimFieldUserID: int64(3), authn.ClaimFieldJwtID: ""}},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

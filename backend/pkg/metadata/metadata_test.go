@@ -47,11 +47,11 @@ func TestFromContext_MissingOrInvalid(t *testing.T) {
 func TestNewContext_FromContext_InvalidData(t *testing.T) {
 	// 使用空的 OperatorMetadata 做回环测试
 	info := &authenticationV1.OperatorMetadata{
-		UserId:    uint64(123),
-		TenantId:  uint64(456),
-		OrgUnitId: uint64(789),
+		UserId:    int64(123),
+		TenantId:  int64(456),
+		OrgUnitId: int64(789),
 		DataScope: identityV1.DataScope_ALL,
-		RoleIds:   []uint64{1},
+		RoleIds:   []int64{1},
 	}
 	b, _ := encodeOperatorMetadata(info)
 	ctx2 := metadata.NewServerContext(context.Background(), metadata.Metadata{
@@ -70,11 +70,11 @@ func TestNewContext_FromContext_InvalidData(t *testing.T) {
 
 func TestNewOperatorMetadataContext_WriteAndRead(t *testing.T) {
 	info := &authenticationV1.OperatorMetadata{
-		UserId:    uint64(123),
-		TenantId:  uint64(456),
-		OrgUnitId: uint64(789),
+		UserId:    int64(123),
+		TenantId:  int64(456),
+		OrgUnitId: int64(789),
 		DataScope: identityV1.DataScope_ALL,
-		RoleIds:   []uint64{1},
+		RoleIds:   []int64{1},
 	}
 	ctx, err := NewContext(context.Background(), info)
 	assert.NoError(t, err)

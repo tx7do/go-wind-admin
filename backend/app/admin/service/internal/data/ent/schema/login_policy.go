@@ -30,7 +30,7 @@ func (LoginPolicy) Annotations() []schema.Annotation {
 // Fields of the LoginPolicy.
 func (LoginPolicy) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("target_id").
+		field.Int64("target_id").
 			Comment("目标用户ID").
 			Optional().
 			Nillable(),
@@ -78,7 +78,7 @@ func (LoginPolicy) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

@@ -53,7 +53,7 @@ func TestUserTokenCache_BasicOperations(t *testing.T) {
 	assert.NotNil(t, repo)
 
 	clientType := authenticationV1.ClientType_app
-	var userId uint64 = 123
+	var userId int64 = 123
 
 	// 用于接收验证结果，避免重复短声明导致重定义
 	var valid bool
@@ -155,7 +155,7 @@ func TestUserTokenCache_VerifyAndRevokeTokenPair(t *testing.T) {
 	repo := NewUserTokenCache(bctx, rdb)
 
 	clientType := authenticationV1.ClientType_app
-	var userId uint64 = 456
+	var userId int64 = 456
 	jti := "jti-atomic"
 	atVal := "access_atomic"
 	rtVal := "refresh_atomic"
@@ -223,7 +223,7 @@ func TestUserTokenCache_RevokeTokenByJtiWalksLineage(t *testing.T) {
 	repo := NewUserTokenCache(bctx, rdb)
 
 	clientType := authenticationV1.ClientType_app
-	var userId uint64 = 789
+	var userId int64 = 789
 
 	// 三代世系：gen1 → gen2 → gen3（每代各自 AT；RT 已随轮换删除故不建）
 	const (

@@ -63,7 +63,7 @@ func (s *EmailSender) Send(ctx context.Context, req *SendRequest) (*SendReceipt,
 }
 
 // Precheck 只解析 SMTP 配置并自检可用性，不拨号。见 channel.Prechecker。
-func (s *EmailSender) Precheck(ctx context.Context, channelID uint64) error {
+func (s *EmailSender) Precheck(ctx context.Context, channelID int64) error {
 	_, err := s.pickAccount(ctx, channelID)
 	return err
 }
@@ -76,7 +76,7 @@ func (s *EmailSender) Precheck(ctx context.Context, channelID uint64) error {
 //
 // 返回的账号自带渠道 ID：自选分支下这是台账里 channel_id 的唯一来源，
 // 早先只回一个 0，事件路由的发信在账上就答不出走的哪个 SMTP 账号。
-func (s *EmailSender) pickAccount(ctx context.Context, channelID uint64) (*data.SmtpAccount, error) {
+func (s *EmailSender) pickAccount(ctx context.Context, channelID int64) (*data.SmtpAccount, error) {
 	account, err := s.resolveAccount(ctx, channelID)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func checkUsable(account *data.SmtpAccount) error {
 	return nil
 }
 
-func (s *EmailSender) resolveAccount(ctx context.Context, channelID uint64) (*data.SmtpAccount, error) {
+func (s *EmailSender) resolveAccount(ctx context.Context, channelID int64) (*data.SmtpAccount, error) {
 	if channelID == 0 {
 		account, err := s.channel.GetFirstEnabledEmailChannel(ctx)
 		if err != nil {

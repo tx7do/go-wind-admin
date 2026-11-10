@@ -70,7 +70,7 @@ const authSvcTestJWTKey = "authsvc-test-hs256-secret-key-0123456789abcdef"
 
 const (
 	authSvcTestUsername  = "authsvc-admin"
-	authSvcTestUserID    = uint64(7001)
+	authSvcTestUserID    = int64(7001)
 	authSvcTenantCode    = "AUTHSVC_TENANT_CHAIN"
 	authSvcTenantCodeOff = "AUTHSVC_TENANT_OFF"
 	authSvcTenantCodeB   = "AUTHSVC_TENANT_MISMATCH"
@@ -84,12 +84,12 @@ const (
 // recordUserLastLogin 的更新调用）。桩数据与实体表无关。
 type authSvcUserRepoStub struct {
 	data.UserRepo
-	usersByID         map[uint64]*identityV1.User
-	roleIDsByUser     map[uint64][]uint64
+	usersByID         map[int64]*identityV1.User
+	roleIDsByUser     map[int64][]int64
 	updates           []*identityV1.UpdateUserRequest
 	findIdentifierErr error
 	// emailToUserID SSO 测试用：email → userID 映射（nil = 走默认 identifier 直返）
-	emailToUserID map[string]uint64
+	emailToUserID map[string]int64
 }
 
 func (s *authSvcUserRepoStub) Get(_ context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
@@ -99,11 +99,11 @@ func (s *authSvcUserRepoStub) Get(_ context.Context, req *identityV1.GetUserRequ
 	return nil, fmt.Errorf("user %d not found (authSvc stub)", req.GetId())
 }
 
-func (s *authSvcUserRepoStub) ListRoleIDsByUserID(_ context.Context, userID uint64) ([]uint64, error) {
+func (s *authSvcUserRepoStub) ListRoleIDsByUserID(_ context.Context, userID int64) ([]int64, error) {
 	return s.roleIDsByUser[userID], nil
 }
 
-func (s *authSvcUserRepoStub) FindUsernameByIdentifier(_ context.Context, _ uint64, identifier string) (string, uint64, error) {
+func (s *authSvcUserRepoStub) FindUsernameByIdentifier(_ context.Context, _ int64, identifier string) (string, int64, error) {
 	if s.findIdentifierErr != nil {
 		return "", 0, s.findIdentifierErr
 	}
@@ -192,8 +192,8 @@ func newAuthenticationServiceForTest(t *testing.T) *authSvcEnv {
 	require.NoError(t, err)
 
 	stub := &authSvcUserRepoStub{
-		usersByID:     make(map[uint64]*identityV1.User),
-		roleIDsByUser: make(map[uint64][]uint64),
+		usersByID:     make(map[int64]*identityV1.User),
+		roleIDsByUser: make(map[int64][]int64),
 	}
 
 	svc := &AuthenticationService{
@@ -228,7 +228,7 @@ func newAuthenticationServiceForTest(t *testing.T) *authSvcEnv {
 }
 
 // seedTenant 落库一个租户并返回其 ID（状态可指定）。
-func (e *authSvcEnv) seedTenant(t *testing.T, name, code string, status identityV1.Tenant_Status) uint64 {
+func (e *authSvcEnv) seedTenant(t *testing.T, name, code string, status identityV1.Tenant_Status) int64 {
 	t.Helper()
 	created, err := e.svc.tenantRepo.Create(e.ctx, &identityV1.Tenant{
 		Name:        trans.Ptr(name),
@@ -243,7 +243,7 @@ func (e *authSvcEnv) seedTenant(t *testing.T, name, code string, status identity
 }
 
 // seedBackendAccessPermission 落库 sys:access_backend 权限并返回其 ID。
-func (e *authSvcEnv) seedBackendAccessPermission(t *testing.T) uint64 {
+func (e *authSvcEnv) seedBackendAccessPermission(t *testing.T) int64 {
 	t.Helper()
 	require.NoError(t, e.svc.permissionRepo.Create(e.ctx, &permissionV1.CreatePermissionRequest{
 		Data: &permissionV1.Permission{
@@ -261,13 +261,13 @@ func (e *authSvcEnv) seedBackendAccessPermission(t *testing.T) uint64 {
 // seedRole 落库一个角色（可选绑定权限/数据范围/字段权限）并按 (tenant, code) 反查 ID。
 func (e *authSvcEnv) seedRole(
 	t *testing.T,
-	tenantID *uint64,
+	tenantID *int64,
 	roleType permissionV1.Role_Type,
 	roleCode string,
-	permIDs []uint64,
+	permIDs []int64,
 	dataScope *identityV1.DataScope,
 	fieldPerms []*permissionV1.RoleFieldPermission,
-) uint64 {
+) int64 {
 	t.Helper()
 	data := &permissionV1.Role{
 		TenantId:    tenantID,
@@ -285,7 +285,7 @@ func (e *authSvcEnv) seedRole(
 	}
 	require.NoError(t, e.svc.roleRepo.Create(e.ctx, &permissionV1.CreateRoleRequest{Data: data}))
 
-	var wantTenant uint64
+	var wantTenant int64
 	if tenantID != nil {
 		wantTenant = *tenantID
 	}
@@ -302,7 +302,7 @@ func (e *authSvcEnv) seedRole(
 
 // seedCredential 落库一条 USERNAME/PASSWORD_HASH 凭证（bcrypt 哈希经
 // prepareCredential 复杂度校验后入库）。
-func (e *authSvcEnv) seedCredential(t *testing.T, tenantID *uint64, userID uint64, identifier string, status authenticationV1.UserCredential_Status) {
+func (e *authSvcEnv) seedCredential(t *testing.T, tenantID *int64, userID int64, identifier string, status authenticationV1.UserCredential_Status) {
 	t.Helper()
 	require.NoError(t, e.svc.userCredentialRepo.Create(e.ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
@@ -319,7 +319,7 @@ func (e *authSvcEnv) seedCredential(t *testing.T, tenantID *uint64, userID uint6
 }
 
 // seedStubUser 回放一个占位用户并挂上角色 ID 集（stub 数据，不入库）。
-func (e *authSvcEnv) seedStubUser(userID uint64, tenantID *uint64, username string, status identityV1.User_Status, roleIDs []uint64) {
+func (e *authSvcEnv) seedStubUser(userID int64, tenantID *int64, username string, status identityV1.User_Status, roleIDs []int64) {
 	e.stub.usersByID[userID] = &identityV1.User{
 		Id:       trans.Ptr(userID),
 		TenantId: tenantID,
@@ -512,9 +512,9 @@ func TestAuthSvcSqlite_LoginPolicyGate(t *testing.T) {
 
 	// 用户定向 TIME 黑名单（任意时刻窗口全覆盖）。
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 	require.NoError(t, e.svc.loginPolicyRepo.Create(e.ctx, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
 			TargetId: trans.Ptr(authSvcTestUserID),
@@ -547,9 +547,9 @@ func TestAuthSvcSqlite_LoginCredentialFailures(t *testing.T) {
 
 	// 凭证存在但密码错误。
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 	ctx2, req2 := e.loginHappyReq(t, base, authSvcTestUsername, "WrongP@ss9999")
 	resp, err = e.svc.Login(ctx2, req2)
 	require.Error(t, err)
@@ -567,7 +567,7 @@ func TestAuthSvcSqlite_LoginCredentialFailures(t *testing.T) {
 
 	// 凭证停用（ENABLED 之外的状态按不存在处理）。
 	e.seedCredential(t, nil, 7602, "authsvc-disabled-cred", authenticationV1.UserCredential_DISABLED)
-	e.seedStubUser(7602, nil, "authsvc-disabled-cred", identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(7602, nil, "authsvc-disabled-cred", identityV1.User_NORMAL, []int64{roleID})
 	ctx4, req4 := e.loginHappyReq(t, base, "authsvc-disabled-cred", constants.DefaultUserPassword)
 	resp, err = e.svc.Login(ctx4, req4)
 	require.Error(t, err)
@@ -591,9 +591,9 @@ func TestAuthSvcSqlite_LoginFullPlatformChain(t *testing.T) {
 	base := context.Background()
 
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 
 	// 先来一次错误密码：失败计数自增到 1。
 	// 注：本测试的假传输上下文 RemoteAddr 为空，ClientIPFromContext 取得空 IP，
@@ -652,9 +652,9 @@ func TestAuthSvcSqlite_LoginRateLimiterLockout(t *testing.T) {
 	base := context.Background()
 
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 
 	for i := 0; i < 5; i++ {
 		ctx, req := e.loginHappyReq(t, base, authSvcTestUsername, "WrongP@ss9999")
@@ -684,9 +684,9 @@ func TestAuthSvcSqlite_LoginMfaGate(t *testing.T) {
 	base := context.Background()
 
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, 7301, "authsvc-mfa-user", authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(7301, nil, "authsvc-mfa-user", identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(7301, nil, "authsvc-mfa-user", identityV1.User_NORMAL, []int64{roleID})
 
 	// 未绑定因子：正常签发。
 	ctx1, req1 := e.loginHappyReq(t, base, "authsvc-mfa-user", constants.DefaultUserPassword)
@@ -720,14 +720,14 @@ func TestAuthSvcSqlite_TenantLoginChain(t *testing.T) {
 		trans.Ptr(tenantID),
 		permissionV1.Role_TENANT,
 		constants.TenantAdminRoleCode,
-		[]uint64{permID},
+		[]int64{permID},
 		identityV1.DataScope_SELF.Enum(),
 		[]*permissionV1.RoleFieldPermission{
 			{Resource: "User", HiddenFields: []string{"email", "mobile"}},
 		},
 	)
 	e.seedCredential(t, trans.Ptr(tenantID), 7401, "authsvc-tenant-user", authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(7401, trans.Ptr(tenantID), "authsvc-tenant-user", identityV1.User_NORMAL, []uint64{tenantRoleID})
+	e.seedStubUser(7401, trans.Ptr(tenantID), "authsvc-tenant-user", identityV1.User_NORMAL, []int64{tenantRoleID})
 
 	ctx, req := e.loginHappyReq(t, base, "authsvc-tenant-user", constants.DefaultUserPassword)
 	req.TenantCode = trans.Ptr(authSvcTenantCode)
@@ -761,7 +761,7 @@ func TestAuthSvcSqlite_AuthorizationDeniedBranches(t *testing.T) {
 	base := context.Background()
 
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	noPermRoleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, "AUTHSVC_ROLE_NO_PERM", nil, nil, nil)
 	require.NotZero(t, noPermRoleID)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
@@ -778,7 +778,7 @@ func TestAuthSvcSqlite_AuthorizationDeniedBranches(t *testing.T) {
 	require.Nil(t, resp)
 
 	// 角色未挂后台访问权限。
-	e.seedStubUser(7606, nil, "authsvc-noperm-user", identityV1.User_NORMAL, []uint64{noPermRoleID})
+	e.seedStubUser(7606, nil, "authsvc-noperm-user", identityV1.User_NORMAL, []int64{noPermRoleID})
 	ctx2, req2 := e.loginHappyReq(t, base, "authsvc-noperm-user", constants.DefaultUserPassword)
 	resp, err = e.svc.Login(ctx2, req2)
 	require.Error(t, err)
@@ -786,7 +786,7 @@ func TestAuthSvcSqlite_AuthorizationDeniedBranches(t *testing.T) {
 	require.Nil(t, resp)
 
 	// 用户状态非 NORMAL。
-	e.seedStubUser(7607, nil, "authsvc-frozen-user", identityV1.User_LOCKED, []uint64{roleID})
+	e.seedStubUser(7607, nil, "authsvc-frozen-user", identityV1.User_LOCKED, []int64{roleID})
 	ctx3, req3 := e.loginHappyReq(t, base, "authsvc-frozen-user", constants.DefaultUserPassword)
 	resp, err = e.svc.Login(ctx3, req3)
 	require.Error(t, err)
@@ -824,9 +824,9 @@ func TestAuthSvcSqlite_LogoutAndRevocation(t *testing.T) {
 	base := context.Background()
 
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 
 	ctx, req := e.loginHappyReq(t, base, authSvcTestUsername, constants.DefaultUserPassword)
 	resp, err := e.svc.Login(ctx, req)
@@ -891,9 +891,9 @@ func TestAuthSvcSqlite_RefreshTokenFlow(t *testing.T) {
 
 	// 合法轮换：先经完整登录链签发旧令牌对，并记录旧会话元数据。
 	permID := e.seedBackendAccessPermission(t)
-	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []uint64{permID}, nil, nil)
+	roleID := e.seedRole(t, nil, permissionV1.Role_SYSTEM, constants.PlatformAdminRoleCode, []int64{permID}, nil, nil)
 	e.seedCredential(t, nil, authSvcTestUserID, authSvcTestUsername, authenticationV1.UserCredential_ENABLED)
-	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []uint64{roleID})
+	e.seedStubUser(authSvcTestUserID, nil, authSvcTestUsername, identityV1.User_NORMAL, []int64{roleID})
 
 	payload := &authenticationV1.UserTokenPayload{UserId: authSvcTestUserID, Username: trans.Ptr(authSvcTestUsername)}
 	oldAccess, oldRefresh, err := e.svc.authenticator.CreateUserToken(base, authenticationV1.ClientType_admin, payload)
@@ -1000,7 +1000,7 @@ func TestAuthSvcSqlite_WhoAmI(t *testing.T) {
 	opCtx := auth.NewContext(base, &authenticationV1.UserTokenPayload{UserId: 4242, Username: trans.Ptr("authsvc-operator")})
 	resp, err = e.svc.WhoAmI(opCtx, &emptypb.Empty{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(4242), resp.GetUserId())
+	require.Equal(t, int64(4242), resp.GetUserId())
 	require.Equal(t, "authsvc-operator", resp.GetUsername())
 }
 

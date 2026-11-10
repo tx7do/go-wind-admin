@@ -56,7 +56,7 @@ func (r *MembershipRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-func (r *MembershipRepo) SetUserOrgUnitID(ctx context.Context, userID uint64, orgUnitID uint64) error {
+func (r *MembershipRepo) SetUserOrgUnitID(ctx context.Context, userID int64, orgUnitID int64) error {
 	var val any
 	if orgUnitID == 0 {
 		val = nil
@@ -72,7 +72,7 @@ func (r *MembershipRepo) SetUserOrgUnitID(ctx context.Context, userID uint64, or
 	return nil
 }
 
-func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID uint64, roleID uint64) error {
+func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID int64, roleID int64) error {
 	var val any
 	if roleID == 0 {
 		val = nil
@@ -88,7 +88,7 @@ func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID uint64, roleI
 	return nil
 }
 
-func (r *MembershipRepo) SetUserPositionID(ctx context.Context, userID uint64, positionID uint64) error {
+func (r *MembershipRepo) SetUserPositionID(ctx context.Context, userID int64, positionID int64) error {
 	var val any
 	if positionID == 0 {
 		val = nil
@@ -104,7 +104,7 @@ func (r *MembershipRepo) SetUserPositionID(ctx context.Context, userID uint64, p
 	return nil
 }
 
-func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint64, status *identityV1.Membership_Status) error {
+func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID int64, status *identityV1.Membership_Status) error {
 	var val any
 	if status == nil {
 		val = nil
@@ -121,7 +121,7 @@ func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint64, statu
 	return nil
 }
 
-func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID uint64, endAt *time.Time) error {
+func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID int64, endAt *time.Time) error {
 	var val any
 	if endAt == nil {
 		val = nil
@@ -137,7 +137,7 @@ func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID uint64, endAt 
 	return nil
 }
 
-func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID, tenantID uint64) (*identityV1.Membership, error) {
+func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID, tenantID int64) (*identityV1.Membership, error) {
 	now := time.Now()
 	var entity models.Membership
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
@@ -155,7 +155,7 @@ func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID, 
 	return dto, nil
 }
 
-func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID uint64) ([]*identityV1.Membership, error) {
+func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID int64) ([]*identityV1.Membership, error) {
 	now := time.Now()
 	var entities []*models.Membership
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
@@ -172,7 +172,7 @@ func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID ui
 	return dtos, nil
 }
 
-func (r *MembershipRepo) GetMembershipIDByUserID(ctx context.Context, userID uint64) (uint64, error) {
+func (r *MembershipRepo) GetMembershipIDByUserID(ctx context.Context, userID int64) (int64, error) {
 	now := time.Now()
 	var entity models.Membership
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
@@ -189,14 +189,14 @@ func (r *MembershipRepo) GetMembershipIDByUserID(ctx context.Context, userID uin
 	return entity.ID, nil
 }
 
-func (r *MembershipRepo) ListUserIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDs(ctx context.Context, membershipID int64, excludeExpired bool) ([]int64, error) {
 	q := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("id = ?", membershipID)
 	if excludeExpired {
 		now := time.Now()
 		q = q.Where("end_at IS NULL OR end_at > ?", now)
 	}
-	var ids []uint64
+	var ids []int64
 	if err := q.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by membership id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by membership id failed")
@@ -204,14 +204,14 @@ func (r *MembershipRepo) ListUserIDs(ctx context.Context, membershipID uint64, e
 	return ids, nil
 }
 
-func (r *MembershipRepo) ListUserIDsByMembershipIDs(ctx context.Context, membershipIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByMembershipIDs(ctx context.Context, membershipIDs []int64, excludeExpired bool) ([]int64, error) {
 	q := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("id IN ?", membershipIDs)
 	if excludeExpired {
 		now := time.Now()
 		q = q.Where("end_at IS NULL OR end_at > ?", now)
 	}
-	var ids []uint64
+	var ids []int64
 	if err := q.Pluck("user_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query user ids by membership ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by membership ids failed")
@@ -221,74 +221,74 @@ func (r *MembershipRepo) ListUserIDsByMembershipIDs(ctx context.Context, members
 
 // === 以下方法为 gorm scaffold 桩：依赖 ent 跨仓储事务/委托/edge，go-crud/gorm 无对应原语 ===
 
-func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, userID uint64, tenantID uint64) error {
+func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, userID int64, tenantID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignTenantMembershipWith not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx any, userID uint64, tenantID uint64) error {
+func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx any, userID int64, tenantID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignTenantMembershipWithTx not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context, membershipID uint64, datas any) error {
+func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context, membershipID int64, datas any) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignMembershipRoles not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) AssignMembershipPositions(ctx context.Context, membershipID uint64, datas any) error {
+func (r *MembershipRepo) AssignMembershipPositions(ctx context.Context, membershipID int64, datas any) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignMembershipPositions not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) AssignMembershipOrgUnits(ctx context.Context, membershipID uint64, datas any) error {
+func (r *MembershipRepo) AssignMembershipOrgUnits(ctx context.Context, membershipID int64, datas any) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: AssignMembershipOrgUnits not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID uint64, tenantID uint64) (uint64, error) {
+func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID int64, tenantID int64) (int64, error) {
 	return 0, identityV1.ErrorInternalServerError("gorm scaffold: GetMembershipID not implemented — ent *ent.Tx transaction has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, membershipID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListMembershipRoleIDs not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) GetRoleIDsByMembership(ctx context.Context, membershipID uint64) ([]uint64, error) {
+func (r *MembershipRepo) GetRoleIDsByMembership(ctx context.Context, membershipID int64) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: GetRoleIDsByMembership not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, membershipID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListMembershipOrgUnitIDs not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, membershipID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListMembershipPositionIDs not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListMembershipRelationIDs(ctx context.Context, membershipID uint64) (roleIDs []uint64, positionIDs []uint64, orgUnitIDs []uint64, err error) {
+func (r *MembershipRepo) ListMembershipRelationIDs(ctx context.Context, membershipID int64) (roleIDs []int64, positionIDs []int64, orgUnitIDs []int64, err error) {
 	return nil, nil, nil, identityV1.ErrorInternalServerError("gorm scaffold: ListMembershipRelationIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByOrgUnitID(ctx context.Context, orgUnitID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByOrgUnitID(ctx context.Context, orgUnitID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByOrgUnitID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByOrgUnitIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByPositionID(ctx context.Context, positionID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByPositionID(ctx context.Context, positionID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByPositionID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByPositionIDs(ctx context.Context, positionIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByPositionIDs(ctx context.Context, positionIDs []int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByPositionIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByRoleID(ctx context.Context, roleID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByRoleID(ctx context.Context, roleID int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByRoleID not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []int64, excludeExpired bool) ([]int64, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: ListUserIDsByRoleIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }
 
-func (r *MembershipRepo) CleanRelationsByUserID(ctx context.Context, tx any, userID uint64) error {
+func (r *MembershipRepo) CleanRelationsByUserID(ctx context.Context, tx any, userID int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: CleanRelationsByUserID not implemented — ent *ent.Tx cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/membership_repo.go")
 }

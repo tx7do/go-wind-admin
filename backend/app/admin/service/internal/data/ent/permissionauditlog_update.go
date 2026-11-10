@@ -29,14 +29,14 @@ func (_u *PermissionAuditLogUpdate) Where(ps ...predicate.PermissionAuditLog) *P
 }
 
 // SetOperatorID sets the "operator_id" field.
-func (_u *PermissionAuditLogUpdate) SetOperatorID(v uint64) *PermissionAuditLogUpdate {
+func (_u *PermissionAuditLogUpdate) SetOperatorID(v int64) *PermissionAuditLogUpdate {
 	_u.mutation.ResetOperatorID()
 	_u.mutation.SetOperatorID(v)
 	return _u
 }
 
 // SetNillableOperatorID sets the "operator_id" field if the given value is not nil.
-func (_u *PermissionAuditLogUpdate) SetNillableOperatorID(v *uint64) *PermissionAuditLogUpdate {
+func (_u *PermissionAuditLogUpdate) SetNillableOperatorID(v *int64) *PermissionAuditLogUpdate {
 	if v != nil {
 		_u.SetOperatorID(*v)
 	}
@@ -321,7 +321,7 @@ func (_u *PermissionAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -333,16 +333,16 @@ func (_u *PermissionAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 		_spec.ClearField(permissionauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(permissionauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(permissionauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.OperatorID(); ok {
-		_spec.SetField(permissionauditlog.FieldOperatorID, field.TypeUint64, value)
+		_spec.SetField(permissionauditlog.FieldOperatorID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOperatorID(); ok {
-		_spec.AddField(permissionauditlog.FieldOperatorID, field.TypeUint64, value)
+		_spec.AddField(permissionauditlog.FieldOperatorID, field.TypeInt64, value)
 	}
 	if _u.mutation.OperatorIDCleared() {
-		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeUint64)
+		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.OperatorName(); ok {
 		_spec.SetField(permissionauditlog.FieldOperatorName, field.TypeString, value)
@@ -430,14 +430,14 @@ type PermissionAuditLogUpdateOne struct {
 }
 
 // SetOperatorID sets the "operator_id" field.
-func (_u *PermissionAuditLogUpdateOne) SetOperatorID(v uint64) *PermissionAuditLogUpdateOne {
+func (_u *PermissionAuditLogUpdateOne) SetOperatorID(v int64) *PermissionAuditLogUpdateOne {
 	_u.mutation.ResetOperatorID()
 	_u.mutation.SetOperatorID(v)
 	return _u
 }
 
 // SetNillableOperatorID sets the "operator_id" field if the given value is not nil.
-func (_u *PermissionAuditLogUpdateOne) SetNillableOperatorID(v *uint64) *PermissionAuditLogUpdateOne {
+func (_u *PermissionAuditLogUpdateOne) SetNillableOperatorID(v *int64) *PermissionAuditLogUpdateOne {
 	if v != nil {
 		_u.SetOperatorID(*v)
 	}
@@ -735,7 +735,7 @@ func (_u *PermissionAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Perm
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(permissionauditlog.Table, permissionauditlog.Columns, sqlgraph.NewFieldSpec(permissionauditlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PermissionAuditLog.id" for update`)}
@@ -764,16 +764,16 @@ func (_u *PermissionAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Perm
 		_spec.ClearField(permissionauditlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(permissionauditlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(permissionauditlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.OperatorID(); ok {
-		_spec.SetField(permissionauditlog.FieldOperatorID, field.TypeUint64, value)
+		_spec.SetField(permissionauditlog.FieldOperatorID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOperatorID(); ok {
-		_spec.AddField(permissionauditlog.FieldOperatorID, field.TypeUint64, value)
+		_spec.AddField(permissionauditlog.FieldOperatorID, field.TypeInt64, value)
 	}
 	if _u.mutation.OperatorIDCleared() {
-		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeUint64)
+		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.OperatorName(); ok {
 		_spec.SetField(permissionauditlog.FieldOperatorName, field.TypeString, value)

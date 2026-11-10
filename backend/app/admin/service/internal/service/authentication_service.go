@@ -248,7 +248,7 @@ func NewAuthenticationService(
 // userId 传 0 时只匹配全局条目（target_id 为空）；密码校验前与取到 user 后各调用一次。
 // 匹配逻辑见 data.MatchLoginPolicy（纯函数，含单测）。
 // 策略查询失败时 fail-open（仅告警）——登录可用性优先于策略拦截，与验证码开关的容错取向一致。
-func (s *AuthenticationService) checkLoginPolicies(ctx context.Context, tenantID, userId uint64, clientIP, deviceId string) (bool, string) {
+func (s *AuthenticationService) checkLoginPolicies(ctx context.Context, tenantID, userId int64, clientIP, deviceId string) (bool, string) {
 	policies, err := s.loginPolicyRepo.ListForLogin(ctx, tenantID)
 	if err != nil {
 		s.log.Errorf(ctx, "list login policies failed for tenant [%d]: %s", tenantID, err.Error())
@@ -310,7 +310,7 @@ func containsPermission(perms []string, target string) bool {
 }
 
 // authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne 一对一用户-租户关系的授权与丰富
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx context.Context, userID, tenantID uint64, tokenPayload *authenticationV1.UserTokenPayload) error {
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx context.Context, userID, tenantID int64, tokenPayload *authenticationV1.UserTokenPayload) error {
 	hasBackendAccess := false
 
 	if tenantID > 0 {
@@ -373,7 +373,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 }
 
 // authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany 一对多用户-租户关系的授权与丰富
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx context.Context, userID, tenantID uint64, tokenPayload *authenticationV1.UserTokenPayload) error {
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx context.Context, userID, tenantID int64, tokenPayload *authenticationV1.UserTokenPayload) error {
 	var memberships []*identityV1.Membership
 	if tenantID > 0 {
 		// 指定租户
@@ -394,7 +394,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 	}
 
 	hasBackendAccess := false
-	var validRoleIDs []uint64
+	var validRoleIDs []int64
 	for _, m := range memberships {
 		if m.GetTenantId() > 0 {
 			// 检查租户状态
@@ -456,7 +456,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 }
 
 // authorizeAndEnrichUserTokenPayload 授权并丰富用户令牌载荷
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID uint64, tokenPayload *authenticationV1.UserTokenPayload) error {
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID int64, tokenPayload *authenticationV1.UserTokenPayload) error {
 	switch constants.DefaultUserTenantRelationType {
 	case constants.UserTenantRelationOneToOne:
 		return s.authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx, userID, tenantID, tokenPayload)
@@ -496,7 +496,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// ===== 租户解析（提前到限流预检之前）：tenant_code 留空视为平台（tenant 0）， =====
 	// ===== 非空则按编号定位租户。解析后的 tenantID 限定后续凭证查询范围， =====
 	// ===== 消除同名 identifier 跨租户歧义；identifier 反查依赖它，必须先行。 =====
-	var tenantID uint64 = 0
+	var tenantID int64 = 0
 	if code := req.GetTenantCode(); strings.TrimSpace(code) != "" {
 		tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
 			QueryBy: &identityV1.GetTenantRequest_Code{Code: code},
@@ -550,7 +550,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 
 	// ===== 凭证校验：在解析出的 tenant 范围内查单条凭证并校验密码 =====
 	// 注意用解析后的 username 局部变量（可能是 email/mobile 反查所得），而非 req 原始输入
-	var matchedUserID uint64
+	var matchedUserID int64
 	var err error
 	matchedUserID, err = s.userCredentialRepo.FindUserCredential(ctx, tenantID, authenticationV1.UserCredential_USERNAME, username, req.GetPassword(), true)
 	if err != nil {
@@ -663,7 +663,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 // recordUserLastLogin 记录用户最后登录时间与 IP。
 // 仅用于展示（用户列表"最后登录"列、个人中心），更新失败不阻断登录流程。
 // 密码登录与 MFA 挑战通过两条成功路径都调用。
-func recordUserLastLogin(ctx context.Context, log *bLogger.Helper, userRepo data.UserRepo, userID uint64, clientIP string) {
+func recordUserLastLogin(ctx context.Context, log *bLogger.Helper, userRepo data.UserRepo, userID int64, clientIP string) {
 	if userID == 0 || userRepo == nil {
 		return
 	}

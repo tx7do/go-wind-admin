@@ -76,15 +76,15 @@ func (OperatorMetadata_OperatorType) EnumDescriptor() ([]byte, []int) {
 type OperatorMetadata struct {
 	state            protoimpl.MessageState        `protogen:"open.v1"`
 	Type             OperatorMetadata_OperatorType `protobuf:"varint,1,opt,name=type,json=t,proto3,enum=authentication.service.v1.OperatorMetadata_OperatorType" json:"type,omitempty"` // 操作者类型
-	UserId           uint64                        `protobuf:"varint,2,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                      // 用户ID
-	TenantId         uint64                        `protobuf:"varint,3,opt,name=tenant_id,json=tid,proto3" json:"tenant_id,omitempty"`                                                  // 租户ID
-	OrgUnitId        uint64                        `protobuf:"varint,4,opt,name=org_unit_id,json=ouid,proto3" json:"org_unit_id,omitempty"`                                             // 当前操作所属的组织单元
+	UserId           int64                         `protobuf:"varint,2,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                      // 用户ID
+	TenantId         int64                         `protobuf:"varint,3,opt,name=tenant_id,json=tid,proto3" json:"tenant_id,omitempty"`                                                  // 租户ID
+	OrgUnitId        int64                         `protobuf:"varint,4,opt,name=org_unit_id,json=ouid,proto3" json:"org_unit_id,omitempty"`                                             // 当前操作所属的组织单元
 	DataScope        v1.DataScope                  `protobuf:"varint,5,opt,name=data_scope,json=ds,proto3,enum=identity.service.v1.DataScope" json:"data_scope,omitempty"`              // 数据权限范围策略
-	RoleIds          []uint64                      `protobuf:"varint,6,rep,packed,name=role_ids,json=rids,proto3" json:"role_ids,omitempty"`                                            // 用于存放少量的核心角色 ID 或标记位
+	RoleIds          []int64                       `protobuf:"varint,6,rep,packed,name=role_ids,json=rids,proto3" json:"role_ids,omitempty"`                                            // 用于存放少量的核心角色 ID 或标记位
 	ServiceName      *string                       `protobuf:"bytes,7,opt,name=service_name,json=sn,proto3,oneof" json:"service_name,omitempty"`                                        // 发起操作的服务名称
 	HostName         *string                       `protobuf:"bytes,8,opt,name=host_name,json=hn,proto3,oneof" json:"host_name,omitempty"`                                              // 发起操作的主机名称
 	DataScopes       []v1.DataScope                `protobuf:"varint,9,rep,packed,name=data_scopes,json=dss,proto3,enum=identity.service.v1.DataScope" json:"data_scopes,omitempty"`    // 数据权限范围类型集合（多角色聚合）
-	DataScopeUnitIds []uint64                      `protobuf:"varint,10,rep,packed,name=data_scope_unit_ids,json=dsu,proto3" json:"data_scope_unit_ids,omitempty"`                      // UNIT 类数据范围的组织单元目标集（并集）
+	DataScopeUnitIds []int64                       `protobuf:"varint,10,rep,packed,name=data_scope_unit_ids,json=dsu,proto3" json:"data_scope_unit_ids,omitempty"`                      // UNIT 类数据范围的组织单元目标集（并集）
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -126,21 +126,21 @@ func (x *OperatorMetadata) GetType() OperatorMetadata_OperatorType {
 	return OperatorMetadata_USER
 }
 
-func (x *OperatorMetadata) GetUserId() uint64 {
+func (x *OperatorMetadata) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *OperatorMetadata) GetTenantId() uint64 {
+func (x *OperatorMetadata) GetTenantId() int64 {
 	if x != nil {
 		return x.TenantId
 	}
 	return 0
 }
 
-func (x *OperatorMetadata) GetOrgUnitId() uint64 {
+func (x *OperatorMetadata) GetOrgUnitId() int64 {
 	if x != nil {
 		return x.OrgUnitId
 	}
@@ -154,7 +154,7 @@ func (x *OperatorMetadata) GetDataScope() v1.DataScope {
 	return v1.DataScope(0)
 }
 
-func (x *OperatorMetadata) GetRoleIds() []uint64 {
+func (x *OperatorMetadata) GetRoleIds() []int64 {
 	if x != nil {
 		return x.RoleIds
 	}
@@ -182,7 +182,7 @@ func (x *OperatorMetadata) GetDataScopes() []v1.DataScope {
 	return nil
 }
 
-func (x *OperatorMetadata) GetDataScopeUnitIds() []uint64 {
+func (x *OperatorMetadata) GetDataScopeUnitIds() []int64 {
 	if x != nil {
 		return x.DataScopeUnitIds
 	}
@@ -249,17 +249,17 @@ const file_authentication_service_v1_operator_proto_rawDesc = "" +
 	"(authentication/service/v1/operator.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fidentity/service/v1/types.proto\"\xd9\x06\n" +
 	"\x10OperatorMetadata\x12`\n" +
 	"\x04type\x18\x01 \x01(\x0e28.authentication.service.v1.OperatorMetadata.OperatorTypeB\x15\xbaG\x12\x92\x02\x0f操作者类型R\x01t\x12$\n" +
-	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12&\n" +
-	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\x03tid\x12B\n" +
-	"\vorg_unit_id\x18\x04 \x01(\x04B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12V\n" +
+	"\auser_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12&\n" +
+	"\ttenant_id\x18\x03 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDR\x03tid\x12B\n" +
+	"\vorg_unit_id\x18\x04 \x01(\x03B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12V\n" +
 	"\n" +
 	"data_scope\x18\x05 \x01(\x0e2\x1e.identity.service.v1.DataScopeB\x1e\xbaG\x1b\x92\x02\x18数据权限范围策略R\x02ds\x12O\n" +
-	"\brole_ids\x18\x06 \x03(\x04B7\xbaG4\x92\x021用于存放少量的核心角色 ID 或标记位R\x04rids\x12@\n" +
+	"\brole_ids\x18\x06 \x03(\x03B7\xbaG4\x92\x021用于存放少量的核心角色 ID 或标记位R\x04rids\x12@\n" +
 	"\fservice_name\x18\a \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的服务名称H\x00R\x02sn\x88\x01\x01\x12=\n" +
 	"\thost_name\x18\b \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的主机名称H\x01R\x02hn\x88\x01\x01\x12s\n" +
 	"\vdata_scopes\x18\t \x03(\x0e2\x1e.identity.service.v1.DataScopeB9\xbaG6\x92\x023数据权限范围类型集合（多角色聚合）R\x03dss\x12`\n" +
 	"\x13data_scope_unit_ids\x18\n" +
-	" \x03(\x04B>\xbaG;\x92\x028UNIT 类数据范围的组织单元目标集（并集）R\x03dsu\"1\n" +
+	" \x03(\x03B>\xbaG;\x92\x028UNIT 类数据范围的组织单元目标集（并集）R\x03dsu\"1\n" +
 	"\fOperatorType\x12\b\n" +
 	"\x04USER\x10\x00\x12\n" +
 	"\n" +

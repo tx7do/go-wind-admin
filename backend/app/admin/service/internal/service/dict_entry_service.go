@@ -42,7 +42,7 @@ func NewDictEntryService(
 // TenantPrivacy 承担，但 type_id 此前不做归属校验——可把条目挂到他租户/平台
 // 的 dict_type id 上（完整性破坏 + id 存在性探测，读取侧 edge 水合被租户过滤
 // 形成悬挂引用）。经 tenant 过滤的 Get 查 0 行即拒绝。
-func (s *DictEntryService) validateDictEntryType(ctx context.Context, typeId uint64) error {
+func (s *DictEntryService) validateDictEntryType(ctx context.Context, typeId int64) error {
 	if typeId == 0 {
 		return nil
 	}

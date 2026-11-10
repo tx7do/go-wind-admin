@@ -82,7 +82,7 @@ func (BiDashboardKind) EnumDescriptor() ([]byte, []int) {
 // BI 仪表盘
 type BiDashboard struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 仪表盘ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 仪表盘ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                     // 名称
 	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                     // 编码
 	Kind          *BiDashboardKind       `protobuf:"varint,4,opt,name=kind,proto3,enum=bi.service.v1.BiDashboardKind,oneof" json:"kind,omitempty"` // 种类
@@ -96,9 +96,9 @@ type BiDashboard struct {
 	Version       *uint32                `protobuf:"varint,12,opt,name=version,proto3,oneof" json:"version,omitempty"`                             // 版本号
 	IsEnabled     *bool                  `protobuf:"varint,13,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`        // 是否启用
 	SortOrder     *uint32                `protobuf:"varint,14,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`        // 排序序号
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`        // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`        // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`        // 删除时间
@@ -136,7 +136,7 @@ func (*BiDashboard) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *BiDashboard) GetId() uint64 {
+func (x *BiDashboard) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -234,21 +234,21 @@ func (x *BiDashboard) GetSortOrder() uint32 {
 	return 0
 }
 
-func (x *BiDashboard) GetCreatedBy() uint64 {
+func (x *BiDashboard) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *BiDashboard) GetUpdatedBy() uint64 {
+func (x *BiDashboard) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *BiDashboard) GetDeletedBy() uint64 {
+func (x *BiDashboard) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -280,7 +280,7 @@ func (x *BiDashboard) GetDeletedAt() *timestamppb.Timestamp {
 type ListBiDashboardResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*BiDashboard         `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -322,7 +322,7 @@ func (x *ListBiDashboardResponse) GetItems() []*BiDashboard {
 	return nil
 }
 
-func (x *ListBiDashboardResponse) GetTotal() uint64 {
+func (x *ListBiDashboardResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -378,7 +378,7 @@ func (x *GetBiDashboardRequest) GetQueryBy() isGetBiDashboardRequest_QueryBy {
 	return nil
 }
 
-func (x *GetBiDashboardRequest) GetId() uint64 {
+func (x *GetBiDashboardRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetBiDashboardRequest_Id); ok {
 			return x.Id
@@ -399,7 +399,7 @@ type isGetBiDashboardRequest_QueryBy interface {
 }
 
 type GetBiDashboardRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetBiDashboardRequest_Id) isGetBiDashboardRequest_QueryBy() {}
@@ -452,7 +452,7 @@ func (x *CreateBiDashboardRequest) GetData() *BiDashboard {
 // 更新 BI 仪表盘 - 请求
 type UpdateBiDashboardRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *BiDashboard           `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 资源不存在则新增
@@ -490,7 +490,7 @@ func (*UpdateBiDashboardRequest) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateBiDashboardRequest) GetId() uint64 {
+func (x *UpdateBiDashboardRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -566,7 +566,7 @@ func (x *DeleteBiDashboardRequest) GetQueryBy() isDeleteBiDashboardRequest_Query
 	return nil
 }
 
-func (x *DeleteBiDashboardRequest) GetId() uint64 {
+func (x *DeleteBiDashboardRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteBiDashboardRequest_Id); ok {
 			return x.Id
@@ -580,7 +580,7 @@ type isDeleteBiDashboardRequest_QueryBy interface {
 }
 
 type DeleteBiDashboardRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteBiDashboardRequest_Id) isDeleteBiDashboardRequest_QueryBy() {}
@@ -588,7 +588,7 @@ func (*DeleteBiDashboardRequest_Id) isDeleteBiDashboardRequest_QueryBy() {}
 // 复制 BI 仪表盘 - 请求
 type CopyBiDashboardRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`          // 源仪表盘ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`          // 源仪表盘ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"` // 副本名称
 	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"` // 副本编码
 	unknownFields protoimpl.UnknownFields
@@ -625,7 +625,7 @@ func (*CopyBiDashboardRequest) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CopyBiDashboardRequest) GetId() uint64 {
+func (x *CopyBiDashboardRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -650,13 +650,13 @@ func (x *CopyBiDashboardRequest) GetCode() string {
 // 恢复 = 快照写回主表，恢复动作本身先快照当前版本）
 type BiDashboardRevision struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                      // 快照ID
-	DashboardId   uint64                 `protobuf:"varint,2,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 所属仪表盘ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                      // 快照ID
+	DashboardId   int64                  `protobuf:"varint,2,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 所属仪表盘ID
 	Version       uint32                 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`                            // 仪表盘版本号
 	Name          *string                `protobuf:"bytes,4,opt,name=name,proto3,oneof" json:"name,omitempty"`                             // 名称快照
 	Payload       *string                `protobuf:"bytes,5,opt,name=payload,proto3,oneof" json:"payload,omitempty"`                       // 仪表盘 JSON 快照
 	Source        *string                `protobuf:"bytes,6,opt,name=source,proto3,oneof" json:"source,omitempty"`                         // 快照来源
-	CreatedBy     *uint64                `protobuf:"varint,7,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"` // 触发者
+	CreatedBy     *int64                 `protobuf:"varint,7,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"` // 触发者
 	CreatedAt     *string                `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`  // 快照时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -692,14 +692,14 @@ func (*BiDashboardRevision) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *BiDashboardRevision) GetId() uint64 {
+func (x *BiDashboardRevision) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *BiDashboardRevision) GetDashboardId() uint64 {
+func (x *BiDashboardRevision) GetDashboardId() int64 {
 	if x != nil {
 		return x.DashboardId
 	}
@@ -734,7 +734,7 @@ func (x *BiDashboardRevision) GetSource() string {
 	return ""
 }
 
-func (x *BiDashboardRevision) GetCreatedBy() uint64 {
+func (x *BiDashboardRevision) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
@@ -751,7 +751,7 @@ func (x *BiDashboardRevision) GetCreatedAt() string {
 // 版本历史 - 请求
 type ListBiDashboardRevisionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DashboardId   uint64                 `protobuf:"varint,1,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 仪表盘ID
+	DashboardId   int64                  `protobuf:"varint,1,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 仪表盘ID
 	Page          *v1.PagingRequest      `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`                                   // 分页参数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -787,7 +787,7 @@ func (*ListBiDashboardRevisionsRequest) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *ListBiDashboardRevisionsRequest) GetDashboardId() uint64 {
+func (x *ListBiDashboardRevisionsRequest) GetDashboardId() int64 {
 	if x != nil {
 		return x.DashboardId
 	}
@@ -857,7 +857,7 @@ func (x *ListBiDashboardRevisionsResponse) GetTotal() uint32 {
 // 恢复版本 - 请求（把快照的 payload/name 写回主表，版本号 +1；恢复前先快照当前版本）
 type RestoreBiDashboardRevisionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 快照ID
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 快照ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -892,7 +892,7 @@ func (*RestoreBiDashboardRevisionRequest) Descriptor() ([]byte, []int) {
 	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *RestoreBiDashboardRevisionRequest) GetId() uint64 {
+func (x *RestoreBiDashboardRevisionRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -905,7 +905,7 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\n" +
 	" bi/service/v1/bi_dashboard.proto\x12\rbi.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x82\x10\n" +
 	"\vBiDashboard\x12&\n" +
-	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v仪表盘IDH\x00R\x02id\x88\x01\x01\x124\n" +
+	"\x02id\x18\x01 \x01(\x03B\x11\xbaG\x0e\x92\x02\v仪表盘IDH\x00R\x02id\x88\x01\x01\x124\n" +
 	"\x04name\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15名称（展示用）H\x01R\x04name\x88\x01\x01\x12X\n" +
 	"\x04code\x18\x03 \x01(\tB?\xbaG<\x92\x029编码，租户内唯一，业务侧按编码取仪表盘H\x02R\x04code\x88\x01\x01\x12}\n" +
 	"\x04kind\x18\x04 \x01(\x0e2\x1e.bi.service.v1.BiDashboardKindBD\xbaGA\x92\x02>种类：DASHBOARD 仪表盘 / SCREEN 大屏 / TEMPLATE 模板H\x03R\x04kind\x88\x01\x01\x12)\n" +
@@ -925,11 +925,11 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\n" +
 	"sort_order\x18\x0e \x01(\rB\x12\xbaG\x0f\x92\x02\f排序序号H\rR\tsortOrder\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\x0eR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x0eR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x10R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x10R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x11R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -963,9 +963,9 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\v_deleted_at\"a\n" +
 	"\x17ListBiDashboardResponse\x120\n" +
 	"\x05items\x18\x01 \x03(\v2\x1a.bi.service.v1.BiDashboardR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc8\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xc8\x01\n" +
 	"\x15GetBiDashboardRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -975,32 +975,32 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\x18CreateBiDashboardRequest\x12.\n" +
 	"\x04data\x18\x01 \x01(\v2\x1a.bi.service.v1.BiDashboardR\x04data\"\x93\x03\n" +
 	"\x18UpdateBiDashboardRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12.\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12.\n" +
 	"\x04data\x18\x02 \x01(\v2\x1a.bi.service.v1.BiDashboardR\x04data\x12n\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB1\xbaG.:\x11\x12\x0fid,name,payload\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"D\n" +
 	"\x18DeleteBiDashboardRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"\xf8\x01\n" +
 	"\x16CopyBiDashboardRequest\x12$\n" +
-	"\x02id\x18\x01 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e源仪表盘IDR\x02id\x12O\n" +
+	"\x02id\x18\x01 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e源仪表盘IDR\x02id\x12O\n" +
 	"\x04name\x18\x02 \x01(\tB6\xbaG3\x92\x020副本名称（缺省在原名后追加 -copy）H\x00R\x04name\x88\x01\x01\x12U\n" +
 	"\x04code\x18\x03 \x01(\tB<\xbaG9\x92\x026副本编码（缺省自动生成，租户内唯一）H\x01R\x04code\x88\x01\x01B\a\n" +
 	"\x05_nameB\a\n" +
 	"\x05_code\"\xe9\x04\n" +
 	"\x13BiDashboardRevision\x12\x1e\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b快照IDR\x02id\x12:\n" +
-	"\fdashboard_id\x18\x02 \x01(\x04B\x17\xbaG\x14\x92\x02\x11所属仪表盘IDR\vdashboardId\x12\\\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b快照IDR\x02id\x12:\n" +
+	"\fdashboard_id\x18\x02 \x01(\x03B\x17\xbaG\x14\x92\x02\x11所属仪表盘IDR\vdashboardId\x12\\\n" +
 	"\aversion\x18\x03 \x01(\rBB\xbaG?\x92\x02<快照对应的仪表盘版本号（保存前的旧版本）R\aversion\x127\n" +
 	"\x04name\x18\x04 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18保存前的名称快照H\x00R\x04name\x88\x01\x01\x12F\n" +
 	"\apayload\x18\x05 \x01(\tB'\xbaG$\x92\x02!保存前的仪表盘 JSON 快照H\x01R\apayload\x88\x01\x01\x12^\n" +
 	"\x06source\x18\x06 \x01(\tBA\xbaG>\x92\x02;快照来源（SAVE=常规保存 RESTORE=恢复前留底）H\x02R\x06source\x88\x01\x01\x12A\n" +
 	"\n" +
-	"created_by\x18\a \x01(\x04B\x1d\xbaG\x1a\x92\x02\x17快照触发者用户IDH\x03R\tcreatedBy\x88\x01\x01\x126\n" +
+	"created_by\x18\a \x01(\x03B\x1d\xbaG\x1a\x92\x02\x17快照触发者用户IDH\x03R\tcreatedBy\x88\x01\x01\x126\n" +
 	"\n" +
 	"created_at\x18\b \x01(\tB\x12\xbaG\x0f\x92\x02\f快照时间H\x04R\tcreatedAt\x88\x01\x01B\a\n" +
 	"\x05_nameB\n" +
@@ -1010,13 +1010,13 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\v_created_byB\r\n" +
 	"\v_created_at\"\x9a\x01\n" +
 	"\x1fListBiDashboardRevisionsRequest\x124\n" +
-	"\fdashboard_id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v仪表盘IDR\vdashboardId\x12A\n" +
+	"\fdashboard_id\x18\x01 \x01(\x03B\x11\xbaG\x0e\x92\x02\v仪表盘IDR\vdashboardId\x12A\n" +
 	"\x04page\x18\x02 \x01(\v2\x19.pagination.PagingRequestB\x12\xbaG\x0f\x92\x02\f分页参数R\x04page\"\x94\x01\n" +
 	" ListBiDashboardRevisionsResponse\x12L\n" +
 	"\x05items\x18\x01 \x03(\v2\".bi.service.v1.BiDashboardRevisionB\x12\xbaG\x0f\x92\x02\f快照列表R\x05items\x12\"\n" +
 	"\x05total\x18\x02 \x01(\rB\f\xbaG\t\x92\x02\x06总数R\x05total\"C\n" +
 	"!RestoreBiDashboardRevisionRequest\x12\x1e\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b快照IDR\x02id*:\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b快照IDR\x02id*:\n" +
 	"\x0fBiDashboardKind\x12\r\n" +
 	"\tDASHBOARD\x10\x00\x12\n" +
 	"\n" +

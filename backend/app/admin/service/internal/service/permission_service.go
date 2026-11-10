@@ -92,7 +92,7 @@ func (s *PermissionService) init() {
 
 func (s *PermissionService) extractRelationIDs(
 	permissions []*permissionV1.Permission,
-	groupSet aggregator.ResourceMap[uint64, *permissionV1.PermissionGroup],
+	groupSet aggregator.ResourceMap[int64, *permissionV1.PermissionGroup],
 ) {
 	for _, p := range permissions {
 		if p.GetGroupId() > 0 {
@@ -103,10 +103,10 @@ func (s *PermissionService) extractRelationIDs(
 
 func (s *PermissionService) fetchRelationInfo(
 	ctx context.Context,
-	groupSet aggregator.ResourceMap[uint64, *permissionV1.PermissionGroup],
+	groupSet aggregator.ResourceMap[int64, *permissionV1.PermissionGroup],
 ) error {
 	if len(groupSet) > 0 {
-		groupIds := make([]uint64, 0, len(groupSet))
+		groupIds := make([]int64, 0, len(groupSet))
 		for id := range groupSet {
 			groupIds = append(groupIds, id)
 		}
@@ -127,12 +127,12 @@ func (s *PermissionService) fetchRelationInfo(
 
 func (s *PermissionService) bindRelations(
 	permissions []*permissionV1.Permission,
-	groupSet aggregator.ResourceMap[uint64, *permissionV1.PermissionGroup],
+	groupSet aggregator.ResourceMap[int64, *permissionV1.PermissionGroup],
 ) {
 	aggregator.Populate(
 		permissions,
 		groupSet,
-		func(ou *permissionV1.Permission) uint64 { return ou.GetGroupId() },
+		func(ou *permissionV1.Permission) int64 { return ou.GetGroupId() },
 		func(ou *permissionV1.Permission, g *permissionV1.PermissionGroup) {
 			ou.GroupName = g.Name
 		},
@@ -140,7 +140,7 @@ func (s *PermissionService) bindRelations(
 }
 
 func (s *PermissionService) enrichRelations(ctx context.Context, permissions []*permissionV1.Permission) error {
-	var groupSet = make(aggregator.ResourceMap[uint64, *permissionV1.PermissionGroup])
+	var groupSet = make(aggregator.ResourceMap[int64, *permissionV1.PermissionGroup])
 	s.extractRelationIDs(permissions, groupSet)
 	if err := s.fetchRelationInfo(ctx, groupSet); err != nil {
 		return err
@@ -156,7 +156,7 @@ func (s *PermissionService) List(ctx context.Context, req *paginationV1.PagingRe
 		return nil, err
 	}
 
-	var limitPermissionIDs []uint64
+	var limitPermissionIDs []int64
 	if operator.GetTenantId() > 0 {
 		limitPermissionIDs, err = s.roleRepo.ListPermissionIDsByRoleCodes(ctx, operator.GetRoles())
 		if err != nil {
@@ -329,7 +329,7 @@ func (s *PermissionService) appendAPis(
 	ctx context.Context,
 	permissions *[]*permissionV1.Permission,
 	mapPermissions *map[string][]*permissionV1.Permission,
-	operatorUserId uint64,
+	operatorUserId int64,
 ) error {
 	// 查询所有启用的 API 资源
 	apis, err := s.apiRepo.List(ctx, &paginationV1.PagingRequest{
@@ -356,7 +356,7 @@ func (s *PermissionService) appendAPis(
 
 	type moduleApis struct {
 		module string
-		apis   []uint64
+		apis   []int64
 	}
 
 	codes := make(map[string]*moduleApis)
@@ -392,7 +392,7 @@ func (s *PermissionService) appendAPis(
 
 			codes[code] = &moduleApis{
 				module: module,
-				apis:   []uint64{api.GetId()},
+				apis:   []int64{api.GetId()},
 			}
 		} else {
 			curCode.apis = append(curCode.apis, api.GetId())
@@ -539,7 +539,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 			Name:      trans.Ptr(title),
 			Code:      trans.Ptr(permissionCode),
 			Status:    trans.Ptr(permissionV1.Permission_ON),
-			MenuIds:   []uint64{menu.GetId()},
+			MenuIds:   []int64{menu.GetId()},
 			CreatedBy: trans.Ptr(operator.UserId),
 			UpdatedBy: trans.Ptr(operator.UserId),
 		}
@@ -595,7 +595,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 	// existingByCode（清空后插入段会把全部派生码误判为"库没有"而必然撞码）。
 	updated, added, removed := 0, 0, 0
 	mergeHit := make(map[string]struct{}, len(derivedByCode))
-	goneIDs := make([]uint64, 0)
+	goneIDs := make([]int64, 0)
 	for code, d := range derivedByCode {
 		exist, ok := existingByCode[code]
 		if !ok {
@@ -702,7 +702,7 @@ groups, err := s.permissionGroupRepo.List(ctx, &paginationV1.PagingRequest{NoPag
 	if err != nil {
 		return err
 	}
-	groupIDByName := make(map[string]uint64, len(groups.GetItems()))
+	groupIDByName := make(map[string]int64, len(groups.GetItems()))
 	for _, g := range groups.GetItems() {
 		groupIDByName[g.GetName()] = g.GetId()
 	}
@@ -714,7 +714,7 @@ groups, err := s.permissionGroupRepo.List(ctx, &paginationV1.PagingRequest{NoPag
 	if err != nil {
 		return err
 	}
-	menuIDSet := make(map[uint64]struct{}, len(menuIDs))
+	menuIDSet := make(map[int64]struct{}, len(menuIDs))
 	for _, id := range menuIDs {
 		menuIDSet[id] = struct{}{}
 	}
@@ -727,8 +727,8 @@ groups, err := s.permissionGroupRepo.List(ctx, &paginationV1.PagingRequest{NoPag
 	if err != nil {
 		return err
 	}
-	allApiIDs := make([]uint64, 0, len(apis))
-	tenantApiIDs := make([]uint64, 0, len(apis))
+	allApiIDs := make([]int64, 0, len(apis))
+	tenantApiIDs := make([]int64, 0, len(apis))
 	for _, a := range apis {
 		allApiIDs = append(allApiIDs, a.GetId())
 		if !constants.IsTenantManagerDeniedApiPath(a.GetPath()) {
@@ -757,7 +757,7 @@ groups, err := s.permissionGroupRepo.List(ctx, &paginationV1.PagingRequest{NoPag
 			data.MenuIds = append(data.MenuIds[:0:0], menuIDs...)
 			data.ApiIds = append(data.ApiIds[:0:0], allApiIDs...)
 		case constants.SystemTenantManagerPermissionCode:
-			kept := make([]uint64, 0, len(data.GetMenuIds()))
+			kept := make([]int64, 0, len(data.GetMenuIds()))
 			for _, id := range data.GetMenuIds() {
 				if _, ok := menuIDSet[id]; ok {
 					kept = append(kept, id)

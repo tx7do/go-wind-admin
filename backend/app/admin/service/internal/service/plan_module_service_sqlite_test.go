@@ -59,7 +59,7 @@ func TestPlanModuleServiceSqlite_Create_AssociatesPlan(t *testing.T) {
 	require.Len(t, rows, 1, "plan_module 表应落库 1 条记录")
 	require.Equal(t, entPlanModule.ModuleDashboard, *rows[0].Module, "module 应经转换器落库为 DASHBOARD")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	// 外键回归断言：白名单行必须挂在请求指定的父套餐上，而非 NULL
 	linked, err := entClient.Client().PlanModule.Query().
@@ -94,7 +94,7 @@ func TestPlanModuleServiceSqlite_List_BackfillsPlanId(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), listResp.Total, "列表应统计全部 1 条")
+	require.Equal(t, int64(1), listResp.Total, "列表应统计全部 1 条")
 	require.Len(t, listResp.Items, 1)
 	require.NotNil(t, listResp.Items[0].PlanId, "列表项应从 plan 边回填 PlanId")
 	require.Equal(t, parent.ID, *listResp.Items[0].PlanId, "回填的 PlanId 应等于父 plan 的 ID")

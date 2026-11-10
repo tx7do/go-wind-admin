@@ -66,10 +66,10 @@ func (r *ServerMonitorRepo) goRuntimeInfo() *serverMonitorV1.GoRuntimeInfo {
 	return &serverMonitorV1.GoRuntimeInfo{
 		Version:       strPtr(runtime.Version()),
 		NumGoroutine:  u32Ptr(uint32(runtime.NumGoroutine())),
-		MemAllocBytes: u64Ptr(ms.Alloc),
-		MemSysBytes:   u64Ptr(ms.Sys),
+		MemAllocBytes: i64Ptr(int64(ms.Alloc)),
+		MemSysBytes:   i64Ptr(int64(ms.Sys)),
 		GcCycles:      u32Ptr(ms.NumGC),
-		UptimeSeconds: u64Ptr(uint64(time.Since(r.startTime).Seconds())),
+		UptimeSeconds: i64Ptr(int64(time.Since(r.startTime).Seconds())),
 		StartedAt:     timestamppb.New(r.startTime),
 	}
 }
@@ -116,4 +116,6 @@ func (r *ServerMonitorRepo) hostInfo() *serverMonitorV1.HostInfo {
 func strPtr(s string) *string { return &s }
 func boolPtr(b bool) *bool    { return &b }
 func u32Ptr(v uint32) *uint32 { return &v }
-func u64Ptr(v uint64) *uint64 { return &v }
+func u64Ptr(v int64) *int64 { return &v }
+
+func i64Ptr(v int64) *int64 { return &v }

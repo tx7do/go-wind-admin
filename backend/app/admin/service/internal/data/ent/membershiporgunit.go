@@ -17,7 +17,7 @@ type MembershipOrgUnit struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -25,23 +25,23 @@ type MembershipOrgUnit struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint64 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint64 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint64 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint64 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
 	// membership ID
-	MembershipID *uint64 `json:"membership_id,omitempty"`
+	MembershipID *int64 `json:"membership_id,omitempty"`
 	// 组织单元 ID
-	OrgUnitID *uint64 `json:"org_unit_id,omitempty"`
+	OrgUnitID *int64 `json:"org_unit_id,omitempty"`
 	// 岗位 ID（可选，冗余）
-	PositionID *uint64 `json:"position_id,omitempty"`
+	PositionID *int64 `json:"position_id,omitempty"`
 	// 角色 ID（可选，冗余）
-	RoleID *uint64 `json:"role_id,omitempty"`
+	RoleID *int64 `json:"role_id,omitempty"`
 	// 生效时间（UTC）
 	StartAt *time.Time `json:"start_at,omitempty"`
 	// 结束时间（UTC）
@@ -49,7 +49,7 @@ type MembershipOrgUnit struct {
 	// 分配时间（UTC）
 	AssignedAt *time.Time `json:"assigned_at,omitempty"`
 	// 分配者用户 ID
-	AssignedBy *uint64 `json:"assigned_by,omitempty"`
+	AssignedBy *int64 `json:"assigned_by,omitempty"`
 	// 是否为主所属
 	IsPrimary *bool `json:"is_primary,omitempty"`
 	// 关联状态
@@ -90,7 +90,7 @@ func (_m *MembershipOrgUnit) assignValues(columns []string, values []any) error 
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case membershiporgunit.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -116,29 +116,29 @@ func (_m *MembershipOrgUnit) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint64)
-				*_m.CreatedBy = uint64(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case membershiporgunit.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint64)
-				*_m.UpdatedBy = uint64(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case membershiporgunit.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint64)
-				*_m.DeletedBy = uint64(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case membershiporgunit.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint64)
-				*_m.TenantID = uint64(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case membershiporgunit.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -151,29 +151,29 @@ func (_m *MembershipOrgUnit) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field membership_id", values[i])
 			} else if value.Valid {
-				_m.MembershipID = new(uint64)
-				*_m.MembershipID = uint64(value.Int64)
+				_m.MembershipID = new(int64)
+				*_m.MembershipID = value.Int64
 			}
 		case membershiporgunit.FieldOrgUnitID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field org_unit_id", values[i])
 			} else if value.Valid {
-				_m.OrgUnitID = new(uint64)
-				*_m.OrgUnitID = uint64(value.Int64)
+				_m.OrgUnitID = new(int64)
+				*_m.OrgUnitID = value.Int64
 			}
 		case membershiporgunit.FieldPositionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field position_id", values[i])
 			} else if value.Valid {
-				_m.PositionID = new(uint64)
-				*_m.PositionID = uint64(value.Int64)
+				_m.PositionID = new(int64)
+				*_m.PositionID = value.Int64
 			}
 		case membershiporgunit.FieldRoleID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field role_id", values[i])
 			} else if value.Valid {
-				_m.RoleID = new(uint64)
-				*_m.RoleID = uint64(value.Int64)
+				_m.RoleID = new(int64)
+				*_m.RoleID = value.Int64
 			}
 		case membershiporgunit.FieldStartAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -200,8 +200,8 @@ func (_m *MembershipOrgUnit) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field assigned_by", values[i])
 			} else if value.Valid {
-				_m.AssignedBy = new(uint64)
-				*_m.AssignedBy = uint64(value.Int64)
+				_m.AssignedBy = new(int64)
+				*_m.AssignedBy = value.Int64
 			}
 		case membershiporgunit.FieldIsPrimary:
 			if value, ok := values[i].(*sql.NullBool); !ok {

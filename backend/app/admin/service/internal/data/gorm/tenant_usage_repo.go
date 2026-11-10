@@ -27,11 +27,11 @@ func NewTenantUsageRepo(ctx *bootstrap.Context) *TenantUsageRepo {
 	}
 }
 
-func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint64) (*identityV1.TenantUsage, error) {
+func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId int64) (*identityV1.TenantUsage, error) {
 	return nil, identityV1.ErrorInternalServerError("gorm scaffold: GetUsage not implemented — ent 4-table aggregation + Plan→Quotas edge chain has no go-crud/gorm primitive; see data/tenant_usage_repo.go")
 }
 
-func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint64) error {
+func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId int64) error {
 	return identityV1.ErrorInternalServerError("gorm scaffold: CleanupTenantData not implemented — ent 29-table transactional delete + token revocation side-effect has no go-crud/gorm primitive; see data/tenant_usage_repo.go")
 }
 

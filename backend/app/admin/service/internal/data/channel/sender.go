@@ -26,18 +26,18 @@ type SendRequest struct {
 	Content string
 	// ChannelID 显式指定渠道配置（sys_notification_channels.id）；0 表示由渠道策略自选。
 	// 渠道测试必须走显式指定：否则"给渠道 3 发测试邮件"会退化成"给第一个启用的发"。
-	ChannelID uint64
+	ChannelID int64
 	// RecipientUserID 收件用户 ID，0 表示直发模式（只有 Target，不知道是谁）。
 	// INTERNAL 渠道必填：站内信没有"地址"这种独立目标，Target 只是它的字符串形式。
-	RecipientUserID uint64
+	RecipientUserID int64
 	// OperatorUserID 触发这次投递的操作人，0 表示系统发起。
 	// 台账的 created_by 由 NotificationService 直接取请求字段，这里带进来是给
 	// "渠道自己还要落业务行"的实现用的（站内信要把发送人写进收件记录的 created_by）。
-	OperatorUserID uint64
+	OperatorUserID int64
 	// RelatedID 产生本次投递的业务对象主键，含义由事件类型决定
 	// （INTERNAL_MESSAGE → sys_internal_messages.id）。渠道自己用不上，
 	// 但站内信必须靠它知道往哪个消息本体上挂收件行。
-	RelatedID uint64
+	RelatedID int64
 	// EventType 这次投递属于哪个业务事件。SMTP 用不上它（主题与正文已经是这个事件的），
 	// WEBHOOK 必须带上：出站 JSON 是对端唯一的判据，而模板渲染排在 P3，
 	// 正文里此刻没有任何东西说明"这是找回密码还是换绑验证码"。
@@ -53,7 +53,7 @@ type SendRequest struct {
 // SendReceipt 渠道回执。
 type SendReceipt struct {
 	// ChannelID 实际使用的渠道配置 ID——台账要能回答"这条到底走的哪个 SMTP 账号"。
-	ChannelID uint64
+	ChannelID int64
 
 	// ProviderID 服务商侧的消息/请求 ID（阿里云 RequestId、腾讯云 SerialNo 等），
 	// 拿得到就带——落台账 provider_id 列，方便对账。多数渠道没有就留空。
@@ -96,7 +96,7 @@ func stripNotifySentinel(err error) string {
 type Prechecker interface {
 	// Precheck 校验 channelID 指向的配置可用；0 表示由渠道策略自选。
 	// 返回的 error 语义与 Send 一致：配置类错误必须包成 ErrChannelNotConfigured。
-	Precheck(ctx context.Context, channelID uint64) error
+	Precheck(ctx context.Context, channelID int64) error
 }
 
 // Registry 渠道注册表。路由指向未注册的渠道时 Notifier 记 FAILED 并报错（代码 bug，不是配置问题）。

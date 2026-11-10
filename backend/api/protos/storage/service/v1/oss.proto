@@ -131,7 +131,7 @@ message GetUploadPresignedUrlResponse {
 
 message GetDownloadInfoRequest {
   oneof selector {
-    uint64 file_id = 1 [
+    int64 file_id = 1 [
       json_name = "fileId",
       (gnostic.openapi.v3.property) = { description: "服务端内部文件 ID" }
     ]; // 服务端内部文件 ID

@@ -92,7 +92,7 @@ var (
 	// DefaultAttempts holds the default value on creation for the "attempts" field.
 	DefaultAttempts uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // EventType defines the type for the "event_type" enum field.

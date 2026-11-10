@@ -68,7 +68,7 @@ func (r *DictEntryI18nRepo) init() {
 // 之前的 OnConflictColumns 写法在 SQLite/PG 下整条被拒、从未生效。
 // 改为查得则更新、查无则插入（经 schema Policy 的 Update/UpdateOne 租户过滤）。
 func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
-	tenantID, operatorID, entryID uint64,
+	tenantID, operatorID, entryID int64,
 	langCode string, data *dictV1.DictEntryI18N,
 ) error {
 	now := time.Now()
@@ -104,7 +104,7 @@ func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
 }
 
 // ListByEntryID 根据字典项ID查询多语言数据列表
-func (r *DictEntryI18nRepo) ListByEntryID(ctx context.Context, entryID uint64) (map[string]*dictV1.DictEntryI18N, error) {
+func (r *DictEntryI18nRepo) ListByEntryID(ctx context.Context, entryID int64) (map[string]*dictV1.DictEntryI18N, error) {
 
 	entities, err := r.entClient.Client().DictEntryI18n.Query().
 		WithDictEntry(func(query *ent.DictEntryQuery) {
@@ -130,7 +130,7 @@ func (r *DictEntryI18nRepo) ListByEntryID(ctx context.Context, entryID uint64) (
 }
 
 // GetByEntryIDAndLangCode 根据字典项ID和语言代码查询多语言数据
-func (r *DictEntryI18nRepo) GetByEntryIDAndLangCode(ctx context.Context, entryID uint64, langCode string) (*dictV1.DictEntryI18N, error) {
+func (r *DictEntryI18nRepo) GetByEntryIDAndLangCode(ctx context.Context, entryID int64, langCode string) (*dictV1.DictEntryI18N, error) {
 	entity, err := r.entClient.Client().DictEntryI18n.Query().
 		WithDictEntry(func(query *ent.DictEntryQuery) {
 			query.Where(dictentry.IDEQ(entryID))
@@ -155,7 +155,7 @@ func (r *DictEntryI18nRepo) Truncate(ctx context.Context) error {
 }
 
 // CleanByEntryID 根据字典项ID清理多语言数据
-func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx *ent.Tx, entryID uint64) error {
+func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx *ent.Tx, entryID int64) error {
 	_, err := tx.DictEntryI18n.Delete().
 		Where(dictentryi18n.HasDictEntryWith(dictentry.IDEQ(entryID))).
 		Exec(ctx)
@@ -163,7 +163,7 @@ func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx *ent.Tx, entr
 }
 
 // CleanByEntryIDs 根据字典项ID清理多语言数据
-func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []uint64) error {
+func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []int64) error {
 	_, err := r.entClient.Client().DictEntryI18n.Delete().
 		Where(dictentryi18n.HasDictEntryWith(dictentry.IDIn(entryIDs...))).
 		Exec(ctx)
@@ -174,8 +174,8 @@ func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []uint
 func (r *DictEntryI18nRepo) ReplaceByEntryID(
 	ctx context.Context,
 	tx *ent.Tx,
-	tenantID, operatorID uint64,
-	entryID uint64, items map[string]*dictV1.DictEntryI18N,
+	tenantID, operatorID int64,
+	entryID int64, items map[string]*dictV1.DictEntryI18N,
 ) (err error) {
 	if err = r.CleanByEntryID(ctx, tx, entryID); err != nil {
 		return err

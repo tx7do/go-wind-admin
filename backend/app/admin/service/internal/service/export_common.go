@@ -162,7 +162,7 @@ func authorizeExportRequest(
 		ctx = viewer.WithSystemContext(ctx)
 	} else {
 		ctx = viewer.WithContext(ctx, viewer.NewUserContext(
-			uint64(operator.GetUserId()), uint64(operator.GetTenantId()), 0, "", nil,
+			int64(operator.GetUserId()), int64(operator.GetTenantId()), 0, "", nil,
 		))
 	}
 	return ctx, operator, true

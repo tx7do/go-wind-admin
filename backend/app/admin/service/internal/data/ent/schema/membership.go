@@ -33,20 +33,20 @@ func (Membership) Annotations() []schema.Annotation {
 // Fields of the Membership.
 func (Membership) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("user_id").
+		field.Int64("user_id").
 			Comment("用户ID").
 			Nillable(),
 
 		// 冗余单一场景字段（互斥：与独立关联表二选一）
-		field.Uint64("org_unit_id").
+		field.Int64("org_unit_id").
 			Optional().
 			Nillable().
 			Comment("组织架构ID（单一，冗余/互斥）"),
-		field.Uint64("position_id").
+		field.Int64("position_id").
 			Optional().
 			Nillable().
 			Comment("职位ID（单一，冗余/互斥）"),
-		field.Uint64("role_id").
+		field.Int64("role_id").
 			Optional().
 			Nillable().
 			Comment("角色ID（单一，冗余/互斥）"),
@@ -70,7 +70,7 @@ func (Membership) Fields() []ent.Field {
 			Comment("分配时间（UTC）").
 			Optional().
 			Nillable(),
-		field.Uint64("assigned_by").
+		field.Int64("assigned_by").
 			Comment("分配者用户ID").
 			Optional().
 			Nillable(),
@@ -102,7 +102,7 @@ func (Membership) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 		mixin.Remark{},
 	}
 }

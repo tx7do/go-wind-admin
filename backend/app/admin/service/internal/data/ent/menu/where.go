@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.Menu {
+func ID(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.Menu {
+func IDEQ(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.Menu {
+func IDNEQ(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.Menu {
+func IDIn(ids ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.Menu {
+func IDNotIn(ids ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.Menu {
+func IDGT(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.Menu {
+func IDGTE(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.Menu {
+func IDLT(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.Menu {
+func IDLTE(id int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,22 +71,22 @@ func DeletedAt(v time.Time) predicate.Menu {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.Menu {
+func CreatedBy(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.Menu {
+func UpdatedBy(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.Menu {
+func DeletedBy(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint64) predicate.Menu {
+func ParentID(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldParentID, v))
 }
 
@@ -271,42 +271,42 @@ func DeletedAtNotNil() predicate.Menu {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.Menu {
+func CreatedByEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.Menu {
+func CreatedByNEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.Menu {
+func CreatedByIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.Menu {
+func CreatedByNotIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.Menu {
+func CreatedByGT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.Menu {
+func CreatedByGTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.Menu {
+func CreatedByLT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.Menu {
+func CreatedByLTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -321,42 +321,42 @@ func CreatedByNotNil() predicate.Menu {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.Menu {
+func UpdatedByEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.Menu {
+func UpdatedByNEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.Menu {
+func UpdatedByIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.Menu {
+func UpdatedByNotIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.Menu {
+func UpdatedByGT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.Menu {
+func UpdatedByGTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.Menu {
+func UpdatedByLT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.Menu {
+func UpdatedByLTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -371,42 +371,42 @@ func UpdatedByNotNil() predicate.Menu {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.Menu {
+func DeletedByEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.Menu {
+func DeletedByNEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.Menu {
+func DeletedByIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.Menu {
+func DeletedByNotIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.Menu {
+func DeletedByGT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.Menu {
+func DeletedByGTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.Menu {
+func DeletedByLT(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.Menu {
+func DeletedByLTE(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -421,22 +421,22 @@ func DeletedByNotNil() predicate.Menu {
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint64) predicate.Menu {
+func ParentIDEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint64) predicate.Menu {
+func ParentIDNEQ(v int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint64) predicate.Menu {
+func ParentIDIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint64) predicate.Menu {
+func ParentIDNotIn(vs ...int64) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldParentID, vs...))
 }
 

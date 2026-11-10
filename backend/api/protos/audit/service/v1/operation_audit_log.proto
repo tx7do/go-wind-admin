@@ -43,12 +43,12 @@ message OperationAuditLog {
     OTHER = 100;      // 其他
   }
 
-  optional uint64 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
   ]; // 用户操作审计日志ID
 
-  optional uint64 tenant_id = 2 [
+  optional int64 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -58,7 +58,7 @@ message OperationAuditLog {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ]; // 租户名称
 
-  optional uint64 user_id = 4 [
+  optional int64 user_id = 4 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
   ]; // 用户ID
@@ -152,13 +152,13 @@ message OperationAuditLog {
 // 查询操作审计日志列表 - 回应
 message ListOperationAuditLogResponse {
   repeated OperationAuditLog items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询操作审计日志详情 - 请求
 message GetOperationAuditLogRequest {
   oneof query_by {
-    uint64 id = 1 [
+    int64 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID

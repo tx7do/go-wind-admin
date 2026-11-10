@@ -167,7 +167,7 @@ func TestPermissionService_syncWithOpenAPI_EmptyPaths(t *testing.T) {
 	require.Greater(t, cnt, 0, "SyncApis 应从内嵌文档播种接口表")
 	listResp, lerr := apiSvc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, lerr)
-	require.Equal(t, uint64(cnt), listResp.GetTotal(), "List 应返回同步后的全量行")
+	require.Equal(t, int64(cnt), listResp.GetTotal(), "List 应返回同步后的全量行")
 	require.Len(t, listResp.GetItems(), cnt)
 }
 
@@ -219,7 +219,7 @@ func TestPermissionService_SyncPermissions_MenuAndApiDerived(t *testing.T) {
 	groups, err := client.PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, groups, 2, "应恰好出现未分类组与目录菜单派生组")
-	modules := map[string]uint64{}
+	modules := map[string]int64{}
 	var uncategorizedName string
 	for _, g := range groups {
 		require.NotNil(t, g.Module)
@@ -285,7 +285,7 @@ func TestPermissionService_SyncPermissions_DuplicateCodeDeduped(t *testing.T) {
 	}))
 	rows, err := client.Menu.Query().All(ctx)
 	require.NoError(t, err)
-	var catalogID uint64
+	var catalogID int64
 	for _, r := range rows {
 		if r.Path != nil && *r.Path == "/opm" {
 			catalogID = r.ID
@@ -342,13 +342,13 @@ func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 	tenantCtx := auth.NewContext(
 		crudViewer.WithContext(ctx, crudViewer.NewUserContext(8, 42, 0, "", nil)),
 		&authenticationV1.UserTokenPayload{
-			UserId: 8, TenantId: trans.Ptr(uint64(42)), Roles: []string{"perm_svc_nonexistent_role"},
+			UserId: 8, TenantId: trans.Ptr(int64(42)), Roles: []string{"perm_svc_nonexistent_role"},
 		})
 
 	// 平台操作人：全量可见 + 组名富集（组行存在时每条带组引用的权限都回填组名）
 	listResp, err := svc.List(platformCtx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(len(constants.DefaultPermissions)), listResp.GetTotal(),
+	require.Equal(t, int64(len(constants.DefaultPermissions)), listResp.GetTotal(),
 		"平台操作人应看到全部播种的默认权限")
 	require.Len(t, listResp.GetItems(), len(constants.DefaultPermissions))
 	for _, item := range listResp.GetItems() {
@@ -366,7 +366,7 @@ func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 	// 平台查看器 + 租户令牌声明（查看器与令牌租户不一致）：
 	// 按码查角色 ID 的租户闸门按查看器判定，拒绝平台上下文的按码查询
 	mismatchCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
-		UserId: 8, TenantId: trans.Ptr(uint64(42)), Roles: []string{"perm_svc_nonexistent_role"},
+		UserId: 8, TenantId: trans.Ptr(int64(42)), Roles: []string{"perm_svc_nonexistent_role"},
 	})
 	_, err = svc.List(mismatchCtx, &paginationV1.PagingRequest{})
 	require.Error(t, err, "平台查看器下的按码查角色 ID 应被租户闸门拒绝")
@@ -415,7 +415,7 @@ func TestPermissionService_CreateUpdateDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
 	rowID := rows[0].ID
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
 	require.Equal(t, "perm_svc_test_code", *rows[0].Code, "代码应按请求落库")
 
 	// 单字段掩码更新：description 更新，name 保持
@@ -429,7 +429,7 @@ func TestPermissionService_CreateUpdateDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "更新后的描述", *after.Description, "掩码内字段 description 应被更新")
 	require.Equal(t, "PermSvc 测试权限", *after.Name, "掩码外字段 name 应保持原值")
-	require.Equal(t, uint64(7), *after.UpdatedBy, "更新行应盖入操作人 ID")
+	require.Equal(t, int64(7), *after.UpdatedBy, "更新行应盖入操作人 ID")
 
 	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &permissionV1.DeletePermissionRequest{
 		QueryBy: &permissionV1.DeletePermissionRequest_Id{Id: rowID},
@@ -485,7 +485,7 @@ func TestPermissionService_SyncPermissions_MergeKeepsIDsAndRoleBindings(t *testi
 	roleRow, err := client.Role.Create().
 		SetName("同步保号角色").
 		SetCode("SYNC_MERGE_ROLE").
-		SetNillableTenantID(trans.Ptr(uint64(42))).
+		SetNillableTenantID(trans.Ptr(int64(42))).
 		Save(ctx)
 	require.NoError(t, err)
 
@@ -626,7 +626,7 @@ func TestPermissionService_SyncPermissions_DisabledMenuKeepsPermission(t *testin
 	roleRow, err := client.Role.Create().
 		SetName("停用保活角色").
 		SetCode("KEEP_ALIVE_ROLE").
-		SetNillableTenantID(trans.Ptr(uint64(42))).
+		SetNillableTenantID(trans.Ptr(int64(42))).
 		Save(ctx)
 	require.NoError(t, err)
 	require.NoError(t, client.RolePermission.Create().
@@ -723,7 +723,7 @@ func TestPermissionService_SyncPermissions_MergeSemantics(t *testing.T) {
 	sysRows, err := client.Permission.Query().Where(permission.CodeHasPrefix("sys:")).All(ctx)
 	require.NoError(t, err)
 	require.NotEmpty(t, sysRows, "系统种子权限应已由 createDefaultPermissions 播种")
-	sysIDs := map[uint64]string{}
+	sysIDs := map[int64]string{}
 	for _, r := range sysRows {
 		sysIDs[r.ID] = *r.Code
 	}
@@ -746,8 +746,8 @@ func TestPermissionService_SyncPermissions_MergeSemantics(t *testing.T) {
 
 	// 菜单绑定替换语义：permB 挂菜单绑定 → 删菜单 B → 三轮同步 → B 权限行删除
 	// 且其菜单绑定随行清理（不留旧快照）
-	require.NoError(t, svc.permissionRepo.AssignSyncBindings(ctx, permB.ID, nil, []uint64{menuB.ID}))
-	menuBindBefore, err := svc.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, []uint64{permB.ID})
+	require.NoError(t, svc.permissionRepo.AssignSyncBindings(ctx, permB.ID, nil, []int64{menuB.ID}))
+	menuBindBefore, err := svc.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, []int64{permB.ID})
 	require.NoError(t, err)
 	require.Len(t, menuBindBefore, 1, "前置：B 应已挂菜单绑定")
 
@@ -757,14 +757,14 @@ func TestPermissionService_SyncPermissions_MergeSemantics(t *testing.T) {
 	bLeft, err := client.Permission.Query().Where(permission.CodeEQ(codeB)).Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, bLeft, "派生集消失的权限应被删除")
-	menuBindAfter, err := svc.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, []uint64{permB.ID})
+	menuBindAfter, err := svc.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, []int64{permB.ID})
 	require.NoError(t, err)
 	require.Empty(t, menuBindAfter, "被删权限的菜单绑定应随级联清理，不留旧快照")
 
 	// 幂等三轮：同派生集（只剩 A）再同步，行数与 id↔code 映射稳定
 	rows3, err := client.Permission.Query().All(ctx)
 	require.NoError(t, err)
-	idsBefore := map[uint64]string{}
+	idsBefore := map[int64]string{}
 	for _, r := range rows3 {
 		idsBefore[r.ID] = *r.Code
 	}

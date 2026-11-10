@@ -66,7 +66,7 @@ func seedOnlineSession(
 	tokenCache *data.UserTokenCache,
 	ctx context.Context,
 	ct authenticationV1.ClientType,
-	uid uint64,
+	uid int64,
 	jti, username, ip string,
 	loginAt int64,
 ) {
@@ -104,7 +104,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 	// 全量：按登录时间倒序（3000 → 2000 → 1000），字段按元数据映射。
 	all, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), all.GetTotal())
+	require.Equal(t, int64(3), all.GetTotal())
 	require.Len(t, all.GetItems(), 3, "缺省分页应返回前 20 条，此处共 3 条")
 	require.Equal(t, "jti-101b", all.GetItems()[0].GetJti(), "最新登录（3000）应排首")
 	require.Equal(t, "jti-102", all.GetItems()[1].GetJti(), "次新登录（2000）应排第二")
@@ -123,7 +123,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 		PageSize: trans.Ptr(uint32(2)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), page1.GetTotal(), "总数应保持全量")
+	require.Equal(t, int64(3), page1.GetTotal(), "总数应保持全量")
 	require.Len(t, page1.GetItems(), 2)
 	require.Equal(t, "jti-101b", page1.GetItems()[0].GetJti())
 	require.Equal(t, "jti-102", page1.GetItems()[1].GetJti())
@@ -143,7 +143,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 		PageSize: trans.Ptr(uint32(2)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), page3.GetTotal())
+	require.Equal(t, int64(3), page3.GetTotal())
 	require.Empty(t, page3.GetItems(), "越界页条目应清空")
 }
 
@@ -160,7 +160,7 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 		Keyword: trans.Ptr("user-201"),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), byUser.GetTotal(), "按用户名关键字应命中对应用户的会话")
+	require.Equal(t, int64(1), byUser.GetTotal(), "按用户名关键字应命中对应用户的会话")
 	require.Len(t, byUser.GetItems(), 1)
 	require.Equal(t, "jti-201a", byUser.GetItems()[0].GetJti())
 
@@ -168,7 +168,7 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 		Keyword: trans.Ptr("10.4.4.4"),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), byIp.GetTotal(), "按 IP 关键字应命中对应会话")
+	require.Equal(t, int64(1), byIp.GetTotal(), "按 IP 关键字应命中对应会话")
 	require.Len(t, byIp.GetItems(), 1)
 	require.Equal(t, "jti-202", byIp.GetItems()[0].GetJti())
 
@@ -176,13 +176,13 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 		Keyword: trans.Ptr("   "),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), byBlank.GetTotal(), "纯空白关键字等效无过滤")
+	require.Equal(t, int64(2), byBlank.GetTotal(), "纯空白关键字等效无过滤")
 
 	byMiss, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Keyword: trans.Ptr("nobody-here"),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), byMiss.GetTotal(), "未命中的关键字应清空结果")
+	require.Equal(t, int64(0), byMiss.GetTotal(), "未命中的关键字应清空结果")
 	require.Empty(t, byMiss.GetItems())
 }
 
@@ -203,7 +203,7 @@ func TestOnlineSessionServiceSqlite_ListMySessionsCurrentFlag(t *testing.T) {
 
 	my, err := svc.ListMyOnlineSession(opCtx, &onlineSessionV1.ListMyOnlineSessionRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), my.GetTotal(), "本人视图只应返回本人会话")
+	require.Equal(t, int64(2), my.GetTotal(), "本人视图只应返回本人会话")
 	require.Len(t, my.GetItems(), 2)
 	require.Equal(t, "jti-301b", my.GetItems()[0].GetJti(), "本人会话按登录时间倒序，最新（3000）应排首")
 	require.Equal(t, "jti-301a", my.GetItems()[1].GetJti())
@@ -214,7 +214,7 @@ func TestOnlineSessionServiceSqlite_ListMySessionsCurrentFlag(t *testing.T) {
 	noJtiCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 301})
 	myNoJti, err := svc.ListMyOnlineSession(noJtiCtx, &onlineSessionV1.ListMyOnlineSessionRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), myNoJti.GetTotal())
+	require.Equal(t, int64(2), myNoJti.GetTotal())
 	for _, item := range myNoJti.GetItems() {
 		require.False(t, item.GetCurrent(), "操作人未声明 jti 时不应有任何 current 标记")
 	}
@@ -298,7 +298,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: uid})
 	_, err := svc.ForceLogoutSession(plainCtx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint64(uid)),
+		UserId:     trans.Ptr(int64(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.Error(t, err, "非租户/平台管理员的强踢应被拒绝")
@@ -307,7 +307,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	adminCtx := onlineAdminOpCtx(ctx)
 	resp, err := svc.ForceLogoutSession(adminCtx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint64(uid)),
+		UserId:     trans.Ptr(int64(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.NoError(t, err, "强制下线已存在会话应成功")
@@ -321,7 +321,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	// 入参守卫：userId/jti 缺失。
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint64(0)),
+		UserId:     trans.Ptr(int64(0)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.Error(t, err, "userId=0 应被拒绝")
@@ -329,7 +329,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_admin.Enum(),
-		UserId:     trans.Ptr(uint64(uid)),
+		UserId:     trans.Ptr(int64(uid)),
 		Jti:        trans.Ptr(""),
 	})
 	require.Error(t, err, "空 jti 应被拒绝")

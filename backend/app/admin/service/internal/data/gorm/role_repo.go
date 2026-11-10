@@ -84,7 +84,7 @@ func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 	return int(count), nil
 }
 
-func (r *RoleRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *RoleRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
@@ -95,7 +95,7 @@ func (r *RoleRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
 	return exist, nil
 }
 
-func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint64) ([]string, error) {
+func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []int64) ([]string, error) {
 	if len(ids) == 0 {
 		return []string{}, nil
 	}
@@ -116,9 +116,9 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint64) ([]
 	return codes, nil
 }
 
-func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) ([]uint64, error) {
+func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) ([]int64, error) {
 	if len(codes) == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	var entities []*models.Role
@@ -127,7 +127,7 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 		return nil, permissionV1.ErrorInternalServerError("query role ids failed")
 	}
 
-	ids := make([]uint64, 0, len(entities))
+	ids := make([]int64, 0, len(entities))
 	for _, entity := range entities {
 		ids = append(ids, entity.ID)
 	}
@@ -145,7 +145,7 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListRolesByRoleCodes not implemented — ent fillPermissionIDs cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint64) ([]*permissionV1.Role, error) {
+func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []int64) ([]*permissionV1.Role, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListRolesByRoleIds not implemented — ent fillPermissionIDs cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
@@ -157,7 +157,7 @@ func (r *RoleRepo) GetTemplateRole(ctx context.Context, templateCode string) (*p
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetTemplateRole not implemented — ent fillPermissionIDs cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx any, tenantID uint64, operatorID uint64) error {
+func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx any, tenantID int64, operatorID int64) error {
 	return permissionV1.ErrorInternalServerError("gorm scaffold: CreateTenantRoleFromTemplate not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
@@ -177,26 +177,26 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 	return permissionV1.ErrorInternalServerError("gorm scaffold: Delete not implemented — ent *ent.Tx cross-repo transaction has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []uint64) ([]uint64, error) {
+func (r *RoleRepo) ListPermissionIDsByRoleIDs(ctx context.Context, roleIDs []int64) ([]int64, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListPermissionIDsByRoleIDs not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, codes []string) ([]uint64, error) {
+func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, codes []string) ([]int64, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListPermissionIDsByRoleCodes not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uint64) ([]Endpoint, error) {
+func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID int64) ([]Endpoint, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionApiEndpoints not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID uint64) ([]string, error) {
+func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID int64) ([]string, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionMenuFullPaths not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint64) ([]string, error) {
+func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []int64) ([]string, error) {
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolesPermissionMenuFullPaths not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint64) (bool, error) {
+func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID int64) (bool, error) {
 	return false, permissionV1.ErrorInternalServerError("gorm scaffold: CanAssignRole not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }

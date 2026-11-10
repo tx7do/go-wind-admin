@@ -43,7 +43,7 @@ func (s *SmsSender) Channel() notificationV1.Channel {
 //
 // 与 WebhookSender.Precheck 同一条理由：一次性验证码躺在队列里等三次重试才失败，
 // 和压根没配渠道一样是没发出去，但台账会记成 FAILED 且验证码已经过期。
-func (s *SmsSender) Precheck(ctx context.Context, channelID uint64) error {
+func (s *SmsSender) Precheck(ctx context.Context, channelID int64) error {
 	account, err := s.pickAccount(ctx, channelID)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (s *SmsSender) Send(ctx context.Context, req *SendRequest) (*SendReceipt, e
 
 // wrapSendFailure 库错误 → 台账文案：目标不合法（手机号归一失败）等库层配置类错误
 // 转译成本包哨兵（SKIPPED：一次都没碰对端）；其余按"拨过号被拒"（FAILED）带出渠道 ID。
-func (s *SmsSender) wrapSendFailure(accountID uint64, err error) error {
+func (s *SmsSender) wrapSendFailure(accountID int64, err error) error {
 	if errors.Is(err, notify.ErrNotConfigured) {
 		return fmt.Errorf("%w: channel [%d] %v", ErrChannelNotConfigured, accountID, stripNotifySentinel(err))
 	}
@@ -125,7 +125,7 @@ func smsConfigOf(account *data.SmsAccount) sms.Config {
 // pickAccount 解析实际使用的短信账号：显式 ID 优先，并校验类型与启用状态。
 // 与 EmailSender.pickAccount 同一条判据：一切"渠道用不了"都包成 ErrChannelNotConfigured，
 // 服务层据此把台账记 SKIPPED（没拨过号）而不是 FAILED（拨过号被拒）。
-func (s *SmsSender) pickAccount(ctx context.Context, channelID uint64) (*data.SmsAccount, error) {
+func (s *SmsSender) pickAccount(ctx context.Context, channelID int64) (*data.SmsAccount, error) {
 	if channelID == 0 {
 		account, err := s.channel.GetFirstEnabledSmsChannel(ctx)
 		if err != nil {

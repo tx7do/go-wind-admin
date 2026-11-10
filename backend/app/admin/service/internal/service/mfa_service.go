@@ -518,13 +518,13 @@ func isASCII(s string) bool {
 	return s != ""
 }
 
-// parseFactorId 将 proto 返回的字符串形式 credential_id 解析为 uint64 主键。
-func parseFactorId(s string) (uint64, error) {
+// parseFactorId 将 proto 返回的字符串形式 credential_id 解析为 int64 主键。
+func parseFactorId(s string) (int64, error) {
 	v, err := strconv.ParseUint(s, 10, 32)
 	if err != nil {
 		return 0, err
 	}
-	return uint64(v), nil
+	return int64(v), nil
 }
 
 // totpQrDataUri 将 otp.Key 的二维码图渲染为 PNG data URI，供前端 <img> 展示。

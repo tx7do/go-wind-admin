@@ -90,7 +90,7 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 			}
 
 			var data = authorizer.PermissionData{
-				Domain: strconv.FormatUint(uint64(role.GetTenantId()), 10),
+				Domain: strconv.FormatInt(role.GetTenantId(), 10),
 				Path:   e.Path,
 				Method: e.Method,
 			}

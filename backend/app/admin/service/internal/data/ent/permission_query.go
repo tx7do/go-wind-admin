@@ -84,8 +84,8 @@ func (_q *PermissionQuery) FirstX(ctx context.Context) *Permission {
 
 // FirstID returns the first Permission ID from the query.
 // Returns a *NotFoundError when no Permission ID was found.
-func (_q *PermissionQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PermissionQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func (_q *PermissionQuery) FirstID(ctx context.Context) (id uint64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *PermissionQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *PermissionQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -135,8 +135,8 @@ func (_q *PermissionQuery) OnlyX(ctx context.Context) *Permission {
 // OnlyID is like Only, but returns the only Permission ID in the query.
 // Returns a *NotSingularError when more than one Permission ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *PermissionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *PermissionQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -152,7 +152,7 @@ func (_q *PermissionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *PermissionQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *PermissionQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -180,7 +180,7 @@ func (_q *PermissionQuery) AllX(ctx context.Context) []*Permission {
 }
 
 // IDs executes the query and returns a list of Permission IDs.
-func (_q *PermissionQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *PermissionQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -192,7 +192,7 @@ func (_q *PermissionQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *PermissionQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *PermissionQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -374,7 +374,7 @@ func (_q *PermissionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *PermissionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

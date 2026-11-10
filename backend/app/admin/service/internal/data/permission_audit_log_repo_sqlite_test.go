@@ -44,7 +44,7 @@ func TestPermissionAuditLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{
 		Data: &auditV1.PermissionAuditLog{
-			OperatorId:   trans.Ptr(uint64(11)),
+			OperatorId:   trans.Ptr(int64(11)),
 			OperatorName: trans.Ptr("sqlite_perm_op"),
 			TargetType:   trans.Ptr("role"),
 			TargetId:     trans.Ptr("3"),
@@ -65,7 +65,7 @@ func TestPermissionAuditLogRepoSqlite_Create(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "sys_permission_audit_logs 应有 1 条记录")
 	row := rows[0]
-	require.Equal(t, uint64(11), *row.OperatorID, "operator_id 应按请求落库")
+	require.Equal(t, int64(11), *row.OperatorID, "operator_id 应按请求落库")
 	require.Equal(t, "sqlite_perm_op", *row.OperatorName, "operator_name 应按请求落库")
 	require.Equal(t, "role", *row.TargetType, "target_type 应按请求落库")
 	require.Equal(t, "3", *row.TargetID, "target_id 应按请求落库")
@@ -150,7 +150,7 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -168,7 +168,7 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetOperatorName(), "MARKERIOTA", "命中行应为含标记的那条")
 
@@ -187,7 +187,7 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), byID.Total, "id 等值过滤应只统计目标行")
+	require.Equal(t, int64(1), byID.Total, "id 等值过滤应只统计目标行")
 	require.Len(t, byID.Items, 1, "id 等值过滤应只返回目标行")
 	require.Equal(t, firstID, byID.Items[0].GetId())
 
@@ -196,7 +196,7 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page1.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page1.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page1.Items, 1, "pageSize=1 第一页应只含 1 行")
 
 	page2, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -204,10 +204,10 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只只含 1 行")
-	require.ElementsMatch(t, []uint64{firstID, secondID},
-		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []int64{firstID, secondID},
+		[]int64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestPermissionAuditLogRepoSqlite_Get 验证 Get 按主键的命中与未命中。

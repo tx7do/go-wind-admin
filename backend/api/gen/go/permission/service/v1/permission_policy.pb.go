@@ -129,18 +129,18 @@ func (PermissionPolicy_Status) EnumDescriptor() ([]byte, []int) {
 // 权限策略
 type PermissionPolicy struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
-	Id            *uint64                        `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                                  // 权限策略ID
-	PermissionId  *uint64                        `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`                                                          // 包含的权限点ID
+	Id            *int64                         `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                                  // 权限策略ID
+	PermissionId  *int64                         `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`                                                          // 包含的权限点ID
 	PolicyEngine  *PermissionPolicy_PolicyEngine `protobuf:"varint,3,opt,name=policy_engine,json=policyEngine,proto3,enum=permission.service.v1.PermissionPolicy_PolicyEngine,oneof" json:"policy_engine,omitempty"` // 策略引擎
 	Definition    *string                        `protobuf:"bytes,4,opt,name=definition,proto3,oneof" json:"definition,omitempty"`                                                                                   // 策略定义（动态结构）
 	Version       *uint32                        `protobuf:"varint,5,opt,name=version,proto3,oneof" json:"version,omitempty"`                                                                                        // 策略版本（用于灰度/回滚）
 	EvalOrder     *uint32                        `protobuf:"varint,6,opt,name=eval_order,json=evalOrder,proto3,oneof" json:"eval_order,omitempty"`                                                                   // 评估优先级（越小越先执行）
 	CacheTtl      *uint32                        `protobuf:"varint,7,opt,name=cache_ttl,json=cacheTtl,proto3,oneof" json:"cache_ttl,omitempty"`                                                                      // 结果缓存秒数（0=不缓存）
-	TenantId      *uint64                        `protobuf:"varint,8,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                      // 租户ID
+	TenantId      *int64                         `protobuf:"varint,8,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                      // 租户ID
 	Status        *PermissionPolicy_Status       `protobuf:"varint,9,opt,name=status,proto3,enum=permission.service.v1.PermissionPolicy_Status,oneof" json:"status,omitempty"`                                       // 状态
-	CreatedBy     *uint64                        `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                 // 创建者ID
-	UpdatedBy     *uint64                        `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                 // 更新者ID
-	DeletedBy     *uint64                        `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                                 // 删除者用户ID
+	CreatedBy     *int64                         `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                 // 创建者ID
+	UpdatedBy     *int64                         `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                 // 更新者ID
+	DeletedBy     *int64                         `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                                 // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp         `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                                  // 创建时间
 	UpdatedAt     *timestamppb.Timestamp         `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                                  // 更新时间
 	DeletedAt     *timestamppb.Timestamp         `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                                  // 删除时间
@@ -178,14 +178,14 @@ func (*PermissionPolicy) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_policy_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PermissionPolicy) GetId() uint64 {
+func (x *PermissionPolicy) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *PermissionPolicy) GetPermissionId() uint64 {
+func (x *PermissionPolicy) GetPermissionId() int64 {
 	if x != nil && x.PermissionId != nil {
 		return *x.PermissionId
 	}
@@ -227,7 +227,7 @@ func (x *PermissionPolicy) GetCacheTtl() uint32 {
 	return 0
 }
 
-func (x *PermissionPolicy) GetTenantId() uint64 {
+func (x *PermissionPolicy) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -241,21 +241,21 @@ func (x *PermissionPolicy) GetStatus() PermissionPolicy_Status {
 	return PermissionPolicy_OFF
 }
 
-func (x *PermissionPolicy) GetCreatedBy() uint64 {
+func (x *PermissionPolicy) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *PermissionPolicy) GetUpdatedBy() uint64 {
+func (x *PermissionPolicy) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *PermissionPolicy) GetDeletedBy() uint64 {
+func (x *PermissionPolicy) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -289,8 +289,8 @@ const file_permission_service_v1_permission_policy_proto_rawDesc = "" +
 	"\n" +
 	"-permission/service/v1/permission_policy.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\v\n" +
 	"\x10PermissionPolicy\x12)\n" +
-	"\x02id\x18\x01 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e权限策略IDH\x00R\x02id\x88\x01\x01\x12D\n" +
-	"\rpermission_id\x18\x02 \x01(\x04B\x1a\xbaG\x17\x92\x02\x14包含的权限点IDH\x01R\fpermissionId\x88\x01\x01\x12r\n" +
+	"\x02id\x18\x01 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e权限策略IDH\x00R\x02id\x88\x01\x01\x12D\n" +
+	"\rpermission_id\x18\x02 \x01(\x03B\x1a\xbaG\x17\x92\x02\x14包含的权限点IDH\x01R\fpermissionId\x88\x01\x01\x12r\n" +
 	"\rpolicy_engine\x18\x03 \x01(\x0e24.permission.service.v1.PermissionPolicy.PolicyEngineB\x12\xbaG\x0f\x92\x02\f策略引擎H\x02R\fpolicyEngine\x88\x01\x01\x12I\n" +
 	"\n" +
 	"definition\x18\x04 \x01(\tB$\xbaG!\x92\x02\x1e策略定义（动态结构）H\x03R\n" +
@@ -299,15 +299,15 @@ const file_permission_service_v1_permission_policy_proto_rawDesc = "" +
 	"\n" +
 	"eval_order\x18\x06 \x01(\rB-\xbaG*\x92\x02'评估优先级（越小越先执行）H\x05R\tevalOrder\x88\x01\x01\x12K\n" +
 	"\tcache_ttl\x18\a \x01(\rB)\xbaG&\x92\x02#结果缓存秒数（0=不缓存）H\x06R\bcacheTtl\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\b \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\aR\btenantId\x88\x01\x01\x12Y\n" +
+	"\ttenant_id\x18\b \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\aR\btenantId\x88\x01\x01\x12Y\n" +
 	"\x06status\x18\t \x01(\x0e2..permission.service.v1.PermissionPolicy.StatusB\f\xbaG\t\x92\x02\x06状态H\bR\x06status\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\tR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\tR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\n" +
 	"R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\vR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\vR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\fR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +

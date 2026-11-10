@@ -35,7 +35,7 @@ func newAgentRunTaskServiceForTest(t *testing.T, entClient *entgo.EntClient[*ent
 		log:                          bLogger.NewHelper(bLogger.NopLogger()),
 		internalMessageRecipientRepo: recipientRepo,
 		// 收件行租户打标的数据源：notifyUserId=5 → 租户 7（与冒烟应用归属租户一致）
-		userRepo:                   &internalMessageServiceUserRepoStub{tenantByUserID: map[uint64]uint64{5: 7}},
+		userRepo:                   &internalMessageServiceUserRepoStub{tenantByUserID: map[int64]int64{5: 7}},
 		notificationPreferenceRepo: nil, // 未接线 = 无静音偏好，推送放行（fail-open）
 		internalMessagePublisher:   noopInternalMessagePublisher{},
 	}
@@ -65,7 +65,7 @@ func TestAiAgentRunTask_Sqlite_EndToEnd(t *testing.T) {
 		SetName("定时冒烟-启用").
 		SetNillableGraph(trans.Ptr(agentRunTaskSmokeGraph)).
 		SetEnabled(true).
-		SetNillableTenantID(trans.Ptr(uint64(7))).
+		SetNillableTenantID(trans.Ptr(int64(7))).
 		Save(ctx)
 	require.NoError(t, err)
 	_, err = entClient.Client().AiAgentApp.Create().
@@ -97,7 +97,7 @@ func TestAiAgentRunTask_Sqlite_EndToEnd(t *testing.T) {
 	t.Logf("run status=%s error=%q output=%q", runs[0].Status, errText, outText)
 	require.Equal(t, aiagentrun.StatusSucceeded, runs[0].Status)
 	require.Contains(t, outText, "脚本输出:什么是退款政策")
-	require.Equal(t, uint64(0), *runs[0].CreatedBy, "机器身份执行：created_by=0")
+	require.Equal(t, int64(0), *runs[0].CreatedBy, "机器身份执行：created_by=0")
 
 	recipients, err := entClient.Client().InternalMessageRecipient.Query().
 		Where(internalmessagerecipient.RecipientUserIDEQ(5)).

@@ -70,14 +70,14 @@ func (_u *ScriptLogUpdate) ClearDeletedAt() *ScriptLogUpdate {
 }
 
 // SetScriptID sets the "script_id" field.
-func (_u *ScriptLogUpdate) SetScriptID(v uint64) *ScriptLogUpdate {
+func (_u *ScriptLogUpdate) SetScriptID(v int64) *ScriptLogUpdate {
 	_u.mutation.ResetScriptID()
 	_u.mutation.SetScriptID(v)
 	return _u
 }
 
 // SetNillableScriptID sets the "script_id" field if the given value is not nil.
-func (_u *ScriptLogUpdate) SetNillableScriptID(v *uint64) *ScriptLogUpdate {
+func (_u *ScriptLogUpdate) SetNillableScriptID(v *int64) *ScriptLogUpdate {
 	if v != nil {
 		_u.SetScriptID(*v)
 	}
@@ -309,7 +309,7 @@ func (_u *ScriptLogUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Scri
 }
 
 func (_u *ScriptLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(scriptlog.Table, scriptlog.Columns, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(scriptlog.Table, scriptlog.Columns, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -333,13 +333,13 @@ func (_u *ScriptLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(scriptlog.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ScriptID(); ok {
-		_spec.SetField(scriptlog.FieldScriptID, field.TypeUint64, value)
+		_spec.SetField(scriptlog.FieldScriptID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedScriptID(); ok {
-		_spec.AddField(scriptlog.FieldScriptID, field.TypeUint64, value)
+		_spec.AddField(scriptlog.FieldScriptID, field.TypeInt64, value)
 	}
 	if _u.mutation.ScriptIDCleared() {
-		_spec.ClearField(scriptlog.FieldScriptID, field.TypeUint64)
+		_spec.ClearField(scriptlog.FieldScriptID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ScriptName(); ok {
 		_spec.SetField(scriptlog.FieldScriptName, field.TypeString, value)
@@ -458,14 +458,14 @@ func (_u *ScriptLogUpdateOne) ClearDeletedAt() *ScriptLogUpdateOne {
 }
 
 // SetScriptID sets the "script_id" field.
-func (_u *ScriptLogUpdateOne) SetScriptID(v uint64) *ScriptLogUpdateOne {
+func (_u *ScriptLogUpdateOne) SetScriptID(v int64) *ScriptLogUpdateOne {
 	_u.mutation.ResetScriptID()
 	_u.mutation.SetScriptID(v)
 	return _u
 }
 
 // SetNillableScriptID sets the "script_id" field if the given value is not nil.
-func (_u *ScriptLogUpdateOne) SetNillableScriptID(v *uint64) *ScriptLogUpdateOne {
+func (_u *ScriptLogUpdateOne) SetNillableScriptID(v *int64) *ScriptLogUpdateOne {
 	if v != nil {
 		_u.SetScriptID(*v)
 	}
@@ -710,7 +710,7 @@ func (_u *ScriptLogUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *S
 }
 
 func (_u *ScriptLogUpdateOne) sqlSave(ctx context.Context) (_node *ScriptLog, err error) {
-	_spec := sqlgraph.NewUpdateSpec(scriptlog.Table, scriptlog.Columns, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(scriptlog.Table, scriptlog.Columns, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ScriptLog.id" for update`)}
@@ -751,13 +751,13 @@ func (_u *ScriptLogUpdateOne) sqlSave(ctx context.Context) (_node *ScriptLog, er
 		_spec.ClearField(scriptlog.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ScriptID(); ok {
-		_spec.SetField(scriptlog.FieldScriptID, field.TypeUint64, value)
+		_spec.SetField(scriptlog.FieldScriptID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedScriptID(); ok {
-		_spec.AddField(scriptlog.FieldScriptID, field.TypeUint64, value)
+		_spec.AddField(scriptlog.FieldScriptID, field.TypeInt64, value)
 	}
 	if _u.mutation.ScriptIDCleared() {
-		_spec.ClearField(scriptlog.FieldScriptID, field.TypeUint64)
+		_spec.ClearField(scriptlog.FieldScriptID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ScriptName(); ok {
 		_spec.SetField(scriptlog.FieldScriptName, field.TypeString, value)

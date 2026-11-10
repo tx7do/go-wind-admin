@@ -46,7 +46,7 @@ func TestRoleMetadataRepoSqlite_CreateGetExist(t *testing.T) {
 	repo := newRoleMetadataRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const roleID = uint64(16001)
+	const roleID = int64(16001)
 
 	tx, err := repo.entClient.Client().Tx(ctx)
 	require.NoError(t, err)
@@ -105,8 +105,8 @@ func TestRoleMetadataRepoSqlite_TemplateVersionUpgrade(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const (
-		templateRoleID = uint64(16002)
-		plainRoleID    = uint64(16003)
+		templateRoleID = int64(16002)
+		plainRoleID    = int64(16003)
 	)
 
 	// 模板记录 + 普通记录各一条
@@ -165,11 +165,11 @@ func TestRoleMetadataRepoSqlite_Upsert(t *testing.T) {
 	repo := newRoleMetadataRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	const roleID = uint64(16004)
+	const roleID = int64(16004)
 
 	payload := &permissionV1.RoleMetadata{
 		RoleId:          trans.Ptr(roleID),
-		TenantId:        trans.Ptr(uint64(0)),
+		TenantId:        trans.Ptr(int64(0)),
 		IsTemplate:      trans.Ptr(false),
 		TemplateVersion: trans.Ptr(int32(5)),
 		SyncPolicy:      permissionV1.RoleMetadata_AUTO.Enum(),

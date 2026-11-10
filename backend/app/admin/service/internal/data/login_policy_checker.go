@@ -21,7 +21,7 @@ import (
 // 后端枚举保留兼容存量数据，存量 MAC 策略永不命中）。
 func MatchLoginPolicy(
 	policies []EffectivePolicy,
-	userId uint64,
+	userId int64,
 	clientIP string,
 	deviceId string,
 	region string,

@@ -109,8 +109,8 @@ func (_q *BiDashboardRevisionQuery) FirstX(ctx context.Context) *BiDashboardRevi
 
 // FirstID returns the first BiDashboardRevision ID from the query.
 // Returns a *NotFoundError when no BiDashboardRevision ID was found.
-func (_q *BiDashboardRevisionQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *BiDashboardRevisionQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -122,7 +122,7 @@ func (_q *BiDashboardRevisionQuery) FirstID(ctx context.Context) (id uint64, err
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *BiDashboardRevisionQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *BiDashboardRevisionQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +160,8 @@ func (_q *BiDashboardRevisionQuery) OnlyX(ctx context.Context) *BiDashboardRevis
 // OnlyID is like Only, but returns the only BiDashboardRevision ID in the query.
 // Returns a *NotSingularError when more than one BiDashboardRevision ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *BiDashboardRevisionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *BiDashboardRevisionQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -177,7 +177,7 @@ func (_q *BiDashboardRevisionQuery) OnlyID(ctx context.Context) (id uint64, err 
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *BiDashboardRevisionQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *BiDashboardRevisionQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -205,7 +205,7 @@ func (_q *BiDashboardRevisionQuery) AllX(ctx context.Context) []*BiDashboardRevi
 }
 
 // IDs executes the query and returns a list of BiDashboardRevision IDs.
-func (_q *BiDashboardRevisionQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *BiDashboardRevisionQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -217,7 +217,7 @@ func (_q *BiDashboardRevisionQuery) IDs(ctx context.Context) (ids []uint64, err 
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *BiDashboardRevisionQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *BiDashboardRevisionQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -415,8 +415,8 @@ func (_q *BiDashboardRevisionQuery) sqlAll(ctx context.Context, hooks ...queryHo
 }
 
 func (_q *BiDashboardRevisionQuery) loadDashboard(ctx context.Context, query *BiDashboardQuery, nodes []*BiDashboardRevision, init func(*BiDashboardRevision), assign func(*BiDashboardRevision, *BiDashboard)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*BiDashboardRevision)
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*BiDashboardRevision)
 	for i := range nodes {
 		if nodes[i].DashboardID == nil {
 			continue
@@ -460,7 +460,7 @@ func (_q *BiDashboardRevisionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *BiDashboardRevisionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(bidashboardrevision.Table, bidashboardrevision.Columns, sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(bidashboardrevision.Table, bidashboardrevision.Columns, sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

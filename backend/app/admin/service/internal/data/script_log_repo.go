@@ -59,7 +59,7 @@ func NewScriptLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.
 
 // ScriptLogRecord 一次脚本执行的记录。
 type ScriptLogRecord struct {
-	ScriptID   uint64
+	ScriptID   int64
 	ScriptName string
 	Language   string
 	Trigger    string // hook / task / test_run / manual
@@ -100,7 +100,7 @@ func (r *ScriptLogRepo) PurgeBefore(ctx context.Context, before time.Time) (int,
 	return deleted, nil
 }
 
-func nonZero[T ~uint32 | ~uint64](v T) *T {
+func nonZero[T ~uint32 | ~int64](v T) *T {
 	if v == 0 {
 		return nil
 	}
@@ -143,15 +143,15 @@ func (r *ScriptLogRepo) CountLog(ctx context.Context) (*scriptV1.CountScriptLogs
 		r.log.Errorf(ctx, "count script logs failed: %s", err.Error())
 		return nil, scriptV1.ErrorInternalServerError("count script logs failed")
 	}
-	return &scriptV1.CountScriptLogsResponse{Count: uint64(count)}, nil
+	return &scriptV1.CountScriptLogsResponse{Count: int64(count)}, nil
 }
 
 // Purge 清理指定时间之前的日志。
-func (r *ScriptLogRepo) Purge(ctx context.Context, before time.Time) (uint64, error) {
+func (r *ScriptLogRepo) Purge(ctx context.Context, before time.Time) (int64, error) {
 	deleted, err := r.PurgeBefore(ctx, before)
 	if err != nil {
 		r.log.Errorf(ctx, "purge script logs failed: %s", err.Error())
 		return 0, scriptV1.ErrorInternalServerError("purge script logs failed")
 	}
-	return uint64(deleted), nil
+	return int64(deleted), nil
 }

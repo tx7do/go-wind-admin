@@ -70,14 +70,14 @@ func (_u *UserOrgUnitUpdate) ClearDeletedAt() *UserOrgUnitUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *UserOrgUnitUpdate) SetCreatedBy(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetCreatedBy(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableCreatedBy(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableCreatedBy(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *UserOrgUnitUpdate) ClearCreatedBy() *UserOrgUnitUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *UserOrgUnitUpdate) SetUpdatedBy(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetUpdatedBy(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableUpdatedBy(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableUpdatedBy(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *UserOrgUnitUpdate) ClearUpdatedBy() *UserOrgUnitUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *UserOrgUnitUpdate) SetDeletedBy(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetDeletedBy(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableDeletedBy(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableDeletedBy(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -171,14 +171,14 @@ func (_u *UserOrgUnitUpdate) ClearRemark() *UserOrgUnitUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserOrgUnitUpdate) SetUserID(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetUserID(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableUserID(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableUserID(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -192,14 +192,14 @@ func (_u *UserOrgUnitUpdate) AddUserID(v int64) *UserOrgUnitUpdate {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *UserOrgUnitUpdate) SetOrgUnitID(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetOrgUnitID(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableOrgUnitID(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableOrgUnitID(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -213,14 +213,14 @@ func (_u *UserOrgUnitUpdate) AddOrgUnitID(v int64) *UserOrgUnitUpdate {
 }
 
 // SetPositionID sets the "position_id" field.
-func (_u *UserOrgUnitUpdate) SetPositionID(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetPositionID(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetPositionID()
 	_u.mutation.SetPositionID(v)
 	return _u
 }
 
 // SetNillablePositionID sets the "position_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillablePositionID(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillablePositionID(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetPositionID(*v)
 	}
@@ -300,14 +300,14 @@ func (_u *UserOrgUnitUpdate) ClearAssignedAt() *UserOrgUnitUpdate {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_u *UserOrgUnitUpdate) SetAssignedBy(v uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetAssignedBy(v int64) *UserOrgUnitUpdate {
 	_u.mutation.ResetAssignedBy()
 	_u.mutation.SetAssignedBy(v)
 	return _u
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdate) SetNillableAssignedBy(v *uint64) *UserOrgUnitUpdate {
+func (_u *UserOrgUnitUpdate) SetNillableAssignedBy(v *int64) *UserOrgUnitUpdate {
 	if v != nil {
 		_u.SetAssignedBy(*v)
 	}
@@ -412,7 +412,7 @@ func (_u *UserOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(userorgunit.Table, userorgunit.Columns, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(userorgunit.Table, userorgunit.Columns, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -436,34 +436,34 @@ func (_u *UserOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(userorgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(userorgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(userorgunit.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(userorgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(userorgunit.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(userorgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(userorgunit.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(userorgunit.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(userorgunit.FieldRemark, field.TypeString, value)
@@ -472,25 +472,25 @@ func (_u *UserOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(userorgunit.FieldRemark, field.TypeString)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(userorgunit.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(userorgunit.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(userorgunit.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PositionID(); ok {
-		_spec.SetField(userorgunit.FieldPositionID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldPositionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPositionID(); ok {
-		_spec.AddField(userorgunit.FieldPositionID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldPositionID, field.TypeInt64, value)
 	}
 	if _u.mutation.PositionIDCleared() {
-		_spec.ClearField(userorgunit.FieldPositionID, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldPositionID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.StartAt(); ok {
 		_spec.SetField(userorgunit.FieldStartAt, field.TypeTime, value)
@@ -511,13 +511,13 @@ func (_u *UserOrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(userorgunit.FieldAssignedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedBy(); ok {
-		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedAssignedBy(); ok {
-		_spec.AddField(userorgunit.FieldAssignedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldAssignedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.AssignedByCleared() {
-		_spec.ClearField(userorgunit.FieldAssignedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldAssignedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsPrimary(); ok {
 		_spec.SetField(userorgunit.FieldIsPrimary, field.TypeBool, value)
@@ -591,14 +591,14 @@ func (_u *UserOrgUnitUpdateOne) ClearDeletedAt() *UserOrgUnitUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *UserOrgUnitUpdateOne) SetCreatedBy(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetCreatedBy(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableCreatedBy(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableCreatedBy(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -618,14 +618,14 @@ func (_u *UserOrgUnitUpdateOne) ClearCreatedBy() *UserOrgUnitUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *UserOrgUnitUpdateOne) SetUpdatedBy(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetUpdatedBy(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableUpdatedBy(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableUpdatedBy(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -645,14 +645,14 @@ func (_u *UserOrgUnitUpdateOne) ClearUpdatedBy() *UserOrgUnitUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *UserOrgUnitUpdateOne) SetDeletedBy(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetDeletedBy(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableDeletedBy(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableDeletedBy(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -692,14 +692,14 @@ func (_u *UserOrgUnitUpdateOne) ClearRemark() *UserOrgUnitUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *UserOrgUnitUpdateOne) SetUserID(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetUserID(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableUserID(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableUserID(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -713,14 +713,14 @@ func (_u *UserOrgUnitUpdateOne) AddUserID(v int64) *UserOrgUnitUpdateOne {
 }
 
 // SetOrgUnitID sets the "org_unit_id" field.
-func (_u *UserOrgUnitUpdateOne) SetOrgUnitID(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetOrgUnitID(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetOrgUnitID()
 	_u.mutation.SetOrgUnitID(v)
 	return _u
 }
 
 // SetNillableOrgUnitID sets the "org_unit_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableOrgUnitID(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableOrgUnitID(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetOrgUnitID(*v)
 	}
@@ -734,14 +734,14 @@ func (_u *UserOrgUnitUpdateOne) AddOrgUnitID(v int64) *UserOrgUnitUpdateOne {
 }
 
 // SetPositionID sets the "position_id" field.
-func (_u *UserOrgUnitUpdateOne) SetPositionID(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetPositionID(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetPositionID()
 	_u.mutation.SetPositionID(v)
 	return _u
 }
 
 // SetNillablePositionID sets the "position_id" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillablePositionID(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillablePositionID(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetPositionID(*v)
 	}
@@ -821,14 +821,14 @@ func (_u *UserOrgUnitUpdateOne) ClearAssignedAt() *UserOrgUnitUpdateOne {
 }
 
 // SetAssignedBy sets the "assigned_by" field.
-func (_u *UserOrgUnitUpdateOne) SetAssignedBy(v uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetAssignedBy(v int64) *UserOrgUnitUpdateOne {
 	_u.mutation.ResetAssignedBy()
 	_u.mutation.SetAssignedBy(v)
 	return _u
 }
 
 // SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
-func (_u *UserOrgUnitUpdateOne) SetNillableAssignedBy(v *uint64) *UserOrgUnitUpdateOne {
+func (_u *UserOrgUnitUpdateOne) SetNillableAssignedBy(v *int64) *UserOrgUnitUpdateOne {
 	if v != nil {
 		_u.SetAssignedBy(*v)
 	}
@@ -946,7 +946,7 @@ func (_u *UserOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *UserOrgUnit
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(userorgunit.Table, userorgunit.Columns, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(userorgunit.Table, userorgunit.Columns, sqlgraph.NewFieldSpec(userorgunit.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserOrgUnit.id" for update`)}
@@ -987,34 +987,34 @@ func (_u *UserOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *UserOrgUnit
 		_spec.ClearField(userorgunit.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(userorgunit.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(userorgunit.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(userorgunit.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(userorgunit.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(userorgunit.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(userorgunit.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(userorgunit.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(userorgunit.FieldRemark, field.TypeString, value)
@@ -1023,25 +1023,25 @@ func (_u *UserOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *UserOrgUnit
 		_spec.ClearField(userorgunit.FieldRemark, field.TypeString)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(userorgunit.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(userorgunit.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
-		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedOrgUnitID(); ok {
-		_spec.AddField(userorgunit.FieldOrgUnitID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldOrgUnitID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PositionID(); ok {
-		_spec.SetField(userorgunit.FieldPositionID, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldPositionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPositionID(); ok {
-		_spec.AddField(userorgunit.FieldPositionID, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldPositionID, field.TypeInt64, value)
 	}
 	if _u.mutation.PositionIDCleared() {
-		_spec.ClearField(userorgunit.FieldPositionID, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldPositionID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.StartAt(); ok {
 		_spec.SetField(userorgunit.FieldStartAt, field.TypeTime, value)
@@ -1062,13 +1062,13 @@ func (_u *UserOrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *UserOrgUnit
 		_spec.ClearField(userorgunit.FieldAssignedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedBy(); ok {
-		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeUint64, value)
+		_spec.SetField(userorgunit.FieldAssignedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedAssignedBy(); ok {
-		_spec.AddField(userorgunit.FieldAssignedBy, field.TypeUint64, value)
+		_spec.AddField(userorgunit.FieldAssignedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.AssignedByCleared() {
-		_spec.ClearField(userorgunit.FieldAssignedBy, field.TypeUint64)
+		_spec.ClearField(userorgunit.FieldAssignedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.IsPrimary(); ok {
 		_spec.SetField(userorgunit.FieldIsPrimary, field.TypeBool, value)

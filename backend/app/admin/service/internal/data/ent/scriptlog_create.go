@@ -65,13 +65,13 @@ func (_c *ScriptLogCreate) SetNillableDeletedAt(v *time.Time) *ScriptLogCreate {
 }
 
 // SetScriptID sets the "script_id" field.
-func (_c *ScriptLogCreate) SetScriptID(v uint64) *ScriptLogCreate {
+func (_c *ScriptLogCreate) SetScriptID(v int64) *ScriptLogCreate {
 	_c.mutation.SetScriptID(v)
 	return _c
 }
 
 // SetNillableScriptID sets the "script_id" field if the given value is not nil.
-func (_c *ScriptLogCreate) SetNillableScriptID(v *uint64) *ScriptLogCreate {
+func (_c *ScriptLogCreate) SetNillableScriptID(v *int64) *ScriptLogCreate {
 	if v != nil {
 		_c.SetScriptID(*v)
 	}
@@ -191,7 +191,7 @@ func (_c *ScriptLogCreate) SetNillableError(v *string) *ScriptLogCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *ScriptLogCreate) SetID(v uint64) *ScriptLogCreate {
+func (_c *ScriptLogCreate) SetID(v int64) *ScriptLogCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -272,7 +272,7 @@ func (_c *ScriptLogCreate) sqlSave(ctx context.Context) (*ScriptLog, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -282,7 +282,7 @@ func (_c *ScriptLogCreate) sqlSave(ctx context.Context) (*ScriptLog, error) {
 func (_c *ScriptLogCreate) createSpec() (*ScriptLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ScriptLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(scriptlog.Table, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(scriptlog.Table, sqlgraph.NewFieldSpec(scriptlog.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -302,7 +302,7 @@ func (_c *ScriptLogCreate) createSpec() (*ScriptLog, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.ScriptID(); ok {
-		_spec.SetField(scriptlog.FieldScriptID, field.TypeUint64, value)
+		_spec.SetField(scriptlog.FieldScriptID, field.TypeInt64, value)
 		_node.ScriptID = &value
 	}
 	if value, ok := _c.mutation.ScriptName(); ok {
@@ -426,7 +426,7 @@ func (u *ScriptLogUpsert) ClearDeletedAt() *ScriptLogUpsert {
 }
 
 // SetScriptID sets the "script_id" field.
-func (u *ScriptLogUpsert) SetScriptID(v uint64) *ScriptLogUpsert {
+func (u *ScriptLogUpsert) SetScriptID(v int64) *ScriptLogUpsert {
 	u.Set(scriptlog.FieldScriptID, v)
 	return u
 }
@@ -438,7 +438,7 @@ func (u *ScriptLogUpsert) UpdateScriptID() *ScriptLogUpsert {
 }
 
 // AddScriptID adds v to the "script_id" field.
-func (u *ScriptLogUpsert) AddScriptID(v uint64) *ScriptLogUpsert {
+func (u *ScriptLogUpsert) AddScriptID(v int64) *ScriptLogUpsert {
 	u.Add(scriptlog.FieldScriptID, v)
 	return u
 }
@@ -699,14 +699,14 @@ func (u *ScriptLogUpsertOne) ClearDeletedAt() *ScriptLogUpsertOne {
 }
 
 // SetScriptID sets the "script_id" field.
-func (u *ScriptLogUpsertOne) SetScriptID(v uint64) *ScriptLogUpsertOne {
+func (u *ScriptLogUpsertOne) SetScriptID(v int64) *ScriptLogUpsertOne {
 	return u.Update(func(s *ScriptLogUpsert) {
 		s.SetScriptID(v)
 	})
 }
 
 // AddScriptID adds v to the "script_id" field.
-func (u *ScriptLogUpsertOne) AddScriptID(v uint64) *ScriptLogUpsertOne {
+func (u *ScriptLogUpsertOne) AddScriptID(v int64) *ScriptLogUpsertOne {
 	return u.Update(func(s *ScriptLogUpsert) {
 		s.AddScriptID(v)
 	})
@@ -924,7 +924,7 @@ func (u *ScriptLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ScriptLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *ScriptLogUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -933,7 +933,7 @@ func (u *ScriptLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ScriptLogUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *ScriptLogUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -990,7 +990,7 @@ func (_c *ScriptLogCreateBulk) Save(ctx context.Context) ([]*ScriptLog, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1168,14 +1168,14 @@ func (u *ScriptLogUpsertBulk) ClearDeletedAt() *ScriptLogUpsertBulk {
 }
 
 // SetScriptID sets the "script_id" field.
-func (u *ScriptLogUpsertBulk) SetScriptID(v uint64) *ScriptLogUpsertBulk {
+func (u *ScriptLogUpsertBulk) SetScriptID(v int64) *ScriptLogUpsertBulk {
 	return u.Update(func(s *ScriptLogUpsert) {
 		s.SetScriptID(v)
 	})
 }
 
 // AddScriptID adds v to the "script_id" field.
-func (u *ScriptLogUpsertBulk) AddScriptID(v uint64) *ScriptLogUpsertBulk {
+func (u *ScriptLogUpsertBulk) AddScriptID(v int64) *ScriptLogUpsertBulk {
 	return u.Update(func(s *ScriptLogUpsert) {
 		s.AddScriptID(v)
 	})

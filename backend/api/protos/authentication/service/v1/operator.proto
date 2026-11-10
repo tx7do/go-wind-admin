@@ -18,17 +18,17 @@ message OperatorMetadata {
     (gnostic.openapi.v3.property) = {description: "操作者类型"}
   ]; // 操作者类型
 
-  uint64 user_id = 2 [
+  int64 user_id = 2 [
     json_name = "uid",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
   ]; // 用户ID
 
-  uint64 tenant_id = 3 [
+  int64 tenant_id = 3 [
     json_name = "tid",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ]; // 租户ID
 
-  uint64 org_unit_id = 4 [
+  int64 org_unit_id = 4 [
     json_name = "ouid",
     (gnostic.openapi.v3.property) = {description: "当前操作所属的组织单元"}
   ]; // 当前操作所属的组织单元
@@ -38,7 +38,7 @@ message OperatorMetadata {
     (gnostic.openapi.v3.property) = {description: "数据权限范围策略"}
   ]; // 数据权限范围策略
 
-  repeated uint64 role_ids = 6 [
+  repeated int64 role_ids = 6 [
     json_name = "rids",
     (gnostic.openapi.v3.property) = {description: "用于存放少量的核心角色 ID 或标记位"}
   ]; // 用于存放少量的核心角色 ID 或标记位
@@ -58,7 +58,7 @@ message OperatorMetadata {
     (gnostic.openapi.v3.property) = {description: "数据权限范围类型集合（多角色聚合）"}
   ]; // 数据权限范围类型集合（多角色聚合）
 
-  repeated uint64 data_scope_unit_ids = 10 [
+  repeated int64 data_scope_unit_ids = 10 [
     json_name = "dsu",
     (gnostic.openapi.v3.property) = {description: "UNIT 类数据范围的组织单元目标集（并集）"}
   ]; // UNIT 类数据范围的组织单元目标集（并集）

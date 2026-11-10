@@ -79,7 +79,7 @@ func TestMonitorAlertRuleRepoSqlite_Create(t *testing.T) {
 	require.True(t, row.IsEnabled)
 	require.Equal(t, "持续越限按冷却重发", *row.Remark)
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入：mixin 列没有 DB 默认值")
 	// 评估状态列初始为空：还没扫过第一轮
 	require.False(t, row.LastFiring, "last_firing 应落列默认 false")
@@ -194,13 +194,13 @@ func TestMonitorAlertRuleRepoSqlite_ListAndListEnabled(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(3), all.GetTotal())
+	require.Equal(t, int64(3), all.GetTotal())
 	require.Len(t, all.GetItems(), 3)
 
 	enabled, err := repo.ListEnabled(ctx)
 	require.NoError(t, err)
 	require.Len(t, enabled, 2, "ListEnabled 只应回启用规则")
-	enabledIDs := map[uint64]bool{}
+	enabledIDs := map[int64]bool{}
 	for _, it := range enabled {
 		enabledIDs[it.GetId()] = true
 	}
@@ -261,7 +261,7 @@ func TestMonitorAlertRuleRepoSqlite_Update(t *testing.T) {
 	require.True(t, row.LastFiring, "管理员掩码更新不得触碰评估回写的 last_firing")
 	require.Equal(t, 620.0, *row.LastValue, "管理员掩码更新不得触碰评估回写的 last_value")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// 不存在 ID：无效果、不报错

@@ -70,14 +70,14 @@ func (_u *MonitorAlertRuleUpdate) ClearDeletedAt() *MonitorAlertRuleUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *MonitorAlertRuleUpdate) SetCreatedBy(v uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetCreatedBy(v int64) *MonitorAlertRuleUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdate) SetNillableCreatedBy(v *uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetNillableCreatedBy(v *int64) *MonitorAlertRuleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -97,14 +97,14 @@ func (_u *MonitorAlertRuleUpdate) ClearCreatedBy() *MonitorAlertRuleUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *MonitorAlertRuleUpdate) SetUpdatedBy(v uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetUpdatedBy(v int64) *MonitorAlertRuleUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdate) SetNillableUpdatedBy(v *uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetNillableUpdatedBy(v *int64) *MonitorAlertRuleUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -124,14 +124,14 @@ func (_u *MonitorAlertRuleUpdate) ClearUpdatedBy() *MonitorAlertRuleUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *MonitorAlertRuleUpdate) SetDeletedBy(v uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetDeletedBy(v int64) *MonitorAlertRuleUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdate) SetNillableDeletedBy(v *uint64) *MonitorAlertRuleUpdate {
+func (_u *MonitorAlertRuleUpdate) SetNillableDeletedBy(v *int64) *MonitorAlertRuleUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -465,7 +465,7 @@ func (_u *MonitorAlertRuleUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(monitoralertrule.Table, monitoralertrule.Columns, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(monitoralertrule.Table, monitoralertrule.Columns, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -489,31 +489,31 @@ func (_u *MonitorAlertRuleUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(monitoralertrule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(monitoralertrule.FieldRemark, field.TypeString, value)
@@ -650,14 +650,14 @@ func (_u *MonitorAlertRuleUpdateOne) ClearDeletedAt() *MonitorAlertRuleUpdateOne
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *MonitorAlertRuleUpdateOne) SetCreatedBy(v uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetCreatedBy(v int64) *MonitorAlertRuleUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdateOne) SetNillableCreatedBy(v *uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetNillableCreatedBy(v *int64) *MonitorAlertRuleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -677,14 +677,14 @@ func (_u *MonitorAlertRuleUpdateOne) ClearCreatedBy() *MonitorAlertRuleUpdateOne
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *MonitorAlertRuleUpdateOne) SetUpdatedBy(v uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetUpdatedBy(v int64) *MonitorAlertRuleUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdateOne) SetNillableUpdatedBy(v *uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetNillableUpdatedBy(v *int64) *MonitorAlertRuleUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -704,14 +704,14 @@ func (_u *MonitorAlertRuleUpdateOne) ClearUpdatedBy() *MonitorAlertRuleUpdateOne
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *MonitorAlertRuleUpdateOne) SetDeletedBy(v uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetDeletedBy(v int64) *MonitorAlertRuleUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *MonitorAlertRuleUpdateOne) SetNillableDeletedBy(v *uint64) *MonitorAlertRuleUpdateOne {
+func (_u *MonitorAlertRuleUpdateOne) SetNillableDeletedBy(v *int64) *MonitorAlertRuleUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -1058,7 +1058,7 @@ func (_u *MonitorAlertRuleUpdateOne) sqlSave(ctx context.Context) (_node *Monito
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(monitoralertrule.Table, monitoralertrule.Columns, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(monitoralertrule.Table, monitoralertrule.Columns, sqlgraph.NewFieldSpec(monitoralertrule.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "MonitorAlertRule.id" for update`)}
@@ -1099,31 +1099,31 @@ func (_u *MonitorAlertRuleUpdateOne) sqlSave(ctx context.Context) (_node *Monito
 		_spec.ClearField(monitoralertrule.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(monitoralertrule.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(monitoralertrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(monitoralertrule.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(monitoralertrule.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(monitoralertrule.FieldDeletedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(monitoralertrule.FieldRemark, field.TypeString, value)

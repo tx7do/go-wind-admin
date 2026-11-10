@@ -21,14 +21,14 @@ import (
 
 // mockScopeViewer 测试用 ViewerContext：可分别指定用户/租户/数据范围。
 type mockScopeViewer struct {
-	uid    uint64
-	tid    uint64
+	uid    int64
+	tid    int64
 	scopes []viewer.DataScope
 }
 
-func (m mockScopeViewer) UserID() uint64                    { return m.uid }
-func (m mockScopeViewer) TenantID() uint64                  { return m.tid }
-func (m mockScopeViewer) OrgUnitID() uint64                 { return 0 }
+func (m mockScopeViewer) UserID() int64                    { return m.uid }
+func (m mockScopeViewer) TenantID() int64                  { return m.tid }
+func (m mockScopeViewer) OrgUnitID() int64                 { return 0 }
 func (m mockScopeViewer) Permissions() []string             { return nil }
 func (m mockScopeViewer) Roles() []string                   { return nil }
 func (m mockScopeViewer) DataScope() []viewer.DataScope     { return m.scopes }
@@ -39,7 +39,7 @@ func (m mockScopeViewer) IsTenantContext() bool             { return m.tid > 0 }
 func (m mockScopeViewer) IsSystemContext() bool             { return false }
 func (m mockScopeViewer) ShouldAudit() bool                 { return false }
 
-func scopeCtx(ctx context.Context, uid, tid uint64, scopes ...viewer.DataScope) context.Context {
+func scopeCtx(ctx context.Context, uid, tid int64, scopes ...viewer.DataScope) context.Context {
 	return viewer.WithContext(ctx, mockScopeViewer{uid: uid, tid: tid, scopes: scopes})
 }
 
@@ -73,13 +73,13 @@ func openScopeTestClient(t *testing.T) *ent.Client {
 	return client
 }
 
-func fmtPair(unit, creator uint64) string {
-	return "u" + strconv.FormatUint(uint64(unit), 10) +
-		":c" + strconv.FormatUint(uint64(creator), 10)
+func fmtPair(unit, creator int64) string {
+	return "u" + strconv.FormatInt(unit, 10) +
+		":c" + strconv.FormatInt(creator, 10)
 }
 
 // seedPosition 在指定租户视角下种一行岗位（unit/creator 为行属性）。
-func seedPosition(client *ent.Client, ctx context.Context, unit, creator uint64, code string) {
+func seedPosition(client *ent.Client, ctx context.Context, unit, creator int64, code string) {
 	client.Position.Create().
 		SetName("pos-" + code).
 		SetCode(code).
@@ -131,7 +131,7 @@ func TestPositionDataScopeGuard(t *testing.T) {
 		seedPosition(client, ctx2, 101, 21, "DS_T2_A")
 	}
 
-	unit101 := viewer.DataScope{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []uint64{101}}
+	unit101 := viewer.DataScope{ScopeType: viewer.ScopeTypeUnit, TargetIDs: []int64{101}}
 
 	// ALL：租户 1 视角下本租户全量（4 行），租户 2 行不可见。
 	expectPairs(t, visiblePositionPairs(client, scopeCtx(ctx, 11, 1,

@@ -65,13 +65,13 @@ func (_c *NotificationRuleCreate) SetNillableDeletedAt(v *time.Time) *Notificati
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *NotificationRuleCreate) SetCreatedBy(v uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetCreatedBy(v int64) *NotificationRuleCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *NotificationRuleCreate) SetNillableCreatedBy(v *uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetNillableCreatedBy(v *int64) *NotificationRuleCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *NotificationRuleCreate) SetNillableCreatedBy(v *uint64) *NotificationR
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *NotificationRuleCreate) SetUpdatedBy(v uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetUpdatedBy(v int64) *NotificationRuleCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *NotificationRuleCreate) SetNillableUpdatedBy(v *uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetNillableUpdatedBy(v *int64) *NotificationRuleCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *NotificationRuleCreate) SetNillableUpdatedBy(v *uint64) *NotificationR
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *NotificationRuleCreate) SetDeletedBy(v uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetDeletedBy(v int64) *NotificationRuleCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *NotificationRuleCreate) SetNillableDeletedBy(v *uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetNillableDeletedBy(v *int64) *NotificationRuleCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -177,7 +177,7 @@ func (_c *NotificationRuleCreate) SetNillableIsAsync(v *bool) *NotificationRuleC
 }
 
 // SetID sets the "id" field.
-func (_c *NotificationRuleCreate) SetID(v uint64) *NotificationRuleCreate {
+func (_c *NotificationRuleCreate) SetID(v int64) *NotificationRuleCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -260,7 +260,7 @@ func (_c *NotificationRuleCreate) sqlSave(ctx context.Context) (*NotificationRul
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -270,7 +270,7 @@ func (_c *NotificationRuleCreate) sqlSave(ctx context.Context) (*NotificationRul
 func (_c *NotificationRuleCreate) createSpec() (*NotificationRule, *sqlgraph.CreateSpec) {
 	var (
 		_node = &NotificationRule{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(notificationrule.Table, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(notificationrule.Table, sqlgraph.NewFieldSpec(notificationrule.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -290,15 +290,15 @@ func (_c *NotificationRuleCreate) createSpec() (*NotificationRule, *sqlgraph.Cre
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationrule.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(notificationrule.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(notificationrule.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -410,7 +410,7 @@ func (u *NotificationRuleUpsert) ClearDeletedAt() *NotificationRuleUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationRuleUpsert) SetCreatedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) SetCreatedBy(v int64) *NotificationRuleUpsert {
 	u.Set(notificationrule.FieldCreatedBy, v)
 	return u
 }
@@ -422,7 +422,7 @@ func (u *NotificationRuleUpsert) UpdateCreatedBy() *NotificationRuleUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationRuleUpsert) AddCreatedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) AddCreatedBy(v int64) *NotificationRuleUpsert {
 	u.Add(notificationrule.FieldCreatedBy, v)
 	return u
 }
@@ -434,7 +434,7 @@ func (u *NotificationRuleUpsert) ClearCreatedBy() *NotificationRuleUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationRuleUpsert) SetUpdatedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) SetUpdatedBy(v int64) *NotificationRuleUpsert {
 	u.Set(notificationrule.FieldUpdatedBy, v)
 	return u
 }
@@ -446,7 +446,7 @@ func (u *NotificationRuleUpsert) UpdateUpdatedBy() *NotificationRuleUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationRuleUpsert) AddUpdatedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) AddUpdatedBy(v int64) *NotificationRuleUpsert {
 	u.Add(notificationrule.FieldUpdatedBy, v)
 	return u
 }
@@ -458,7 +458,7 @@ func (u *NotificationRuleUpsert) ClearUpdatedBy() *NotificationRuleUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationRuleUpsert) SetDeletedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) SetDeletedBy(v int64) *NotificationRuleUpsert {
 	u.Set(notificationrule.FieldDeletedBy, v)
 	return u
 }
@@ -470,7 +470,7 @@ func (u *NotificationRuleUpsert) UpdateDeletedBy() *NotificationRuleUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationRuleUpsert) AddDeletedBy(v uint64) *NotificationRuleUpsert {
+func (u *NotificationRuleUpsert) AddDeletedBy(v int64) *NotificationRuleUpsert {
 	u.Add(notificationrule.FieldDeletedBy, v)
 	return u
 }
@@ -665,14 +665,14 @@ func (u *NotificationRuleUpsertOne) ClearDeletedAt() *NotificationRuleUpsertOne 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationRuleUpsertOne) SetCreatedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) SetCreatedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationRuleUpsertOne) AddCreatedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) AddCreatedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -693,14 +693,14 @@ func (u *NotificationRuleUpsertOne) ClearCreatedBy() *NotificationRuleUpsertOne 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationRuleUpsertOne) SetUpdatedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) SetUpdatedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationRuleUpsertOne) AddUpdatedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) AddUpdatedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -721,14 +721,14 @@ func (u *NotificationRuleUpsertOne) ClearUpdatedBy() *NotificationRuleUpsertOne 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationRuleUpsertOne) SetDeletedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) SetDeletedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationRuleUpsertOne) AddDeletedBy(v uint64) *NotificationRuleUpsertOne {
+func (u *NotificationRuleUpsertOne) AddDeletedBy(v int64) *NotificationRuleUpsertOne {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -869,7 +869,7 @@ func (u *NotificationRuleUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *NotificationRuleUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *NotificationRuleUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -878,7 +878,7 @@ func (u *NotificationRuleUpsertOne) ID(ctx context.Context) (id uint64, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *NotificationRuleUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *NotificationRuleUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -935,7 +935,7 @@ func (_c *NotificationRuleCreateBulk) Save(ctx context.Context) ([]*Notification
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1113,14 +1113,14 @@ func (u *NotificationRuleUpsertBulk) ClearDeletedAt() *NotificationRuleUpsertBul
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *NotificationRuleUpsertBulk) SetCreatedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) SetCreatedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *NotificationRuleUpsertBulk) AddCreatedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) AddCreatedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1141,14 +1141,14 @@ func (u *NotificationRuleUpsertBulk) ClearCreatedBy() *NotificationRuleUpsertBul
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *NotificationRuleUpsertBulk) SetUpdatedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) SetUpdatedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *NotificationRuleUpsertBulk) AddUpdatedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) AddUpdatedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1169,14 +1169,14 @@ func (u *NotificationRuleUpsertBulk) ClearUpdatedBy() *NotificationRuleUpsertBul
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *NotificationRuleUpsertBulk) SetDeletedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) SetDeletedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *NotificationRuleUpsertBulk) AddDeletedBy(v uint64) *NotificationRuleUpsertBulk {
+func (u *NotificationRuleUpsertBulk) AddDeletedBy(v int64) *NotificationRuleUpsertBulk {
 	return u.Update(func(s *NotificationRuleUpsert) {
 		s.AddDeletedBy(v)
 	})

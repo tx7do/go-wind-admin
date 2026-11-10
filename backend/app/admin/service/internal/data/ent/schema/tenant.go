@@ -60,7 +60,7 @@ func (Tenant) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint64("admin_user_id").
+		field.Int64("admin_user_id").
 			Comment("管理员用户ID").
 			Optional().
 			Nillable(),

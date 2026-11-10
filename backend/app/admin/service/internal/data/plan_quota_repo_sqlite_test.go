@@ -118,7 +118,7 @@ func TestPlanQuotaRepoSqlite_ListFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "等值过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "等值过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "等值过滤后只应返回 1 行")
 	require.NotNil(t, filtered.Items[0].QuotaType, "命中行的 quota_type 应被映射回 DTO")
 	require.Equal(t, identityV1.PlanQuota_USER_LIMIT, *filtered.Items[0].QuotaType, "命中行应为 USER_LIMIT 行")
@@ -130,7 +130,7 @@ func TestPlanQuotaRepoSqlite_ListFilter(t *testing.T) {
 	// 无过滤：两行全部返回，PlanId 均回填
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total)
+	require.Equal(t, int64(2), all.Total)
 	require.Len(t, all.Items, 2)
 	for _, item := range all.Items {
 		require.Equal(t, parent.ID, *item.PlanId, "所有条目的 PlanId 均应回填父套餐 ID")

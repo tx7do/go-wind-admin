@@ -12,9 +12,9 @@ import (
 )
 
 func TestNewUserTokenPayload(t *testing.T) {
-	ou := uint64(42)
-	uid := uint64(1)
-	tid := uint64(2)
+	ou := int64(42)
+	uid := int64(1)
+	tid := int64(2)
 	username := "test_user"
 	roleCodes := []string{"admin"}
 	client := "client_123"
@@ -41,9 +41,9 @@ func TestNewUserTokenPayload(t *testing.T) {
 }
 
 func TestNewUserTokenAuthClaims(t *testing.T) {
-	ou := uint64(7)
-	uid := uint64(3)
-	tid := uint64(4)
+	ou := int64(7)
+	uid := int64(3)
+	tid := int64(4)
 	username := "alice"
 	roleCodes := []string{"editor"}
 	client := "cli"
@@ -75,8 +75,8 @@ func TestNewUserTokenAuthClaims(t *testing.T) {
 
 func TestNewUserTokenPayloadWithClaims(t *testing.T) {
 	user := identityV1.User{
-		Id:       trans.Ptr(uint64(5)),
-		TenantId: trans.Ptr(uint64(6)),
+		Id:       trans.Ptr(int64(5)),
+		TenantId: trans.Ptr(int64(6)),
 		Username: trans.Ptr("bob"),
 		Roles:    []string{"viewer"},
 	}
@@ -84,7 +84,7 @@ func TestNewUserTokenPayloadWithClaims(t *testing.T) {
 	client := "cid"
 	device := "did"
 	ds := identityV1.DataScope(3)
-	ou := uint64(9)
+	ou := int64(9)
 
 	claims := &authn.AuthClaims{
 		authn.ClaimFieldSubject: user.GetUsername(),
@@ -116,8 +116,8 @@ func TestNewUserTokenPayloadWithClaims(t *testing.T) {
 
 func TestNewUserTokenPayloadWithJwtMapClaims(t *testing.T) {
 	user := identityV1.User{
-		Id:       trans.Ptr(uint64(10)),
-		TenantId: trans.Ptr(uint64(11)),
+		Id:       trans.Ptr(int64(10)),
+		TenantId: trans.Ptr(int64(11)),
 		Username: trans.Ptr("eve"),
 		Roles:    []string{"r1", "r2"},
 	}
@@ -125,7 +125,7 @@ func TestNewUserTokenPayloadWithJwtMapClaims(t *testing.T) {
 	client := "c1"
 	device := "d1"
 	ds := identityV1.DataScope(4)
-	ou := uint64(21)
+	ou := int64(21)
 
 	// jwt.MapClaims uses float64 for numeric JSON numbers
 	mapClaims := jwt.MapClaims{
@@ -159,10 +159,10 @@ func TestNewUserTokenPayloadWithJwtMapClaims(t *testing.T) {
 // TestNewUserTokenDataScopesRoundTrip 验证多角色聚合数据范围（dss/dsu 轨道）
 // 的 claims 序列化与解析往返一致性。
 func TestNewUserTokenDataScopesRoundTrip(t *testing.T) {
-	ou := uint64(7)
-	uid := uint64(3)
-	tid := uint64(4)
-	dsUnits := []uint64{7, 8}
+	ou := int64(7)
+	uid := int64(3)
+	tid := int64(4)
+	dsUnits := []int64{7, 8}
 
 	payload := NewUserTokenPayload(
 		"bob", uid, tid, &ou, []string{"editor"},
@@ -196,8 +196,8 @@ func TestNewUserTokenDataScopesRoundTrip(t *testing.T) {
 func TestNewUserTokenPayloadWithClaimsLegacyDsFallback(t *testing.T) {
 	claims := &authn.AuthClaims{}
 	(*claims)[authn.ClaimFieldSubject] = "legacy"
-	(*claims)[ClaimFieldUserID] = uint64(3)
-	(*claims)[ClaimFieldTenantID] = uint64(4)
+	(*claims)[ClaimFieldUserID] = int64(3)
+	(*claims)[ClaimFieldTenantID] = int64(4)
 	(*claims)[ClaimFieldDataScope] = identityV1.DataScope_ALL.String()
 
 	payload, err := NewUserTokenPayloadWithClaims(claims)

@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.UserOrgUnit {
+func ID(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.UserOrgUnit {
+func IDEQ(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.UserOrgUnit {
+func IDNEQ(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.UserOrgUnit {
+func IDIn(ids ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.UserOrgUnit {
+func IDNotIn(ids ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.UserOrgUnit {
+func IDGT(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.UserOrgUnit {
+func IDGTE(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.UserOrgUnit {
+func IDLT(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.UserOrgUnit {
+func IDLTE(id int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,22 +70,22 @@ func DeletedAt(v time.Time) predicate.UserOrgUnit {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.UserOrgUnit {
+func CreatedBy(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.UserOrgUnit {
+func UpdatedBy(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.UserOrgUnit {
+func DeletedBy(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.UserOrgUnit {
+func TenantID(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldTenantID, v))
 }
 
@@ -95,17 +95,17 @@ func Remark(v string) predicate.UserOrgUnit {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint64) predicate.UserOrgUnit {
+func UserID(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldUserID, v))
 }
 
 // OrgUnitID applies equality check predicate on the "org_unit_id" field. It's identical to OrgUnitIDEQ.
-func OrgUnitID(v uint64) predicate.UserOrgUnit {
+func OrgUnitID(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldOrgUnitID, v))
 }
 
 // PositionID applies equality check predicate on the "position_id" field. It's identical to PositionIDEQ.
-func PositionID(v uint64) predicate.UserOrgUnit {
+func PositionID(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldPositionID, v))
 }
 
@@ -125,7 +125,7 @@ func AssignedAt(v time.Time) predicate.UserOrgUnit {
 }
 
 // AssignedBy applies equality check predicate on the "assigned_by" field. It's identical to AssignedByEQ.
-func AssignedBy(v uint64) predicate.UserOrgUnit {
+func AssignedBy(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldAssignedBy, v))
 }
 
@@ -285,42 +285,42 @@ func DeletedAtNotNil() predicate.UserOrgUnit {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.UserOrgUnit {
+func CreatedByEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.UserOrgUnit {
+func CreatedByNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.UserOrgUnit {
+func CreatedByIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.UserOrgUnit {
+func CreatedByNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.UserOrgUnit {
+func CreatedByGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.UserOrgUnit {
+func CreatedByGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.UserOrgUnit {
+func CreatedByLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.UserOrgUnit {
+func CreatedByLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -335,42 +335,42 @@ func CreatedByNotNil() predicate.UserOrgUnit {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.UserOrgUnit {
+func UpdatedByEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.UserOrgUnit {
+func UpdatedByNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.UserOrgUnit {
+func UpdatedByIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.UserOrgUnit {
+func UpdatedByNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.UserOrgUnit {
+func UpdatedByGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.UserOrgUnit {
+func UpdatedByGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.UserOrgUnit {
+func UpdatedByLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.UserOrgUnit {
+func UpdatedByLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -385,42 +385,42 @@ func UpdatedByNotNil() predicate.UserOrgUnit {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.UserOrgUnit {
+func DeletedByEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.UserOrgUnit {
+func DeletedByNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.UserOrgUnit {
+func DeletedByIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.UserOrgUnit {
+func DeletedByNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.UserOrgUnit {
+func DeletedByGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.UserOrgUnit {
+func DeletedByGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.UserOrgUnit {
+func DeletedByLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.UserOrgUnit {
+func DeletedByLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -435,42 +435,42 @@ func DeletedByNotNil() predicate.UserOrgUnit {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.UserOrgUnit {
+func TenantIDEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.UserOrgUnit {
+func TenantIDNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.UserOrgUnit {
+func TenantIDIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.UserOrgUnit {
+func TenantIDNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.UserOrgUnit {
+func TenantIDGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.UserOrgUnit {
+func TenantIDGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.UserOrgUnit {
+func TenantIDLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.UserOrgUnit {
+func TenantIDLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -560,122 +560,122 @@ func RemarkContainsFold(v string) predicate.UserOrgUnit {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint64) predicate.UserOrgUnit {
+func UserIDEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint64) predicate.UserOrgUnit {
+func UserIDNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint64) predicate.UserOrgUnit {
+func UserIDIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint64) predicate.UserOrgUnit {
+func UserIDNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint64) predicate.UserOrgUnit {
+func UserIDGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint64) predicate.UserOrgUnit {
+func UserIDGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint64) predicate.UserOrgUnit {
+func UserIDLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint64) predicate.UserOrgUnit {
+func UserIDLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldUserID, v))
 }
 
 // OrgUnitIDEQ applies the EQ predicate on the "org_unit_id" field.
-func OrgUnitIDEQ(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDNEQ applies the NEQ predicate on the "org_unit_id" field.
-func OrgUnitIDNEQ(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDIn applies the In predicate on the "org_unit_id" field.
-func OrgUnitIDIn(vs ...uint64) predicate.UserOrgUnit {
+func OrgUnitIDIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldOrgUnitID, vs...))
 }
 
 // OrgUnitIDNotIn applies the NotIn predicate on the "org_unit_id" field.
-func OrgUnitIDNotIn(vs ...uint64) predicate.UserOrgUnit {
+func OrgUnitIDNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldOrgUnitID, vs...))
 }
 
 // OrgUnitIDGT applies the GT predicate on the "org_unit_id" field.
-func OrgUnitIDGT(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDGTE applies the GTE predicate on the "org_unit_id" field.
-func OrgUnitIDGTE(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDLT applies the LT predicate on the "org_unit_id" field.
-func OrgUnitIDLT(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldOrgUnitID, v))
 }
 
 // OrgUnitIDLTE applies the LTE predicate on the "org_unit_id" field.
-func OrgUnitIDLTE(v uint64) predicate.UserOrgUnit {
+func OrgUnitIDLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldOrgUnitID, v))
 }
 
 // PositionIDEQ applies the EQ predicate on the "position_id" field.
-func PositionIDEQ(v uint64) predicate.UserOrgUnit {
+func PositionIDEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldPositionID, v))
 }
 
 // PositionIDNEQ applies the NEQ predicate on the "position_id" field.
-func PositionIDNEQ(v uint64) predicate.UserOrgUnit {
+func PositionIDNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldPositionID, v))
 }
 
 // PositionIDIn applies the In predicate on the "position_id" field.
-func PositionIDIn(vs ...uint64) predicate.UserOrgUnit {
+func PositionIDIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldPositionID, vs...))
 }
 
 // PositionIDNotIn applies the NotIn predicate on the "position_id" field.
-func PositionIDNotIn(vs ...uint64) predicate.UserOrgUnit {
+func PositionIDNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldPositionID, vs...))
 }
 
 // PositionIDGT applies the GT predicate on the "position_id" field.
-func PositionIDGT(v uint64) predicate.UserOrgUnit {
+func PositionIDGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldPositionID, v))
 }
 
 // PositionIDGTE applies the GTE predicate on the "position_id" field.
-func PositionIDGTE(v uint64) predicate.UserOrgUnit {
+func PositionIDGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldPositionID, v))
 }
 
 // PositionIDLT applies the LT predicate on the "position_id" field.
-func PositionIDLT(v uint64) predicate.UserOrgUnit {
+func PositionIDLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldPositionID, v))
 }
 
 // PositionIDLTE applies the LTE predicate on the "position_id" field.
-func PositionIDLTE(v uint64) predicate.UserOrgUnit {
+func PositionIDLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldPositionID, v))
 }
 
@@ -840,42 +840,42 @@ func AssignedAtNotNil() predicate.UserOrgUnit {
 }
 
 // AssignedByEQ applies the EQ predicate on the "assigned_by" field.
-func AssignedByEQ(v uint64) predicate.UserOrgUnit {
+func AssignedByEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldEQ(FieldAssignedBy, v))
 }
 
 // AssignedByNEQ applies the NEQ predicate on the "assigned_by" field.
-func AssignedByNEQ(v uint64) predicate.UserOrgUnit {
+func AssignedByNEQ(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNEQ(FieldAssignedBy, v))
 }
 
 // AssignedByIn applies the In predicate on the "assigned_by" field.
-func AssignedByIn(vs ...uint64) predicate.UserOrgUnit {
+func AssignedByIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldIn(FieldAssignedBy, vs...))
 }
 
 // AssignedByNotIn applies the NotIn predicate on the "assigned_by" field.
-func AssignedByNotIn(vs ...uint64) predicate.UserOrgUnit {
+func AssignedByNotIn(vs ...int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldNotIn(FieldAssignedBy, vs...))
 }
 
 // AssignedByGT applies the GT predicate on the "assigned_by" field.
-func AssignedByGT(v uint64) predicate.UserOrgUnit {
+func AssignedByGT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGT(FieldAssignedBy, v))
 }
 
 // AssignedByGTE applies the GTE predicate on the "assigned_by" field.
-func AssignedByGTE(v uint64) predicate.UserOrgUnit {
+func AssignedByGTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldGTE(FieldAssignedBy, v))
 }
 
 // AssignedByLT applies the LT predicate on the "assigned_by" field.
-func AssignedByLT(v uint64) predicate.UserOrgUnit {
+func AssignedByLT(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLT(FieldAssignedBy, v))
 }
 
 // AssignedByLTE applies the LTE predicate on the "assigned_by" field.
-func AssignedByLTE(v uint64) predicate.UserOrgUnit {
+func AssignedByLTE(v int64) predicate.UserOrgUnit {
 	return predicate.UserOrgUnit(sql.FieldLTE(FieldAssignedBy, v))
 }
 

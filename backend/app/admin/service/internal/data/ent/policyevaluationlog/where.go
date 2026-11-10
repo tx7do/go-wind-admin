@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.PolicyEvaluationLog {
+func ID(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.PolicyEvaluationLog {
+func IDEQ(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.PolicyEvaluationLog {
+func IDNEQ(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.PolicyEvaluationLog {
+func IDIn(ids ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.PolicyEvaluationLog {
+func IDNotIn(ids ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.PolicyEvaluationLog {
+func IDGT(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.PolicyEvaluationLog {
+func IDGTE(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.PolicyEvaluationLog {
+func IDLT(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.PolicyEvaluationLog {
+func IDLTE(id int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -60,27 +60,27 @@ func CreatedAt(v time.Time) predicate.PolicyEvaluationLog {
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint64) predicate.PolicyEvaluationLog {
+func TenantID(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint64) predicate.PolicyEvaluationLog {
+func UserID(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldUserID, v))
 }
 
 // MembershipID applies equality check predicate on the "membership_id" field. It's identical to MembershipIDEQ.
-func MembershipID(v uint64) predicate.PolicyEvaluationLog {
+func MembershipID(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldMembershipID, v))
 }
 
 // PermissionID applies equality check predicate on the "permission_id" field. It's identical to PermissionIDEQ.
-func PermissionID(v uint64) predicate.PolicyEvaluationLog {
+func PermissionID(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldPermissionID, v))
 }
 
 // PolicyID applies equality check predicate on the "policy_id" field. It's identical to PolicyIDEQ.
-func PolicyID(v uint64) predicate.PolicyEvaluationLog {
+func PolicyID(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldPolicyID, v))
 }
 
@@ -185,42 +185,42 @@ func CreatedAtNotNil() predicate.PolicyEvaluationLog {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDNEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func TenantIDIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func TenantIDNotIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDGT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDGTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDLT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint64) predicate.PolicyEvaluationLog {
+func TenantIDLTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -235,162 +235,162 @@ func TenantIDNotNil() predicate.PolicyEvaluationLog {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint64) predicate.PolicyEvaluationLog {
+func UserIDEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint64) predicate.PolicyEvaluationLog {
+func UserIDNEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func UserIDIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func UserIDNotIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint64) predicate.PolicyEvaluationLog {
+func UserIDGT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint64) predicate.PolicyEvaluationLog {
+func UserIDGTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint64) predicate.PolicyEvaluationLog {
+func UserIDLT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint64) predicate.PolicyEvaluationLog {
+func UserIDLTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldUserID, v))
 }
 
 // MembershipIDEQ applies the EQ predicate on the "membership_id" field.
-func MembershipIDEQ(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldMembershipID, v))
 }
 
 // MembershipIDNEQ applies the NEQ predicate on the "membership_id" field.
-func MembershipIDNEQ(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDNEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldMembershipID, v))
 }
 
 // MembershipIDIn applies the In predicate on the "membership_id" field.
-func MembershipIDIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func MembershipIDIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldMembershipID, vs...))
 }
 
 // MembershipIDNotIn applies the NotIn predicate on the "membership_id" field.
-func MembershipIDNotIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func MembershipIDNotIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldMembershipID, vs...))
 }
 
 // MembershipIDGT applies the GT predicate on the "membership_id" field.
-func MembershipIDGT(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDGT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldMembershipID, v))
 }
 
 // MembershipIDGTE applies the GTE predicate on the "membership_id" field.
-func MembershipIDGTE(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDGTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldMembershipID, v))
 }
 
 // MembershipIDLT applies the LT predicate on the "membership_id" field.
-func MembershipIDLT(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDLT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldMembershipID, v))
 }
 
 // MembershipIDLTE applies the LTE predicate on the "membership_id" field.
-func MembershipIDLTE(v uint64) predicate.PolicyEvaluationLog {
+func MembershipIDLTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldMembershipID, v))
 }
 
 // PermissionIDEQ applies the EQ predicate on the "permission_id" field.
-func PermissionIDEQ(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldPermissionID, v))
 }
 
 // PermissionIDNEQ applies the NEQ predicate on the "permission_id" field.
-func PermissionIDNEQ(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDNEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldPermissionID, v))
 }
 
 // PermissionIDIn applies the In predicate on the "permission_id" field.
-func PermissionIDIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func PermissionIDIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldPermissionID, vs...))
 }
 
 // PermissionIDNotIn applies the NotIn predicate on the "permission_id" field.
-func PermissionIDNotIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func PermissionIDNotIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldPermissionID, vs...))
 }
 
 // PermissionIDGT applies the GT predicate on the "permission_id" field.
-func PermissionIDGT(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDGT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldPermissionID, v))
 }
 
 // PermissionIDGTE applies the GTE predicate on the "permission_id" field.
-func PermissionIDGTE(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDGTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldPermissionID, v))
 }
 
 // PermissionIDLT applies the LT predicate on the "permission_id" field.
-func PermissionIDLT(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDLT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldPermissionID, v))
 }
 
 // PermissionIDLTE applies the LTE predicate on the "permission_id" field.
-func PermissionIDLTE(v uint64) predicate.PolicyEvaluationLog {
+func PermissionIDLTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldPermissionID, v))
 }
 
 // PolicyIDEQ applies the EQ predicate on the "policy_id" field.
-func PolicyIDEQ(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldPolicyID, v))
 }
 
 // PolicyIDNEQ applies the NEQ predicate on the "policy_id" field.
-func PolicyIDNEQ(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDNEQ(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldPolicyID, v))
 }
 
 // PolicyIDIn applies the In predicate on the "policy_id" field.
-func PolicyIDIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func PolicyIDIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldPolicyID, vs...))
 }
 
 // PolicyIDNotIn applies the NotIn predicate on the "policy_id" field.
-func PolicyIDNotIn(vs ...uint64) predicate.PolicyEvaluationLog {
+func PolicyIDNotIn(vs ...int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldPolicyID, vs...))
 }
 
 // PolicyIDGT applies the GT predicate on the "policy_id" field.
-func PolicyIDGT(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDGT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldPolicyID, v))
 }
 
 // PolicyIDGTE applies the GTE predicate on the "policy_id" field.
-func PolicyIDGTE(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDGTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldPolicyID, v))
 }
 
 // PolicyIDLT applies the LT predicate on the "policy_id" field.
-func PolicyIDLT(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDLT(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldPolicyID, v))
 }
 
 // PolicyIDLTE applies the LTE predicate on the "policy_id" field.
-func PolicyIDLTE(v uint64) predicate.PolicyEvaluationLog {
+func PolicyIDLTE(v int64) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldPolicyID, v))
 }
 

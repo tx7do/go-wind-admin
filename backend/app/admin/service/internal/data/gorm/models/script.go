@@ -19,8 +19,8 @@ type Script struct {
 	Critical    *bool      `gorm:"column:critical;type:TINYINT;default:0;comment:关键脚本：执行失败时中断钩子链"`
 	Version     *uint32    `gorm:"column:version;type:int unsigned;default:1;comment:版本号，每次更新自增（热更新指纹）"`
 	Enabled     *bool      `gorm:"column:is_enabled;type:TINYINT;default:1;comment:是否启用"`
-	CreatedBy   *uint64    `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
-	UpdatedBy   *uint64    `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
+	CreatedBy   *int64    `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
+	UpdatedBy   *int64    `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
 	CreatedAt   *time.Time `gorm:"column:created_at;type:datetime;comment:创建时间"`
 	UpdatedAt   *time.Time `gorm:"column:updated_at;type:datetime;comment:更新时间"`
 }

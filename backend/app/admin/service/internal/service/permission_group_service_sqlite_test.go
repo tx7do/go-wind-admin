@@ -52,7 +52,7 @@ func TestPermissionGroupServiceSqlite_InitSeedsDefaultTree_AndListAssemblesTree(
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(len(constants.DefaultPermissionGroups)), listResp.Total, "Total 应统计全部已播种行")
+	require.Equal(t, int64(len(constants.DefaultPermissionGroups)), listResp.Total, "Total 应统计全部已播种行")
 	require.Len(t, listResp.Items, 1, "树形组装后只应返回根节点")
 	root := listResp.Items[0]
 	require.Equal(t, "系统管理", root.GetName(), "根节点应为默认树的根")
@@ -80,7 +80,7 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 
 	svc.init()
 
-	rootID := uint64(0)
+	rootID := int64(0)
 	rows, err := entClient.Client().PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, len(constants.DefaultPermissionGroups))
@@ -106,14 +106,14 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 	afterRows, err := entClient.Client().PermissionGroup.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, afterRows, len(constants.DefaultPermissionGroups)+1, "播种树之外应新增 1 个分组")
-	var createdID uint64
+	var createdID int64
 	for _, r := range afterRows {
 		if r.Name != nil && *r.Name == "服务层新分组" {
 			createdID = r.ID
 			require.NotNil(t, r.ParentID, "ParentId 应落库为指向父分组的外键")
 			require.Equal(t, rootID, *r.ParentID, "外键应指向根分组")
 			require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-			require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+			require.Equal(t, int64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 			require.Equal(t, entPermissionGroup.StatusOn, *r.Status, "status 应经转换器落库为 ON")
 		}
 	}
@@ -121,7 +121,7 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(len(constants.DefaultPermissionGroups)+1), listResp.Total, "Total 应统计全部行")
+	require.Equal(t, int64(len(constants.DefaultPermissionGroups)+1), listResp.Total, "Total 应统计全部行")
 	require.Len(t, listResp.Items, 1, "树形组装后仍只应返回根节点")
 	require.Len(t, listResp.Items[0].GetChildren(), len(constants.DefaultPermissionGroups), "根的 Children 应包含全部子分组（含新建者）")
 

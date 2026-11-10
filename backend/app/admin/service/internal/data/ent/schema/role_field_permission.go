@@ -33,7 +33,7 @@ func (RoleFieldPermission) Annotations() []schema.Annotation {
 func (RoleFieldPermission) Fields() []ent.Field {
 	return []ent.Field{
 
-		field.Uint64("role_id").
+		field.Int64("role_id").
 			Comment("角色ID（关联sys_roles.id）").
 			Nillable(),
 
@@ -55,7 +55,7 @@ func (RoleFieldPermission) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

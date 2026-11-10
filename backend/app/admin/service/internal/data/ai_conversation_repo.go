@@ -77,11 +77,11 @@ func (r *AiConversationRepo) Count(ctx context.Context, req *paginationV1.Paging
 		return nil, aiV1.ErrorInternalServerError("query ai conversation count failed")
 	}
 
-	return &aiV1.CountAiConversationResponse{Count: uint64(count)}, nil
+	return &aiV1.CountAiConversationResponse{Count: int64(count)}, nil
 }
 
 // List 按分页条件查询；ownerUserID > 0 时强制只返回该用户的会话（聊天场景不可信前端过滤）。
-func (r *AiConversationRepo) List(ctx context.Context, req *paginationV1.PagingRequest, ownerUserID uint64) (*aiV1.ListAiConversationResponse, error) {
+func (r *AiConversationRepo) List(ctx context.Context, req *paginationV1.PagingRequest, ownerUserID int64) (*aiV1.ListAiConversationResponse, error) {
 	if req == nil {
 		return nil, aiV1.ErrorBadRequest("invalid parameter")
 	}
@@ -125,7 +125,7 @@ func (r *AiConversationRepo) Get(ctx context.Context, req *aiV1.GetAiConversatio
 }
 
 // GetEntityByID 取实体（service 层做归属校验用）。
-func (r *AiConversationRepo) GetEntityByID(ctx context.Context, id uint64) (*ent.AiConversation, error) {
+func (r *AiConversationRepo) GetEntityByID(ctx context.Context, id int64) (*ent.AiConversation, error) {
 	entity, err := r.entClient.Client().AiConversation.Query().
 		Where(aiconversation.IDEQ(id)).
 		Only(ctx)
@@ -196,7 +196,7 @@ func (r *AiConversationRepo) Update(ctx context.Context, req *aiV1.UpdateAiConve
 }
 
 // TouchLastMessage 更新最近消息时间（chat 主链路高频小写）。
-func (r *AiConversationRepo) TouchLastMessage(ctx context.Context, id uint64) error {
+func (r *AiConversationRepo) TouchLastMessage(ctx context.Context, id int64) error {
 	err := r.entClient.Client().AiConversation.UpdateOneID(id).
 		SetLastMessageAt(time.Now()).
 		SetUpdatedAt(time.Now()).

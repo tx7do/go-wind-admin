@@ -84,7 +84,7 @@ func newNotifySeamEnv(t *testing.T) *notifySeamEnv {
 		userRepo: &internalMessageServiceUserRepoStub{
 			// 定向投递的收件人 1024 属于租户 5，而本测试的 ctx 是 SystemContext（租户 0）：
 			// 收件行落在 5 才说明打标跟的是收件人，不是操作人/viewer。
-			tenantByUserID: map[uint64]uint64{1024: 5},
+			tenantByUserID: map[int64]int64{1024: 5},
 		},
 		internalMessagePublisher: pub,
 		notifier:                 unwiredNotifier{},
@@ -127,7 +127,7 @@ func TestNotifySeamDirectedSend(t *testing.T) {
 		Type:            internalMessageV1.InternalMessage_NOTIFICATION,
 		Title:           trans.Ptr("接缝测试标题"),
 		Content:         "接缝测试正文",
-		RecipientUserId: trans.Ptr(uint64(1024)),
+		RecipientUserId: trans.Ptr(int64(1024)),
 	})
 	require.NoError(t, err)
 
@@ -138,23 +138,23 @@ func TestNotifySeamDirectedSend(t *testing.T) {
 	require.Equal(t, notificationV1.Channel_INTERNAL, row.GetChannel(),
 		"渠道由 sys_notification_rules 的 INTERNAL_MESSAGE 一行决定（调用方没有显式传 Channel）")
 	require.Equal(t, resp.GetMessageId(), row.GetRelatedId(), "台账要能跳回消息本体")
-	require.Equal(t, uint64(1024), row.GetRecipientUserId())
+	require.Equal(t, int64(1024), row.GetRecipientUserId())
 	require.Equal(t, "1024", row.GetTarget(), "INTERNAL 的目标是用户 ID 原文，不脱敏")
 	require.Equal(t, notificationV1.DeliveryStatus_SENT, row.GetStatus())
 	require.Zero(t, row.GetChannelId(), "站内信不吃渠道花名册，channel_id 保持空")
-	require.Equal(t, uint64(88), row.GetCreatedBy(), "操作人由调用方显式传入")
+	require.Equal(t, int64(88), row.GetCreatedBy(), "操作人由调用方显式传入")
 
 	inbox, err := e.im.internalMessageRecipientRepo.List(e.ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Len(t, inbox.GetItems(), 1, "缝的另一端确实落了收件行")
 	require.Equal(t, resp.GetMessageId(), inbox.GetItems()[0].GetMessageId())
-	require.Equal(t, uint64(1024), inbox.GetItems()[0].GetRecipientUserId())
-	require.Equal(t, uint64(5), inbox.GetItems()[0].GetTenantId(),
+	require.Equal(t, int64(1024), inbox.GetItems()[0].GetRecipientUserId())
+	require.Equal(t, int64(5), inbox.GetItems()[0].GetTenantId(),
 		"收件行必须打在收件人的租户上：viewer 是租户 0 的 SystemContext，落在 5 才证明打标跟的是受众")
 
 	payload := ssePayloadAt(t, e.pub, 0)
 	require.NotZero(t, payload["id"], "SSE 载荷必须带收件行主键")
-	require.Equal(t, strconv.FormatUint(resp.GetMessageId(), 10), payload["messageId"])
+	require.Equal(t, strconv.FormatInt(resp.GetMessageId(), 10), payload["messageId"])
 	// title/content 在收件表里没有列（读侧由消息本体回填），只有推送载荷带得到值。
 	require.Equal(t, "接缝测试标题", payload["title"])
 }
@@ -184,7 +184,7 @@ func TestInternalMessageSenderRequiresMessageId(t *testing.T) {
 		Target:          "1024",
 		Title:           "缺关联的投递",
 		Content:         "正文",
-		RecipientUserId: trans.Ptr(uint64(1024)),
+		RecipientUserId: trans.Ptr(int64(1024)),
 	})
 	require.Error(t, err)
 
@@ -203,7 +203,7 @@ func TestInternalMessageSenderRequiresMessageId(t *testing.T) {
 func TestBroadcastSsePayloadCarriesRecipientId(t *testing.T) {
 	e := newNotifySeamEnv(t)
 
-	mkUsers := func(ids ...uint64) []*identityV1.User {
+	mkUsers := func(ids ...int64) []*identityV1.User {
 		users := make([]*identityV1.User, 0, len(ids))
 		for _, id := range ids {
 			users = append(users, &identityV1.User{Id: trans.Ptr(id)})
@@ -211,17 +211,17 @@ func TestBroadcastSsePayloadCarriesRecipientId(t *testing.T) {
 		return users
 	}
 	e.im.userRepo = &broadcastUserRepoStub{
-		usersByTenant: map[uint64][]*identityV1.User{7: mkUsers(701, 702, 703)},
+		usersByTenant: map[int64][]*identityV1.User{7: mkUsers(701, 702, 703)},
 	}
 
 	msg, err := e.im.internalMessageRepo.Create(e.ctx, &internalMessageV1.CreateInternalMessageRequest{
 		Data: &internalMessageV1.InternalMessage{
-			TenantId:  trans.Ptr(uint64(7)),
+			TenantId:  trans.Ptr(int64(7)),
 			Title:     trans.Ptr("广播标题"),
 			Content:   trans.Ptr("广播正文"),
 			Status:    internalMessageV1.InternalMessage_PUBLISHED.Enum(),
 			Type:      internalMessageV1.InternalMessage_NOTIFICATION.Enum(),
-			CreatedBy: trans.Ptr(uint64(1)),
+			CreatedBy: trans.Ptr(int64(1)),
 		},
 	})
 	require.NoError(t, err)
@@ -234,6 +234,6 @@ func TestBroadcastSsePayloadCarriesRecipientId(t *testing.T) {
 	for i := range e.pub.events {
 		payload := ssePayloadAt(t, e.pub, i)
 		require.NotZero(t, payload["id"], "第 %d 条推送缺收件行主键", i)
-		require.Equal(t, strconv.FormatUint(msg.GetId(), 10), payload["messageId"])
+		require.Equal(t, strconv.FormatInt(msg.GetId(), 10), payload["messageId"])
 	}
 }

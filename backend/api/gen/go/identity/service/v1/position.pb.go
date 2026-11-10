@@ -135,7 +135,7 @@ func (Position_Type) EnumDescriptor() ([]byte, []int) {
 // 职位
 type Position struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Id                    *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                        // 职位ID
+	Id                    *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                        // 职位ID
 	Name                  *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                     // 职位名称
 	Code                  *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                                     // 唯一编码（建议规则：部门编码 + 职位类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别
 	Headcount             *uint32                `protobuf:"varint,4,opt,name=headcount,proto3,oneof" json:"headcount,omitempty"`                                                          // 编制人数（该职位最多可容纳的员工数量，0表示无限制）
@@ -148,17 +148,17 @@ type Position struct {
 	JobGrade              *string                `protobuf:"bytes,11,opt,name=job_grade,json=jobGrade,proto3,oneof" json:"job_grade,omitempty"`                                            // 职级
 	Level                 *int32                 `protobuf:"varint,12,opt,name=level,proto3,oneof" json:"level,omitempty"`                                                                 // 数值化职级
 	IsKeyPosition         *bool                  `protobuf:"varint,13,opt,name=is_key_position,json=isKeyPosition,proto3,oneof" json:"is_key_position,omitempty"`                          // 是否关键岗位
-	TenantId              *uint64                `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                           // 租户ID
+	TenantId              *int64                 `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                           // 租户ID
 	TenantName            *string                `protobuf:"bytes,21,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                      // 租户名称
-	OrgUnitId             *uint64                `protobuf:"varint,22,opt,name=org_unit_id,json=orgUnitId,proto3,oneof" json:"org_unit_id,omitempty"`                                      // 所属组织单元ID
+	OrgUnitId             *int64                 `protobuf:"varint,22,opt,name=org_unit_id,json=orgUnitId,proto3,oneof" json:"org_unit_id,omitempty"`                                      // 所属组织单元ID
 	OrgUnitName           *string                `protobuf:"bytes,23,opt,name=org_unit_name,json=orgUnitName,proto3,oneof" json:"org_unit_name,omitempty"`                                 // 所属组织单元名称
-	ReportsToPositionId   *uint64                `protobuf:"varint,24,opt,name=reports_to_position_id,json=reportsToPositionId,proto3,oneof" json:"reports_to_position_id,omitempty"`      // 汇报关系用户ID
+	ReportsToPositionId   *int64                 `protobuf:"varint,24,opt,name=reports_to_position_id,json=reportsToPositionId,proto3,oneof" json:"reports_to_position_id,omitempty"`      // 汇报关系用户ID
 	ReportsToPositionName *string                `protobuf:"bytes,25,opt,name=reports_to_position_name,json=reportsToPositionName,proto3,oneof" json:"reports_to_position_name,omitempty"` // 汇报关系用户名称
 	StartAt               *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`                                               // 生效时间
 	EndAt                 *timestamppb.Timestamp `protobuf:"bytes,51,opt,name=end_at,json=endAt,proto3,oneof" json:"end_at,omitempty"`                                                     // 失效时间
-	CreatedBy             *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                       // 创建者ID
-	UpdatedBy             *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                       // 更新者ID
-	DeletedBy             *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                       // 删除者用户ID
+	CreatedBy             *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                       // 创建者ID
+	UpdatedBy             *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                       // 更新者ID
+	DeletedBy             *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                       // 删除者用户ID
 	CreatedAt             *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                        // 创建时间
 	UpdatedAt             *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                        // 更新时间
 	DeletedAt             *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                        // 删除时间
@@ -196,7 +196,7 @@ func (*Position) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_position_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Position) GetId() uint64 {
+func (x *Position) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -287,7 +287,7 @@ func (x *Position) GetIsKeyPosition() bool {
 	return false
 }
 
-func (x *Position) GetTenantId() uint64 {
+func (x *Position) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -301,7 +301,7 @@ func (x *Position) GetTenantName() string {
 	return ""
 }
 
-func (x *Position) GetOrgUnitId() uint64 {
+func (x *Position) GetOrgUnitId() int64 {
 	if x != nil && x.OrgUnitId != nil {
 		return *x.OrgUnitId
 	}
@@ -315,7 +315,7 @@ func (x *Position) GetOrgUnitName() string {
 	return ""
 }
 
-func (x *Position) GetReportsToPositionId() uint64 {
+func (x *Position) GetReportsToPositionId() int64 {
 	if x != nil && x.ReportsToPositionId != nil {
 		return *x.ReportsToPositionId
 	}
@@ -343,21 +343,21 @@ func (x *Position) GetEndAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Position) GetCreatedBy() uint64 {
+func (x *Position) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Position) GetUpdatedBy() uint64 {
+func (x *Position) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Position) GetDeletedBy() uint64 {
+func (x *Position) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -389,7 +389,7 @@ func (x *Position) GetDeletedAt() *timestamppb.Timestamp {
 type ListPositionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*Position            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -431,7 +431,7 @@ func (x *ListPositionResponse) GetItems() []*Position {
 	return nil
 }
 
-func (x *ListPositionResponse) GetTotal() uint64 {
+func (x *ListPositionResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -489,7 +489,7 @@ func (x *GetPositionRequest) GetQueryBy() isGetPositionRequest_QueryBy {
 	return nil
 }
 
-func (x *GetPositionRequest) GetId() uint64 {
+func (x *GetPositionRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetPositionRequest_Id); ok {
 			return x.Id
@@ -528,7 +528,7 @@ type isGetPositionRequest_QueryBy interface {
 }
 
 type GetPositionRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type GetPositionRequest_Name struct {
@@ -593,7 +593,7 @@ func (x *CreatePositionRequest) GetData() *Position {
 // 更新职位 - 请求
 type UpdatePositionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Position              `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -631,7 +631,7 @@ func (*UpdatePositionRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_position_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdatePositionRequest) GetId() uint64 {
+func (x *UpdatePositionRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -707,7 +707,7 @@ func (x *DeletePositionRequest) GetQueryBy() isDeletePositionRequest_QueryBy {
 	return nil
 }
 
-func (x *DeletePositionRequest) GetId() uint64 {
+func (x *DeletePositionRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeletePositionRequest_Id); ok {
 			return x.Id
@@ -721,7 +721,7 @@ type isDeletePositionRequest_QueryBy interface {
 }
 
 type DeletePositionRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeletePositionRequest_Id) isDeletePositionRequest_QueryBy() {}
@@ -816,7 +816,7 @@ func (x *BatchCreatePositionsResponse) GetCreatedIds() []int32 {
 
 type CountPositionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -851,7 +851,7 @@ func (*CountPositionResponse) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_position_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CountPositionResponse) GetCount() uint64 {
+func (x *CountPositionResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -864,7 +864,7 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\n" +
 	"\"identity/service/v1/position.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xad\x13\n" +
 	"\bPosition\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b职位IDH\x00R\x02id\x88\x01\x01\x12+\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b职位IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f职位名称H\x01R\x04name\x88\x01\x01\x12\xa6\x01\n" +
 	"\x04code\x18\x03 \x01(\tB\x8c\x01\xbaG\x88\x01\x92\x02\x84\x01唯一编码（建议规则：部门编码 + 职位类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别H\x02R\x04code\x88\x01\x01\x12u\n" +
 	"\theadcount\x18\x04 \x01(\rBR\xbaGO\x92\x02L编制人数（该职位最多可容纳的员工数量，0表示无限制）H\x03R\theadcount\x88\x01\x01\x12K\n" +
@@ -881,21 +881,21 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"R\bjobGrade\x88\x01\x01\x120\n" +
 	"\x05level\x18\f \x01(\x05B\x15\xbaG\x12\x92\x02\x0f数值化职级H\vR\x05level\x88\x01\x01\x12E\n" +
 	"\x0fis_key_position\x18\r \x01(\bB\x18\xbaG\x15\x92\x02\x12是否关键岗位H\fR\risKeyPosition\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x14 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\rR\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18\x14 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\rR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18\x15 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x0eR\n" +
 	"tenantName\x88\x01\x01\x12?\n" +
-	"\vorg_unit_id\x18\x16 \x01(\x04B\x1a\xbaG\x17\x92\x02\x14所属组织单元IDH\x0fR\torgUnitId\x88\x01\x01\x12G\n" +
+	"\vorg_unit_id\x18\x16 \x01(\x03B\x1a\xbaG\x17\x92\x02\x14所属组织单元IDH\x0fR\torgUnitId\x88\x01\x01\x12G\n" +
 	"\rorg_unit_name\x18\x17 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18所属组织单元名称H\x10R\vorgUnitName\x88\x01\x01\x12T\n" +
-	"\x16reports_to_position_id\x18\x18 \x01(\x04B\x1a\xbaG\x17\x92\x02\x14汇报关系用户IDH\x11R\x13reportsToPositionId\x88\x01\x01\x12\\\n" +
+	"\x16reports_to_position_id\x18\x18 \x01(\x03B\x1a\xbaG\x17\x92\x02\x14汇报关系用户IDH\x11R\x13reportsToPositionId\x88\x01\x01\x12\\\n" +
 	"\x18reports_to_position_name\x18\x19 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18汇报关系用户名称H\x12R\x15reportsToPositionName\x88\x01\x01\x12W\n" +
 	"\bstart_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15生效时间（UTC）H\x13R\astartAt\x88\x01\x01\x12S\n" +
 	"\x06end_at\x183 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15失效时间（UTC）H\x14R\x05endAt\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\x15R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x15R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\x16R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x16R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x17R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x17R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x18R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -946,9 +946,9 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\v_deleted_at\"a\n" +
 	"\x14ListPositionResponse\x123\n" +
 	"\x05items\x18\x01 \x03(\v2\x1d.identity.service.v1.PositionR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\x97\x02\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\x97\x02\n" +
 	"\x12GetPositionRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12$\n" +
 	"\x04name\x18\x02 \x01(\tB\x0e\xbaG\v\x18\x01\x92\x02\x06名称H\x00R\x04name\x12*\n" +
 	"\x04code\x18\x03 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f唯一编码H\x00R\x04code\x12w\n" +
@@ -960,14 +960,14 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\x15CreatePositionRequest\x121\n" +
 	"\x04data\x18\x01 \x01(\v2\x1d.identity.service.v1.PositionR\x04data\"\x98\x03\n" +
 	"\x15UpdatePositionRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x121\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x121\n" +
 	"\x04data\x18\x02 \x01(\v2\x1d.identity.service.v1.PositionR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"A\n" +
 	"\x15DeletePositionRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"R\n" +
@@ -977,7 +977,7 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的职位ID列表R\n" +
 	"createdIds\"-\n" +
 	"\x15CountPositionResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xea\x04\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xea\x04\n" +
 	"\x0fPositionService\x12N\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a).identity.service.v1.ListPositionResponse\"\x00\x12P\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a*.identity.service.v1.CountPositionResponse\"\x00\x12O\n" +

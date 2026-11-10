@@ -43,12 +43,12 @@ func newAiProviderServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent
 
 // aiProviderOperator 构造指定用户的操作者上下文。
 // Provider 管理已是平台管理员闸门，测试统一以平台管理员身份执行。
-func aiProviderOperator(ctx context.Context, userID uint64) context.Context {
+func aiProviderOperator(ctx context.Context, userID int64) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: userID, IsPlatformAdmin: trans.Ptr(true)})
 }
 
 // aiProviderCreateViaService 经服务层创建一个提供商，返回其落库 ID。
-func aiProviderCreateViaService(t *testing.T, svc *AiProviderService, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name, apiKey string) uint64 {
+func aiProviderCreateViaService(t *testing.T, svc *AiProviderService, entClient *entCrud.EntClient[*ent.Client], ctx context.Context, name, apiKey string) int64 {
 	t.Helper()
 	_, err := svc.Create(ctx, &aiV1.CreateAiProviderRequest{
 		Data: &aiV1.AiProvider{
@@ -115,7 +115,7 @@ func TestAiProviderService_CreateSealsApiKey(t *testing.T) {
 		"未配置 GOWIND_CRYPTO_KEY 时明文直通落库（配了则为 enc: 密文，读路径解密对称）")
 	require.Equal(t, "sk-***cdef", *row.APIKeyHint, "hint 只存脱敏形态")
 	require.NotNil(t, row.CreatedBy, "CreatedBy 应盖章为操作人")
-	require.Equal(t, uint64(81), *row.CreatedBy)
+	require.Equal(t, int64(81), *row.CreatedBy)
 	// 仓内约定：Create 构造器只落 created_by，updated_by 首次更新才落库
 	//（access_key 等全线服务一致），故这里不断言 updated_by。
 	require.True(t, *row.IsEnabled, "启用位应经转换器落库")
@@ -186,7 +186,7 @@ func TestAiProviderService_UpdateApiKeySemantics(t *testing.T) {
 	require.Equal(t, "sk-newkey98765", *row.APIKey, "新 key 应加密（明文直通）落库")
 	require.Equal(t, "sk-***8765", *row.APIKeyHint, "hint 应随新 key 刷新")
 	require.Equal(t, "更新后名字", *row.Name)
-	require.Equal(t, uint64(82), *row.UpdatedBy, "updated_by 应盖章为操作人")
+	require.Equal(t, int64(82), *row.UpdatedBy, "updated_by 应盖章为操作人")
 
 	// 分支二：不带 key（DTO 带空串也算不带）→ 已存 key/hint 原样保留，掩码被摘除
 	req2 := &aiV1.UpdateAiProviderRequest{

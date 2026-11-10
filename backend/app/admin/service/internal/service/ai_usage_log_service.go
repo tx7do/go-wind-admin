@@ -59,7 +59,7 @@ func (s *AiUsageLogService) GetUsageSummary(ctx context.Context, _ *emptypb.Empt
 			return nil, err
 		}
 		resp.QuotaConfigured = configured
-		resp.QuotaLimit = limit
+		resp.QuotaLimit = uint64(limit)
 	}
 
 	return resp, nil

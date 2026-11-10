@@ -51,7 +51,7 @@ func (DictEntry) Mixin() []ent.Mixin {
 		mixin.OperatorID64{},
 		mixin.SortOrder{},
 		mixin.IsEnabled{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

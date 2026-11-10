@@ -82,7 +82,7 @@ func TestUserRepoSqlite_Get(t *testing.T) {
 	require.Len(t, rows, 1, "SQLite 中应有 1 条 user 记录")
 	require.Equal(t, entUser.StatusLocked, *rows[0].Status, "proto User_LOCKED 应映射为 ent StatusLocked")
 	require.Equal(t, entUser.GenderMale, *rows[0].Gender, "proto User_MALE 应映射为 ent GenderMale")
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetUserRequest{
@@ -95,7 +95,7 @@ func TestUserRepoSqlite_Get(t *testing.T) {
 	require.Equal(t, identityV1.User_MALE, gotByID.GetGender(), "读视图应回填 gender")
 
 	// ListUsersByIds：实体已在手的路径同样经 backfillEnumsFrom 回填
-	byIds, err := repo.ListUsersByIds(ctx, []uint64{createdID})
+	byIds, err := repo.ListUsersByIds(ctx, []int64{createdID})
 	require.NoError(t, err, "按主键列表查询应命中")
 	require.Len(t, byIds, 1, "按主键列表应命中 1 条")
 	require.Equal(t, identityV1.User_LOCKED, byIds[0].GetStatus(), "ListUsersByIds 读视图应回填 status")
@@ -135,7 +135,7 @@ func TestUserRepoSqlite_List(t *testing.T) {
 	// 无过滤：应返回全部 2 条
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条")
 	for _, item := range all.Items {
 		// 列表读视图：枚举按行内实际存储值回填，随标记行各自如实呈现。

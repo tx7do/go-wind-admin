@@ -29,16 +29,16 @@ const (
 // 语言
 type Language struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 语言ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                        // 语言ID
 	LanguageCode  *string                `protobuf:"bytes,2,opt,name=language_code,json=languageCode,proto3,oneof" json:"language_code,omitempty"` // 标准语言代码
 	LanguageName  *string                `protobuf:"bytes,3,opt,name=language_name,json=languageName,proto3,oneof" json:"language_name,omitempty"` // 语言名称
 	NativeName    *string                `protobuf:"bytes,4,opt,name=native_name,json=nativeName,proto3,oneof" json:"native_name,omitempty"`       // 本地语言名称
 	IsDefault     *bool                  `protobuf:"varint,5,opt,name=is_default,json=isDefault,proto3,oneof" json:"is_default,omitempty"`         // 是否为默认语言
 	IsEnabled     *bool                  `protobuf:"varint,6,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`         // 是否启用
 	SortOrder     *uint32                `protobuf:"varint,7,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`         // 排序顺序，值越小越靠前
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`        // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`        // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`        // 删除时间
@@ -76,7 +76,7 @@ func (*Language) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_language_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Language) GetId() uint64 {
+func (x *Language) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -125,21 +125,21 @@ func (x *Language) GetSortOrder() uint32 {
 	return 0
 }
 
-func (x *Language) GetCreatedBy() uint64 {
+func (x *Language) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *Language) GetUpdatedBy() uint64 {
+func (x *Language) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *Language) GetDeletedBy() uint64 {
+func (x *Language) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -171,7 +171,7 @@ func (x *Language) GetDeletedAt() *timestamppb.Timestamp {
 type ListLanguageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*Language            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,7 +213,7 @@ func (x *ListLanguageResponse) GetItems() []*Language {
 	return nil
 }
 
-func (x *ListLanguageResponse) GetTotal() uint64 {
+func (x *ListLanguageResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -270,7 +270,7 @@ func (x *GetLanguageRequest) GetQueryBy() isGetLanguageRequest_QueryBy {
 	return nil
 }
 
-func (x *GetLanguageRequest) GetId() uint64 {
+func (x *GetLanguageRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetLanguageRequest_Id); ok {
 			return x.Id
@@ -300,7 +300,7 @@ type isGetLanguageRequest_QueryBy interface {
 }
 
 type GetLanguageRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 type GetLanguageRequest_Code struct {
@@ -359,7 +359,7 @@ func (x *CreateLanguageRequest) GetData() *Language {
 // 更新语言 - 请求
 type UpdateLanguageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *Language              `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -397,7 +397,7 @@ func (*UpdateLanguageRequest) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_language_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateLanguageRequest) GetId() uint64 {
+func (x *UpdateLanguageRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -473,7 +473,7 @@ func (x *DeleteLanguageRequest) GetQueryBy() isDeleteLanguageRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteLanguageRequest) GetId() uint64 {
+func (x *DeleteLanguageRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteLanguageRequest_Id); ok {
 			return x.Id
@@ -487,7 +487,7 @@ type isDeleteLanguageRequest_QueryBy interface {
 }
 
 type DeleteLanguageRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteLanguageRequest_Id) isDeleteLanguageRequest_QueryBy() {}
@@ -582,7 +582,7 @@ func (x *BatchCreateLanguagesResponse) GetCreatedIds() []int32 {
 
 type CountLanguageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -617,7 +617,7 @@ func (*CountLanguageResponse) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_language_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CountLanguageResponse) GetCount() uint64 {
+func (x *CountLanguageResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -630,7 +630,7 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\n" +
 	"\x1edict/service/v1/language.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xa3\b\n" +
 	"\bLanguage\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b语言IDH\x00R\x02id\x88\x01\x01\x12B\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b语言IDH\x00R\x02id\x88\x01\x01\x12B\n" +
 	"\rlanguage_code\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12标准语言代码H\x01R\flanguageCode\x88\x01\x01\x12<\n" +
 	"\rlanguage_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f语言名称H\x02R\flanguageName\x88\x01\x01\x12>\n" +
 	"\vnative_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12本地语言名称H\x03R\n" +
@@ -642,11 +642,11 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\n" +
 	"sort_order\x18\a \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x06R\tsortOrder\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\aR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\aR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
 	"R\tcreatedAt\x88\x01\x01\x12S\n" +
@@ -669,9 +669,9 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\v_deleted_at\"]\n" +
 	"\x14ListLanguageResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.dict.service.v1.LanguageR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xf7\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xf7\x01\n" +
 	"\x12GetLanguageRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x120\n" +
 	"\x04code\x18\x02 \x01(\tB\x1a\xbaG\x17\x18\x01\x92\x02\x12标准语言代码H\x00R\x04code\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
@@ -682,14 +682,14 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\x15CreateLanguageRequest\x12-\n" +
 	"\x04data\x18\x01 \x01(\v2\x19.dict.service.v1.LanguageR\x04data\"\x94\x03\n" +
 	"\x15UpdateLanguageRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12-\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12-\n" +
 	"\x04data\x18\x02 \x01(\v2\x19.dict.service.v1.LanguageR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"A\n" +
 	"\x15DeleteLanguageRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"N\n" +
@@ -699,7 +699,7 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的语言ID列表R\n" +
 	"createdIds\"-\n" +
 	"\x15CountLanguageResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xaf\x04\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xaf\x04\n" +
 	"\x0fLanguageService\x12J\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListLanguageResponse\"\x00\x12L\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a&.dict.service.v1.CountLanguageResponse\"\x00\x12G\n" +

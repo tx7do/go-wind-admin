@@ -134,8 +134,8 @@ func (_q *AiDocQuery) FirstX(ctx context.Context) *AiDoc {
 
 // FirstID returns the first AiDoc ID from the query.
 // Returns a *NotFoundError when no AiDoc ID was found.
-func (_q *AiDocQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *AiDocQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -147,7 +147,7 @@ func (_q *AiDocQuery) FirstID(ctx context.Context) (id uint64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AiDocQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *AiDocQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -185,8 +185,8 @@ func (_q *AiDocQuery) OnlyX(ctx context.Context) *AiDoc {
 // OnlyID is like Only, but returns the only AiDoc ID in the query.
 // Returns a *NotSingularError when more than one AiDoc ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AiDocQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *AiDocQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -202,7 +202,7 @@ func (_q *AiDocQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AiDocQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *AiDocQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -230,7 +230,7 @@ func (_q *AiDocQuery) AllX(ctx context.Context) []*AiDoc {
 }
 
 // IDs executes the query and returns a list of AiDoc IDs.
-func (_q *AiDocQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *AiDocQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -242,7 +242,7 @@ func (_q *AiDocQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AiDocQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *AiDocQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -460,8 +460,8 @@ func (_q *AiDocQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AiDoc,
 }
 
 func (_q *AiDocQuery) loadBase(ctx context.Context, query *AiKnowledgeBaseQuery, nodes []*AiDoc, init func(*AiDoc), assign func(*AiDoc, *AiKnowledgeBase)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*AiDoc)
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*AiDoc)
 	for i := range nodes {
 		if nodes[i].BaseID == nil {
 			continue
@@ -493,7 +493,7 @@ func (_q *AiDocQuery) loadBase(ctx context.Context, query *AiKnowledgeBaseQuery,
 }
 func (_q *AiDocQuery) loadChunks(ctx context.Context, query *AiChunkQuery, nodes []*AiDoc, init func(*AiDoc), assign func(*AiDoc, *AiChunk)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*AiDoc)
+	nodeids := make(map[int64]*AiDoc)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -538,7 +538,7 @@ func (_q *AiDocQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *AiDocQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

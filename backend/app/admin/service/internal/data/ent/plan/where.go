@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.Plan {
+func ID(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.Plan {
+func IDEQ(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.Plan {
+func IDNEQ(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.Plan {
+func IDIn(ids ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.Plan {
+func IDNotIn(ids ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.Plan {
+func IDGT(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.Plan {
+func IDGTE(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.Plan {
+func IDLT(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.Plan {
+func IDLTE(id int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldID, id))
 }
 
@@ -71,17 +71,17 @@ func DeletedAt(v time.Time) predicate.Plan {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint64) predicate.Plan {
+func CreatedBy(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint64) predicate.Plan {
+func UpdatedBy(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint64) predicate.Plan {
+func DeletedBy(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDeletedBy, v))
 }
 
@@ -256,42 +256,42 @@ func DeletedAtNotNil() predicate.Plan {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint64) predicate.Plan {
+func CreatedByEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint64) predicate.Plan {
+func CreatedByNEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint64) predicate.Plan {
+func CreatedByIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint64) predicate.Plan {
+func CreatedByNotIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint64) predicate.Plan {
+func CreatedByGT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint64) predicate.Plan {
+func CreatedByGTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint64) predicate.Plan {
+func CreatedByLT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint64) predicate.Plan {
+func CreatedByLTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -306,42 +306,42 @@ func CreatedByNotNil() predicate.Plan {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint64) predicate.Plan {
+func UpdatedByEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint64) predicate.Plan {
+func UpdatedByNEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint64) predicate.Plan {
+func UpdatedByIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint64) predicate.Plan {
+func UpdatedByNotIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint64) predicate.Plan {
+func UpdatedByGT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint64) predicate.Plan {
+func UpdatedByGTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint64) predicate.Plan {
+func UpdatedByLT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint64) predicate.Plan {
+func UpdatedByLTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -356,42 +356,42 @@ func UpdatedByNotNil() predicate.Plan {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint64) predicate.Plan {
+func DeletedByEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint64) predicate.Plan {
+func DeletedByNEQ(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint64) predicate.Plan {
+func DeletedByIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint64) predicate.Plan {
+func DeletedByNotIn(vs ...int64) predicate.Plan {
 	return predicate.Plan(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint64) predicate.Plan {
+func DeletedByGT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint64) predicate.Plan {
+func DeletedByGTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint64) predicate.Plan {
+func DeletedByLT(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint64) predicate.Plan {
+func DeletedByLTE(v int64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldDeletedBy, v))
 }
 

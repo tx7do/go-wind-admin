@@ -73,7 +73,7 @@ func TestNotificationChannelRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.Remark)
 	require.Equal(t, "渠道-alpha", *row.Remark, "remark 应按载荷落库")
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	// 未初始化全局加密器时 EncryptIfNeeded 为透传
 	require.NotNil(t, row.SMTPPassword)
 	require.Equal(t, "alpha-secret", *row.SMTPPassword, "请求级 password 应经 EncryptIfNeeded（透传）落 smtp_password")
@@ -106,7 +106,7 @@ func TestNotificationChannelRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, notificationchannel.StatusOff, *beta.Status, "enabled=false 应派生 status=OFF")
 	require.Nil(t, beta.SMTPPassword, "未携带 password 时 smtp_password 应为空")
 	require.NotNil(t, beta.CreatedBy)
-	require.Equal(t, uint64(1002), *beta.CreatedBy)
+	require.Equal(t, int64(1002), *beta.CreatedBy)
 
 	// 参数校验分支
 	_, err = repo.Create(ctx, nil, 1)
@@ -214,9 +214,9 @@ func TestNotificationChannelRepoSqlite_List(t *testing.T) {
 	// 无过滤：两行全部返回，HasPassword 按各自密码列有无回填
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 行")
-	hasPwd := map[uint64]bool{}
+	hasPwd := map[int64]bool{}
 	for _, it := range all.Items {
 		hasPwd[it.GetId()] = it.GetHasPassword()
 	}
@@ -230,7 +230,7 @@ func TestNotificationChannelRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Equal(t, idWithoutPwd, filtered.Items[0].GetId(), "命中行应为名称含 markerout 的 B 行")
 	require.False(t, filtered.Items[0].GetHasPassword())
@@ -315,7 +315,7 @@ func TestNotificationChannelRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, notificationchannel.StatusOn, *row.Status, "掩码内的 enabled=true 应派生 status=ON")
 	require.Equal(t, "orig-secret", *row.SMTPPassword, "password 为空时 smtp_password 应保持原值")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// 第二次更新：掩码 [smtp_from, smtp_username, remark, smtp_port]，password 非空
@@ -616,8 +616,8 @@ func TestNotificationChannelRepoSqlite_WebhookColumns(t *testing.T) {
 	// 列表视图：两列标识逐行回填
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
-	flags := map[uint64]bool{}
+	require.Equal(t, int64(2), all.GetTotal())
+	flags := map[int64]bool{}
 	for _, it := range all.GetItems() {
 		flags[it.GetId()] = it.GetHasWebhookSecret()
 	}

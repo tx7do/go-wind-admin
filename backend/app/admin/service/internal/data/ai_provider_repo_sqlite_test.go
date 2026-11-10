@@ -39,7 +39,7 @@ func newProviderPayload() *aiV1.AiProvider {
 		IsDefault:      trans.Ptr(true),
 		IsEnabled:      trans.Ptr(true),
 		Remark:         trans.Ptr("主力云端提供商"),
-		CreatedBy:      trans.Ptr(uint64(1001)),
+		CreatedBy:      trans.Ptr(int64(1001)),
 	}
 }
 
@@ -73,7 +73,7 @@ func TestAiProviderRepoSqlite_Create(t *testing.T) {
 	require.NotNil(t, row.IsEnabled)
 	require.True(t, *row.IsEnabled, "is_enabled 应按载荷落库")
 	require.NotNil(t, row.CreatedBy)
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入：留给 NULL 列表页会出一排空行")
 
 	// 读视图：枚举回映射 + 密文脱敏
@@ -235,7 +235,7 @@ func TestAiProviderRepoSqlite_List(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
+	require.Equal(t, int64(2), all.GetTotal())
 	require.Len(t, all.GetItems(), 2)
 	for _, it := range all.GetItems() {
 		require.Nil(t, it.ApiKey, "列表读视图同样不得带出密文（这条失守就是批量泄密）")
@@ -247,7 +247,7 @@ func TestAiProviderRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
 	require.Len(t, filtered.GetItems(), 1)
 	require.Equal(t, "marker-云端", filtered.GetItems()[0].GetName())
 
@@ -257,7 +257,7 @@ func TestAiProviderRepoSqlite_List(t *testing.T) {
 	// Count 与 List 的 total 口径一致
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cnt.GetCount(), "Count 应与 List 的 total 同口径")
+	require.Equal(t, int64(2), cnt.GetCount(), "Count 应与 List 的 total 同口径")
 }
 
 // TestAiProviderRepoSqlite_Update 验证掩码语义：掩码内字段更新（枚举经 converter 落库）、
@@ -302,7 +302,7 @@ func TestAiProviderRepoSqlite_Update(t *testing.T) {
 		Id: id,
 		Data: &aiV1.AiProvider{
 			Remark:    trans.Ptr("已切换本地部署"),
-			UpdatedBy: trans.Ptr(uint64(2001)),
+			UpdatedBy: trans.Ptr(int64(2001)),
 		},
 	}))
 	row, err = entClient.Client().AiProvider.Get(ctx, id)
@@ -310,7 +310,7 @@ func TestAiProviderRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "已切换本地部署", *row.Remark)
 	require.Equal(t, "qwen2.5-72b", *row.ModelName, "无掩码时未带字段是 SetNillable no-op，不应清掉原值")
 	require.NotNil(t, row.UpdatedBy)
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "updated_by 应按载荷盖成新操作人")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "updated_by 应按载荷盖成新操作人")
 	require.NotNil(t, row.UpdatedAt)
 
 	// allow_missing：对不存在的 ID 转创建（upsert 语义）。目标 ID 由载荷 Data.Id 承载
@@ -320,7 +320,7 @@ func TestAiProviderRepoSqlite_Update(t *testing.T) {
 		AllowMissing: trans.Ptr(true),
 		Data: func() *aiV1.AiProvider {
 			p := newProviderPayload()
-			p.Id = trans.Ptr(uint64(777001))
+			p.Id = trans.Ptr(int64(777001))
 			return p
 		}(),
 	}))
@@ -338,7 +338,7 @@ func TestAiProviderRepoSqlite_Update(t *testing.T) {
 	require.Error(t, err, "对不存在 ID 的普通更新不应创建行")
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), cnt.GetCount(), "失败更新不应影响行数")
+	require.Equal(t, int64(2), cnt.GetCount(), "失败更新不应影响行数")
 
 	// 入参守卫
 	require.Error(t, repo.Update(ctx, nil), "nil 请求应返回 BadRequest")
@@ -376,7 +376,7 @@ func TestAiProviderRepoSqlite_Delete(t *testing.T) {
 
 	cnt, err := repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), cnt.GetCount(), "只该删掉一行")
+	require.Equal(t, int64(1), cnt.GetCount(), "只该删掉一行")
 
 	require.Error(t, repo.Delete(ctx, nil), "nil 请求应返回 BadRequest")
 	require.NoError(t, repo.Delete(ctx, &aiV1.DeleteAiProviderRequest{
@@ -384,5 +384,5 @@ func TestAiProviderRepoSqlite_Delete(t *testing.T) {
 	}), "删除不存在的 ID 不应报错（ent 删除 0 行不视为失败）")
 	cnt, err = repo.Count(ctx, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), cnt.GetCount(), "失败删除不应影响行数")
+	require.Equal(t, int64(1), cnt.GetCount(), "失败删除不应影响行数")
 }

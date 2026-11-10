@@ -40,11 +40,11 @@ func (Position) Fields() []ent.Field {
 			NotEmpty().
 			Nillable(),
 
-		field.Uint64("org_unit_id").
+		field.Int64("org_unit_id").
 			Comment("所属组织单元ID").
 			Nillable(),
 
-		field.Uint64("reports_to_position_id").
+		field.Int64("reports_to_position_id").
 			Comment("汇报关系").
 			Optional().
 			Nillable(),
@@ -111,7 +111,7 @@ func (Position) Mixin() []ent.Mixin {
 		mixin.OperatorID64{},
 		mixin.SortOrder{},
 		mixin.Remark{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 		mixin.SwitchStatus{},
 	}
 }

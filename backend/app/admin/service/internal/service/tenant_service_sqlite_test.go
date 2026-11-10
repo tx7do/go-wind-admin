@@ -38,7 +38,7 @@ type tenantServiceUserRepoStub struct {
 	data.UserRepo
 }
 
-func (s *tenantServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []uint64) ([]*identityV1.User, error) {
+func (s *tenantServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []int64) ([]*identityV1.User, error) {
 	users := make([]*identityV1.User, 0, len(ids))
 	for _, id := range ids {
 		users = append(users, &identityV1.User{
@@ -49,8 +49,8 @@ func (s *tenantServiceUserRepoStub) ListUsersByIds(_ context.Context, ids []uint
 	return users, nil
 }
 
-func (s *tenantServiceUserRepoStub) CountByTenantIDs(_ context.Context, tenantIDs []uint64) (map[uint64]int, error) {
-	counts := make(map[uint64]int, len(tenantIDs))
+func (s *tenantServiceUserRepoStub) CountByTenantIDs(_ context.Context, tenantIDs []int64) (map[int64]int, error) {
+	counts := make(map[int64]int, len(tenantIDs))
 	for _, id := range tenantIDs {
 		counts[id] = 3
 	}
@@ -92,7 +92,7 @@ func TestTenantServiceSqlite_ListEnrichment(t *testing.T) {
 		Status:      identityV1.Tenant_ON.Enum(),
 		Type:        identityV1.Tenant_TRIAL.Enum(),
 		AuditStatus: identityV1.Tenant_APPROVED.Enum(),
-		AdminUserId: trans.Ptr(uint64(9901)),
+		AdminUserId: trans.Ptr(int64(9901)),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, withAdmin)
@@ -109,7 +109,7 @@ func TestTenantServiceSqlite_ListEnrichment(t *testing.T) {
 
 	resp, err := svc.List(tenantPlatAdminCtx(ctx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), resp.GetTotal(), "两条租户都应出现在列表中")
+	require.Equal(t, int64(2), resp.GetTotal(), "两条租户都应出现在列表中")
 	require.Len(t, resp.GetItems(), 2)
 
 	for _, item := range resp.GetItems() {
@@ -139,7 +139,7 @@ func TestTenantServiceSqlite_GetEnrichment(t *testing.T) {
 		Status:      identityV1.Tenant_ON.Enum(),
 		Type:        identityV1.Tenant_TRIAL.Enum(),
 		AuditStatus: identityV1.Tenant_APPROVED.Enum(),
-		AdminUserId: trans.Ptr(uint64(9902)),
+		AdminUserId: trans.Ptr(int64(9902)),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, created.Id)
@@ -201,10 +201,10 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 	})
 	require.NoError(t, err, "service.Create 应走完操作人注入与事务创建")
 
-	var createdID uint64
+	var createdID int64
 	listResp, err := svc.List(tenantPlatAdminCtx(baseCtx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), listResp.GetTotal(), "创建后列表应恰好包含该租户")
+	require.Equal(t, int64(1), listResp.GetTotal(), "创建后列表应恰好包含该租户")
 	require.Len(t, listResp.GetItems(), 1)
 	item := listResp.GetItems()[0]
 	createdID = item.GetId()
@@ -218,6 +218,6 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 
 	after, err := svc.List(tenantPlatAdminCtx(baseCtx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), after.GetTotal(), "删除后列表应为空")
+	require.Equal(t, int64(0), after.GetTotal(), "删除后列表应为空")
 	require.Empty(t, after.GetItems())
 }

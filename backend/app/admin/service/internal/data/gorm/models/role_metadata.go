@@ -11,7 +11,7 @@ import (
 type RoleMetadata struct {
 	mixin.AutoIncrementID64
 
-	RoleId            *uint64         `gorm:"column:role_id;type:int unsigned;comment:角色ID"`
+	RoleId            *int64         `gorm:"column:role_id;type:int unsigned;comment:角色ID"`
 	IsTemplate        *bool           `gorm:"column:is_template;type:boolean;comment:是否模板"`
 	TemplateFor       *string         `gorm:"column:template_for;type:varchar(255);comment:模板用于"`
 	TemplateVersion   *int32          `gorm:"column:template_version;type:int;comment:模板版本"`

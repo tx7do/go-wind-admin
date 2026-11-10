@@ -29,7 +29,7 @@ func newAppPayload(name string) *aiV1.AiAgentApp {
 		Description: trans.Ptr("周报汇总应用"),
 		Graph:       trans.Ptr(`{"nodes":[{"id":"start"}],"edges":[]}`),
 		Enabled:     trans.Ptr(true),
-		TenantId:    trans.Ptr(uint64(7)),
+		TenantId:    trans.Ptr(int64(7)),
 	}
 }
 
@@ -51,8 +51,8 @@ func TestAiAgentAppRepoSqlite_Create(t *testing.T) {
 	require.Equal(t, "周报汇总应用", *row.Description)
 	require.Equal(t, `{"nodes":[{"id":"start"}],"edges":[]}`, *row.Graph, "graph 原文必须保值：运行引擎靠它重放图")
 	require.True(t, row.Enabled, "enabled 应按载荷落库")
-	require.Equal(t, uint64(7), *row.TenantID, "租户归属必须落库：唯一索引与隔离都按它")
-	require.Equal(t, uint64(1001), *row.CreatedBy, "operatorID 应落 created_by")
+	require.Equal(t, int64(7), *row.TenantID, "租户归属必须落库：唯一索引与隔离都按它")
+	require.Equal(t, int64(1001), *row.CreatedBy, "operatorID 应落 created_by")
 	require.NotNil(t, row.CreatedAt, "created_at 必须显式写入")
 
 	// 同租户重名：唯一约束冲突必须转成可读的 400，而不是 500
@@ -63,7 +63,7 @@ func TestAiAgentAppRepoSqlite_Create(t *testing.T) {
 	// 跨租户同名：唯一索引是 (tenant_id, name)，别家可以叫同一个名字
 	idOther, err := repo.Create(ctx, func() *aiV1.AiAgentApp {
 		p := newAppPayload("周报助手")
-		p.TenantId = trans.Ptr(uint64(9))
+		p.TenantId = trans.Ptr(int64(9))
 		return p
 	}(), 1002)
 	require.NoError(t, err, "跨租户同名应放行（唯一索引按租户分桶）")
@@ -98,11 +98,11 @@ func TestAiAgentAppRepoSqlite_List(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.GetTotal())
+	require.Equal(t, int64(2), all.GetTotal())
 	require.Len(t, all.GetItems(), 2)
 
 	// enabled 回填：停用行也必须如实回 false，不能因 copier 失配全变 true/nil
-	enabledFlags := map[uint64]bool{}
+	enabledFlags := map[int64]bool{}
 	for _, it := range all.GetItems() {
 		require.NotNil(t, it.Enabled, "enabled 应经读路径回填为指针")
 		enabledFlags[it.GetId()] = it.GetEnabled()
@@ -117,7 +117,7 @@ func TestAiAgentAppRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.GetTotal(), "contains 过滤应只统计命中行")
 	require.Equal(t, "marker-启用应用", filtered.GetItems()[0].GetName())
 
 	_, err = repo.List(ctx, nil)
@@ -175,7 +175,7 @@ func TestAiAgentAppRepoSqlite_Update(t *testing.T) {
 	require.False(t, row.Enabled, "掩码内的 enabled=false 应生效（停用是运行闸门）")
 	require.Equal(t, "待改应用", row.Name, "掩码外未点名的 name 应保持原值")
 	require.Equal(t, `{"nodes":[{"id":"start"}],"edges":[]}`, *row.Graph, "掩码外的 graph 原文不得被顺手动走")
-	require.Equal(t, uint64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
+	require.Equal(t, int64(2001), *row.UpdatedBy, "operatorID 应落 updated_by")
 	require.NotNil(t, row.UpdatedAt, "更新应写入 updated_at")
 
 	// 无掩码全量更新：name/description/graph 直写；enabled 缺席 → 值型列直写 false
@@ -228,7 +228,7 @@ func TestAiAgentAppRepoSqlite_Delete(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), all.GetTotal(), "只该删掉一行")
+	require.Equal(t, int64(1), all.GetTotal(), "只该删掉一行")
 
 	require.Error(t, repo.Delete(ctx, 0), "id=0 应返回 BadRequest")
 	// ent 的 DeleteOneID 对 0 行返回 NotFoundError，repo 包装成 500：与按 ID 删实体的
@@ -238,5 +238,5 @@ func TestAiAgentAppRepoSqlite_Delete(t *testing.T) {
 	require.Contains(t, err.Error(), "delete ai agent app failed")
 	all, err = repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), all.GetTotal(), "失败删除不应影响行数")
+	require.Equal(t, int64(1), all.GetTotal(), "失败删除不应影响行数")
 }

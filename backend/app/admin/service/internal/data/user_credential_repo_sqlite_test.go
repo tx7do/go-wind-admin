@@ -69,7 +69,7 @@ func TestUserCredentialRepoSqlite_CreateAndGet(t *testing.T) {
 
 	err := repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:            trans.Ptr(uint64(77)),
+			UserId:            trans.Ptr(int64(77)),
 			IdentityType:      authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:        trans.Ptr("sqlite_uc_user"),
 			CredentialType:    authenticationV1.UserCredential_API_KEY.Enum(),
@@ -87,7 +87,7 @@ func TestUserCredentialRepoSqlite_CreateAndGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "sys_user_credentials 应有 1 条记录")
 	row := rows[0]
-	require.Equal(t, uint64(77), *row.UserID, "user_id 应按请求落库")
+	require.Equal(t, int64(77), *row.UserID, "user_id 应按请求落库")
 	require.NotNil(t, row.IdentityType)
 	require.Equal(t, entUserCredential.IdentityTypeUsername, *row.IdentityType,
 		"proto USERNAME 应映射为 ent IdentityTypeUsername")
@@ -169,7 +169,7 @@ func TestUserCredentialRepoSqlite_IdentityTypeEnumPairs(t *testing.T) {
 		if entVal == nil || entUserCredential.IdentityTypeValidator(*entVal) != nil {
 			require.Error(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 				Data: &authenticationV1.UserCredential{
-					UserId:         trans.Ptr(uint64(1)),
+					UserId:         trans.Ptr(int64(1)),
 					IdentityType:   authenticationV1.UserCredential_IdentityType(value).Enum(),
 					Identifier:     trans.Ptr(fmt.Sprintf("sqlite-ident-identity-rejected-%d", value)),
 					CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -184,7 +184,7 @@ func TestUserCredentialRepoSqlite_IdentityTypeEnumPairs(t *testing.T) {
 		expectedProto[value] = 1
 		require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 			Data: &authenticationV1.UserCredential{
-				UserId:         trans.Ptr(uint64(1)),
+				UserId:         trans.Ptr(int64(1)),
 				IdentityType:   authenticationV1.UserCredential_IdentityType(value).Enum(),
 				Identifier:     trans.Ptr(fmt.Sprintf("sqlite-ident-identity-%d", serial)),
 				CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -229,7 +229,7 @@ func TestUserCredentialRepoSqlite_StatusEnumPairs(t *testing.T) {
 		expectedProto[value] = 1
 		require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 			Data: &authenticationV1.UserCredential{
-				UserId:         trans.Ptr(uint64(2)),
+				UserId:         trans.Ptr(int64(2)),
 				IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 				Identifier:     trans.Ptr(fmt.Sprintf("sqlite-ident-status-%d", serial)),
 				CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -278,7 +278,7 @@ func TestUserCredentialRepoSqlite_CredentialTypeEnumPairs(t *testing.T) {
 		if entVal == nil || entUserCredential.CredentialTypeValidator(*entVal) != nil {
 			require.Error(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 				Data: &authenticationV1.UserCredential{
-					UserId:         trans.Ptr(uint64(3)),
+					UserId:         trans.Ptr(int64(3)),
 					IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 					Identifier:     trans.Ptr(fmt.Sprintf("sqlite-ident-credtype-rejected-%d", value)),
 					CredentialType: authenticationV1.UserCredential_CredentialType(value).Enum(),
@@ -297,7 +297,7 @@ func TestUserCredentialRepoSqlite_CredentialTypeEnumPairs(t *testing.T) {
 		}
 		require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 			Data: &authenticationV1.UserCredential{
-				UserId:         trans.Ptr(uint64(3)),
+				UserId:         trans.Ptr(int64(3)),
 				IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 				Identifier:     trans.Ptr(fmt.Sprintf("sqlite-ident-credtype-%d", serial)),
 				CredentialType: authenticationV1.UserCredential_CredentialType(value).Enum(),
@@ -347,7 +347,7 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	for i, marker := range []string{"MARKERRHO", "MARKERSIGMA"} {
 		require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 			Data: &authenticationV1.UserCredential{
-				UserId:         trans.Ptr(uint64(50)),
+				UserId:         trans.Ptr(int64(50)),
 				IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 				Identifier:     trans.Ptr(marker + "_ident"),
 				CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -365,7 +365,7 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2)
 
 	filtered, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -383,7 +383,7 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetIdentifier(), "MARKERRHO", "命中行应为含标记的那条")
 
@@ -402,7 +402,7 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), byID.Total, "id 等值过滤应只统计目标行")
+	require.Equal(t, int64(1), byID.Total, "id 等值过滤应只统计目标行")
 	require.Len(t, byID.Items, 1, "id 等值过滤应只返回目标行")
 	require.Equal(t, secondID, byID.Items[0].GetId())
 
@@ -411,7 +411,7 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page1.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page1.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page1.Items, 1, "pageSize=1 第一页应只含 1 行")
 
 	page2, err := repo.List(ctx, &paginationV1.PagingRequest{
@@ -419,10 +419,10 @@ func TestUserCredentialRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		PageSize: trans.Ptr(uint32(1)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), page2.Total, "分页时 Total 应仍为全量 2")
+	require.Equal(t, int64(2), page2.Total, "分页时 Total 应仍为全量 2")
 	require.Len(t, page2.Items, 1, "pageSize=1 第二页应只含 1 行")
-	require.ElementsMatch(t, []uint64{firstID, secondID},
-		[]uint64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
+	require.ElementsMatch(t, []int64{firstID, secondID},
+		[]int64{page1.Items[0].GetId(), page2.Items[0].GetId()}, "两页合并应覆盖全部行")
 }
 
 // TestUserCredentialRepoSqlite_CountAndIsExist 验证 Count 的带谓词/无谓词语义
@@ -433,7 +433,7 @@ func TestUserCredentialRepoSqlite_CountAndIsExist(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(60)),
+			UserId:         trans.Ptr(int64(60)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("count_ident_a"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -443,7 +443,7 @@ func TestUserCredentialRepoSqlite_CountAndIsExist(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(61)),
+			UserId:         trans.Ptr(int64(61)),
 			IdentityType:   authenticationV1.UserCredential_EMAIL.Enum(),
 			Identifier:     trans.Ptr("count_ident_b@x"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -495,7 +495,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	// 弱口令创建被复杂度校验拒绝
 	require.Error(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(77)),
+			UserId:         trans.Ptr(int64(77)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("sqlite_pw_user"),
 			CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
@@ -507,7 +507,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	// 强口令创建成功，落库为哈希
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(77)),
+			UserId:         trans.Ptr(int64(77)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("sqlite_pw_user"),
 			CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
@@ -523,7 +523,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	// 停用状态的凭证行：FindUserCredential 应按“用户不存在”拒绝（不泄露状态差异）
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(78)),
+			UserId:         trans.Ptr(int64(78)),
 			IdentityType:   authenticationV1.UserCredential_EMAIL.Enum(),
 			Identifier:     trans.Ptr("disabled@x"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -536,7 +536,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	uid, err := repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME,
 		"sqlite_pw_user", pw0, false)
 	require.NoError(t, err, "正确口令应命中")
-	require.Equal(t, uint64(77), uid, "应返回落库 user_id")
+	require.Equal(t, int64(77), uid, "应返回落库 user_id")
 
 	// FindUserCredential：错误口令
 	_, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME,
@@ -559,7 +559,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	uid, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME,
 		"sqlite_pw_user", base64.StdEncoding.EncodeToString(encGood), true)
 	require.NoError(t, err, "AES 加密载荷解密后应命中")
-	require.Equal(t, uint64(77), uid)
+	require.Equal(t, int64(77), uid)
 
 	// FindUserCredential：needDecrypt 路径——非 base64 载荷报错
 	_, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME,
@@ -639,7 +639,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	require.True(t, ok, "历史首条应为旧口令 pw0 的哈希")
 	uid, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME, "sqlite_pw_user", pw1, false)
 	require.NoError(t, err, "轮换后新口令 pw1 应命中")
-	require.Equal(t, uint64(77), uid)
+	require.Equal(t, int64(77), uid)
 	_, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME, "sqlite_pw_user", pw0, false)
 	require.Error(t, err, "轮换后旧口令 pw0 应失效")
 
@@ -666,7 +666,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	require.Len(t, readHistory(), 2, "二次轮换后历史应含 2 条旧哈希")
 	uid, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME, "sqlite_pw_user", pw2, false)
 	require.NoError(t, err, "AES 轮换后新口令 pw2 应命中")
-	require.Equal(t, uint64(77), uid)
+	require.Equal(t, int64(77), uid)
 
 	// ChangeCredential 的 AES needDecrypt 路径：非法 base64 拒绝
 	require.Error(t, repo.ChangeCredential(ctx, &authenticationV1.ChangeCredentialRequest{
@@ -686,7 +686,7 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	require.Len(t, readHistory(), 3, "三次轮换后历史应封顶 3 条")
 	uid, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME, "sqlite_pw_user", pw3, false)
 	require.NoError(t, err, "重置后新口令 pw3 应命中")
-	require.Equal(t, uint64(77), uid)
+	require.Equal(t, int64(77), uid)
 	_, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME, "sqlite_pw_user", pw2, false)
 	require.Error(t, err, "重置后旧口令 pw2 应失效")
 
@@ -718,7 +718,7 @@ func TestUserCredentialRepoSqlite_UpdateMaskAndAllowMissing(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(88)),
+			UserId:         trans.Ptr(int64(88)),
 			IdentityType:   authenticationV1.UserCredential_EMAIL.Enum(),
 			Identifier:     trans.Ptr("update_before@x"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -765,7 +765,7 @@ func TestUserCredentialRepoSqlite_UpdateMaskAndAllowMissing(t *testing.T) {
 		Id:           987654,
 		AllowMissing: trans.Ptr(true),
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(89)),
+			UserId:         trans.Ptr(int64(89)),
 			IdentityType:   authenticationV1.UserCredential_PHONE.Enum(),
 			Identifier:     trans.Ptr("allowmissing-created@x"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -792,7 +792,7 @@ func TestUserCredentialRepoSqlite_Delete(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(91)),
+			UserId:         trans.Ptr(int64(91)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("del_ident_a"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -802,7 +802,7 @@ func TestUserCredentialRepoSqlite_Delete(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(91)),
+			UserId:         trans.Ptr(int64(91)),
 			IdentityType:   authenticationV1.UserCredential_EMAIL.Enum(),
 			Identifier:     trans.Ptr("del_ident_b@x"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -812,7 +812,7 @@ func TestUserCredentialRepoSqlite_Delete(t *testing.T) {
 	}))
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(92)),
+			UserId:         trans.Ptr(int64(92)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("del_ident_c"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),
@@ -850,7 +850,7 @@ func TestUserCredentialRepoSqlite_Delete(t *testing.T) {
 	// Delete：删除存在的 ID
 	require.NoError(t, repo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
-			UserId:         trans.Ptr(uint64(93)),
+			UserId:         trans.Ptr(int64(93)),
 			IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 			Identifier:     trans.Ptr("del_ident_d"),
 			CredentialType: authenticationV1.UserCredential_API_KEY.Enum(),

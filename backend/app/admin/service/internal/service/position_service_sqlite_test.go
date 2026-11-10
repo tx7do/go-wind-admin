@@ -63,12 +63,12 @@ func TestPositionServiceSqlite_CreateListCountAndGet(t *testing.T) {
 		require.Equal(t, entPosition.StatusOn, *r.Status, "status 应经转换器落库为 ON")
 		require.Equal(t, entPosition.TypeManager, r.Type, "type 应经转换器落库为 MANAGER")
 		require.NotNil(t, r.CreatedBy, "created_by 应被服务层盖入操作人 ID")
-		require.Equal(t, uint64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+		require.Equal(t, int64(7), *r.CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 	}
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listResp.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), listResp.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, listResp.Items, 2, "无过滤时应返回 2 条")
 	for _, item := range listResp.Items {
 		require.Empty(t, item.GetOrgUnitName(), "无组织单元关联的职位不应回填组织单元名")
@@ -76,10 +76,10 @@ func TestPositionServiceSqlite_CreateListCountAndGet(t *testing.T) {
 
 	countResp, err := svc.Count(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), countResp.GetCount(), "Count 应统计全部 2 条")
+	require.Equal(t, int64(2), countResp.GetCount(), "Count 应统计全部 2 条")
 
 	got, err := svc.Get(ctx, &identityV1.GetPositionRequest{
-		QueryBy: &identityV1.GetPositionRequest_Id{Id: uint64(rows[0].ID)},
+		QueryBy: &identityV1.GetPositionRequest_Id{Id: int64(rows[0].ID)},
 	})
 	require.NoError(t, err, "按已存在主键查询应命中")
 	require.Equal(t, "服务层职位甲", got.GetName(), "命中记录的 name 应与写入一致")
@@ -124,7 +124,7 @@ func TestPositionServiceSqlite_List_ContainsFilter(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 条")
 	require.Contains(t, filtered.Items[0].GetName(), "MARKERPOSALPHA", "命中行应是携带标记的那条")
 }

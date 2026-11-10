@@ -29,17 +29,17 @@ const (
 // 站内信消息分类
 type InternalMessageCategory struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                   // 分类ID
+	Id            *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                   // 分类ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                // 名称
 	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                // 编码
 	IconUrl       *string                `protobuf:"bytes,4,opt,name=icon_url,json=iconUrl,proto3,oneof" json:"icon_url,omitempty"`           // 图标URL
 	SortOrder     *uint32                `protobuf:"varint,5,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`    // 排序顺序，值越小越靠前
 	IsEnabled     *bool                  `protobuf:"varint,6,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`    // 是否启用
-	TenantId      *uint64                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`      // 租户ID，0代表系统全局角色
+	TenantId      *int64                 `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`      // 租户ID，0代表系统全局角色
 	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"` // 租户名称
-	CreatedBy     *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`  // 创建者ID
-	UpdatedBy     *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`  // 更新者ID
-	DeletedBy     *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`  // 删除者用户ID
+	CreatedBy     *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`  // 创建者ID
+	UpdatedBy     *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`  // 更新者ID
+	DeletedBy     *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`  // 删除者用户ID
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`   // 创建时间
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`   // 更新时间
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`   // 删除时间
@@ -77,7 +77,7 @@ func (*InternalMessageCategory) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_category_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *InternalMessageCategory) GetId() uint64 {
+func (x *InternalMessageCategory) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -119,7 +119,7 @@ func (x *InternalMessageCategory) GetIsEnabled() bool {
 	return false
 }
 
-func (x *InternalMessageCategory) GetTenantId() uint64 {
+func (x *InternalMessageCategory) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
@@ -133,21 +133,21 @@ func (x *InternalMessageCategory) GetTenantName() string {
 	return ""
 }
 
-func (x *InternalMessageCategory) GetCreatedBy() uint64 {
+func (x *InternalMessageCategory) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *InternalMessageCategory) GetUpdatedBy() uint64 {
+func (x *InternalMessageCategory) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *InternalMessageCategory) GetDeletedBy() uint64 {
+func (x *InternalMessageCategory) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -179,7 +179,7 @@ func (x *InternalMessageCategory) GetDeletedAt() *timestamppb.Timestamp {
 type ListInternalMessageCategoryResponse struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Items         []*InternalMessageCategory `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                     `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                      `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -221,7 +221,7 @@ func (x *ListInternalMessageCategoryResponse) GetItems() []*InternalMessageCateg
 	return nil
 }
 
-func (x *ListInternalMessageCategoryResponse) GetTotal() uint64 {
+func (x *ListInternalMessageCategoryResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -277,7 +277,7 @@ func (x *GetInternalMessageCategoryRequest) GetQueryBy() isGetInternalMessageCat
 	return nil
 }
 
-func (x *GetInternalMessageCategoryRequest) GetId() uint64 {
+func (x *GetInternalMessageCategoryRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetInternalMessageCategoryRequest_Id); ok {
 			return x.Id
@@ -298,7 +298,7 @@ type isGetInternalMessageCategoryRequest_QueryBy interface {
 }
 
 type GetInternalMessageCategoryRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*GetInternalMessageCategoryRequest_Id) isGetInternalMessageCategoryRequest_QueryBy() {}
@@ -351,7 +351,7 @@ func (x *CreateInternalMessageCategoryRequest) GetData() *InternalMessageCategor
 // 更新站内信消息分类 - 请求
 type UpdateInternalMessageCategoryRequest struct {
 	state         protoimpl.MessageState   `protogen:"open.v1"`
-	Id            uint64                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *InternalMessageCategory `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask   `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                    `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
@@ -389,7 +389,7 @@ func (*UpdateInternalMessageCategoryRequest) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_category_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateInternalMessageCategoryRequest) GetId() uint64 {
+func (x *UpdateInternalMessageCategoryRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -465,7 +465,7 @@ func (x *DeleteInternalMessageCategoryRequest) GetQueryBy() isDeleteInternalMess
 	return nil
 }
 
-func (x *DeleteInternalMessageCategoryRequest) GetId() uint64 {
+func (x *DeleteInternalMessageCategoryRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteInternalMessageCategoryRequest_Id); ok {
 			return x.Id
@@ -479,14 +479,14 @@ type isDeleteInternalMessageCategoryRequest_QueryBy interface {
 }
 
 type DeleteInternalMessageCategoryRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
 func (*DeleteInternalMessageCategoryRequest_Id) isDeleteInternalMessageCategoryRequest_QueryBy() {}
 
 type CountInternalMessageCategoryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -521,7 +521,7 @@ func (*CountInternalMessageCategoryResponse) Descriptor() ([]byte, []int) {
 	return file_internal_message_service_v1_internal_message_category_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountInternalMessageCategoryResponse) GetCount() uint64 {
+func (x *CountInternalMessageCategoryResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -534,7 +534,7 @@ const file_internal_message_service_v1_internal_message_category_proto_rawDesc =
 	"\n" +
 	";internal_message/service/v1/internal_message_category.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xb0\b\n" +
 	"\x17InternalMessageCategory\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b分类IDH\x00R\x02id\x88\x01\x01\x12%\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b分类IDH\x00R\x02id\x88\x01\x01\x12%\n" +
 	"\x04name\x18\x02 \x01(\tB\f\xbaG\t\x92\x02\x06名称H\x01R\x04name\x88\x01\x01\x12%\n" +
 	"\x04code\x18\x03 \x01(\tB\f\xbaG\t\x92\x02\x06编码H\x02R\x04code\x88\x01\x01\x12/\n" +
 	"\bicon_url\x18\x04 \x01(\tB\x0f\xbaG\f\x92\x02\t图标URLH\x03R\aiconUrl\x88\x01\x01\x12K\n" +
@@ -542,15 +542,15 @@ const file_internal_message_service_v1_internal_message_category_proto_rawDesc =
 	"sort_order\x18\x05 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x04R\tsortOrder\x88\x01\x01\x126\n" +
 	"\n" +
 	"is_enabled\x18\x06 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x05R\tisEnabled\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\x04B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x128\n" +
+	"\ttenant_id\x18( \x01(\x03B*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\aR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
 	"R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +
@@ -575,9 +575,9 @@ const file_internal_message_service_v1_internal_message_category_proto_rawDesc =
 	"\v_deleted_at\"\x87\x01\n" +
 	"#ListInternalMessageCategoryResponse\x12J\n" +
 	"\x05items\x18\x01 \x03(\v24.internal_message.service.v1.InternalMessageCategoryR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xd4\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xd4\x01\n" +
 	"!GetInternalMessageCategoryRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
@@ -587,19 +587,19 @@ const file_internal_message_service_v1_internal_message_category_proto_rawDesc =
 	"$CreateInternalMessageCategoryRequest\x12H\n" +
 	"\x04data\x18\x01 \x01(\v24.internal_message.service.v1.InternalMessageCategoryR\x04data\"\xbe\x03\n" +
 	"$UpdateInternalMessageCategoryRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12H\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12H\n" +
 	"\x04data\x18\x02 \x01(\v24.internal_message.service.v1.InternalMessageCategoryR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"P\n" +
 	"$DeleteInternalMessageCategoryRequest\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\x04B\n" +
+	"\x02id\x18\x01 \x01(\x03B\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"<\n" +
 	"$CountInternalMessageCategoryResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xa4\x05\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xa4\x05\n" +
 	"\x1eInternalMessageCategoryService\x12e\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a@.internal_message.service.v1.ListInternalMessageCategoryResponse\"\x00\x12g\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1aA.internal_message.service.v1.CountInternalMessageCategoryResponse\"\x00\x12}\n" +

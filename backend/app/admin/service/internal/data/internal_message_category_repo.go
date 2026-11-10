@@ -99,7 +99,7 @@ func (r *InternalMessageCategoryRepo) List(ctx context.Context, req *paginationV
 	}, nil
 }
 
-func (r *InternalMessageCategoryRepo) IsExist(ctx context.Context, id uint64) (bool, error) {
+func (r *InternalMessageCategoryRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().InternalMessageCategory.Query().
 		Where(internalmessagecategory.IDEQ(id)).
 		Exist(ctx)
@@ -133,7 +133,7 @@ func (r *InternalMessageCategoryRepo) Get(ctx context.Context, req *internalMess
 }
 
 // ListCategoriesByIds 根据ID列表获取分类列表
-func (r *InternalMessageCategoryRepo) ListCategoriesByIds(ctx context.Context, ids []uint64) ([]*internalMessageV1.InternalMessageCategory, error) {
+func (r *InternalMessageCategoryRepo) ListCategoriesByIds(ctx context.Context, ids []int64) ([]*internalMessageV1.InternalMessageCategory, error) {
 	if len(ids) == 0 {
 		return []*internalMessageV1.InternalMessageCategory{}, nil
 	}

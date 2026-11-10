@@ -29,14 +29,14 @@ func (_u *PolicyEvaluationLogUpdate) Where(ps ...predicate.PolicyEvaluationLog) 
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *PolicyEvaluationLogUpdate) SetUserID(v uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetUserID(v int64) *PolicyEvaluationLogUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdate) SetNillableUserID(v *uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetNillableUserID(v *int64) *PolicyEvaluationLogUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -50,14 +50,14 @@ func (_u *PolicyEvaluationLogUpdate) AddUserID(v int64) *PolicyEvaluationLogUpda
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (_u *PolicyEvaluationLogUpdate) SetMembershipID(v uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetMembershipID(v int64) *PolicyEvaluationLogUpdate {
 	_u.mutation.ResetMembershipID()
 	_u.mutation.SetMembershipID(v)
 	return _u
 }
 
 // SetNillableMembershipID sets the "membership_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdate) SetNillableMembershipID(v *uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetNillableMembershipID(v *int64) *PolicyEvaluationLogUpdate {
 	if v != nil {
 		_u.SetMembershipID(*v)
 	}
@@ -71,14 +71,14 @@ func (_u *PolicyEvaluationLogUpdate) AddMembershipID(v int64) *PolicyEvaluationL
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_u *PolicyEvaluationLogUpdate) SetPermissionID(v uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetPermissionID(v int64) *PolicyEvaluationLogUpdate {
 	_u.mutation.ResetPermissionID()
 	_u.mutation.SetPermissionID(v)
 	return _u
 }
 
 // SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdate) SetNillablePermissionID(v *uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetNillablePermissionID(v *int64) *PolicyEvaluationLogUpdate {
 	if v != nil {
 		_u.SetPermissionID(*v)
 	}
@@ -92,14 +92,14 @@ func (_u *PolicyEvaluationLogUpdate) AddPermissionID(v int64) *PolicyEvaluationL
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (_u *PolicyEvaluationLogUpdate) SetPolicyID(v uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetPolicyID(v int64) *PolicyEvaluationLogUpdate {
 	_u.mutation.ResetPolicyID()
 	_u.mutation.SetPolicyID(v)
 	return _u
 }
 
 // SetNillablePolicyID sets the "policy_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdate) SetNillablePolicyID(v *uint64) *PolicyEvaluationLogUpdate {
+func (_u *PolicyEvaluationLogUpdate) SetNillablePolicyID(v *int64) *PolicyEvaluationLogUpdate {
 	if v != nil {
 		_u.SetPolicyID(*v)
 	}
@@ -343,7 +343,7 @@ func (_u *PolicyEvaluationLogUpdate) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (_u *PolicyEvaluationLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(policyevaluationlog.Table, policyevaluationlog.Columns, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(policyevaluationlog.Table, policyevaluationlog.Columns, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -355,34 +355,34 @@ func (_u *PolicyEvaluationLogUpdate) sqlSave(ctx context.Context) (_node int, er
 		_spec.ClearField(policyevaluationlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(policyevaluationlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(policyevaluationlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(policyevaluationlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.MembershipID(); ok {
-		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedMembershipID(); ok {
-		_spec.AddField(policyevaluationlog.FieldMembershipID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldMembershipID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PermissionID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
-		_spec.AddField(policyevaluationlog.FieldPermissionID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PolicyID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPolicyID(); ok {
-		_spec.AddField(policyevaluationlog.FieldPolicyID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldPolicyID, field.TypeInt64, value)
 	}
 	if _u.mutation.PolicyIDCleared() {
-		_spec.ClearField(policyevaluationlog.FieldPolicyID, field.TypeUint64)
+		_spec.ClearField(policyevaluationlog.FieldPolicyID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.RequestPath(); ok {
 		_spec.SetField(policyevaluationlog.FieldRequestPath, field.TypeString, value)
@@ -464,14 +464,14 @@ type PolicyEvaluationLogUpdateOne struct {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *PolicyEvaluationLogUpdateOne) SetUserID(v uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetUserID(v int64) *PolicyEvaluationLogUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdateOne) SetNillableUserID(v *uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetNillableUserID(v *int64) *PolicyEvaluationLogUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -485,14 +485,14 @@ func (_u *PolicyEvaluationLogUpdateOne) AddUserID(v int64) *PolicyEvaluationLogU
 }
 
 // SetMembershipID sets the "membership_id" field.
-func (_u *PolicyEvaluationLogUpdateOne) SetMembershipID(v uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetMembershipID(v int64) *PolicyEvaluationLogUpdateOne {
 	_u.mutation.ResetMembershipID()
 	_u.mutation.SetMembershipID(v)
 	return _u
 }
 
 // SetNillableMembershipID sets the "membership_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdateOne) SetNillableMembershipID(v *uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetNillableMembershipID(v *int64) *PolicyEvaluationLogUpdateOne {
 	if v != nil {
 		_u.SetMembershipID(*v)
 	}
@@ -506,14 +506,14 @@ func (_u *PolicyEvaluationLogUpdateOne) AddMembershipID(v int64) *PolicyEvaluati
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (_u *PolicyEvaluationLogUpdateOne) SetPermissionID(v uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetPermissionID(v int64) *PolicyEvaluationLogUpdateOne {
 	_u.mutation.ResetPermissionID()
 	_u.mutation.SetPermissionID(v)
 	return _u
 }
 
 // SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdateOne) SetNillablePermissionID(v *uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetNillablePermissionID(v *int64) *PolicyEvaluationLogUpdateOne {
 	if v != nil {
 		_u.SetPermissionID(*v)
 	}
@@ -527,14 +527,14 @@ func (_u *PolicyEvaluationLogUpdateOne) AddPermissionID(v int64) *PolicyEvaluati
 }
 
 // SetPolicyID sets the "policy_id" field.
-func (_u *PolicyEvaluationLogUpdateOne) SetPolicyID(v uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetPolicyID(v int64) *PolicyEvaluationLogUpdateOne {
 	_u.mutation.ResetPolicyID()
 	_u.mutation.SetPolicyID(v)
 	return _u
 }
 
 // SetNillablePolicyID sets the "policy_id" field if the given value is not nil.
-func (_u *PolicyEvaluationLogUpdateOne) SetNillablePolicyID(v *uint64) *PolicyEvaluationLogUpdateOne {
+func (_u *PolicyEvaluationLogUpdateOne) SetNillablePolicyID(v *int64) *PolicyEvaluationLogUpdateOne {
 	if v != nil {
 		_u.SetPolicyID(*v)
 	}
@@ -791,7 +791,7 @@ func (_u *PolicyEvaluationLogUpdateOne) Modify(modifiers ...func(u *sql.UpdateBu
 }
 
 func (_u *PolicyEvaluationLogUpdateOne) sqlSave(ctx context.Context) (_node *PolicyEvaluationLog, err error) {
-	_spec := sqlgraph.NewUpdateSpec(policyevaluationlog.Table, policyevaluationlog.Columns, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(policyevaluationlog.Table, policyevaluationlog.Columns, sqlgraph.NewFieldSpec(policyevaluationlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PolicyEvaluationLog.id" for update`)}
@@ -820,34 +820,34 @@ func (_u *PolicyEvaluationLogUpdateOne) sqlSave(ctx context.Context) (_node *Pol
 		_spec.ClearField(policyevaluationlog.FieldCreatedAt, field.TypeTime)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(policyevaluationlog.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(policyevaluationlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(policyevaluationlog.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.MembershipID(); ok {
-		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldMembershipID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedMembershipID(); ok {
-		_spec.AddField(policyevaluationlog.FieldMembershipID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldMembershipID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PermissionID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
-		_spec.AddField(policyevaluationlog.FieldPermissionID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldPermissionID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.PolicyID(); ok {
-		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeUint64, value)
+		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPolicyID(); ok {
-		_spec.AddField(policyevaluationlog.FieldPolicyID, field.TypeUint64, value)
+		_spec.AddField(policyevaluationlog.FieldPolicyID, field.TypeInt64, value)
 	}
 	if _u.mutation.PolicyIDCleared() {
-		_spec.ClearField(policyevaluationlog.FieldPolicyID, field.TypeUint64)
+		_spec.ClearField(policyevaluationlog.FieldPolicyID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.RequestPath(); ok {
 		_spec.SetField(policyevaluationlog.FieldRequestPath, field.TypeString, value)

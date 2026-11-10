@@ -72,14 +72,14 @@ func (_u *AiDocUpdate) ClearDeletedAt() *AiDocUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiDocUpdate) SetCreatedBy(v uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetCreatedBy(v int64) *AiDocUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiDocUpdate) SetNillableCreatedBy(v *uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetNillableCreatedBy(v *int64) *AiDocUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -99,14 +99,14 @@ func (_u *AiDocUpdate) ClearCreatedBy() *AiDocUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiDocUpdate) SetUpdatedBy(v uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetUpdatedBy(v int64) *AiDocUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiDocUpdate) SetNillableUpdatedBy(v *uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetNillableUpdatedBy(v *int64) *AiDocUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -126,14 +126,14 @@ func (_u *AiDocUpdate) ClearUpdatedBy() *AiDocUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiDocUpdate) SetDeletedBy(v uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetDeletedBy(v int64) *AiDocUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiDocUpdate) SetNillableDeletedBy(v *uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetNillableDeletedBy(v *int64) *AiDocUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -153,13 +153,13 @@ func (_u *AiDocUpdate) ClearDeletedBy() *AiDocUpdate {
 }
 
 // SetBaseID sets the "base_id" field.
-func (_u *AiDocUpdate) SetBaseID(v uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetBaseID(v int64) *AiDocUpdate {
 	_u.mutation.SetBaseID(v)
 	return _u
 }
 
 // SetNillableBaseID sets the "base_id" field if the given value is not nil.
-func (_u *AiDocUpdate) SetNillableBaseID(v *uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetNillableBaseID(v *int64) *AiDocUpdate {
 	if v != nil {
 		_u.SetBaseID(*v)
 	}
@@ -260,14 +260,14 @@ func (_u *AiDocUpdate) ClearErrorMessage() *AiDocUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiDocUpdate) SetUserID(v uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetUserID(v int64) *AiDocUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiDocUpdate) SetNillableUserID(v *uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) SetNillableUserID(v *int64) *AiDocUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -292,14 +292,14 @@ func (_u *AiDocUpdate) SetBase(v *AiKnowledgeBase) *AiDocUpdate {
 }
 
 // AddChunkIDs adds the "chunks" edge to the AiChunk entity by IDs.
-func (_u *AiDocUpdate) AddChunkIDs(ids ...uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) AddChunkIDs(ids ...int64) *AiDocUpdate {
 	_u.mutation.AddChunkIDs(ids...)
 	return _u
 }
 
 // AddChunks adds the "chunks" edges to the AiChunk entity.
 func (_u *AiDocUpdate) AddChunks(v ...*AiChunk) *AiDocUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -324,14 +324,14 @@ func (_u *AiDocUpdate) ClearChunks() *AiDocUpdate {
 }
 
 // RemoveChunkIDs removes the "chunks" edge to AiChunk entities by IDs.
-func (_u *AiDocUpdate) RemoveChunkIDs(ids ...uint64) *AiDocUpdate {
+func (_u *AiDocUpdate) RemoveChunkIDs(ids ...int64) *AiDocUpdate {
 	_u.mutation.RemoveChunkIDs(ids...)
 	return _u
 }
 
 // RemoveChunks removes "chunks" edges to AiChunk entities.
 func (_u *AiDocUpdate) RemoveChunks(v ...*AiChunk) *AiDocUpdate {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -372,7 +372,7 @@ func (_u *AiDocUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AiDocUpd
 }
 
 func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -396,34 +396,34 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(aidoc.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aidoc.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aidoc.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aidoc.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aidoc.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aidoc.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aidoc.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aidoc.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aidoc.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aidoc.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(aidoc.FieldName, field.TypeString, value)
@@ -453,13 +453,13 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(aidoc.FieldErrorMessage, field.TypeString)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aidoc.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aidoc.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aidoc.FieldUserID, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldUserID, field.TypeInt64)
 	}
 	if _u.mutation.BaseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -469,7 +469,7 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aidoc.BaseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -482,7 +482,7 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aidoc.BaseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -498,7 +498,7 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -511,7 +511,7 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -527,7 +527,7 @@ func (_u *AiDocUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -598,14 +598,14 @@ func (_u *AiDocUpdateOne) ClearDeletedAt() *AiDocUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AiDocUpdateOne) SetCreatedBy(v uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetCreatedBy(v int64) *AiDocUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AiDocUpdateOne) SetNillableCreatedBy(v *uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetNillableCreatedBy(v *int64) *AiDocUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -625,14 +625,14 @@ func (_u *AiDocUpdateOne) ClearCreatedBy() *AiDocUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AiDocUpdateOne) SetUpdatedBy(v uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetUpdatedBy(v int64) *AiDocUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AiDocUpdateOne) SetNillableUpdatedBy(v *uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetNillableUpdatedBy(v *int64) *AiDocUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -652,14 +652,14 @@ func (_u *AiDocUpdateOne) ClearUpdatedBy() *AiDocUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AiDocUpdateOne) SetDeletedBy(v uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetDeletedBy(v int64) *AiDocUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AiDocUpdateOne) SetNillableDeletedBy(v *uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetNillableDeletedBy(v *int64) *AiDocUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -679,13 +679,13 @@ func (_u *AiDocUpdateOne) ClearDeletedBy() *AiDocUpdateOne {
 }
 
 // SetBaseID sets the "base_id" field.
-func (_u *AiDocUpdateOne) SetBaseID(v uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetBaseID(v int64) *AiDocUpdateOne {
 	_u.mutation.SetBaseID(v)
 	return _u
 }
 
 // SetNillableBaseID sets the "base_id" field if the given value is not nil.
-func (_u *AiDocUpdateOne) SetNillableBaseID(v *uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetNillableBaseID(v *int64) *AiDocUpdateOne {
 	if v != nil {
 		_u.SetBaseID(*v)
 	}
@@ -786,14 +786,14 @@ func (_u *AiDocUpdateOne) ClearErrorMessage() *AiDocUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AiDocUpdateOne) SetUserID(v uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetUserID(v int64) *AiDocUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AiDocUpdateOne) SetNillableUserID(v *uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) SetNillableUserID(v *int64) *AiDocUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -818,14 +818,14 @@ func (_u *AiDocUpdateOne) SetBase(v *AiKnowledgeBase) *AiDocUpdateOne {
 }
 
 // AddChunkIDs adds the "chunks" edge to the AiChunk entity by IDs.
-func (_u *AiDocUpdateOne) AddChunkIDs(ids ...uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) AddChunkIDs(ids ...int64) *AiDocUpdateOne {
 	_u.mutation.AddChunkIDs(ids...)
 	return _u
 }
 
 // AddChunks adds the "chunks" edges to the AiChunk entity.
 func (_u *AiDocUpdateOne) AddChunks(v ...*AiChunk) *AiDocUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -850,14 +850,14 @@ func (_u *AiDocUpdateOne) ClearChunks() *AiDocUpdateOne {
 }
 
 // RemoveChunkIDs removes the "chunks" edge to AiChunk entities by IDs.
-func (_u *AiDocUpdateOne) RemoveChunkIDs(ids ...uint64) *AiDocUpdateOne {
+func (_u *AiDocUpdateOne) RemoveChunkIDs(ids ...int64) *AiDocUpdateOne {
 	_u.mutation.RemoveChunkIDs(ids...)
 	return _u
 }
 
 // RemoveChunks removes "chunks" edges to AiChunk entities.
 func (_u *AiDocUpdateOne) RemoveChunks(v ...*AiChunk) *AiDocUpdateOne {
-	ids := make([]uint64, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -911,7 +911,7 @@ func (_u *AiDocUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AiDoc
 }
 
 func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error) {
-	_spec := sqlgraph.NewUpdateSpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewUpdateSpec(aidoc.Table, aidoc.Columns, sqlgraph.NewFieldSpec(aidoc.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AiDoc.id" for update`)}
@@ -952,34 +952,34 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 		_spec.ClearField(aidoc.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(aidoc.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(aidoc.FieldCreatedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(aidoc.FieldCreatedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(aidoc.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(aidoc.FieldUpdatedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(aidoc.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(aidoc.FieldDeletedBy, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(aidoc.FieldDeletedBy, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(aidoc.FieldTenantID, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(aidoc.FieldName, field.TypeString, value)
@@ -1009,13 +1009,13 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 		_spec.ClearField(aidoc.FieldErrorMessage, field.TypeString)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(aidoc.FieldUserID, field.TypeUint64, value)
+		_spec.SetField(aidoc.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(aidoc.FieldUserID, field.TypeUint64, value)
+		_spec.AddField(aidoc.FieldUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.UserIDCleared() {
-		_spec.ClearField(aidoc.FieldUserID, field.TypeUint64)
+		_spec.ClearField(aidoc.FieldUserID, field.TypeInt64)
 	}
 	if _u.mutation.BaseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1025,7 +1025,7 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 			Columns: []string{aidoc.BaseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1038,7 +1038,7 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 			Columns: []string{aidoc.BaseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1054,7 +1054,7 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1067,7 +1067,7 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1083,7 +1083,7 @@ func (_u *AiDocUpdateOne) sqlSave(ctx context.Context) (_node *AiDoc, err error)
 			Columns: []string{aidoc.ChunksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(aichunk.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

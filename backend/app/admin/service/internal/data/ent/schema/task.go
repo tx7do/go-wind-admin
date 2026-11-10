@@ -83,7 +83,7 @@ func (Task) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
 		mixin.Remark{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

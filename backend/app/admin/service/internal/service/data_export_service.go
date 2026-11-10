@@ -136,10 +136,10 @@ func aiUsageExportColumns() []exportColumn[*aiV1.AiUsageLog] {
 	return []exportColumn[*aiV1.AiUsageLog]{
 		{header: "createdAt", value: func(r *aiV1.AiUsageLog) string { return fmtTime(r.GetCreatedAt()) }},
 		{header: "modelName", value: func(r *aiV1.AiUsageLog) string { return r.GetModelName() }},
-		{header: "promptTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatUint(uint64(r.GetPromptTokens()), 10) }},
-		{header: "completionTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatUint(uint64(r.GetCompletionTokens()), 10) }},
-		{header: "totalTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatUint(uint64(r.GetTotalTokens()), 10) }},
-		{header: "durationMs", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatUint(uint64(r.GetDurationMs()), 10) }},
+		{header: "promptTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatInt(int64(r.GetPromptTokens()), 10) }},
+		{header: "completionTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatInt(int64(r.GetCompletionTokens()), 10) }},
+		{header: "totalTokens", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatInt(int64(r.GetTotalTokens()), 10) }},
+		{header: "durationMs", value: func(r *aiV1.AiUsageLog) string { return strconv.FormatInt(int64(r.GetDurationMs()), 10) }},
 	}
 }
 
@@ -153,16 +153,16 @@ func notificationDeliveryExportColumns() []exportColumn[*notificationV1.Notifica
 		{header: "status", value: func(r *notificationV1.NotificationDelivery) string { return r.GetStatus().String() }},
 		{header: "target", value: func(r *notificationV1.NotificationDelivery) string { return r.GetTarget() }},
 		{header: "attempts", value: func(r *notificationV1.NotificationDelivery) string {
-			return strconv.FormatUint(uint64(r.GetAttempts()), 10)
+			return strconv.FormatInt(int64(r.GetAttempts()), 10)
 		}},
 		{header: "recipientUserId", value: func(r *notificationV1.NotificationDelivery) string {
-			return strconv.FormatUint(uint64(r.GetRecipientUserId()), 10)
+			return strconv.FormatInt(r.GetRecipientUserId(), 10)
 		}},
 		{header: "channelId", value: func(r *notificationV1.NotificationDelivery) string {
-			return strconv.FormatUint(uint64(r.GetChannelId()), 10)
+			return strconv.FormatInt(r.GetChannelId(), 10)
 		}},
 		{header: "relatedId", value: func(r *notificationV1.NotificationDelivery) string {
-			return strconv.FormatUint(uint64(r.GetRelatedId()), 10)
+			return strconv.FormatInt(r.GetRelatedId(), 10)
 		}},
 		{header: "requestId", value: func(r *notificationV1.NotificationDelivery) string { return r.GetRequestId() }},
 		{header: "lastError", value: func(r *notificationV1.NotificationDelivery) string { return r.GetLastError() }},

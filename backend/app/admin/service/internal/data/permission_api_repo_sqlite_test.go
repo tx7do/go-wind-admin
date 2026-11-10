@@ -63,7 +63,7 @@ func TestPermissionApiRepoSqlite_AssignAndListAndDelete(t *testing.T) {
 	apiRow := createEndpointApi(t, entClient, ctx, "/sqlite/pa/assign", "GET")
 
 	// AssignApis：写入关联（id → 端点快照）
-	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []uint64{apiRow.ID}), "AssignApis 应成功")
+	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []int64{apiRow.ID}), "AssignApis 应成功")
 	linked, err := entClient.Client().PermissionApi.Query().
 		Where(permissionapi.PermissionIDEQ(permRow.ID)).
 		All(ctx)
@@ -73,18 +73,18 @@ func TestPermissionApiRepoSqlite_AssignAndListAndDelete(t *testing.T) {
 	require.Equal(t, "GET", *linked[0].Method, "关联应落端点快照 method")
 
 	// ListEndpoints：按权限列出端点快照
-	endpoints, err := repo.ListEndpoints(ctx, []uint64{permRow.ID})
+	endpoints, err := repo.ListEndpoints(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
 	require.Len(t, endpoints, 1)
 	require.Equal(t, "/sqlite/pa/assign", endpoints[0].Path)
 
 	// ListApiIDs：端点快照反解回当前 API id
-	apiIDs, err := repo.ListApiIDs(ctx, []uint64{permRow.ID})
+	apiIDs, err := repo.ListApiIDs(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{apiRow.ID}, apiIDs, "ListApiIDs 应返回关联的 API ID")
+	require.Equal(t, []int64{apiRow.ID}, apiIDs, "ListApiIDs 应返回关联的 API ID")
 
 	// ListApiIDs：未知权限返回空
-	none, err := repo.ListApiIDs(ctx, []uint64{876543})
+	none, err := repo.ListApiIDs(ctx, []int64{876543})
 	require.NoError(t, err)
 	require.Empty(t, none, "无关联的权限应返回空列表")
 
@@ -113,16 +113,16 @@ func TestPermissionApiRepoSqlite_AssignApisReplaces(t *testing.T) {
 	apiB := createEndpointApi(t, entClient, ctx, "/sqlite/pa/replace/b", "POST")
 
 	// 第一次：{A}
-	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []uint64{apiA.ID}))
-	idsA, err := repo.ListApiIDs(ctx, []uint64{permRow.ID})
+	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []int64{apiA.ID}))
+	idsA, err := repo.ListApiIDs(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{apiA.ID}, idsA, "第一次分配后应只含 A")
+	require.Equal(t, []int64{apiA.ID}, idsA, "第一次分配后应只含 A")
 
 	// 第二次：{B} —— A 应被清理
-	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []uint64{apiB.ID}))
-	idsB, err := repo.ListApiIDs(ctx, []uint64{permRow.ID})
+	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []int64{apiB.ID}))
+	idsB, err := repo.ListApiIDs(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{apiB.ID}, idsB, "第二次分配后应只含 B（A 被清理）")
+	require.Equal(t, []int64{apiB.ID}, idsB, "第二次分配后应只含 B（A 被清理）")
 	total, err := entClient.Client().PermissionApi.Query().
 		Where(permissionapi.PermissionIDEQ(permRow.ID)).
 		Count(ctx)
@@ -131,7 +131,7 @@ func TestPermissionApiRepoSqlite_AssignApisReplaces(t *testing.T) {
 
 	// 空集合：清空全部
 	require.NoError(t, repo.AssignApis(ctx, permRow.ID, nil))
-	idsC, err := repo.ListApiIDs(ctx, []uint64{permRow.ID})
+	idsC, err := repo.ListApiIDs(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
 	require.Empty(t, idsC, "空集合分配应清空全部关联")
 }
@@ -150,7 +150,7 @@ func TestPermissionApiRepoSqlite_AssignApisMissingIDs(t *testing.T) {
 	require.NoError(t, err)
 	apiRow := createEndpointApi(t, entClient, ctx, "/sqlite/pa/missing", "GET")
 
-	err = repo.AssignApis(ctx, permRow.ID, []uint64{apiRow.ID, 987654321})
+	err = repo.AssignApis(ctx, permRow.ID, []int64{apiRow.ID, 987654321})
 	require.Error(t, err, "含失效引用的分配应整体失败")
 	require.ErrorContains(t, err, "987654321", "错误应带缺失 id 明细")
 
@@ -176,7 +176,7 @@ func TestPermissionApiRepoSqlite_EndpointBindingSurvivesDrift(t *testing.T) {
 	require.NoError(t, err)
 	apiRow := createEndpointApi(t, entClient, ctx, "/sqlite/pa/drift", "DELETE")
 
-	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []uint64{apiRow.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permRow.ID, []int64{apiRow.ID}))
 
 	// 模拟旧版「接口同步」的删了再加：同一端点、id 重新生成
 	require.NoError(t, entClient.Client().Api.DeleteOneID(apiRow.ID).Exec(ctx))
@@ -184,16 +184,16 @@ func TestPermissionApiRepoSqlite_EndpointBindingSurvivesDrift(t *testing.T) {
 	require.NotEqual(t, apiRow.ID, reborn.ID, "重建行的 id 应不同于原行（自增推进）")
 
 	// 绑定快照原样存活：不受 id 漂移影响
-	endpoints, err := repo.ListEndpoints(ctx, []uint64{permRow.ID})
+	endpoints, err := repo.ListEndpoints(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
 	require.Len(t, endpoints, 1, "端点删除重建后绑定应原样存活")
 	require.Equal(t, "/sqlite/pa/drift", endpoints[0].Path)
 	require.Equal(t, "DELETE", endpoints[0].Method)
 
 	// 反解回的是重建后的新 id
-	apiIDs, err := repo.ListApiIDs(ctx, []uint64{permRow.ID})
+	apiIDs, err := repo.ListApiIDs(ctx, []int64{permRow.ID})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{reborn.ID}, apiIDs, "ListApiIDs 应反解到重建后的新 id")
+	require.Equal(t, []int64{reborn.ID}, apiIDs, "ListApiIDs 应反解到重建后的新 id")
 }
 
 // TestPermissionApiRepoSqlite_DeleteByEndpoints 验证端点级联清理：
@@ -215,21 +215,21 @@ func TestPermissionApiRepoSqlite_DeleteByEndpoints(t *testing.T) {
 	require.NoError(t, err)
 	apiRow := createEndpointApi(t, entClient, ctx, "/sqlite/pa/cascade", "PUT")
 
-	require.NoError(t, repo.AssignApis(ctx, permA.ID, []uint64{apiRow.ID}))
-	require.NoError(t, repo.AssignApis(ctx, permB.ID, []uint64{apiRow.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permA.ID, []int64{apiRow.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permB.ID, []int64{apiRow.ID}))
 
 	// 端点级联：两个权限的该端点绑定都被清，其他端点不受影响
 	otherAPI := createEndpointApi(t, entClient, ctx, "/sqlite/pa/other", "GET")
-	require.NoError(t, repo.AssignApis(ctx, permA.ID, []uint64{otherAPI.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permA.ID, []int64{otherAPI.ID}))
 
 	require.NoError(t, repo.DeleteByEndpoints(ctx, entClient.Client(), "/sqlite/pa/cascade", "PUT"), "DeleteByEndpoints 应成功")
 
-	leftA, err := repo.ListEndpoints(ctx, []uint64{permA.ID})
+	leftA, err := repo.ListEndpoints(ctx, []int64{permA.ID})
 	require.NoError(t, err)
 	require.Len(t, leftA, 1, "A 应只剩 other 端点绑定")
 	require.Equal(t, "/sqlite/pa/other", leftA[0].Path)
 
-	leftB, err := repo.ListEndpoints(ctx, []uint64{permB.ID})
+	leftB, err := repo.ListEndpoints(ctx, []int64{permB.ID})
 	require.NoError(t, err)
 	require.Empty(t, leftB, "B 的被删端点绑定应被级联清空")
 }
@@ -252,8 +252,8 @@ func TestPermissionApiRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
 	require.NoError(t, err)
 	apiRow := createEndpointApi(t, entClient, ctx, "/sqlite/pa/del", "GET")
 
-	require.NoError(t, repo.AssignApis(ctx, permA.ID, []uint64{apiRow.ID}))
-	require.NoError(t, repo.AssignApis(ctx, permB.ID, []uint64{apiRow.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permA.ID, []int64{apiRow.ID}))
+	require.NoError(t, repo.AssignApis(ctx, permB.ID, []int64{apiRow.ID}))
 	cntA, err := entClient.Client().PermissionApi.Query().
 		Where(permissionapi.PermissionIDEQ(permA.ID)).Count(ctx)
 	require.NoError(t, err)
@@ -264,7 +264,7 @@ func TestPermissionApiRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
 	require.Equal(t, 1, cntB)
 
 	// 只清 A：B 保留
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{permA.ID}), "DeleteByPermissionIDs 应成功")
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []int64{permA.ID}), "DeleteByPermissionIDs 应成功")
 	cntA, err = entClient.Client().PermissionApi.Query().
 		Where(permissionapi.PermissionIDEQ(permA.ID)).Count(ctx)
 	require.NoError(t, err)
@@ -275,7 +275,7 @@ func TestPermissionApiRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
 	require.Equal(t, 1, cntB, "未指定权限的关联应保留")
 
 	// 全清
-	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint64{permA.ID, permB.ID}))
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []int64{permA.ID, permB.ID}))
 	total, err := entClient.Client().PermissionApi.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, total, "全量清理后表内行数应为 0")
@@ -312,7 +312,7 @@ func TestApiRepoSqlite_SyncMergePreservesIDs(t *testing.T) {
 	require.NoError(t, err)
 
 	// 权限绑定 alpha，记住绑定行 id
-	require.NoError(t, paRepo.AssignApis(ctx, permRow.ID, []uint64{alpha.ID}))
+	require.NoError(t, paRepo.AssignApis(ctx, permRow.ID, []int64{alpha.ID}))
 	bindingID, err := entClient.Client().PermissionApi.Query().
 		Where(permissionapi.PermissionIDEQ(permRow.ID)).
 		FirstID(ctx)
@@ -337,7 +337,7 @@ func TestApiRepoSqlite_SyncMergePreservesIDs(t *testing.T) {
 	require.Equal(t, alpha.ID, alphaAfter.ID, "MERGE 后同端点 id 必须不变")
 	require.Equal(t, "alpha-v2", *alphaAfter.Description, "变化的元数据应更新")
 	require.NotNil(t, alphaAfter.UpdatedBy, "操作人应落 updated_by")
-	require.Equal(t, uint64(7), *alphaAfter.UpdatedBy)
+	require.Equal(t, int64(7), *alphaAfter.UpdatedBy)
 
 	// 三轮同步：alpha 元数据无变化 → 不触发 UPDATE（updated_by 不被覆盖）
 	added, updated, removed, err = repo.SyncMerge(ctx, spec2, 9)
@@ -349,7 +349,7 @@ func TestApiRepoSqlite_SyncMergePreservesIDs(t *testing.T) {
 		Where(api.PathEQ("/sync/alpha")).
 		Only(ctx)
 	require.NoError(t, err)
-	require.Equal(t, uint64(7), *alphaAgain.UpdatedBy, "无变化的行不应被 UPDATE（updated_by 保持上一轮）")
+	require.Equal(t, int64(7), *alphaAgain.UpdatedBy, "无变化的行不应被 UPDATE（updated_by 保持上一轮）")
 
 	// beta 被移除时其绑定被级联清理（本用例 beta 无绑定，另行验证删除计数）
 	cnt, err := entClient.Client().Api.Query().Count(ctx)
@@ -389,7 +389,7 @@ func TestApiRepoSqlite_SyncMergeCascadeCleansBindings(t *testing.T) {
 		Where(api.PathEQ("/sync/doomed")).
 		Only(ctx)
 	require.NoError(t, err)
-	require.NoError(t, paRepo.AssignApis(ctx, permRow.ID, []uint64{doomed.ID}))
+	require.NoError(t, paRepo.AssignApis(ctx, permRow.ID, []int64{doomed.ID}))
 
 	// 二轮同步：端点从 spec 消失
 	spec2 := []*permissionV1.Api{}

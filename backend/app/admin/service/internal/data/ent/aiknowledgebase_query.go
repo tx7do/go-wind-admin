@@ -110,8 +110,8 @@ func (_q *AiKnowledgeBaseQuery) FirstX(ctx context.Context) *AiKnowledgeBase {
 
 // FirstID returns the first AiKnowledgeBase ID from the query.
 // Returns a *NotFoundError when no AiKnowledgeBase ID was found.
-func (_q *AiKnowledgeBaseQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *AiKnowledgeBaseQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func (_q *AiKnowledgeBaseQuery) FirstID(ctx context.Context) (id uint64, err err
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AiKnowledgeBaseQuery) FirstIDX(ctx context.Context) uint64 {
+func (_q *AiKnowledgeBaseQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +161,8 @@ func (_q *AiKnowledgeBaseQuery) OnlyX(ctx context.Context) *AiKnowledgeBase {
 // OnlyID is like Only, but returns the only AiKnowledgeBase ID in the query.
 // Returns a *NotSingularError when more than one AiKnowledgeBase ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AiKnowledgeBaseQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (_q *AiKnowledgeBaseQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (_q *AiKnowledgeBaseQuery) OnlyID(ctx context.Context) (id uint64, err erro
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AiKnowledgeBaseQuery) OnlyIDX(ctx context.Context) uint64 {
+func (_q *AiKnowledgeBaseQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -206,7 +206,7 @@ func (_q *AiKnowledgeBaseQuery) AllX(ctx context.Context) []*AiKnowledgeBase {
 }
 
 // IDs executes the query and returns a list of AiKnowledgeBase IDs.
-func (_q *AiKnowledgeBaseQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+func (_q *AiKnowledgeBaseQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -218,7 +218,7 @@ func (_q *AiKnowledgeBaseQuery) IDs(ctx context.Context) (ids []uint64, err erro
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AiKnowledgeBaseQuery) IDsX(ctx context.Context) []uint64 {
+func (_q *AiKnowledgeBaseQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -418,7 +418,7 @@ func (_q *AiKnowledgeBaseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 
 func (_q *AiKnowledgeBaseQuery) loadDocs(ctx context.Context, query *AiDocQuery, nodes []*AiKnowledgeBase, init func(*AiKnowledgeBase), assign func(*AiKnowledgeBase, *AiDoc)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*AiKnowledgeBase)
+	nodeids := make(map[int64]*AiKnowledgeBase)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -463,7 +463,7 @@ func (_q *AiKnowledgeBaseQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *AiKnowledgeBaseQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(aiknowledgebase.Table, aiknowledgebase.Columns, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewQuerySpec(aiknowledgebase.Table, aiknowledgebase.Columns, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

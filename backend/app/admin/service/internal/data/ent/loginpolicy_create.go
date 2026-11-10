@@ -65,13 +65,13 @@ func (_c *LoginPolicyCreate) SetNillableDeletedAt(v *time.Time) *LoginPolicyCrea
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *LoginPolicyCreate) SetCreatedBy(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetCreatedBy(v int64) *LoginPolicyCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *LoginPolicyCreate) SetNillableCreatedBy(v *uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetNillableCreatedBy(v *int64) *LoginPolicyCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *LoginPolicyCreate) SetNillableCreatedBy(v *uint64) *LoginPolicyCreate 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *LoginPolicyCreate) SetUpdatedBy(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetUpdatedBy(v int64) *LoginPolicyCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *LoginPolicyCreate) SetNillableUpdatedBy(v *uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetNillableUpdatedBy(v *int64) *LoginPolicyCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *LoginPolicyCreate) SetNillableUpdatedBy(v *uint64) *LoginPolicyCreate 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *LoginPolicyCreate) SetDeletedBy(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetDeletedBy(v int64) *LoginPolicyCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *LoginPolicyCreate) SetNillableDeletedBy(v *uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetNillableDeletedBy(v *int64) *LoginPolicyCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *LoginPolicyCreate) SetNillableDeletedBy(v *uint64) *LoginPolicyCreate 
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *LoginPolicyCreate) SetTenantID(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetTenantID(v int64) *LoginPolicyCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *LoginPolicyCreate) SetNillableTenantID(v *uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetNillableTenantID(v *int64) *LoginPolicyCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *LoginPolicyCreate) SetNillableTenantID(v *uint64) *LoginPolicyCreate {
 }
 
 // SetTargetID sets the "target_id" field.
-func (_c *LoginPolicyCreate) SetTargetID(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetTargetID(v int64) *LoginPolicyCreate {
 	_c.mutation.SetTargetID(v)
 	return _c
 }
 
 // SetNillableTargetID sets the "target_id" field if the given value is not nil.
-func (_c *LoginPolicyCreate) SetNillableTargetID(v *uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetNillableTargetID(v *int64) *LoginPolicyCreate {
 	if v != nil {
 		_c.SetTargetID(*v)
 	}
@@ -191,7 +191,7 @@ func (_c *LoginPolicyCreate) SetNillableMethod(v *loginpolicy.Method) *LoginPoli
 }
 
 // SetID sets the "id" field.
-func (_c *LoginPolicyCreate) SetID(v uint64) *LoginPolicyCreate {
+func (_c *LoginPolicyCreate) SetID(v int64) *LoginPolicyCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -281,7 +281,7 @@ func (_c *LoginPolicyCreate) sqlSave(ctx context.Context) (*LoginPolicy, error) 
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -291,7 +291,7 @@ func (_c *LoginPolicyCreate) sqlSave(ctx context.Context) (*LoginPolicy, error) 
 func (_c *LoginPolicyCreate) createSpec() (*LoginPolicy, *sqlgraph.CreateSpec) {
 	var (
 		_node = &LoginPolicy{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(loginpolicy.Table, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(loginpolicy.Table, sqlgraph.NewFieldSpec(loginpolicy.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -311,23 +311,23 @@ func (_c *LoginPolicyCreate) createSpec() (*LoginPolicy, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(loginpolicy.FieldTenantID, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.TargetID(); ok {
-		_spec.SetField(loginpolicy.FieldTargetID, field.TypeUint64, value)
+		_spec.SetField(loginpolicy.FieldTargetID, field.TypeInt64, value)
 		_node.TargetID = &value
 	}
 	if value, ok := _c.mutation.Value(); ok {
@@ -435,7 +435,7 @@ func (u *LoginPolicyUpsert) ClearDeletedAt() *LoginPolicyUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LoginPolicyUpsert) SetCreatedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) SetCreatedBy(v int64) *LoginPolicyUpsert {
 	u.Set(loginpolicy.FieldCreatedBy, v)
 	return u
 }
@@ -447,7 +447,7 @@ func (u *LoginPolicyUpsert) UpdateCreatedBy() *LoginPolicyUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LoginPolicyUpsert) AddCreatedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) AddCreatedBy(v int64) *LoginPolicyUpsert {
 	u.Add(loginpolicy.FieldCreatedBy, v)
 	return u
 }
@@ -459,7 +459,7 @@ func (u *LoginPolicyUpsert) ClearCreatedBy() *LoginPolicyUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LoginPolicyUpsert) SetUpdatedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) SetUpdatedBy(v int64) *LoginPolicyUpsert {
 	u.Set(loginpolicy.FieldUpdatedBy, v)
 	return u
 }
@@ -471,7 +471,7 @@ func (u *LoginPolicyUpsert) UpdateUpdatedBy() *LoginPolicyUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LoginPolicyUpsert) AddUpdatedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) AddUpdatedBy(v int64) *LoginPolicyUpsert {
 	u.Add(loginpolicy.FieldUpdatedBy, v)
 	return u
 }
@@ -483,7 +483,7 @@ func (u *LoginPolicyUpsert) ClearUpdatedBy() *LoginPolicyUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LoginPolicyUpsert) SetDeletedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) SetDeletedBy(v int64) *LoginPolicyUpsert {
 	u.Set(loginpolicy.FieldDeletedBy, v)
 	return u
 }
@@ -495,7 +495,7 @@ func (u *LoginPolicyUpsert) UpdateDeletedBy() *LoginPolicyUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LoginPolicyUpsert) AddDeletedBy(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) AddDeletedBy(v int64) *LoginPolicyUpsert {
 	u.Add(loginpolicy.FieldDeletedBy, v)
 	return u
 }
@@ -507,7 +507,7 @@ func (u *LoginPolicyUpsert) ClearDeletedBy() *LoginPolicyUpsert {
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *LoginPolicyUpsert) SetTargetID(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) SetTargetID(v int64) *LoginPolicyUpsert {
 	u.Set(loginpolicy.FieldTargetID, v)
 	return u
 }
@@ -519,7 +519,7 @@ func (u *LoginPolicyUpsert) UpdateTargetID() *LoginPolicyUpsert {
 }
 
 // AddTargetID adds v to the "target_id" field.
-func (u *LoginPolicyUpsert) AddTargetID(v uint64) *LoginPolicyUpsert {
+func (u *LoginPolicyUpsert) AddTargetID(v int64) *LoginPolicyUpsert {
 	u.Add(loginpolicy.FieldTargetID, v)
 	return u
 }
@@ -699,14 +699,14 @@ func (u *LoginPolicyUpsertOne) ClearDeletedAt() *LoginPolicyUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LoginPolicyUpsertOne) SetCreatedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) SetCreatedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LoginPolicyUpsertOne) AddCreatedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) AddCreatedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -727,14 +727,14 @@ func (u *LoginPolicyUpsertOne) ClearCreatedBy() *LoginPolicyUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LoginPolicyUpsertOne) SetUpdatedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) SetUpdatedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LoginPolicyUpsertOne) AddUpdatedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) AddUpdatedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -755,14 +755,14 @@ func (u *LoginPolicyUpsertOne) ClearUpdatedBy() *LoginPolicyUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LoginPolicyUpsertOne) SetDeletedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) SetDeletedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LoginPolicyUpsertOne) AddDeletedBy(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) AddDeletedBy(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -783,14 +783,14 @@ func (u *LoginPolicyUpsertOne) ClearDeletedBy() *LoginPolicyUpsertOne {
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *LoginPolicyUpsertOne) SetTargetID(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) SetTargetID(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetTargetID(v)
 	})
 }
 
 // AddTargetID adds v to the "target_id" field.
-func (u *LoginPolicyUpsertOne) AddTargetID(v uint64) *LoginPolicyUpsertOne {
+func (u *LoginPolicyUpsertOne) AddTargetID(v int64) *LoginPolicyUpsertOne {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddTargetID(v)
 	})
@@ -910,7 +910,7 @@ func (u *LoginPolicyUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *LoginPolicyUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *LoginPolicyUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -919,7 +919,7 @@ func (u *LoginPolicyUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *LoginPolicyUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *LoginPolicyUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -976,7 +976,7 @@ func (_c *LoginPolicyCreateBulk) Save(ctx context.Context) ([]*LoginPolicy, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1157,14 +1157,14 @@ func (u *LoginPolicyUpsertBulk) ClearDeletedAt() *LoginPolicyUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LoginPolicyUpsertBulk) SetCreatedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) SetCreatedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LoginPolicyUpsertBulk) AddCreatedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) AddCreatedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1185,14 +1185,14 @@ func (u *LoginPolicyUpsertBulk) ClearCreatedBy() *LoginPolicyUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LoginPolicyUpsertBulk) SetUpdatedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) SetUpdatedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LoginPolicyUpsertBulk) AddUpdatedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) AddUpdatedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1213,14 +1213,14 @@ func (u *LoginPolicyUpsertBulk) ClearUpdatedBy() *LoginPolicyUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LoginPolicyUpsertBulk) SetDeletedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) SetDeletedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LoginPolicyUpsertBulk) AddDeletedBy(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) AddDeletedBy(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1241,14 +1241,14 @@ func (u *LoginPolicyUpsertBulk) ClearDeletedBy() *LoginPolicyUpsertBulk {
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *LoginPolicyUpsertBulk) SetTargetID(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) SetTargetID(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.SetTargetID(v)
 	})
 }
 
 // AddTargetID adds v to the "target_id" field.
-func (u *LoginPolicyUpsertBulk) AddTargetID(v uint64) *LoginPolicyUpsertBulk {
+func (u *LoginPolicyUpsertBulk) AddTargetID(v int64) *LoginPolicyUpsertBulk {
 	return u.Update(func(s *LoginPolicyUpsert) {
 		s.AddTargetID(v)
 	})

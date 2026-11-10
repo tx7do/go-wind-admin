@@ -40,7 +40,7 @@ func (_d *AiKnowledgeBaseDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *AiKnowledgeBaseDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(aiknowledgebase.Table, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewDeleteSpec(aiknowledgebase.Table, sqlgraph.NewFieldSpec(aiknowledgebase.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

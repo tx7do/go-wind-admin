@@ -78,9 +78,9 @@ func (s *PlanQuotaWatermarkService) AsyncPlanQuotaWatermarkScan(taskType string,
 		return nil
 	}
 
-	grouped := make(map[uint64][]data.QuotaWatermarkHit)
-	adminOf := make(map[uint64]uint64)
-	nameOf := make(map[uint64]string)
+	grouped := make(map[int64][]data.QuotaWatermarkHit)
+	adminOf := make(map[int64]int64)
+	nameOf := make(map[int64]string)
 	for _, h := range hits {
 		grouped[h.TenantID] = append(grouped[h.TenantID], h)
 		adminOf[h.TenantID] = h.AdminUserID
@@ -131,7 +131,7 @@ func (s *PlanQuotaWatermarkService) AsyncPlanQuotaWatermarkScan(taskType string,
 // deliverOne 建一条站内信行并向单个收件人投递收件行（审计日报 deliverMessage 的
 // 单收件人形态）。静音时段由 sendNotification 内核处理（只抑制实时推送，收件行
 // 照落）。
-func (s *PlanQuotaWatermarkService) deliverOne(ctx context.Context, recipientUserID uint64, title, content string) error {
+func (s *PlanQuotaWatermarkService) deliverOne(ctx context.Context, recipientUserID int64, title, content string) error {
 	now := time.Now()
 	msg, err := s.internalMsgRepo.Create(ctx, &internalMessageV1.CreateInternalMessageRequest{
 		Data: &internalMessageV1.InternalMessage{
@@ -139,7 +139,7 @@ func (s *PlanQuotaWatermarkService) deliverOne(ctx context.Context, recipientUse
 			Content:   trans.Ptr(content),
 			Status:    trans.Ptr(internalMessageV1.InternalMessage_PUBLISHED),
 			Type:      trans.Ptr(internalMessageV1.InternalMessage_NOTIFICATION),
-			CreatedBy: trans.Ptr(uint64(0)),
+			CreatedBy: trans.Ptr(int64(0)),
 			CreatedAt: timeutil.TimeToTimestamppb(&now),
 		},
 	})

@@ -79,7 +79,7 @@ func (AiProvider_ModelType) EnumDescriptor() ([]byte, []int) {
 // AI 模型提供商（一行 = 一个可调用的模型端点配置）
 type AiProvider struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                        // 提供商ID
+	Id             *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                        // 提供商ID
 	Name           *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                     // 提供商显示名称
 	ModelType      *AiProvider_ModelType  `protobuf:"varint,3,opt,name=model_type,json=modelType,proto3,enum=ai.service.v1.AiProvider_ModelType,oneof" json:"model_type,omitempty"` // 模型部署形态
 	ModelName      *string                `protobuf:"bytes,4,opt,name=model_name,json=modelName,proto3,oneof" json:"model_name,omitempty"`                                          // 模型名称
@@ -94,9 +94,9 @@ type AiProvider struct {
 	IsDefault      *bool                  `protobuf:"varint,13,opt,name=is_default,json=isDefault,proto3,oneof" json:"is_default,omitempty"`                                        // 是否默认提供商
 	Remark         *string                `protobuf:"bytes,14,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                // 备注
 	IsEnabled      *bool                  `protobuf:"varint,15,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`                                        // 是否启用
-	CreatedBy      *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                       // 创建者用户ID
-	UpdatedBy      *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                       // 更新者用户ID
-	DeletedBy      *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                       // 删除者用户ID
+	CreatedBy      *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                       // 创建者用户ID
+	UpdatedBy      *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                       // 更新者用户ID
+	DeletedBy      *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                       // 删除者用户ID
 	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                        // 创建时间
 	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                        // 更新时间
 	DeletedAt      *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                        // 删除时间
@@ -134,7 +134,7 @@ func (*AiProvider) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_provider_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AiProvider) GetId() uint64 {
+func (x *AiProvider) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
@@ -239,21 +239,21 @@ func (x *AiProvider) GetIsEnabled() bool {
 	return false
 }
 
-func (x *AiProvider) GetCreatedBy() uint64 {
+func (x *AiProvider) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *AiProvider) GetUpdatedBy() uint64 {
+func (x *AiProvider) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *AiProvider) GetDeletedBy() uint64 {
+func (x *AiProvider) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -285,7 +285,7 @@ func (x *AiProvider) GetDeletedAt() *timestamppb.Timestamp {
 type ListAiProviderResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*AiProvider          `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -327,7 +327,7 @@ func (x *ListAiProviderResponse) GetItems() []*AiProvider {
 	return nil
 }
 
-func (x *ListAiProviderResponse) GetTotal() uint64 {
+func (x *ListAiProviderResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -383,7 +383,7 @@ func (x *GetAiProviderRequest) GetQueryBy() isGetAiProviderRequest_QueryBy {
 	return nil
 }
 
-func (x *GetAiProviderRequest) GetId() uint64 {
+func (x *GetAiProviderRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*GetAiProviderRequest_Id); ok {
 			return x.Id
@@ -404,7 +404,7 @@ type isGetAiProviderRequest_QueryBy interface {
 }
 
 type GetAiProviderRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 func (*GetAiProviderRequest_Id) isGetAiProviderRequest_QueryBy() {}
@@ -457,7 +457,7 @@ func (x *CreateAiProviderRequest) GetData() *AiProvider {
 // 更新 AI 提供商 - 请求
 type UpdateAiProviderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Data          *AiProvider            `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 资源不存在则新增
@@ -495,7 +495,7 @@ func (*UpdateAiProviderRequest) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_provider_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateAiProviderRequest) GetId() uint64 {
+func (x *UpdateAiProviderRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -571,7 +571,7 @@ func (x *DeleteAiProviderRequest) GetQueryBy() isDeleteAiProviderRequest_QueryBy
 	return nil
 }
 
-func (x *DeleteAiProviderRequest) GetId() uint64 {
+func (x *DeleteAiProviderRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteAiProviderRequest_Id); ok {
 			return x.Id
@@ -585,14 +585,14 @@ type isDeleteAiProviderRequest_QueryBy interface {
 }
 
 type DeleteAiProviderRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 func (*DeleteAiProviderRequest_Id) isDeleteAiProviderRequest_QueryBy() {}
 
 type CountAiProviderResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 提供商数量
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 提供商数量
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -627,7 +627,7 @@ func (*CountAiProviderResponse) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_provider_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CountAiProviderResponse) GetCount() uint64 {
+func (x *CountAiProviderResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -641,7 +641,7 @@ const file_ai_service_v1_ai_provider_proto_rawDesc = "" +
 	"\x1fai/service/v1/ai_provider.proto\x12\rai.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xfd\x10\n" +
 	"\n" +
 	"AiProvider\x12&\n" +
-	"\x02id\x18\x01 \x01(\x04B\x11\xbaG\x0e\x92\x02\v提供商IDH\x00R\x02id\x88\x01\x01\x12b\n" +
+	"\x02id\x18\x01 \x01(\x03B\x11\xbaG\x0e\x92\x02\v提供商IDH\x00R\x02id\x88\x01\x01\x12b\n" +
 	"\x04name\x18\x02 \x01(\tBI\xbaGF\x92\x02C提供商显示名称，如 DeepSeek、通义千问、本地 OllamaH\x01R\x04name\x88\x01\x01\x12s\n" +
 	"\n" +
 	"model_type\x18\x03 \x01(\x0e2#.ai.service.v1.AiProvider.ModelTypeB*\xbaG'\x92\x02$模型部署形态：本地 / 云端H\x02R\tmodelType\x88\x01\x01\x12^\n" +
@@ -666,11 +666,11 @@ const file_ai_service_v1_ai_provider_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x0f \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x0eR\tisEnabled\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0fR\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x03B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0fR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x10R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x10R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x11R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x11R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x12R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -705,9 +705,9 @@ const file_ai_service_v1_ai_provider_proto_rawDesc = "" +
 	"\v_deleted_at\"_\n" +
 	"\x16ListAiProviderResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.ai.service.v1.AiProviderR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xbb\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xbb\x01\n" +
 	"\x14GetAiProviderRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\x04H\x00R\x02id\x12w\n" +
+	"\x02id\x18\x01 \x01(\x03H\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
 	"\bquery_byB\f\n" +
@@ -716,18 +716,18 @@ const file_ai_service_v1_ai_provider_proto_rawDesc = "" +
 	"\x17CreateAiProviderRequest\x12-\n" +
 	"\x04data\x18\x01 \x01(\v2\x19.ai.service.v1.AiProviderR\x04data\"\xf1\x01\n" +
 	"\x17UpdateAiProviderRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12-\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12-\n" +
 	"\x04data\x18\x02 \x01(\v2\x19.ai.service.v1.AiProviderR\x04data\x12[\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x1e\xbaG\x1b\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12(\n" +
 	"\rallow_missing\x18\x04 \x01(\bH\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"7\n" +
 	"\x17DeleteAiProviderRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\x04H\x00R\x02idB\n" +
+	"\x02id\x18\x01 \x01(\x03H\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\"/\n" +
 	"\x17CountAiProviderResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xda\x03\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xda\x03\n" +
 	"\x11AiProviderService\x12J\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a%.ai.service.v1.ListAiProviderResponse\"\x00\x12L\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a&.ai.service.v1.CountAiProviderResponse\"\x00\x12G\n" +

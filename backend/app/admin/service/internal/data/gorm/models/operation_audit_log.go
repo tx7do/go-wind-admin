@@ -9,7 +9,7 @@ import (
 type OperationAuditLog struct {
 	mixin.AutoIncrementID64
 
-	UserId         *uint64         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
+	UserId         *int64         `gorm:"column:user_id;type:int unsigned;index;comment:操作者用户ID"`
 	Username       *string         `gorm:"column:username;type:varchar(255);comment:操作者账号名"`
 	ResourceType   *string         `gorm:"column:resource_type;type:varchar(255);comment:资源类型"`
 	ResourceId     *string         `gorm:"column:resource_id;type:varchar(255);comment:资源ID"`

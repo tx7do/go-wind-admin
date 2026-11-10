@@ -106,7 +106,7 @@ func TestOrgUnitRepoSqlite_List(t *testing.T) {
 	// 无过滤：两个根节点都应返回
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应统计全部 2 条")
+	require.Equal(t, int64(2), all.Total, "无过滤时应统计全部 2 条")
 	require.Len(t, all.Items, 2, "无过滤时应返回 2 条根节点")
 	for _, item := range all.Items {
 		// 列表读视图：status/type 未显式指定、按列默认（ON/DEPARTMENT）落库并经回填如实呈现。
@@ -121,7 +121,7 @@ func TestOrgUnitRepoSqlite_List(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤应只统计命中行")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤应只统计命中行")
 	require.Len(t, filtered.Items, 1, "contains 过滤应只返回命中行")
 	require.Contains(t, filtered.Items[0].GetName(), "MARKERALPHA", "命中行应为含标记的那条")
 }
@@ -143,7 +143,7 @@ func TestOrgUnitRepoSqlite_Get(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	// 命中：按主键
 	gotByID, err := repo.Get(ctx, &identityV1.GetOrgUnitRequest{
@@ -178,7 +178,7 @@ func TestOrgUnitRepoSqlite_Update(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	err = repo.Update(ctx, &identityV1.UpdateOrgUnitRequest{
 		Id:         createdID,
@@ -210,7 +210,7 @@ func TestOrgUnitRepoSqlite_Delete(t *testing.T) {
 	rows, err := repo.entClient.Client().OrgUnit.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	createdID := uint64(rows[0].ID)
+	createdID := int64(rows[0].ID)
 
 	require.NoError(t, repo.Delete(ctx, &identityV1.DeleteOrgUnitRequest{
 		QueryBy: &identityV1.DeleteOrgUnitRequest_Id{Id: createdID},

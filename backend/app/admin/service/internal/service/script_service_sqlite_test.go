@@ -113,7 +113,7 @@ func TestScriptService_CreateNameConflict(t *testing.T) {
 	rows, err := client.Script.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 1, "冲突请求不应追加行")
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "创建行应盖入操作人 ID")
 }
 
 // TestScriptService_CrudLifecycle 验证 Get 命中/未命中、单字段掩码更新
@@ -166,7 +166,7 @@ func TestScriptService_CrudLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "更新后的描述", *after.Description, "掩码内字段 description 应被更新")
 	require.Equal(t, "svc_crud_row", *after.Name, "掩码外字段 name 应保持原值")
-	require.Equal(t, uint64(7), *after.UpdatedBy, "更新行应盖入操作人 ID")
+	require.Equal(t, int64(7), *after.UpdatedBy, "更新行应盖入操作人 ID")
 
 	// Update 改名为全新名：validateDraft 对携带 Name 的载荷同时校验 Source
 	// （钉死语义），故载荷需同时带源码；掩码只放开 name，源码不落库
@@ -186,7 +186,7 @@ func TestScriptService_CrudLifecycle(t *testing.T) {
 	require.Error(t, err, "空 ID 列表应拒绝")
 	require.True(t, scriptV1.IsBadRequest(err))
 
-	_, err = svc.Delete(ctx, &scriptV1.DeleteScriptRequest{Ids: []uint64{rowID}})
+	_, err = svc.Delete(ctx, &scriptV1.DeleteScriptRequest{Ids: []int64{rowID}})
 	require.NoError(t, err, "按 ID 删除应成功")
 	cnt, err := client.Script.Query().Count(ctx)
 	require.NoError(t, err)
@@ -200,7 +200,7 @@ func TestScriptService_ListCount(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), listResp.GetTotal(), "空表 List 应为 0")
+	require.Equal(t, int64(0), listResp.GetTotal(), "空表 List 应为 0")
 	require.Empty(t, listResp.GetItems())
 
 	cntResp, err := svc.Count(ctx, &paginationV1.PagingRequest{})
@@ -241,8 +241,8 @@ func TestScriptService_CreateDeleteResyncLinkage(t *testing.T) {
 
 	rows, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), rows.GetTotal(), "脚本表应含刚创建的行")
-	ids := make([]uint64, 0, len(rows.GetItems()))
+	require.Equal(t, int64(1), rows.GetTotal(), "脚本表应含刚创建的行")
+	ids := make([]int64, 0, len(rows.GetItems()))
 	for _, item := range rows.GetItems() {
 		ids = append(ids, item.GetId())
 	}

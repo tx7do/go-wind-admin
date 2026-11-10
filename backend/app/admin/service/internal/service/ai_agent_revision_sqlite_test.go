@@ -63,11 +63,11 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 
 	listResp, err := svc.ListRevisions(ctx, &aiV1.ListAiAgentRevisionsRequest{AppId: appID})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), listResp.GetTotal(), "应有一行 v1 快照")
+	require.Equal(t, int64(1), listResp.GetTotal(), "应有一行 v1 快照")
 	revs := listResp.GetItems()
 	require.Equal(t, agentGraphV1, revs[0].GetGraph(), "快照记的是更新前的旧 graph")
 	require.Equal(t, "SAVE", revs[0].GetSource())
-	require.Equal(t, uint64(7), revs[0].GetCreatedBy())
+	require.Equal(t, int64(7), revs[0].GetCreatedBy())
 
 	// ② graph 没变的更新（只改 enabled）不得产生新快照
 	_, err = svc.Update(ctx, &aiV1.UpdateAiAgentAppRequest{
@@ -78,7 +78,7 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 	require.NoError(t, err)
 	listSame, err := svc.ListRevisions(ctx, &aiV1.ListAiAgentRevisionsRequest{AppId: appID})
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), listSame.GetTotal(), "graph 未变化的更新不应留快照")
+	require.Equal(t, int64(1), listSame.GetTotal(), "graph 未变化的更新不应留快照")
 
 	// ③ 恢复到 v1 快照：当前 v2 先以 RESTORE 留底，再把 v1 写回
 	_, err = svc.RestoreRevision(ctx, &aiV1.RestoreAiAgentRevisionRequest{Id: revs[0].GetId()})
@@ -90,7 +90,7 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 
 	listAfter, err := svc.ListRevisions(ctx, &aiV1.ListAiAgentRevisionsRequest{AppId: appID})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), listAfter.GetTotal(), "恢复前应先留底当前版本")
+	require.Equal(t, int64(2), listAfter.GetTotal(), "恢复前应先留底当前版本")
 	revs2 := listAfter.GetItems()
 	sources := map[string]bool{}
 	for _, r := range revs2 {
@@ -104,7 +104,7 @@ func TestAiAgentRevision_Sqlite_SaveAndRestore(t *testing.T) {
 		AppId:     trans.Ptr(appID),
 		Graph:     trans.Ptr(`{"nodes":[]}`),
 		Source:    trans.Ptr("SAVE"),
-		CreatedBy: trans.Ptr(uint64(7)),
+		CreatedBy: trans.Ptr(int64(7)),
 	}
 	require.NoError(t, svc.revisionRepo.Create(ctx, bad), "直插一条坏快照作为铺垫")
 	listBefore, err := svc.ListRevisions(ctx, &aiV1.ListAiAgentRevisionsRequest{AppId: appID})

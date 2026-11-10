@@ -58,7 +58,7 @@ func (InternalMessageCategory) Mixin() []ent.Mixin {
 		mixin.IsEnabled{},
 		mixin.SortOrder{},
 		mixin.Remark{},
-		mixin.TenantID[uint64]{},
+		mixin.TenantID[int64]{},
 	}
 }
 

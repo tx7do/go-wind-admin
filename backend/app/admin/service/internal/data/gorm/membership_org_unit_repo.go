@@ -59,7 +59,7 @@ func (r *MembershipOrgUnitRepo) init() {
 }
 
 // CleanRelationsByMembershipID 清理会员组织单元关联
-func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipID(ctx context.Context, membershipID uint64) error {
+func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipID(ctx context.Context, membershipID int64) error {
 	if membershipID == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipID(ctx context.Context
 }
 
 // CleanRelationsByMembershipIDs 清理多个会员组织单元关联
-func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipIDs(ctx context.Context, membershipIDs []uint64) error {
+func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipIDs(ctx context.Context, membershipIDs []int64) error {
 	if len(membershipIDs) == 0 {
 		return nil
 	}
@@ -89,7 +89,7 @@ func (r *MembershipOrgUnitRepo) CleanRelationsByMembershipIDs(ctx context.Contex
 }
 
 // CleanRelationsByOrgUnitID 清理组织单元的会员关联
-func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnitID uint64) error {
+func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnitID int64) error {
 	if orgUnitID == 0 {
 		return nil
 	}
@@ -104,7 +104,7 @@ func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, o
 }
 
 // CleanRelationsByOrgUnitIDs 清理多个组织单元的会员关联
-func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUnitIDs []uint64) error {
+func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUnitIDs []int64) error {
 	if len(orgUnitIDs) == 0 {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (r *MembershipOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, 
 }
 
 // RemoveOrgUnitsFromMembership 删除会员的组织单元关联
-func (r *MembershipOrgUnitRepo) RemoveOrgUnitsFromMembership(ctx context.Context, membershipID uint64, ids []uint64) error {
+func (r *MembershipOrgUnitRepo) RemoveOrgUnitsFromMembership(ctx context.Context, membershipID int64, ids []int64) error {
 	if membershipID == 0 || len(ids) == 0 {
 		return nil
 	}
@@ -138,7 +138,7 @@ func (r *MembershipOrgUnitRepo) RemoveOrgUnitsFromMembership(ctx context.Context
 // AssignMembershipOrgUnits 分配组织单元给会员
 func (r *MembershipOrgUnitRepo) AssignMembershipOrgUnits(
 	ctx context.Context,
-	membershipID uint64,
+	membershipID int64,
 	datas []*identityV1.MembershipOrgUnit,
 ) error {
 	if len(datas) == 0 || membershipID == 0 {
@@ -159,9 +159,9 @@ func (r *MembershipOrgUnitRepo) AssignMembershipOrgUnits(
 }
 
 // ListOrgUnitIDs 列出角色关联的组织单元ID列表
-func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID int64, excludeExpired bool) ([]int64, error) {
 	if membershipID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.MembershipOrgUnit{}).Where("membership_id = ?", membershipID)
@@ -171,7 +171,7 @@ func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("org_unit_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query orgUnit ids by membership id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit ids by membership id failed")
@@ -180,9 +180,9 @@ func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID
 }
 
 // ListMembershipIDs 获取组织单元关联的会员ID列表
-func (r *MembershipOrgUnitRepo) ListMembershipIDs(ctx context.Context, orgUnitID uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipOrgUnitRepo) ListMembershipIDs(ctx context.Context, orgUnitID int64, excludeExpired bool) ([]int64, error) {
 	if orgUnitID == 0 {
-		return []uint64{}, nil
+		return []int64{}, nil
 	}
 
 	db := r.client.DB.WithContext(ctx).Model(&models.MembershipOrgUnit{}).Where("org_unit_id = ?", orgUnitID)
@@ -192,7 +192,7 @@ func (r *MembershipOrgUnitRepo) ListMembershipIDs(ctx context.Context, orgUnitID
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query membership ids by orgUnit id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by orgUnit id failed")
@@ -201,7 +201,7 @@ func (r *MembershipOrgUnitRepo) ListMembershipIDs(ctx context.Context, orgUnitID
 }
 
 // ListMembershipIDsByOrgUnitIDs 获取多个组织单元关联的会员ID列表
-func (r *MembershipOrgUnitRepo) ListMembershipIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []uint64, excludeExpired bool) ([]uint64, error) {
+func (r *MembershipOrgUnitRepo) ListMembershipIDsByOrgUnitIDs(ctx context.Context, orgUnitIDs []int64, excludeExpired bool) ([]int64, error) {
 	if len(orgUnitIDs) == 0 {
 		return nil, nil
 	}
@@ -213,7 +213,7 @@ func (r *MembershipOrgUnitRepo) ListMembershipIDsByOrgUnitIDs(ctx context.Contex
 		db = db.Where("end_at IS NULL OR end_at > ?", now)
 	}
 
-	var ids []uint64
+	var ids []int64
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
 		r.log.Errorf(ctx, "query membership ids by orgUnit ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by orgUnit ids failed")

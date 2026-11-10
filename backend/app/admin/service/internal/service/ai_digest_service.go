@@ -233,7 +233,7 @@ func (s *AiDigestService) deliverMessage(ctx context.Context, users []*ent.User,
 			Content:   trans.Ptr(content),
 			Status:    trans.Ptr(internalMessageV1.InternalMessage_PUBLISHED),
 			Type:      trans.Ptr(internalMessageV1.InternalMessage_NOTIFICATION),
-			CreatedBy: trans.Ptr(uint64(0)),
+			CreatedBy: trans.Ptr(int64(0)),
 			CreatedAt: timeutil.TimeToTimestamppb(&now),
 		},
 	})

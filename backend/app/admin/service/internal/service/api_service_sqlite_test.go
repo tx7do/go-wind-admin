@@ -86,7 +86,7 @@ func TestApiServiceSqlite_InitSeedsApiTableFromOpenAPI(t *testing.T) {
 
 	listResp, err := svc.List(ctx, &paginationV1.PagingRequest{})
 	require.NoError(t, err)
-	require.Equal(t, uint64(cnt), listResp.Total, "List 应统计全部已同步行")
+	require.Equal(t, int64(cnt), listResp.Total, "List 应统计全部已同步行")
 	require.Len(t, listResp.Items, cnt, "List 应返回全部已同步行")
 
 	// 表非空：再次 init() 不应重复同步（守卫负分支）
@@ -114,7 +114,7 @@ func TestApiServiceSqlite_GetWalkRouteData(t *testing.T) {
 
 	resp, err := svc.GetWalkRouteData(ctx, &emptypb.Empty{})
 	require.NoError(t, err, "注册 walker 后遍历应成功")
-	require.Equal(t, uint64(2), resp.GetTotal(), "Total 应等于遍历到的路由数")
+	require.Equal(t, int64(2), resp.GetTotal(), "Total 应等于遍历到的路由数")
 	require.Len(t, resp.GetItems(), 2, "条目数应等于遍历到的路由数")
 	require.Equal(t, "/stub-alpha", resp.GetItems()[0].GetPath(), "第 1 条应保持 walker 给出的路径")
 	require.Equal(t, "GET", resp.GetItems()[0].GetMethod(), "第 1 条应保持 walker 给出的方法")
@@ -160,7 +160,7 @@ func TestApiServiceSqlite_CreateGetUpdateDelete(t *testing.T) {
 	require.Equal(t, entApi.ScopeAdmin, *rows[0].Scope, "scope 应经转换器落库为 ADMIN")
 	require.Equal(t, entApi.BusinessModuleDashboard, *rows[0].BusinessModule, "business_module 应经转换器落库为 DASHBOARD")
 	require.NotNil(t, rows[0].CreatedBy, "created_by 应被服务层盖入操作人 ID")
-	require.Equal(t, uint64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
+	require.Equal(t, int64(7), *rows[0].CreatedBy, "created_by 应等于令牌声明中的操作人 ID")
 
 	got, err := svc.Get(ctx, &permissionV1.GetApiRequest{
 		QueryBy: &permissionV1.GetApiRequest_Id{Id: rows[0].ID},

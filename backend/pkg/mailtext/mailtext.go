@@ -162,7 +162,7 @@ func ContactBindCode(ctx context.Context, code string) (title, content string) {
 }
 
 // ChannelTestEmail 渠道测试邮件，对应 EventType_CHANNEL_TEST_EMAIL。
-func ChannelTestEmail(ctx context.Context, channelID, operatorID uint64) (title, content string) {
+func ChannelTestEmail(ctx context.Context, channelID, operatorID int64) (title, content string) {
 	t := tableOf(ctx)
 	return t.channelTestTitle, fmt.Sprintf(t.channelTestBody, channelID, operatorID)
 }
@@ -173,7 +173,7 @@ func ChannelTestEmail(ctx context.Context, channelID, operatorID uint64) (title,
 // eventType 传的是**被测规则**的事件类型名（不是这条测试本身的事件类型）：
 // 管理员要一眼看出"这一发验证的是哪条路由"，而台账的 event_type 列记的也是它。
 // 用字符串而不是 proto 枚举，是为了不把 notification.service.v1 拽进文案包。
-func RuleTestNotification(ctx context.Context, ruleID uint64, eventType string) (title, content string) {
+func RuleTestNotification(ctx context.Context, ruleID int64, eventType string) (title, content string) {
 	t := tableOf(ctx)
 	return t.ruleTestTitle, fmt.Sprintf(t.ruleTestBody, ruleID, eventType)
 }
@@ -193,14 +193,14 @@ func PhoneBindCode(ctx context.Context, code string) (title, content string) {
 }
 
 // ChannelTestSms 渠道测试短信（SMS 渠道），对应 EventType_CHANNEL_TEST_SMS。
-func ChannelTestSms(ctx context.Context, channelID, operatorID uint64) (title, content string) {
+func ChannelTestSms(ctx context.Context, channelID, operatorID int64) (title, content string) {
 	t := tableOf(ctx)
 	return t.channelTestSmsTitle, fmt.Sprintf(t.channelTestSmsBody, channelID, operatorID)
 }
 
 // ChannelTestExt 扩展渠道（EXT_*）测试消息，对应 EventType_CHANNEL_TEST_EXT。
 // 出站正文是通用测试文案（各渠道无模板概念）；台账文案与出站正文同一段。
-func ChannelTestExt(ctx context.Context, operatorID uint64) (title, content string) {
+func ChannelTestExt(ctx context.Context, operatorID int64) (title, content string) {
 	title = "GoWind Admin 通知渠道测试消息"
 	if LocaleEnUS == Resolve(ctx) {
 		title = "GoWind Admin notification channel test message"

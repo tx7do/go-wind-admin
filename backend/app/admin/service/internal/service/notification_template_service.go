@@ -137,7 +137,7 @@ func (s *NotificationTemplateService) RenderNotificationTemplate(ctx context.Con
 }
 
 // currentUserId 取操作人 ID；系统上下文（无操作人）返回 0，repo 侧据此留空 created_by。
-func currentUserId(ctx context.Context) uint64 {
+func currentUserId(ctx context.Context) int64 {
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		return 0

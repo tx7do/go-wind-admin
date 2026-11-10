@@ -49,9 +49,9 @@ const (
 // NewUserTokenPayload 创建用户令牌
 func NewUserTokenPayload(
 	username string,
-	userID uint64,
-	tenantID uint64,
-	orgUnitID *uint64,
+	userID int64,
+	tenantID int64,
+	orgUnitID *int64,
 	roleCodes []string,
 	dataScope *identityV1.DataScope,
 	clientID *string,
@@ -114,7 +114,7 @@ func NewUserTokenAuthClaims(
 	if len(tokenPayload.DataScopeUnitIds) > 0 {
 		unitParts := make([]string, 0, len(tokenPayload.DataScopeUnitIds))
 		for _, id := range tokenPayload.DataScopeUnitIds {
-			unitParts = append(unitParts, strconv.FormatUint(id, 10))
+			unitParts = append(unitParts, strconv.FormatInt(id, 10))
 		}
 		authClaims[ClaimFieldDataScopeUnits] = strings.Join(unitParts, ",")
 	}
@@ -155,7 +155,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		payload.Jti = trans.Ptr(jti)
 	}
 
-	userId, err := claims.GetUint64(ClaimFieldUserID)
+	userId, err := claims.GetInt64(ClaimFieldUserID)
 	if err != nil {
 		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldUserID failed: %v", err))
 	}
@@ -163,7 +163,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		payload.UserId = userId
 	}
 
-	tenantId, err := claims.GetUint64(ClaimFieldTenantID)
+	tenantId, err := claims.GetInt64(ClaimFieldTenantID)
 	if err != nil {
 		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldTenantID failed: %v", err))
 	}
@@ -224,7 +224,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 	}
 	if unitIdsStr != "" {
 		for _, part := range strings.Split(unitIdsStr, ",") {
-			if v, perr := strconv.ParseUint(part, 10, 64); perr == nil {
+			if v, perr := strconv.ParseInt(part, 10, 64); perr == nil && v >= 0 {
 				payload.DataScopeUnitIds = append(payload.DataScopeUnitIds, v)
 			}
 		}
@@ -238,7 +238,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		payload.HiddenFields = hiddenFields
 	}
 
-	orgUnitID, err := claims.GetUint64(ClaimFieldOrgUnitID)
+	orgUnitID, err := claims.GetInt64(ClaimFieldOrgUnitID)
 	if err != nil {
 		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint64 ClaimFieldOrgUnitID failed: %v", err))
 	}
@@ -274,11 +274,11 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 
 	// JSON 数字在 Go 里解码为 float64；这里两值断言，类型不符则跳过而非 panic。
 	if userId, ok := claims[ClaimFieldUserID].(float64); ok {
-		payload.UserId = uint64(userId)
+		payload.UserId = int64(userId)
 	}
 
 	if tenantId, ok := claims[ClaimFieldTenantID].(float64); ok {
-		payload.TenantId = trans.Ptr(uint64(tenantId))
+		payload.TenantId = trans.Ptr(int64(tenantId))
 	}
 
 	if clientId, ok := claims[ClaimFieldClientID].(string); ok {
@@ -296,7 +296,7 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 	}
 
 	if orgUnitID, ok := claims[ClaimFieldOrgUnitID].(float64); ok {
-		payload.OrgUnitId = trans.Ptr(uint64(orgUnitID))
+		payload.OrgUnitId = trans.Ptr(int64(orgUnitID))
 	}
 
 	if ipa, ok := claims[ClaimFieldIsPlatformAdmin].(bool); ok && ipa {

@@ -65,5 +65,5 @@ func (s *ScriptLogService) Purge(ctx context.Context, req *scriptV1.PurgeScriptL
 		return nil, err
 	}
 
-	return &scriptV1.PurgeScriptLogsResponse{Deleted: deleted}, nil
+	return &scriptV1.PurgeScriptLogsResponse{Deleted: uint64(deleted)}, nil
 }

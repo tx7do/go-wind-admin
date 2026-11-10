@@ -82,8 +82,8 @@ func (AiRole) EnumDescriptor() ([]byte, []int) {
 // AI 对话消息
 type AiMessage struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               *uint64                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                     // 消息ID
-	ConversationId   *uint64                `protobuf:"varint,2,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`       // 所属会话ID
+	Id               *int64                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                     // 消息ID
+	ConversationId   *int64                 `protobuf:"varint,2,opt,name=conversation_id,json=conversationId,proto3,oneof" json:"conversation_id,omitempty"`       // 所属会话ID
 	Role             *AiRole                `protobuf:"varint,3,opt,name=role,proto3,enum=ai.service.v1.AiRole,oneof" json:"role,omitempty"`                       // 消息角色
 	Content          *string                `protobuf:"bytes,4,opt,name=content,proto3,oneof" json:"content,omitempty"`                                            // 消息正文
 	ModelName        *string                `protobuf:"bytes,5,opt,name=model_name,json=modelName,proto3,oneof" json:"model_name,omitempty"`                       // 模型名称快照
@@ -91,11 +91,11 @@ type AiMessage struct {
 	CompletionTokens *uint32                `protobuf:"varint,7,opt,name=completion_tokens,json=completionTokens,proto3,oneof" json:"completion_tokens,omitempty"` // 输出 token 数
 	DurationMs       *uint32                `protobuf:"varint,8,opt,name=duration_ms,json=durationMs,proto3,oneof" json:"duration_ms,omitempty"`                   // 生成耗时
 	ErrorMessage     *string                `protobuf:"bytes,9,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"`              // 失败原因
-	UserId           *uint64                `protobuf:"varint,10,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                              // 归属用户ID
-	TenantId         *uint64                `protobuf:"varint,11,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                        // 租户ID
-	CreatedBy        *uint64                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                    // 创建者用户ID
-	UpdatedBy        *uint64                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                    // 更新者用户ID
-	DeletedBy        *uint64                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                    // 删除者用户ID
+	UserId           *int64                 `protobuf:"varint,10,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                              // 归属用户ID
+	TenantId         *int64                 `protobuf:"varint,11,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                        // 租户ID
+	CreatedBy        *int64                 `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                    // 创建者用户ID
+	UpdatedBy        *int64                 `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                    // 更新者用户ID
+	DeletedBy        *int64                 `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                    // 删除者用户ID
 	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                     // 创建时间
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                     // 更新时间
 	DeletedAt        *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                     // 删除时间
@@ -133,14 +133,14 @@ func (*AiMessage) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_message_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AiMessage) GetId() uint64 {
+func (x *AiMessage) GetId() int64 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *AiMessage) GetConversationId() uint64 {
+func (x *AiMessage) GetConversationId() int64 {
 	if x != nil && x.ConversationId != nil {
 		return *x.ConversationId
 	}
@@ -196,35 +196,35 @@ func (x *AiMessage) GetErrorMessage() string {
 	return ""
 }
 
-func (x *AiMessage) GetUserId() uint64 {
+func (x *AiMessage) GetUserId() int64 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *AiMessage) GetTenantId() uint64 {
+func (x *AiMessage) GetTenantId() int64 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *AiMessage) GetCreatedBy() uint64 {
+func (x *AiMessage) GetCreatedBy() int64 {
 	if x != nil && x.CreatedBy != nil {
 		return *x.CreatedBy
 	}
 	return 0
 }
 
-func (x *AiMessage) GetUpdatedBy() uint64 {
+func (x *AiMessage) GetUpdatedBy() int64 {
 	if x != nil && x.UpdatedBy != nil {
 		return *x.UpdatedBy
 	}
 	return 0
 }
 
-func (x *AiMessage) GetDeletedBy() uint64 {
+func (x *AiMessage) GetDeletedBy() int64 {
 	if x != nil && x.DeletedBy != nil {
 		return *x.DeletedBy
 	}
@@ -256,7 +256,7 @@ func (x *AiMessage) GetDeletedAt() *timestamppb.Timestamp {
 type ListAiMessageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*AiMessage           `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -298,7 +298,7 @@ func (x *ListAiMessageResponse) GetItems() []*AiMessage {
 	return nil
 }
 
-func (x *ListAiMessageResponse) GetTotal() uint64 {
+func (x *ListAiMessageResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
@@ -353,7 +353,7 @@ func (x *DeleteAiMessageRequest) GetQueryBy() isDeleteAiMessageRequest_QueryBy {
 	return nil
 }
 
-func (x *DeleteAiMessageRequest) GetId() uint64 {
+func (x *DeleteAiMessageRequest) GetId() int64 {
 	if x != nil {
 		if x, ok := x.QueryBy.(*DeleteAiMessageRequest_Id); ok {
 			return x.Id
@@ -367,14 +367,14 @@ type isDeleteAiMessageRequest_QueryBy interface {
 }
 
 type DeleteAiMessageRequest_Id struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
 }
 
 func (*DeleteAiMessageRequest_Id) isDeleteAiMessageRequest_QueryBy() {}
 
 type CountAiMessageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         uint64                 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 消息数量
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // 消息数量
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -409,7 +409,7 @@ func (*CountAiMessageResponse) Descriptor() ([]byte, []int) {
 	return file_ai_service_v1_ai_message_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CountAiMessageResponse) GetCount() uint64 {
+func (x *CountAiMessageResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -422,8 +422,8 @@ const file_ai_service_v1_ai_message_proto_rawDesc = "" +
 	"\n" +
 	"\x1eai/service/v1/ai_message.proto\x12\rai.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x8d\v\n" +
 	"\tAiMessage\x12#\n" +
-	"\x02id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b消息IDH\x00R\x02id\x88\x01\x01\x12B\n" +
-	"\x0fconversation_id\x18\x02 \x01(\x04B\x14\xbaG\x11\x92\x02\x0e所属会话IDH\x01R\x0econversationId\x88\x01\x01\x12B\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b消息IDH\x00R\x02id\x88\x01\x01\x12B\n" +
+	"\x0fconversation_id\x18\x02 \x01(\x03B\x14\xbaG\x11\x92\x02\x0e所属会话IDH\x01R\x0econversationId\x88\x01\x01\x12B\n" +
 	"\x04role\x18\x03 \x01(\x0e2\x15.ai.service.v1.AiRoleB\x12\xbaG\x0f\x92\x02\f消息角色H\x02R\x04role\x88\x01\x01\x12?\n" +
 	"\acontent\x18\x04 \x01(\tB \xbaG\x1d\x92\x02\x1a消息正文（Markdown）H\x03R\acontent\x88\x01\x01\x12N\n" +
 	"\n" +
@@ -434,15 +434,15 @@ const file_ai_service_v1_ai_message_proto_rawDesc = "" +
 	"durationMs\x88\x01\x01\x12W\n" +
 	"\rerror_message\x18\t \x01(\tB-\xbaG*\x92\x02'生成失败原因（仅失败记录）H\bR\ferrorMessage\x88\x01\x01\x122\n" +
 	"\auser_id\x18\n" +
-	" \x01(\x04B\x14\xbaG\x11\x92\x02\x0e归属用户IDH\tR\x06userId\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\v \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDH\n" +
+	" \x01(\x03B\x14\xbaG\x11\x92\x02\x0e归属用户IDH\tR\x06userId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\v \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\n" +
 	"R\btenantId\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\x04B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\vR\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\x03B\x17\xbaG\x14\x92\x02\x11创建者用户IDH\vR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x04B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x17\xbaG\x14\x92\x02\x11更新者用户IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x04B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
 	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x0eR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -471,13 +471,13 @@ const file_ai_service_v1_ai_message_proto_rawDesc = "" +
 	"\v_deleted_at\"]\n" +
 	"\x15ListAiMessageResponse\x12.\n" +
 	"\x05items\x18\x01 \x03(\v2\x18.ai.service.v1.AiMessageR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"6\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"6\n" +
 	"\x16DeleteAiMessageRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\x04H\x00R\x02idB\n" +
+	"\x02id\x18\x01 \x01(\x03H\x00R\x02idB\n" +
 	"\n" +
 	"\bquery_by\".\n" +
 	"\x16CountAiMessageResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count*F\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count*F\n" +
 	"\x06AiRole\x12\x17\n" +
 	"\x13AI_ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04USER\x10\x01\x12\r\n" +

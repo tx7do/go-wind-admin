@@ -115,7 +115,7 @@ func TestPermissionRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	}, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), filtered.Total, "contains 过滤后 Total 应为 1")
+	require.Equal(t, int64(1), filtered.Total, "contains 过滤后 Total 应为 1")
 	require.Len(t, filtered.Items, 1, "contains 过滤后只应返回 1 行")
 	require.Contains(t, *filtered.Items[0].Name, "markerjkl", "命中行应是携带标记的行")
 
@@ -134,12 +134,12 @@ func TestPermissionRepoSqlite_ListContainsFilter(t *testing.T) {
 		},
 	}, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), none.Total, "无命中 contains 应返回 Total=0")
+	require.Equal(t, int64(0), none.Total, "无命中 contains 应返回 Total=0")
 	require.Empty(t, none.Items)
 
 	all, err := repo.List(ctx, &paginationV1.PagingRequest{}, nil)
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), all.Total, "无过滤时应返回全部 2 行")
+	require.Equal(t, int64(2), all.Total, "无过滤时应返回全部 2 行")
 	require.Len(t, all.Items, 2)
 	// 列表读视图：status 未显式指定、按列默认（ON）落库，经 queryEnumsAndBackfill
 	// 如实回显。
@@ -216,18 +216,18 @@ func TestPermissionRepoSqlite_CodesAndIdsLookup(t *testing.T) {
 	rows, err := repo.entClient.Client().Permission.Query().All(ctx)
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
-	idByCode := map[string]uint64{}
+	idByCode := map[string]int64{}
 	for _, row := range rows {
 		idByCode[*row.Code] = row.ID
 	}
 
-	codes, err := repo.GetPermissionCodesByIDs(ctx, []uint64{idByCode["sqlite_perm_lookup_a"], idByCode["sqlite_perm_lookup_b"]})
+	codes, err := repo.GetPermissionCodesByIDs(ctx, []int64{idByCode["sqlite_perm_lookup_a"], idByCode["sqlite_perm_lookup_b"]})
 	require.NoError(t, err)
 	require.ElementsMatch(t, []string{"sqlite_perm_lookup_a", "sqlite_perm_lookup_b"}, codes, "按 ID 列表应取回全部对应 code")
 
 	ids, err := repo.GetPermissionIDsByCodes(ctx, []string{"sqlite_perm_lookup_a"})
 	require.NoError(t, err)
-	require.Equal(t, []uint64{idByCode["sqlite_perm_lookup_a"]}, ids, "按 code 列表应取回对应 ID")
+	require.Equal(t, []int64{idByCode["sqlite_perm_lookup_a"]}, ids, "按 code 列表应取回对应 ID")
 
 	emptyCodes, err := repo.GetPermissionCodesByIDs(ctx, nil)
 	require.NoError(t, err)
@@ -278,7 +278,7 @@ func TestPermissionRepoSqlite_Update(t *testing.T) {
 func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 	// newApiRow 直建端点身份完整的 API 行并返回 id：绑定入参是 api 引用，
 	// 新键下落库前会解析成 (path, method) 快照——引用必须真实存在
-	newApiRow := func(t *testing.T, repo *PermissionRepo, ctx context.Context, path, method string) uint64 {
+	newApiRow := func(t *testing.T, repo *PermissionRepo, ctx context.Context, path, method string) int64 {
 		t.Helper()
 		row, err := repo.entClient.Client().Api.Create().
 			SetNillablePath(trans.Ptr(path)).
@@ -290,7 +290,7 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 
 	// newMenuRow 直建一条根菜单行（path 即全路径）并返回 id：菜单绑定入参同样是
 	// 菜单引用，落库前会解析成全路径快照——引用必须真实存在
-	newMenuRow := func(t *testing.T, repo *PermissionRepo, ctx context.Context, name, fullPath string) uint64 {
+	newMenuRow := func(t *testing.T, repo *PermissionRepo, ctx context.Context, name, fullPath string) int64 {
 		t.Helper()
 		row, err := repo.entClient.Client().Menu.Create().
 			SetName(name).
@@ -301,7 +301,7 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 		return row.ID
 	}
 
-	newPerm := func(t *testing.T, code string) (*PermissionRepo, context.Context, uint64, uint64, uint64, uint64, uint64, uint64) {
+	newPerm := func(t *testing.T, code string) (*PermissionRepo, context.Context, int64, int64, int64, int64, int64, int64) {
 		t.Helper()
 		entClient := enttest.NewEntClientForTest(t)
 		repo := newPermissionRepoSqlite(t, entClient)
@@ -315,8 +315,8 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 			Data: &permissionV1.Permission{
 				Name:    trans.Ptr("sqlite权限点-关联保持"),
 				Code:    trans.Ptr(code),
-				MenuIds: []uint64{menu1, menu2, menu3},
-				ApiIds:  []uint64{apiA, apiB},
+				MenuIds: []int64{menu1, menu2, menu3},
+				ApiIds:  []int64{apiA, apiB},
 			},
 		}))
 		rows, err := repo.entClient.Client().Permission.Query().All(ctx)
@@ -325,7 +325,7 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 		return repo, ctx, rows[0].ID, apiA, apiB, menu1, menu2, menu3
 	}
 
-	menuPaths := func(t *testing.T, repo *PermissionRepo, ctx context.Context, permID uint64) map[string]struct{} {
+	menuPaths := func(t *testing.T, repo *PermissionRepo, ctx context.Context, permID int64) map[string]struct{} {
 		t.Helper()
 		links, err := repo.entClient.Client().PermissionMenu.Query().
 			Where(permissionmenu.PermissionIDEQ(permID)).All(ctx)
@@ -349,8 +349,8 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "menu_ids", "api_ids"}},
 			Data: &permissionV1.Permission{
 				Name:    trans.Ptr("sqlite权限点-关联改写"),
-				MenuIds: []uint64{newMenuA, newMenuB, newMenuC},
-				ApiIds:  []uint64{apiC},
+				MenuIds: []int64{newMenuA, newMenuB, newMenuC},
+				ApiIds:  []int64{apiC},
 			},
 		}))
 		paths := menuPaths(t, repo, ctx, id)
@@ -360,7 +360,7 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 		require.NotEqual(t, m1, newMenuA)
 		require.NotEqual(t, m2, newMenuB)
 		require.NotEqual(t, m3, newMenuC)
-		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []uint64{id})
+		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []int64{id})
 		require.NoError(t, err)
 		require.Len(t, endpoints, 1, "提交的接口集应整体替换旧的")
 		require.Equal(t, "/sqlite/rel/c", endpoints[0].Path, "绑定应落新端点的快照")
@@ -392,14 +392,14 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 			Id:         id,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menuIds", "apiIds"}},
 			Data: &permissionV1.Permission{
-				MenuIds: []uint64{newMenuD},
-				ApiIds:  []uint64{apiD, apiE},
+				MenuIds: []int64{newMenuD},
+				ApiIds:  []int64{apiD, apiE},
 			},
 		}))
 		paths := menuPaths(t, repo, ctx, id)
 		require.Len(t, paths, 1, "camelCase 掩码路径的菜单集替换应同样生效")
 		require.Contains(t, paths, "/relm/d")
-		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []uint64{id})
+		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []int64{id})
 		require.NoError(t, err)
 		require.Len(t, endpoints, 2, "camelCase 掩码路径的接口集替换应同样生效")
 	})
@@ -411,8 +411,8 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menu_ids", "api_ids"}},
 			Data: &permissionV1.Permission{
 				Name:    trans.Ptr("sqlite权限点-清空授权"),
-				MenuIds: []uint64{},
-				ApiIds:  []uint64{},
+				MenuIds: []int64{},
+				ApiIds:  []int64{},
 			},
 		}))
 		require.Empty(t, menuPaths(t, repo, ctx, id), "全不勾是合法操作：提交了就该清空")
@@ -488,7 +488,7 @@ func TestPermissionRepoSqlite_DeleteCascadesAllBindings(t *testing.T) {
 	roleRow, err := client.Role.Create().
 		SetName("级联删除角色").
 		SetCode("CASCADE_DEL_ROLE").
-		SetNillableTenantID(trans.Ptr(uint64(42))).
+		SetNillableTenantID(trans.Ptr(int64(42))).
 		Save(ctx)
 	require.NoError(t, err)
 	require.NoError(t, client.RolePermission.Create().
@@ -531,7 +531,7 @@ func TestPermissionRepoSqlite_DeleteCascadesAllBindings(t *testing.T) {
 	require.Equal(t, 1, bCnt, "删除甲不得牵连权限乙的绑定")
 
 	// DeleteByIDs 删除乙 → 同样的级联语义
-	require.NoError(t, repo.DeleteByIDs(ctx, []uint64{permB.ID}), "DeleteByIDs 应成功")
+	require.NoError(t, repo.DeleteByIDs(ctx, []int64{permB.ID}), "DeleteByIDs 应成功")
 	rpCnt, err = client.RolePermission.Query().Where(rolepermission.PermissionIDEQ(permB.ID)).Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, rpCnt, "DeleteByIDs 同样必须级联清角色授权")

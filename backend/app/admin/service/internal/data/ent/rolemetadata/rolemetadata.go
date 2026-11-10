@@ -91,7 +91,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint64
+	DefaultTenantID int64
 	// DefaultIsTemplate holds the default value on creation for the "is_template" field.
 	DefaultIsTemplate bool
 	// DefaultTemplateVersion holds the default value on creation for the "template_version" field.
@@ -99,7 +99,7 @@ var (
 	// DefaultCustomOverrides holds the default value on creation for the "custom_overrides" field.
 	DefaultCustomOverrides *permissionpb.RoleOverride
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
+	IDValidator func(int64) error
 )
 
 // SyncPolicy defines the type for the "sync_policy" enum field.
