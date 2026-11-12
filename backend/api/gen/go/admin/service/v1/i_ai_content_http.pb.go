@@ -88,6 +88,9 @@ func _AiContentService_SemanticSearch0_HTTP_Handler(srv AiContentServiceHTTPServ
 func _AiContentService_RebuildSearchIndex0_HTTP_Handler(srv AiContentServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -139,10 +142,10 @@ func (c *AiContentServiceHTTPClientImpl) GenerateContent(ctx context.Context, in
 func (c *AiContentServiceHTTPClientImpl) RebuildSearchIndex(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.RebuildSearchIndexResponse, error) {
 	var out v1.RebuildSearchIndexResponse
 	pattern := "/admin/v1/ai/content/rebuild-index"
-	path := binding.EncodeURL(pattern, in, true)
+	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAiContentServiceRebuildSearchIndex))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, nil, &out, opts...)
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

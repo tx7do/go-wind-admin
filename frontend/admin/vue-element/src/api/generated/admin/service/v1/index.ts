@@ -1234,9 +1234,9 @@ export function createAiContentServiceClient(
         method: 'SemanticSearch',
       }) as Promise<aiservicev1_SemanticSearchResponse>;
     },
-    RebuildSearchIndex(_request) {
+    RebuildSearchIndex(request) {
       const path = `/admin/v1/ai/content/rebuild-index`;
-      const body = null;
+      const body = JSON.stringify(request);
       return transport.unary(path, 'POST', body, {
         service: 'AiContentService',
         method: 'RebuildSearchIndex',

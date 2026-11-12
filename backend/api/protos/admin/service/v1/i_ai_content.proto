@@ -29,6 +29,7 @@ service AiContentService {
   rpc RebuildSearchIndex (google.protobuf.Empty) returns (ai.service.v1.RebuildSearchIndexResponse) {
     option (google.api.http) = {
       post: "/admin/v1/ai/content/rebuild-index"
+      body: "*"
     };
   }
 }

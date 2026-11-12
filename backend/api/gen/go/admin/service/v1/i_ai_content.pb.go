@@ -27,11 +27,11 @@ var File_admin_service_v1_i_ai_content_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_ai_content_proto_rawDesc = "" +
 	"\n" +
-	"#admin/service/v1/i_ai_content.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eai/service/v1/ai_content.proto2\xad\x03\n" +
+	"#admin/service/v1/i_ai_content.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eai/service/v1/ai_content.proto2\xb0\x03\n" +
 	"\x10AiContentService\x12\x8a\x01\n" +
 	"\x0fGenerateContent\x12%.ai.service.v1.GenerateContentRequest\x1a&.ai.service.v1.GenerateContentResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/admin/v1/ai/content/generate\x12\x85\x01\n" +
-	"\x0eSemanticSearch\x12$.ai.service.v1.SemanticSearchRequest\x1a%.ai.service.v1.SemanticSearchResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/admin/v1/ai/content/search\x12\x83\x01\n" +
-	"\x12RebuildSearchIndex\x12\x16.google.protobuf.Empty\x1a).ai.service.v1.RebuildSearchIndexResponse\"*\x82\xd3\xe4\x93\x02$\"\"/admin/v1/ai/content/rebuild-indexB\xbc\x01\n" +
+	"\x0eSemanticSearch\x12$.ai.service.v1.SemanticSearchRequest\x1a%.ai.service.v1.SemanticSearchResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/admin/v1/ai/content/search\x12\x86\x01\n" +
+	"\x12RebuildSearchIndex\x12\x16.google.protobuf.Empty\x1a).ai.service.v1.RebuildSearchIndexResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/admin/v1/ai/content/rebuild-indexB\xbc\x01\n" +
 	"\x14com.admin.service.v1B\x0fIAiContentProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_ai_content_proto_goTypes = []any{

@@ -584,6 +584,10 @@ paths:
                 - AiContentService
             description: 重建搜索索引
             operationId: AiContentService_RebuildSearchIndex
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
             responses:
                 "200":
                     description: OK
