@@ -38,6 +38,10 @@ export default defineConfig(({mode}) => {
                 'use-sync-external-store/shim/index.js',
                 'use-sync-external-store/shim/with-selector',
                 'use-sync-external-store/shim/with-selector.js',
+                // @tiptap/react（editor-react exclude 子树的传递依赖，保持 raw）会 default-import
+                // 'react-dom'。机制层收编进 @go-wind/admin-react 包后，app 源码不再裸导 react-dom，
+                // 优化器不再为它建入口 chunk，raw CJS 直接 serve 即缺 default 导出——显式收编。
+                'react-dom',
             ],
         },
         resolve: {
@@ -45,26 +49,11 @@ export default defineConfig(({mode}) => {
                 '@': '/src',
                 '#': '/types',
             },
-            // @go-wind/admin-react 以 link 源码形态消费（未发版前）时，包内对外部库的裸导入
-            // 会从包所在目录（go-wind-ui workspace）向上解析，与宿主 node_modules 形成两套
-            // 实例——react/antd/zustand/i18next/react-i18next/react-router/react-query 都是
-            // 单例敏感库（context/private 字段），双实例直接坏登录与 i18n。dedupe 强制这些
-            // 包一律从宿主根解析。发版改走 npm 依赖后本段仍保留无害。
-            dedupe: [
-                'react',
-                'react-dom',
-                'antd',
-                '@ant-design/icons',
-                '@ant-design/pro-components',
-                'react-router-dom',
-                'react-i18next',
-                'i18next',
-                '@tanstack/react-query',
-                'zustand',
-                'axios',
-                '@microsoft/fetch-event-source',
-                'dayjs',
-            ],
+            // 注意：不要给 @go-wind/admin-react 的 peers 加 resolve.dedupe。
+            // link 源码形态消费时 dedupe 曾用于防单例库双实例；但走 npm 依赖后
+            // pnpm lockfile 已保证 peer 单实例，而 dedupe 会把这些裸依赖的解析
+            // 绕过依赖优化器、直接 serve 原始 CJS（react-dom/index.js 无命名
+            // default 导出，页面直接白屏卡加载页）。
         },
         css: {
             preprocessorOptions: {
