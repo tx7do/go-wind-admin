@@ -15,7 +15,7 @@ import { EditOutlined,
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { taskservicev1_Task as Task } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import {
   fetchListTasks,
   useDeleteTask,
@@ -25,7 +25,7 @@ import {
   useStopAllTasks,
   useRestartAllTasks,
 } from '@/api/hooks/task';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import SystemTasksModal from './SystemTasksModal';
 import { getTaskTypeMap, getTaskTypeOptions } from './constants';

@@ -1,5 +1,5 @@
-import type { AppRouteObject } from '@/core/router/types';
-import { createLazyRoute } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { createLazyRoute } from '@go-wind/admin-react';
 
 /**
  * 权限管理路由配置

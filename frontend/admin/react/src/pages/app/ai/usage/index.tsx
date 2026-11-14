@@ -4,10 +4,10 @@ import ListTable from '@/components/common/ListTable';
 import TableExportButton from '@/components/common/TableExportButton';
 import { Progress } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useGetAiUsageSummary } from '@/api/hooks/ai-usage';
 import { fetchListAiUsageLogs } from '@/api/hooks/ai-usage';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { TABLE } from '@/config/constants';
 

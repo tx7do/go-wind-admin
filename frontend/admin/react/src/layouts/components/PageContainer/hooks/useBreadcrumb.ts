@@ -3,7 +3,7 @@ import React from 'react';
 import { useMatches, useNavigate } from 'react-router-dom';
 import { getIconFromName } from '@/layouts/MainLayout/utils/iconResolver';
 
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import type { BreadcrumbItem } from '../types';
 
 interface UseBreadcrumbOptions {

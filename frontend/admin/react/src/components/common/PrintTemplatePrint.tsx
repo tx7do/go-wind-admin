@@ -7,7 +7,7 @@ import { apiClient } from '@/api/client';
 import { fetchListPrintTemplates } from '@/api/hooks/print-template';
 import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
 import { getPaperDimensions } from '@go-wind/print-core/designer';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import DOMPurify from 'dompurify';
 
 /**

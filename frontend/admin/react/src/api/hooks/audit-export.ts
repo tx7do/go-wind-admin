@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/stores';
-import type { PaginationQuery } from '@/core';
+import { useAuthStore } from '@go-wind/admin-react';
+import type { PaginationQuery } from '@go-wind/admin-react';
 
 /**
  * 审计日志服务端导出：走 /admin/v1/audit-logs:export（XLSX，突破客户端

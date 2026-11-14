@@ -24,7 +24,7 @@ import { useListAiKnowledgeBases } from '@/api/hooks/ai-knowledge';
 import { useListAiProviders } from '@/api/hooks/ai-provider';
 import { fetchGetAiAgentApp, fetchListAiAgentApps, useRunAiAgentApp, useUpdateAiAgentApp } from '@/api/hooks/ai-agent';
 import { useAgentRunStream } from './agent-runs-drawer';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 
 /**
  * Agent 画布编辑器（M1）：

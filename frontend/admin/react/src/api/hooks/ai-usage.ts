@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
-import { PaginationQuery, queryClient } from '@/core';
+import { PaginationQuery, queryClient } from '@go-wind/admin-react';
 
 // useGetAiUsageSummary — 当月用量汇总（tokens/调用次数/配额上限）
 export function useGetAiUsageSummary() {

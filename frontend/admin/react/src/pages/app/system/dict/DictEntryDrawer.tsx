@@ -10,7 +10,7 @@ import { App, Select, Form, Table, Input, Button, Space, Spin } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreateDictEntry, useUpdateDictEntry } from '@/api/hooks/dict';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { fetchListDictTypes } from '@/api/hooks/dict';

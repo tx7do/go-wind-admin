@@ -4,8 +4,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SloganIcon from './icons/SloganIcon';
-import { usePreferences } from '@/core/preferences/hooks/usePreferences';
-import { useLocale } from '@/core/preferences/hooks/useLocale';
+import { usePreferences } from '@go-wind/admin-react';
+import { useLocale } from '@go-wind/admin-react';
 
 /**
  * 认证页面布局属性

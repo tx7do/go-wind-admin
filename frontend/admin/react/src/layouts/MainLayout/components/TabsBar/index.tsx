@@ -14,9 +14,9 @@ import {
   CloseCircleOutlined,
   DownOutlined,
 } from '@ant-design/icons';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { useTabsStore } from '@/stores/tabs';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import { usePageRefreshStore } from '@/stores/pageRefresh';
 import { getIconFromName } from '../../utils/iconResolver';
 import './tabsbar.css';

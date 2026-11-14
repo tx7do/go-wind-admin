@@ -4,7 +4,7 @@ import {
   type auditservicev1_ListLoginAuditLogResponse,
   type auditservicev1_LoginAuditLog,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery, queryClient } from '@/core';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

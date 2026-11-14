@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Form, Input, App } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useEditUserPassword } from '@/api/hooks/user';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 
 interface EditPasswordModalProps {
   open: boolean;

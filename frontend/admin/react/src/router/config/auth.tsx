@@ -1,4 +1,4 @@
-import { type AppRouteObject } from '@/core/router';
+import { type AppRouteObject } from '@go-wind/admin-react';
 import { GuestGuard } from '@/router/guards';
 
 import UserLayout from '@/layouts/UserLayout';

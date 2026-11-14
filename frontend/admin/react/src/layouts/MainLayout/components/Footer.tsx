@@ -1,4 +1,4 @@
-import { usePreferencesStore } from '@/core/preferences/store';
+import { usePreferencesStore } from '@go-wind/admin-react';
 
 export const AppFooter = () => {
   const { copyright } = usePreferencesStore((state) => state.preferences);

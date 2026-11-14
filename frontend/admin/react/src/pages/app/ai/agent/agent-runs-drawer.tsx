@@ -10,7 +10,7 @@ import type {
   aiservicev1_AiAgentApp as AiAgentApp,
 } from '@/api/generated/admin/service/v1';
 import { useListAiAgentRuns } from '@/api/hooks/ai-agent-run';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 
 /**
  * Agent 应用运行台账抽屉：该应用的历次试运行记录
@@ -144,7 +144,7 @@ export default function AgentRunsDrawer({
 }
 
 import { useEffect } from 'react';
-import { globalSSEClient, SSE_EVENT } from '@/core';
+import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-react';
 
 /**
  * 订阅本用户流上的 ai_agent_run 帧（试运行实时观感）。

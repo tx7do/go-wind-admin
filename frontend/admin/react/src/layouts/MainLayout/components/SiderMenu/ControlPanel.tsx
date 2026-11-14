@@ -5,7 +5,7 @@ import {
   PushpinOutlined,
   PushpinFilled,
 } from '@ant-design/icons';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 
 interface ControlPanelProps {
   collapsed: boolean;

@@ -8,13 +8,13 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { fetchListDictEntries, useDeleteDictEntry } from '@/api/hooks/dict';
 import { enableBoolOptions, getEnableColor, getEnableLabel, getEntryLabel } from './constants';
 import DictEntryDrawer from './DictEntryDrawer';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 

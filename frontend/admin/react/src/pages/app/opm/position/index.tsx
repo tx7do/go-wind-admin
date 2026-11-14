@@ -13,9 +13,9 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { identityservicev1_Position as Position } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListPositions, useCreatePosition, useDeletePosition } from '@/api/hooks/position';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import ImportModal from '@/components/common/ImportModal';
 import type { ImportField } from '@/utils/import';

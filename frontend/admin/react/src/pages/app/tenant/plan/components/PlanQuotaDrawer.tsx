@@ -9,7 +9,7 @@ import { App, Select, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreatePlanQuota, useUpdatePlanQuota, fetchListPlans } from '@/api/hooks/plan';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { getQuotaTypeOptions } from '../constants';

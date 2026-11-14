@@ -15,12 +15,12 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { permissionservicev1_Menu as Menu } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListMenus, useDeleteMenu, useSyncMenus, buildSyncMenusRequest } from '@/api/hooks/menu';
 import { businessRoutes } from '@/router/business-routes';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
-import { getRandomColor } from '@/utils/color';
+import { getRandomColor } from '@go-wind/admin-react';
 import {
   getMenuTypeMap,
   getStatusMap,

@@ -24,13 +24,13 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { PaginationQuery } from '@/core';
-import { useI18n } from '@/core/i18n';
-import { useUserStore } from '@/stores';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { PaginationQuery } from '@go-wind/admin-react';
+import { useI18n } from '@go-wind/admin-react';
+import { useUserStore } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { useListMyOnlineSessions } from '@/api/hooks/online-session';
 import { fetchListUserInbox } from '@/api/hooks/internal-message';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 
 const { Text, Title } = Typography;

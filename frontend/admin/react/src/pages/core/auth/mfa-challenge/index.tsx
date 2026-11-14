@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input, Button, App } from 'antd';
 import { SafetyOutlined } from '@ant-design/icons';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@go-wind/admin-react';
 import { useSearchParams } from 'react-router-dom';
 
 const MfaChallenge: React.FC = () => {

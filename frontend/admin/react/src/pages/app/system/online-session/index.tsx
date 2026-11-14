@@ -14,7 +14,7 @@ import {
 } from '@/api/hooks/online-session';
 import TableExportButton from '@/components/common/TableExportButton';
 import { TABLE } from '@/config/constants';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';

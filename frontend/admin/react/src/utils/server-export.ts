@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/stores';
-import type { PaginationQuery } from '@/core';
+import { useAuthStore } from '@go-wind/admin-react';
+import type { PaginationQuery } from '@go-wind/admin-react';
 
 /**
  * 服务端全量导出（XLSX，后端统一行数上限）：query 走 PaginationQuery 的

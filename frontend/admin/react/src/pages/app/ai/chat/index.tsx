@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { aiservicev1_AiConversation, aiservicev1_AiMessage } from '@/api/generated/admin/service/v1';
-import { PaginationQuery, globalSSEClient, SSE_EVENT } from '@/core';
+import { PaginationQuery, globalSSEClient, SSE_EVENT } from '@go-wind/admin-react';
 import {
   useDeleteAiConversation,
   useListAiConversations,

@@ -17,8 +17,8 @@ import {
   type identityservicev1_CreatePlanModuleRequest,
   type identityservicev1_DeletePlanModuleRequest,
 } from '@/api/generated/admin/service/v1';
-import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
-import { queryClient } from '@/core';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-react';
+import { queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

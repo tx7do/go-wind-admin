@@ -6,7 +6,7 @@ import {
   type online_sessionservicev1_RevokeMyOnlineSessionRequest,
   type online_sessionservicev1_RevokeMyOnlineSessionResponse,
 } from '@/api/generated/admin/service/v1';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

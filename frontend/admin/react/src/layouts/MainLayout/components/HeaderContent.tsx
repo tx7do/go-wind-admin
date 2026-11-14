@@ -27,14 +27,14 @@ import { getIconFromName } from '@/layouts/MainLayout/utils/iconResolver';
 
 import { SettingBoltIcon } from '@/components/common/settingBoltIcon';
 
-import { useI18n } from '@/core/i18n';
-import { usePreferencesStore } from '@/core/preferences/store';
-import type { SupportedLanguagesType } from '@/core/preferences/types/layout';
+import { useI18n } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
+import type { SupportedLanguagesType } from '@go-wind/admin-react';
 import { fetchListUserInbox, } from '@/api/hooks/internal-message';
 import { apiClient } from '@/api/client';
 import { useQuery } from '@tanstack/react-query';
-import { PaginationQuery, queryClient } from '@/core';
-import { globalSSEClient, SSE_EVENT } from '@/core/transport/sse';
+import { PaginationQuery, queryClient } from '@go-wind/admin-react';
+import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-react';
 import { useLockStore } from '@/stores';
 import { LockScreenModal } from './LockScreenModal';
 

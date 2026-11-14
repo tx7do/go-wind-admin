@@ -1,5 +1,5 @@
-import type { AppRouteObject } from '@/core/router/types';
-import { createLazyRoute } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { createLazyRoute } from '@go-wind/admin-react';
 
 /**
  * 通知域路由配置：渠道配置、路由规则（事件 → 渠道）、投递台账

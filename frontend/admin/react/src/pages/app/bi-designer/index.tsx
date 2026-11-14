@@ -13,7 +13,7 @@ import { BiDesignerReact } from "@go-wind/bi-react";
 import { setBiLocale } from "@go-wind/bi-vue";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
 import { fetchBiDashboard, useSaveBiDashboardPayload } from '@/api/hooks/bi-dashboard';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import { usePageFullscreen } from '@/hooks/usePageFullscreen';
 
 /** 本地草稿键（无 id 模式），与仪表盘页共用 */

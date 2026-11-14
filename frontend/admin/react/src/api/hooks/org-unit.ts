@@ -11,7 +11,7 @@ import {
   type identityservicev1_ListOrgUnitResponse,
   type identityservicev1_OrgUnit,
 } from '@/api/generated/admin/service/v1';
-import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

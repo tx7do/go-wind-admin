@@ -4,11 +4,11 @@ import { ConfigProvider, Button, Tooltip } from 'antd';
 import { GlobalOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-import { useAuthStore } from '@/stores';
-import { usePreferencesStore } from '@/core/preferences/store';
-import { useThemeConfig } from '@/core/preferences/hooks/useThemeConfig';
-import { useLocale } from '@/core/preferences/hooks/useLocale';
-import { startThemeViewTransition } from '@/core/preferences/theme-transition';
+import { useAuthStore } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
+import { useThemeConfig } from '@go-wind/admin-react';
+import { useLocale } from '@go-wind/admin-react';
+import { startThemeViewTransition } from '@go-wind/admin-react';
 
 import SloganIcon from '@/components/bussiness/AuthLayout/icons/SloganIcon';
 

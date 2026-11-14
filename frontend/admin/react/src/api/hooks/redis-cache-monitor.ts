@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { type redis_cacheservicev1_RedisCacheMonitorInfo } from '@/api/generated/admin/service/v1';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

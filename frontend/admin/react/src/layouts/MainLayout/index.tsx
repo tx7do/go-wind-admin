@@ -16,16 +16,17 @@ import { useMenuData } from './hooks/useMenuData';
 import { useLayoutState } from './hooks/useLayoutState';
 
 // Stores & Preferences
-import { useUserStore, useAuthStore, usePageRefreshStore, useLockStore } from '@/stores';
-import { useAccess } from '@/core/access';
-import { usePreferencesStore } from '@/core/preferences/store';
-import { useThemeConfig } from '@/core/preferences/hooks/useThemeConfig';
-import { startThemeViewTransition } from '@/core/preferences/theme-transition';
-import { PreferencesPanel } from '@/core/preferences/components';
+import { usePageRefreshStore, useLockStore } from '@/stores';
+import { useAuthStore, useUserStore } from '@go-wind/admin-react';
+import { useAccess } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
+import { useThemeConfig } from '@go-wind/admin-react';
+import { startThemeViewTransition } from '@go-wind/admin-react';
+import { PreferencesPanel } from '@go-wind/admin-react';
 
 import { allRoutes } from '@/router';
-import { AccessibleRoutesContext } from '@/core/router';
-import type { AppRouteObject } from '@/core/router/types';
+import { AccessibleRoutesContext } from '@go-wind/admin-react';
+import type { AppRouteObject } from '@go-wind/admin-react';
 
 interface LayoutRouteHandle {
   title?: string;

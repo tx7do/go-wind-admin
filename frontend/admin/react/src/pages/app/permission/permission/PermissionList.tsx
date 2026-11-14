@@ -8,9 +8,9 @@ import { EditOutlined, DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-d
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { fetchListPermissions, useDeletePermission, useSyncPermissions } from '@/api/hooks/permission';
 import { getStatusMap, getStatusOptions } from './constants';
 import PermissionDrawer from './PermissionDrawer';

@@ -9,7 +9,7 @@ import {
   type scriptservicev1_PurgeScriptLogsRequest,
   type scriptservicev1_PurgeScriptLogsResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery, queryClient } from '@/core';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

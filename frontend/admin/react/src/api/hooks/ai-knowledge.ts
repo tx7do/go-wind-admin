@@ -1,7 +1,7 @@
 import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
-import { type PaginationQuery, queryClient } from '@/core';
-import { makeUpdateMask } from '@/core/transport/rest/utils';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
+import { makeUpdateMask } from '@go-wind/admin-react';
 import type {
   aiservicev1_AiDoc,
   aiservicev1_AiKnowledgeBase,

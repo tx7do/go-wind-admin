@@ -5,7 +5,7 @@ import {
   type ListRouteResponse,
 } from '@/api/generated/admin/service/v1';
 import { apiClient } from '@/api/client';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 
 // ------------------------------
 // 1. 获取导航路由（左侧菜单）

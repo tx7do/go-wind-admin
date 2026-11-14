@@ -8,9 +8,9 @@ import { ApiOutlined, DeleteOutlined, EditOutlined, PlusOutlined, PlayCircleOutl
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { scriptservicev1_Script as Script } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListScripts, useDeleteScript, useUpdateScript, useListHookPoints } from '@/api/hooks/script';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { TABLE } from '@/config/constants.ts';
 import { getLanguageOptions, languageColorMap } from './constants';

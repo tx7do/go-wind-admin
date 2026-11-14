@@ -2,7 +2,7 @@ import { Button, Result, Typography, Space, Alert, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CopyOutlined, BugOutlined, ReloadOutlined, HomeOutlined } from '@ant-design/icons';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import { reportError } from './utils/report';
 
 const { Text, Paragraph } = Typography;

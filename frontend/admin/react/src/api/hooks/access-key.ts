@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
-import { type PaginationQuery, queryClient } from '@/core';
-import { makeUpdateMask } from '@/core/transport/rest/utils';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
+import { makeUpdateMask } from '@go-wind/admin-react';
 import type {
   access_keyservicev1_AccessKey as AccessKey,
   access_keyservicev1_CreateAccessKeyRequest,

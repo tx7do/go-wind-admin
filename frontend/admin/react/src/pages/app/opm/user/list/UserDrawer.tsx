@@ -5,13 +5,13 @@ import { App, TreeSelect, Select, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreateUser, useUpdateUser } from '@/api/hooks/user';
 import { fetchListRoles } from '@/api/hooks/role';
 import { fetchListOrgUnits } from '@/api/hooks/org-unit';
 import { fetchListPositions } from '@/api/hooks/position';
-import { useUserStore } from '@/stores/user';
-import { parseResourceHiddenFields } from '@/core/access';
+import { useUserStore } from '@go-wind/admin-react';
+import { parseResourceHiddenFields } from '@go-wind/admin-react';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { getUserStatusOptions, getGenderOptions } from '../constants';
 import { buildOrgTreeSelectData } from './tree-utils';

@@ -14,8 +14,8 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { PaginationQuery } from '@go-wind/admin-react';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { fetchListPermissionGroups, useDeletePermissionGroup } from '@/api/hooks/permission-group';
 import { getStatusMap, getStatusOptions } from './constants';
 import PermissionGroupDrawer from './PermissionGroupDrawer';

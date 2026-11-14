@@ -18,7 +18,7 @@ import { useCreateRole, useUpdateRole, fetchGetRole, fetchListRoles } from '@/ap
 import { fetchListPermissionGroups } from '@/api/hooks/permission-group';
 import { fetchListPermissions } from '@/api/hooks/permission';
 import { fetchListOrgUnits } from '@/api/hooks/org-unit';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import {
   getStatusOptions,
   getDataScopeOptions,

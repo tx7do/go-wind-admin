@@ -20,7 +20,7 @@ import type {
   notificationservicev1_UpdateNotificationRuleRequest,
 } from '@/api/generated/admin/service/v1';
 import { useListChannelSchemas } from '@/api/hooks/notification-channel-schema';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import {
   fetchListNotificationRules,
@@ -29,7 +29,7 @@ import {
   useTestDispatchNotification,
   useUpdateNotificationRule,
 } from '@/api/hooks/notification-rule';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';

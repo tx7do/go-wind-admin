@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 /**

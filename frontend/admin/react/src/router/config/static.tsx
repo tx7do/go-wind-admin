@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 
-import { type AppRouteObject } from '@/core/router';
+import { type AppRouteObject } from '@go-wind/admin-react';
 import { AuthGuard } from '@/router/guards';
 import MainLayout from '@/layouts/MainLayout';
 

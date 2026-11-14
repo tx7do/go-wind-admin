@@ -4,7 +4,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUser } from '@/api/hooks/user';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { TabEnum } from './types';
 import BasicInfoPage from './BasicInfoPage';

@@ -13,13 +13,13 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { access_keyservicev1_AccessKey as AccessKey } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import {
   fetchListAccessKeys,
   useDeleteAccessKey,
   useResetAccessKeySecret,
 } from '@/api/hooks/access-key';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import AccessKeyDrawer from './components/AccessKeyDrawer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';

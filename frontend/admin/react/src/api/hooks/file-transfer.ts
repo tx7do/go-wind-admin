@@ -1,6 +1,6 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
-import { RequestClient } from '@/core';
+import { RequestClient } from '@go-wind/admin-react';
 
 // ==============================
 // 文件下载 / 上传辅助函数

@@ -13,8 +13,8 @@ import {
   useQuery,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
-import type { AppRouteObject } from '@/core/router';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@go-wind/admin-react';
+import type { AppRouteObject } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

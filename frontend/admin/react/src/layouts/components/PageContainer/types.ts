@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { PageContainerProps as ProPageContainerProps } from '@ant-design/pro-components';
 
-import type { AppRoute } from '@/core/router/types';
+import type { AppRoute } from '@go-wind/admin-react';
 
 export interface PageContainerProps extends Omit<
   ProPageContainerProps,

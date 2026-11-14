@@ -48,20 +48,26 @@ const PROVENANCE_MARKERS = [
 // kebab-case path) — do not port them to the registered copies for
 // parity's sake. The two structurally identical copies registered below
 // are the ones this check pins.
+// React side (November 2026): the react transport truth moved out of this repo
+// into the @go-wind/admin-react package (github.com/tx7do/go-wind-ui,
+// packages/admin-react/src/transport). It is no longer mirrored in-repo —
+// downstream consumers pin it as an npm dependency instead. The groups below
+// therefore compare the vue copies only; the react copy's parity obligations
+// are carried by the go-wind-ui repository's own review gates.
+// (The vue-vben roots were also rebased here from the pre-consolidation
+// apps/admin/src path to the single-package src path.)
 const GROUPS = [
   {
     name: 'transport/sse',
     roots: [
-      'frontend/admin/react/src/core/transport/sse',
       'frontend/admin/vue-element/src/core/transport/sse',
-      'frontend/admin/vue-vben/apps/admin/src/transport/sse',
+      'frontend/admin/vue-vben/src/transport/sse',
     ],
     files: ['event.ts', 'index.ts', 'sse_client.ts', 'types.ts'],
   },
   {
     name: 'transport/rest',
     roots: [
-      'frontend/admin/react/src/core/transport/rest',
       'frontend/admin/vue-element/src/core/transport/rest',
     ],
     files: ['pagination.ts', 'preset-interceptors.ts'],

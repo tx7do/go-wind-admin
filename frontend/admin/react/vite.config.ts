@@ -1,4 +1,6 @@
 import {defineConfig, loadEnv} from 'vite';
+import {realpathSync} from 'node:fs';
+import {resolve} from 'node:path';
 
 import {handleEnv, createProxy, createVitePlugins, buildOptions} from './build';
 
@@ -8,6 +10,15 @@ export default defineConfig(({mode}) => {
     const env = loadEnv(mode, root);
     const viteEnv = handleEnv(env);
     const {VITE_SERVER_PORT, VITE_PROXY} = viteEnv;
+
+    // @go-wind/admin-react 以 link 形态安装时真实目录在本仓之外，dev server 默认
+    // 拒绝服务根外文件；把链接目标加进 fs.allow（未 link 安装时忽略）。
+    let linkedAdminReactRoot: string[] = [];
+    try {
+        linkedAdminReactRoot = [realpathSync(resolve(root, 'node_modules/@go-wind/admin-react'))];
+    } catch {
+        // 非 link 安装（正式 npm 依赖）无需额外放行
+    }
 
     return {
         base: '/',
@@ -34,6 +45,26 @@ export default defineConfig(({mode}) => {
                 '@': '/src',
                 '#': '/types',
             },
+            // @go-wind/admin-react 以 link 源码形态消费（未发版前）时，包内对外部库的裸导入
+            // 会从包所在目录（go-wind-ui workspace）向上解析，与宿主 node_modules 形成两套
+            // 实例——react/antd/zustand/i18next/react-i18next/react-router/react-query 都是
+            // 单例敏感库（context/private 字段），双实例直接坏登录与 i18n。dedupe 强制这些
+            // 包一律从宿主根解析。发版改走 npm 依赖后本段仍保留无害。
+            dedupe: [
+                'react',
+                'react-dom',
+                'antd',
+                '@ant-design/icons',
+                '@ant-design/pro-components',
+                'react-router-dom',
+                'react-i18next',
+                'i18next',
+                '@tanstack/react-query',
+                'zustand',
+                'axios',
+                '@microsoft/fetch-event-source',
+                'dayjs',
+            ],
         },
         css: {
             preprocessorOptions: {
@@ -46,6 +77,9 @@ export default defineConfig(({mode}) => {
         server: {
             open: true,
             port: VITE_SERVER_PORT,
+            fs: {
+                allow: [root, ...linkedAdminReactRoot],
+            },
             // 跨域处理
             proxy: createProxy(VITE_PROXY),
             // 减少文件监听开销

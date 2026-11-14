@@ -1,5 +1,5 @@
-import type { AppRouteObject } from '@/core/router/types';
-import { createLazyRoute } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { createLazyRoute } from '@go-wind/admin-react';
 
 /**
  * BI 分析：仪表盘（渲染态）。order=2 紧跟概览之后，与 ele/vben 两端同序。

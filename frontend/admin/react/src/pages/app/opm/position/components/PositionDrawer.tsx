@@ -12,7 +12,7 @@ import { App, TreeSelect, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { identityservicev1_Position as Position } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreatePosition, useUpdatePosition } from '@/api/hooks/position';
 import { fetchListOrgUnits } from '@/api/hooks/org-unit';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';

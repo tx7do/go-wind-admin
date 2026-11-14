@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 
-import type { AppRouteObject } from '@/core/router/types';
-import { createLazyRoute } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { createLazyRoute } from '@go-wind/admin-react';
 
 /**
  * 概览（仪表盘）路由：目录 + 分析叶子，与 ele/vben 及菜单种子的

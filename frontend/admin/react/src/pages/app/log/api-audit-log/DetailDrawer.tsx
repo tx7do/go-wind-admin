@@ -3,7 +3,7 @@ import { Drawer, Descriptions, Divider, Tag } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { auditservicev1_ApiAuditLog } from '@/api/generated/admin/service/v1';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 
 interface DetailDrawerProps {
   open: boolean;

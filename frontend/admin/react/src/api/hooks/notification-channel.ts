@@ -8,7 +8,7 @@ import {
   type notification_channelservicev1_SendTestRequest,
   type notification_channelservicev1_UpdateNotificationChannelRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery, queryClient } from '@/core';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

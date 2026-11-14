@@ -12,7 +12,7 @@ import {
   type aiservicev1_RunAiAgentAppRequest,
   type aiservicev1_UpdateAiAgentAppRequest,
 } from '@/api/generated/admin/service/v1';
-import { PaginationQuery, queryClient } from '@/core';
+import { PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

@@ -1,4 +1,4 @@
-import type { AppRouteObject } from '@/core/router/types';
+import type { AppRouteObject } from '@go-wind/admin-react';
 
 import BlankLayout from '@/layouts/BlankLayout';
 import RouteErrorFallback from '@/layouts/components/ErrorFallback/RouteErrorFallback';

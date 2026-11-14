@@ -7,12 +7,12 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Tag, App } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { auditservicev1_OperationAuditLog as OperationAuditLog } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import { fetchListOperationAuditLogs } from '@/api/hooks/operation-audit-log';
 import { exportAuditLogs, type AuditExportFormat } from '@/utils/csv';
 import { exportAuditLogsServer } from '@/api/hooks/audit-export';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import {
   getActionMap,

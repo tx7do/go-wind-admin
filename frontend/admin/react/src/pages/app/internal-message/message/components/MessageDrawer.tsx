@@ -10,7 +10,7 @@ import { App, TreeSelect, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { internal_messageservicev1_InternalMessage as InternalMessage } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useUpdateInternalMessage, useSendMessage, fetchListMessageCategories } from '@/api/hooks/internal-message';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { fetchListUsers } from '@/api/hooks/user';

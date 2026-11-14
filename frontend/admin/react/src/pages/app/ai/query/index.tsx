@@ -5,7 +5,7 @@ import { SendOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { useAskAiQuery, type AskAiQueryHistoryItem, type AskAiQueryParams } from '@/api/hooks/ai-query';
 import type { aiservicev1_AiQueryRow } from '@/api/generated/admin/service/v1';

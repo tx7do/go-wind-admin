@@ -2,7 +2,7 @@ import { Card, Descriptions, Spin, Tag, Typography, Empty, theme } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { server_monitorservicev1_ServerMonitorInfo } from '@/api/generated/admin/service/v1';
 import { useServerMonitorInfo } from '@/api/hooks/server-monitor';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 
 const { Title, Text } = Typography;

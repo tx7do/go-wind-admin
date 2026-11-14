@@ -6,7 +6,7 @@
  * 保留 token 注入、错误拦截、自动刷新等全部已有逻辑。
  */
 import { type ClientTransport, createApiClient } from "@/api/generated/admin/service/v1";
-import { consumeCaptchaHeaders, requestApi } from "@/core/transport/rest";
+import { consumeCaptchaHeaders, requestApi } from "@go-wind/admin-react";
 
 const transport: ClientTransport = {
   unary(path, method, body, _meta) {

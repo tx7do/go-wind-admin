@@ -12,7 +12,7 @@ import {
   LoginOutlined,
   AuditOutlined,
 } from '@ant-design/icons';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import { AiInsightsCard, SourceDonutChart, SourcePieChart, StatsCard, TrendChart } from '../components';
 
 const Analytics = () => {

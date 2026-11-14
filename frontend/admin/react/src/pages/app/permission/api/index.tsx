@@ -8,10 +8,10 @@ import { EditOutlined, DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-d
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { permissionservicev1_Api as Api } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE, METHOD_LIST } from '@/config/constants';
 import { fetchListApis, useSyncApisApi, useDeleteApi } from '@/api/hooks/api';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { getMethodColor } from './constants';
 import ApiDrawer from './components/ApiDrawer';

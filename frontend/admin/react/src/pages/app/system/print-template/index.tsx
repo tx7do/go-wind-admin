@@ -14,10 +14,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { printservicev1_PrintTemplate as PrintTemplate } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import { fetchListPrintTemplates, useDeletePrintTemplate } from '@/api/hooks/print-template';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { orientationLabel } from './constants';
 import TemplateDesignerDrawer from './components/TemplateDesignerDrawer';

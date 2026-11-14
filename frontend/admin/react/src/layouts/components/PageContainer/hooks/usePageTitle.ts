@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { usePreferencesStore } from '@/core/preferences/store';
-import { useI18n } from '@/core/i18n';
+import { usePreferencesStore } from '@go-wind/admin-react';
+import { useI18n } from '@go-wind/admin-react';
 import { useTranslation } from 'react-i18next';
 
 interface UsePageTitleOptions {

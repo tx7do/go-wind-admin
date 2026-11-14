@@ -5,8 +5,8 @@ import { LockOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 
-import { useI18n } from '@/core/i18n';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { useI18n } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { useLockStore } from '@/stores';
 
 interface LockScreenProps {

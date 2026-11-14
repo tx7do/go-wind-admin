@@ -3,7 +3,7 @@ import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { usePreferencesStore } from '@/core/preferences/store';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { getIconFromName } from '../../utils/iconResolver';
 import ControlPanel from './ControlPanel';
 import './SiderMenu.style.less';

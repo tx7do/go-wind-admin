@@ -13,7 +13,7 @@ import {
   type identityservicev1_VerifyContactRequest,
 } from '@/api/generated/admin/service/v1';
 import { apiClient } from '@/api/client';
-import { makeUpdateMask, queryClient } from '@/core';
+import { makeUpdateMask, queryClient } from '@go-wind/admin-react';
 import { encryptPasswordEnvelope } from '@/utils';
 
 /**

@@ -13,7 +13,7 @@ import { App, TreeSelect, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { identityservicev1_OrgUnit as OrgUnit } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreateOrgUnit, useUpdateOrgUnit, fetchListOrgUnits } from '@/api/hooks/org-unit';
 import { fetchListUsers } from '@/api/hooks/user';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';

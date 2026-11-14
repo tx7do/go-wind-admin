@@ -1,5 +1,5 @@
 import {AppRouter} from '@/router';
-import {useLocaleSync} from '@/core/i18n/hooks/useLocaleSync';
+import {useLocaleSync} from '@go-wind/admin-react';
 
 function App() {
     // 同步 preferences 和 i18n 语言

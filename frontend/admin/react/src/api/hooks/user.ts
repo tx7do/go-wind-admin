@@ -12,9 +12,9 @@ import {
   type identityservicev1_EditUserPasswordRequest,
   type identityservicev1_UserExistsResponse,
 } from '@/api/generated/admin/service/v1';
-import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
-import { queryClient } from '@/core';
+import { queryClient } from '@go-wind/admin-react';
 import { encryptPasswordEnvelope } from '@/utils';
 
 /**

@@ -10,7 +10,7 @@ import { App } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import type { aiservicev1_AiKnowledgeBase as AiKnowledgeBase } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreateAiKnowledgeBase, useUpdateAiKnowledgeBase } from '@/api/hooks/ai-knowledge';
 import { fetchListAiProviders } from '@/api/hooks/ai-provider';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';

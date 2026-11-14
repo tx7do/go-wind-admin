@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { App, Button, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import type { PaginationQuery } from '@/core';
+import type { PaginationQuery } from '@go-wind/admin-react';
 import { exportAuditLogs, type AuditExportFormat } from '@/utils/csv';
 import { serverExportFile } from '@/utils/server-export';
 

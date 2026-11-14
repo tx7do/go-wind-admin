@@ -2,8 +2,8 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Spin, Alert } from 'antd';
 import { useLocation } from 'react-router-dom';
 
-import { usePreferences } from '@/core/preferences';
-import { useI18n } from '@/core/i18n';
+import { usePreferences } from '@go-wind/admin-react';
+import { useI18n } from '@go-wind/admin-react';
 
 import './iframe-layout.less';
 

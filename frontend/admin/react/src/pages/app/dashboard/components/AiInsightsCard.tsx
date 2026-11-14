@@ -3,7 +3,7 @@ import { Button, Skeleton, Tag, Typography, App } from 'antd';
 import { RobotOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import type { AiInsightAlert, AiSensitiveOpItem } from '@/api/generated/admin/service/v1';
 
 /** 严重度 → 左边条/标签色（语义一致：红=高、橙=中、蓝=低）。

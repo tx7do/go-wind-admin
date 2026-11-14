@@ -1,6 +1,6 @@
 import { Navigate, useSearchParams } from 'react-router-dom';
 import React from 'react';
-import { useAuthStore, useUserStore } from '@/stores';
+import { useAuthStore, useUserStore } from '@go-wind/admin-react';
 
 interface GuestGuardProps {
   isAuthenticated?: boolean;

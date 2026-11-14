@@ -9,10 +9,10 @@ import type {
   notificationservicev1_DeliveryStatus,
   notificationservicev1_NotificationDelivery as NotificationDelivery,
 } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import { fetchListNotificationDeliveries } from '@/api/hooks/notification-delivery';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';

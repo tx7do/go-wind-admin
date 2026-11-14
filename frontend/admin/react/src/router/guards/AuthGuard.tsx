@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import React from 'react';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@go-wind/admin-react';
 
 interface AuthGuardProps {
     isAuthenticated?: boolean;

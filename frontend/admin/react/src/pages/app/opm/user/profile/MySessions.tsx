@@ -6,7 +6,7 @@ import {
   useRevokeMyOnlineSession,
 } from '@/api/hooks/online-session';
 import type { online_sessionservicev1_OnlineSession as OnlineSession } from '@/api/generated/admin/service/v1';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 
 const { Text } = Typography;
 

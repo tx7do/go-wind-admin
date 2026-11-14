@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { AppRouteObject } from '@/core/router/types';
-import { transformRoutesToMenu } from '@/core/router/utils/menu';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { transformRoutesToMenu } from '@go-wind/admin-react';
 
 interface UseMenuDataOptions {
   staticRoutes?: AppRouteObject[]; // 静态路由（前端模式）

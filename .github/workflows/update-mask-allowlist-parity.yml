@@ -1,5 +1,7 @@
 name: update-mask-allowlist-parity
 
+# react 端 makeUpdateMask 的机制实现已移入 @go-wind/admin-react 包（go-wind-ui 仓），
+# 但调用点仍在 react src/api/hooks，故保留 react src 路径过滤。
 on:
   push:
     paths:

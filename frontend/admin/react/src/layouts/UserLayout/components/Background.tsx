@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { usePreferences } from '@/core/preferences/hooks/usePreferences';
+import { usePreferences } from '@go-wind/admin-react';
 
-import type { AuthPageLayoutType } from '@/core/preferences/types';
+import type { AuthPageLayoutType } from '@go-wind/admin-react';
 
 import './background.less';
 

@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import type { identityservicev1_User as User } from '@/api/generated/admin/service/v1';
 import { useGetUser } from '@/api/hooks/user';
 import { getGenderMap } from '../constants';
-import { getCharColor, getRandomColor } from '@/utils/color';
-import { formatDateTime } from '@/utils/date';
-import { useUserStore } from '@/stores/user';
-import { isFieldHidden } from '@/core/access';
+import { getCharColor, getRandomColor } from '@go-wind/admin-react';
+import { formatDateTime } from '@go-wind/admin-react';
+import { useUserStore } from '@go-wind/admin-react';
+import { isFieldHidden } from '@go-wind/admin-react';
 
 interface BasicInfoPageProps {
   userId: string | undefined; // uint64 → proto3 JSON 下为字符串

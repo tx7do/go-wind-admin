@@ -8,9 +8,9 @@ import { DeleteOutlined, EditOutlined, FileTextOutlined, PlusOutlined } from '@a
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiKnowledgeBase as AiKnowledgeBase } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListAiKnowledgeBases, useDeleteAiKnowledgeBase } from '@/api/hooks/ai-knowledge';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { TABLE } from '@/config/constants';
 import KnowledgeDrawer from './components/KnowledgeDrawer';

@@ -1,5 +1,5 @@
 diff --git a/es/Table.d.ts b/es/Table.d.ts
-index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5cc2b4051e 100644
+index 64f836a5338fad47e00f10f541f8573fe0994b86..e37d9d815df1c8b332edb2e7b74380009d0bafdd 100644
 --- a/es/Table.d.ts
 +++ b/es/Table.d.ts
 @@ -89,6 +89,12 @@ export interface TableProps<RecordType = any> extends Omit<LegacyExpandableProps
@@ -16,10 +16,10 @@ index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5c
       * @private Internal usage, may remove by refactor.
       *
 diff --git a/es/Table.js b/es/Table.js
-index 68ff186bb60709399e80fb5f92effed8082fcfb1..35278a964843a4f48d1875388acc6291480a180d 100644
+index cdb5af85acfbe072fb36c3ead715c01b27832e0c..edb638bdb708463c42a3008a0fe6e280e159bd61 100644
 --- a/es/Table.js
 +++ b/es/Table.js
-@@ -106,6 +106,7 @@ const Table = (tableProps, ref) => {
+@@ -99,6 +99,7 @@ const Table = (tableProps, ref) => {
      transformColumns,
      internalRefs,
      tailor,
@@ -27,7 +27,7 @@ index 68ff186bb60709399e80fb5f92effed8082fcfb1..35278a964843a4f48d1875388acc6291
      getContainerWidth,
      sticky,
      rowHoverable = true
-@@ -386,7 +387,10 @@ const Table = (tableProps, ref) => {
+@@ -387,7 +388,10 @@ const Table = (tableProps, ref) => {
    }, []);
  
    // ===================== Effects ======================
@@ -40,7 +40,7 @@ index 68ff186bb60709399e80fb5f92effed8082fcfb1..35278a964843a4f48d1875388acc6291
      if (!tailor || !useInternalHooks) {
        if (scrollBodyRef.current instanceof Element) {
 diff --git a/lib/Table.d.ts b/lib/Table.d.ts
-index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5cc2b4051e 100644
+index 64f836a5338fad47e00f10f541f8573fe0994b86..e37d9d815df1c8b332edb2e7b74380009d0bafdd 100644
 --- a/lib/Table.d.ts
 +++ b/lib/Table.d.ts
 @@ -89,6 +89,12 @@ export interface TableProps<RecordType = any> extends Omit<LegacyExpandableProps
@@ -57,10 +57,10 @@ index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5c
       * @private Internal usage, may remove by refactor.
       *
 diff --git a/lib/Table.js b/lib/Table.js
-index bb05a4e2367de95f8623f15be32ee6bec8aaecb9..cfba4bb36c27be6559c0e8e9d4a4d4ada96365e3 100644
+index e16246c3fa4ee0305b9a1cf04bc25116616b5f0d..6d2edda0feaeba11b6c229980fdbc5e17c27b290 100644
 --- a/lib/Table.js
 +++ b/lib/Table.js
-@@ -113,6 +113,7 @@ const Table = (tableProps, ref) => {
+@@ -106,6 +106,7 @@ const Table = (tableProps, ref) => {
      transformColumns,
      internalRefs,
      tailor,
@@ -68,7 +68,7 @@ index bb05a4e2367de95f8623f15be32ee6bec8aaecb9..cfba4bb36c27be6559c0e8e9d4a4d4ad
      getContainerWidth,
      sticky,
      rowHoverable = true
-@@ -393,7 +394,10 @@ const Table = (tableProps, ref) => {
+@@ -394,7 +395,10 @@ const Table = (tableProps, ref) => {
    }, []);
  
    // ===================== Effects ======================
@@ -77,6 +77,6 @@ index bb05a4e2367de95f8623f15be32ee6bec8aaecb9..cfba4bb36c27be6559c0e8e9d4a4d4ad
 +  // Callers may pass the live scrollbar width (0 while hidden) — the mount-time
 +  // measurement goes stale when the body scrollbar is toggled at runtime.
 +  const scrollbarSize = customizeScrollbarSize ?? measuredScrollbarSize;
-   (0, _useLayoutEffect.default)(() => {
+   (0, _util.useLayoutEffect)(() => {
      if (!tailor || !useInternalHooks) {
        if (scrollBodyRef.current instanceof Element) {

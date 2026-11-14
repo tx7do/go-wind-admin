@@ -1,4 +1,4 @@
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { message } from 'antd';
 import ExcelJS from 'exceljs';
 

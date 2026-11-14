@@ -7,7 +7,7 @@ import type {
   redis_cacheservicev1_SlowLogEntry,
 } from '@/api/generated/admin/service/v1';
 import { useRedisCacheMonitorInfo } from '@/api/hooks/redis-cache-monitor';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 
 const { Title, Text } = Typography;

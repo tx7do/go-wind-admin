@@ -8,7 +8,7 @@ import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard'
 import { useUpdateTenant, useCreateTenantWithAdminUser, useGetTenantUsage, useCleanupTenantData } from '@/api/hooks/tenant';
 import { toProtoTimestamp } from '@/utils/datetime';
 import { fetchListPlans } from '@/api/hooks/plan';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import type {
   identityservicev1_Tenant,
   identityservicev1_Tenant_Type,

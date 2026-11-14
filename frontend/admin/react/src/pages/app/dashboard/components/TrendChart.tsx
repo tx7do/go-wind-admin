@@ -1,6 +1,6 @@
 import { Card } from 'antd';
 import type { LoginTrendResponse } from '@/api/generated/admin/service/v1';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 import { LineChart } from './LineChart';
 
 interface TrendChartProps {

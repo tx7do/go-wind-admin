@@ -3,7 +3,7 @@ import type { ProColumns } from '@ant-design/pro-components';
 import { useTranslation } from 'react-i18next';
 import ListTable from '@/components/common/ListTable';
 import { useInspectSystemTasks } from '@/api/hooks/task-monitor';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@go-wind/admin-react';
 
 const { Text } = Typography;
 

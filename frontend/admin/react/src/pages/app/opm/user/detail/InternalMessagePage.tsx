@@ -5,10 +5,10 @@ import ListTable from '@/components/common/ListTable';
 import { Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { internal_messageservicev1_InternalMessageRecipient as InboxItem } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import { fetchListUserInbox } from '@/api/hooks/internal-message';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import {
   getRecipientStatusMap,
   getRecipientStatusOptions,

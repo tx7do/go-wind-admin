@@ -24,7 +24,7 @@ import type {
   monitor_alertservicev1_MonitorAlertRule as MonitorAlertRule,
   monitor_alertservicev1_UpdateMonitorAlertRuleRequest,
 } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import {
   fetchListMonitorAlertRules,
@@ -33,7 +33,7 @@ import {
   useEvaluateMonitorAlerts,
   useUpdateMonitorAlertRule,
 } from '@/api/hooks/monitor-alert';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';

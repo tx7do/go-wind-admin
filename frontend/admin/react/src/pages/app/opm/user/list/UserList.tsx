@@ -11,14 +11,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { usePrintTemplateDialog } from '@/components/common/PrintTemplatePrint';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { fetchListUsers, useDeleteUser } from '@/api/hooks/user';
 import { useAdminResetMfa } from '@/api/hooks/mfa';
-import { useAuthStore } from '@/stores';
-import { useUserStore } from '@/stores/user';
-import { parseResourceHiddenFields } from '@/core/access';
+import { useAuthStore } from '@go-wind/admin-react';
+import { useUserStore } from '@go-wind/admin-react';
+import { parseResourceHiddenFields } from '@go-wind/admin-react';
 import { getUserStatusMap, getUserStatusOptions } from '../constants';
 import UserDrawer from './UserDrawer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';

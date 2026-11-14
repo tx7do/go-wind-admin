@@ -8,9 +8,9 @@ import { EditOutlined, DeleteOutlined, PlusOutlined, CloudOutlined, LaptopOutlin
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiProvider as AiProvider } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListAiProviders, useDeleteAiProvider } from '@/api/hooks/ai-provider';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { TABLE } from '@/config/constants';
 import AiProviderDrawer from './components/AiProviderDrawer';

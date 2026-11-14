@@ -8,10 +8,10 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListOrgUnits } from '@/api/hooks/org-unit';
 import { fetchListTenants } from '@/api/hooks/tenant';
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@go-wind/admin-react';
 
 interface OrgListProps {
   currentOrgUnitId: string | undefined; // id 均为 uint64，proto3 JSON 下是字符串

@@ -12,7 +12,7 @@ import {
   type notificationservicev1_TestDispatchNotificationResponse,
   type notificationservicev1_UpdateNotificationRuleRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery, queryClient } from '@/core';
+import { type PaginationQuery, queryClient } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
 
 // ==============================

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Form, Input, Button, App } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@go-wind/admin-react';
 import { useChangePassword } from '@/api/hooks/user-profile';
 
 const EditPassword = () => {

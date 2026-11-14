@@ -5,10 +5,10 @@ import { Skeleton, Alert, Button, Space } from 'antd';
 import { ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
 
 import { usePageRefreshStore } from '@/stores/pageRefresh';
-import { useAccess } from '@/core/access';
+import { useAccess } from '@go-wind/admin-react';
 
-import { useI18n } from '@/core/i18n';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { useI18n } from '@go-wind/admin-react';
+import { usePreferencesStore } from '@go-wind/admin-react';
 
 import { useBreadcrumb } from './hooks/useBreadcrumb';
 import { usePageTitle } from './hooks/usePageTitle';

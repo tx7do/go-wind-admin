@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
-import { createAccessibleRouter } from '@/core/router/factory';
-import { useAuthStore } from '@/stores';
+import { createAccessibleRouter } from '@go-wind/admin-react';
+import { useAuthStore, useUserStore } from '@go-wind/admin-react';
 import { useAuth } from '@/hooks/useAuth';
-import { getAccessStatic } from '@/core/access';
+import { getAccessStatic } from '@go-wind/admin-react';
 import { fetchAllDictEntries } from '@/hooks/useDictCache';
-import { usePreferencesStore } from '@/core/preferences/store';
+import { usePreferencesStore } from '@go-wind/admin-react';
 import { apiClient } from '@/api/client';
-import { useI18n } from '@/core/i18n';
+import { useI18n } from '@go-wind/admin-react';
 
 import { Forbidden } from '@/pages/core/error';
-import { AccessibleRoutesContext } from '@/core/router';
-import type { AppRouteObject, ComponentRecordType } from '@/core/router';
+import { AccessibleRoutesContext } from '@go-wind/admin-react';
+import type { AppRouteObject, ComponentRecordType } from '@go-wind/admin-react';
 import MainLayout from '@/layouts/MainLayout';
 import { AuthGuard } from '@/router/guards';
 
 import { errorRoutes } from './config/error-routes';
-import Loading from '@/components/common/Loading';
+import { ThemeLoading } from '@go-wind/admin-react';
+import { ROUTES } from '@/config/constants';
 import { authRoutes } from './config/auth';
 import { staticRoutes } from './config/static';
 
@@ -119,7 +120,6 @@ export const AppRouter = () => {
             // 清除 userStore 防止脏数据
             console.warn('Auth initialization failed, will redirect to login:', authErr);
             // forceLogout 已在拦截器中处理，此处清除 userStore
-            const { useUserStore } = await import('@/stores');
             useUserStore.getState().$reset();
 
             if (stale) return; // 已过期，不继续创建路由
@@ -148,6 +148,7 @@ export const AppRouter = () => {
           },
           layoutMap,
           pageMap,
+          defaultHomePath: ROUTES.DEFAULT_HOME,
           autoInjectRedirect: true,
           autoSort: true,
         });
@@ -173,7 +174,7 @@ export const AppRouter = () => {
   }, [isAuthenticated, accessMode]);
 
   if (loading || !routerBundle)
-    return <Loading fullScreen text={t('loading.initializing')} subText={t('loading.loadingRouter')} />;
+    return <ThemeLoading fullScreen text={t('loading.initializing')} subText={t('loading.loadingRouter')} />;
 
   // 挂载路由树经 Context 下发：侧栏镜像实际挂载路由（后端模式=后端下发，
   // 前端模式=权限过滤后），避免后端模式侧栏回退静态全量表造成越权观感

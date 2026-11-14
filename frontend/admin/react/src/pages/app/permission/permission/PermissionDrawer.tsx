@@ -15,7 +15,7 @@ import {
   BorderOutlined,
 } from '@ant-design/icons';
 
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useCreatePermission, useUpdatePermission } from '@/api/hooks/permission';
 import { fetchListPermissionGroups } from '@/api/hooks/permission-group';
 import { fetchListMenus } from '@/api/hooks/menu';

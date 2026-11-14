@@ -9,8 +9,8 @@ import {
   useUploadAvatar,
   useDeleteAvatar,
 } from '@/api/hooks/user-profile';
-import { getCharColor, getRandomColor } from '@/utils/color';
-import { formatDateTime } from '@/utils/date';
+import { getCharColor, getRandomColor } from '@go-wind/admin-react';
+import { formatDateTime } from '@go-wind/admin-react';
 
 const BaseSetting = () => {
   const { t } = useTranslation(['profile', 'common']);

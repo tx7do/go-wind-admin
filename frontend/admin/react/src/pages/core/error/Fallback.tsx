@@ -4,8 +4,8 @@ import {Button} from 'antd';
 import {ArrowLeftOutlined, ReloadOutlined} from '@ant-design/icons';
 
 import type {FallbackProps} from './fallback';
-import {useI18n} from '@/core/i18n';
-import {usePreferencesStore} from '@/core/preferences/store';
+import {useI18n} from '@go-wind/admin-react';
+import {usePreferencesStore} from '@go-wind/admin-react';
 
 // 导入图标组件
 import {Icon401} from './icons/Icon401';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import BaseSetting from './BaseSetting';
 import EditPassword from './EditPassword';

@@ -1,4 +1,4 @@
-import type { AppRouteObject } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
 
 // 自动导入 modules 下的所有路由模块（仅包含业务功能路由）
 const modulesRoutes = import.meta.glob<AppRouteObject[][]>('./modules/**/*.tsx', {

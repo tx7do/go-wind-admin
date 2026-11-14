@@ -18,7 +18,7 @@ import {
   useCreatePlanModule,
   useDeletePlanModule,
 } from '@/api/hooks/plan';
-import { PaginationQuery } from '@/core/transport/rest';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { getPlanVersionOptions, getExpiryPolicyOptions, getModuleOptions } from '../constants';
 import { SELECT_FILTER_PROPS } from '../constants';

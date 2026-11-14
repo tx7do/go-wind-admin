@@ -23,7 +23,7 @@ import type {
   notificationservicev1_RenderNotificationTemplateRequest,
   notificationservicev1_UpdateNotificationTemplateRequest,
 } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import {
   fetchListNotificationTemplates,
@@ -32,7 +32,7 @@ import {
   useRenderNotificationTemplate,
   useUpdateNotificationTemplate,
 } from '@/api/hooks/notification-template';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';

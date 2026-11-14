@@ -24,7 +24,7 @@ import type {
   notification_channelservicev1_CreateNotificationChannelRequest,
   notification_channelservicev1_UpdateNotificationChannelRequest,
 } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import {
   fetchListNotificationChannels,
@@ -34,7 +34,7 @@ import {
   useCreateNotificationChannel,
 } from '@/api/hooks/notification-channel';
 import { useListChannelSchemas, type ChannelSchema } from '@/api/hooks/notification-channel-schema';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';

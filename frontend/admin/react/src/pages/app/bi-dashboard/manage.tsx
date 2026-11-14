@@ -14,14 +14,14 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { biservicev1_BiDashboard as BiDashboard } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@/config/constants';
 import {
   fetchListBiDashboards,
   useCopyBiDashboard,
   useDeleteBiDashboard,
 } from '@/api/hooks/bi-dashboard';
-import { useProTableScrollY } from '@/hooks/useProTableScrollY';
+import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import BiDesignerDrawer from './components/BiDesignerDrawer';
 import RevisionsDrawer from './components/RevisionsDrawer';

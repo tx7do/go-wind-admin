@@ -9,7 +9,7 @@ import type {
   dictservicev1_DictType,
 } from '@/api/generated/admin/service/v1';
 import { fetchListDictTypes, fetchListDictEntries } from '@/api/hooks/dict';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 
 // ==============================
 // 字典项缓存（模块级单例）

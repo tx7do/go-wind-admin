@@ -1,18 +1,50 @@
-import { initI18n } from '@/core/i18n';
-import { usePreferencesStore } from '@/core/preferences';
-import { type HttpResponse, RequestClient } from '@/core/transport/rest';
-import i18n from 'i18next';
-import { useAuthStore } from '@/stores';
 import {
+  configureAdminRuntime,
+  configureQueryClient,
   connectSSEServer,
+  coreResources,
+  initI18n,
+  setAuthGateway,
   startRefreshTimer,
-} from '@/hooks/useTokenRefresh';
+  RequestClient,
+  type HttpResponse,
+  useAuthStore,
+  usePreferencesStore,
+} from '@go-wind/admin-react';
+import i18n from 'i18next';
+import { resources, allNamespaces } from '@/locales';
+import {
+  loginMutation,
+  logoutMutation,
+  refreshTokenMutation,
+  verifyMfaMutation,
+} from '@/api';
+import { apiClient } from '@/api/client';
 import { fetchUserProfile } from '@/api/hooks/user-profile';
+import { encryptPasswordEnvelope } from '@/utils';
 
 /**
  * 应用启动初始化
  */
 export async function bootstrap() {
+  // 运行时开关注入（包内不读 import.meta.env——lib 构建会把它静态替换成包构建时的值）
+  configureAdminRuntime({ isDev: import.meta.env.DEV });
+  configureQueryClient({ isDev: import.meta.env.DEV });
+
+  // 认证数据面注入：机制（token 内存态/刷新调度/MFA 挑战/登出清理）在包内，
+  // 后端调用与口令加密（密钥属宿主 env）全部由宿主实现 AuthGateway
+  setAuthGateway({
+    login: (params) => loginMutation.execute(params as Parameters<typeof loginMutation.execute>[0]),
+    verifyMfa: (params) => verifyMfaMutation.execute(params),
+    ssoLogin: (params) => apiClient.authenticationService.SsoLogin(params),
+    logout: () => logoutMutation.execute({}),
+    refresh: () => refreshTokenMutation.execute(undefined),
+    fetchProfile: async () => (await fetchUserProfile()) as unknown as Parameters<
+      ReturnType<typeof useAuthStore.getState>['setUserInfo']
+    >[0],
+    encryptPassword: (plain) => encryptPasswordEnvelope(plain),
+  });
+
   await _initI18n();
 
   // 全局错误观测：未处理的 promise 拒绝/运行时异常若无人接管会静默丢失，
@@ -48,8 +80,19 @@ async function _initI18n() {
   // 从 preferences 获取初始语言
   const initialLocale = usePreferencesStore.getState().preferences.app.locale;
 
-  // 初始化 i18n（传入初始语言）
-  await initI18n(initialLocale);
+  // i18n 资源 = 包内置框架命名空间（common/auth/editor/preferences）+ 宿主命名空间，
+  // 同名时宿主覆盖包内置（routes 是宿主业务路由标题，必须宿主侧提供）
+  const mergedResources = {
+    'zh-CN': { ...coreResources['zh-CN'], ...resources['zh-CN'] },
+    'en-US': { ...coreResources['en-US'], ...resources['en-US'] },
+  } as Record<string, Record<string, Record<string, unknown>>>;
+
+  // 初始化 i18n（传入初始语言与合并资源）
+  await initI18n(initialLocale, {
+    resources: mergedResources,
+    namespaces: Object.keys(mergedResources['zh-CN'] ?? allNamespaces),
+    missingKeyWarn: import.meta.env.DEV,
+  });
 
   // 注入 RequestClient 回调（业务层 → 基础设施层）
   // 必须在 initStores 之后，因为 getToken 依赖 accessStore
@@ -63,6 +106,10 @@ async function _initI18n() {
     onError: (msg) => console.error('[RequestClient]', msg),
     getErrorMsg: getErrorMsg,
   });
+
+  // SSE 基础地址由宿主从自身 env 解析后传入（包内零 env 直读），
+  // 后续 token 刷新的重连会复用该地址
+  const sseBaseUrl = import.meta.env.VITE_SSE_URL ?? '/api/sse';
 
   // 页面刷新后的会话恢复：
   // access token 仅存内存，刷新页面后丢失。refresh token 现以 HttpOnly Cookie 传输，
@@ -108,7 +155,7 @@ async function _initI18n() {
           if (profile) {
             useAuthStore.getState().setUserInfo(profile);
             // 恢复 SSE 连接与刷新定时器
-            connectSSEServer();
+            connectSSEServer(sseBaseUrl);
             startRefreshTimer();
             console.log('[Bootstrap] session silently restored via refresh cookie');
           } else {

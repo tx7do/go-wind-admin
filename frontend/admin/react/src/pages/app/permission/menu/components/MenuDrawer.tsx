@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import type { permissionservicev1_Menu as Menu } from '@/api/generated/admin/service/v1';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { useCreateMenu, useUpdateMenu, fetchListMenus } from '@/api/hooks/menu';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery } from '@go-wind/admin-react';
 import {
   getMenuTypeOptions,
   getStatusOptions,

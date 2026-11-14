@@ -1,5 +1,5 @@
-import type { AppRouteObject } from '@/core/router/types';
-import { createLazyRoute } from '@/core/router';
+import type { AppRouteObject } from '@go-wind/admin-react';
+import { createLazyRoute } from '@go-wind/admin-react';
 
 /**
  * AI 路由配置：对话助手 + 模型提供商管理
