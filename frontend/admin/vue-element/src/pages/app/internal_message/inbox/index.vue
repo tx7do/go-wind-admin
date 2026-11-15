@@ -128,7 +128,7 @@ import SvgIcon from "@/components/SvgIcon/index.vue";
 import { isDarkMode } from "@/components/Editor";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import {
   internalMessageRecipientStatusToType,
   internalMessageRecipientStatusLabel,
@@ -137,8 +137,8 @@ import {
   useMarkNotificationAsRead,
   useDeleteNotificationFromInbox,
 } from "@/api/composables";
-import { useAppUserStore } from "@/stores";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useAppUserStore } from '@go-wind/admin-element';
+import { PaginationQuery } from "@go-wind/admin-core";
 import defaultAvatar from "@/assets/images/default-avatar.png";
 
 const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();

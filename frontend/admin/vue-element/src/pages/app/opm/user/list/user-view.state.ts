@@ -5,9 +5,9 @@ import type {
   identityservicev1_ListTenantResponse as ListTenantResponse,
   identityservicev1_ListUserResponse as ListUserResponse,
 } from "@/api/generated/admin/service/v1";
-import { useAppUserStore } from "@/stores";
+import { useAppUserStore } from '@go-wind/admin-element';
 import { fetchListTenants, fetchListOrgUnits, fetchListUsers } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 interface UserViewState {
   loading: boolean; // 加载状

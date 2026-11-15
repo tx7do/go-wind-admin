@@ -2,7 +2,7 @@ import type { aiservicev1_AiProvider } from '#/api/generated/admin/service/v1';
 
 import { apiClient } from '#/api/client';
 
-import { makeUpdateMask } from '#/transport/rest';
+import { makeUpdateMask } from '@go-wind/admin-core';
 
 // ==============================
 // AI 模型提供商（平台级配置）

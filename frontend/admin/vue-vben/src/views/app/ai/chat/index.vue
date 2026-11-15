@@ -27,7 +27,7 @@ import {
   updateAiConversation,
 } from '#/api';
 import type { aiservicev1_AiKnowledgeBase as AiKnowledgeBase } from '#/api/generated/admin/service/v1';
-import { globalSSEClient, SSE_EVENT } from '#/transport/sse';
+import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-core';
 import type {
   aiservicev1_AiConversation as AiConversation,
   aiservicev1_AiMessage as AiMessage,

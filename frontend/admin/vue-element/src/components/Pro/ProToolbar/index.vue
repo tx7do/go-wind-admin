@@ -141,8 +141,8 @@ import {
   Upload,
 } from "@element-plus/icons-vue";
 import ColumnFilter from "./ColumnFilter.vue";
-import { AccessControl } from "@/core/access";
-import { useI18n } from "@/core/i18n";
+import { AccessControl } from "@go-wind/admin-element";
+import { useI18n } from "@go-wind/admin-element";
 import type {
   ProToolbarProps,
   ProToolbarEmits,

@@ -1,6 +1,6 @@
 import { useAccessStore } from '@vben/stores';
 
-import type { PaginationQuery } from '#/transport/rest/pagination';
+import type { PaginationQuery } from '@go-wind/admin-core';
 
 /** 服务端审计导出支持的日志类型（与后端 ExportService 的 type 参数一致） */
 export type AuditExportLogType =

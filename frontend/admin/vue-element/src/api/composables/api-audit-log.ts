@@ -4,7 +4,7 @@ import type {
   auditservicev1_GetApiAuditLogRequest,
   auditservicev1_ListApiAuditLogResponse,
 } from "@/api/generated/admin/service/v1";
-import type { PaginationQuery } from "@/core/transport/rest";
+import type { PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 

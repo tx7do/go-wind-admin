@@ -2,8 +2,13 @@
  * 应用常量定义
  *
  * @description
- * 包含应用中所有的常量定义，包括角色、存储键名等
+ * 包含应用中所有的常量定义，包括角色、存储键名等。
+ * 机制层常量（LOGIN_PATH/DEFAULT_HOME_PATH/DRAWER_WIDTH）已迁入
+ * @go-wind/admin-element，此处 re-export 保持消费点不变。
  */
+
+// 机制层常量（唯一真相在包内）
+export { LOGIN_PATH, DEFAULT_HOME_PATH, DRAWER_WIDTH } from "@go-wind/admin-element";
 
 /**
  * 应用存储前缀
@@ -25,22 +30,3 @@ export const ROLE_ROOT = "ROOT";
  * 用于前端识别平台租户（不参与套餐/菜单配置）
  */
 export const PLATFORM_TENANT_ID = 0;
-
-/**
- * @zh_CN 登录页面 url 地址
- */
-export const LOGIN_PATH = "/login";
-
-/**
- * @zh_CN 默认首页地址
- */
-export const DEFAULT_HOME_PATH = "/analytics";
-
-/**
- * 抽屉通用宽度
- *
- * @description
- * 全系统标准抽屉宽度，与 Dialog 弹窗宽度统一
- * 复杂内容抽屉（菜单树、权限树等）可按需使用更宽的值
- */
-export const DRAWER_WIDTH = "480px";

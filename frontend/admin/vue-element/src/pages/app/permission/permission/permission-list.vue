@@ -35,7 +35,7 @@ import {
   useDeletePermission,
   useSyncPermissions,
 } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { usePermissionViewStore } from "@/pages/app/permission/permission/permission-view.state";
 
 const { mutateAsync: deletePermission } = useDeletePermission();

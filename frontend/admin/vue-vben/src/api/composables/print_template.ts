@@ -9,7 +9,7 @@ import type {
   printservicev1_GeneratePrintTemplateResponse,
 } from '#/api/generated/admin/service/v1';
 
-import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-core';
 
 import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';

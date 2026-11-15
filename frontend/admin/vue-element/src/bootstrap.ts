@@ -9,21 +9,28 @@ import "@/styles/tailwind.css";
 import "animate.css";
 
 import { setupDirective } from "@/directives";
-import { setupI18n } from "@/core/i18n";
-import { router, setupRouter } from "@/router";
-import { initStores } from "@/stores/setup";
 import { registerGlobComp } from "@/registerGlobComp";
-import { initPreferences, preferences } from "@/core/preferences";
-import { RequestClient } from "@/core/transport/rest";
 import {
+  setupI18n,
+  initStores,
+  initPreferences,
+  preferences,
+  setAuthGateway,
+  setAppRouter,
   connectSSEServer,
   logoutToLoginPage,
   refreshToken,
   startRefreshTimer,
-} from "@/composables/use-token-refresh";
-import { useAccessStore } from "@/stores";
-import { createI18nGetErrorMsg } from "@/composables/use-request-error-msg";
-import { i18n } from "@/core/i18n";
+  useAccessStore,
+  createI18nGetErrorMsg,
+  i18n,
+} from "@go-wind/admin-element";
+import { RequestClient } from "@go-wind/admin-core";
+import { encryptPasswordEnvelope } from "@go-wind/admin-core";
+import { router, setupRouter } from "@/router";
+import { localesMap } from "@/locales";
+import { login as authLogin, logout as authLogout, generateCaptcha as authGenerateCaptcha, getMyPermissionCode, getMe, verifyMfaMutation, refreshToken as refreshTokenService } from "@/api/composables";
+import { apiClient } from "@/api/client";
 
 import App from "./App.vue";
 import { setupVueQuery } from "@/plugins/vue-query";
@@ -71,6 +78,27 @@ async function bootstrap(namespace: string) {
   // 配置 pinia-store
   await initStores(app, { namespace });
 
+  // 认证数据面注入：机制（token 内存态/刷新调度/MFA 挑战/登出清理/路由编排）在包内，
+  // 后端调用与口令加密（密钥属宿主 env）全部由宿主实现 ElementAuthGateway。
+  // 注意 refresh 必须注入纯 API 调用（refreshTokenService）而非包内 refreshToken 编排——
+  // 编排内部会调 gateway.refresh，注入编排会形成循环调用。
+  setAuthGateway({
+    login: (params) => authLogin(params as any),
+    verifyMfa: (params) => verifyMfaMutation.execute(params as any),
+    ssoLogin: (params) => apiClient.authenticationService.SsoLogin(params),
+    logout: () => authLogout(),
+    refresh: () => refreshTokenService(),
+    fetchUserInfo: async () => {
+      const user = await getMe();
+      return (user ?? null) as any;
+    },
+    fetchAccessCodes: () => getMyPermissionCode(),
+    generateCaptcha: () => authGenerateCaptcha(),
+    encryptPassword: (plain) => encryptPasswordEnvelope(plain, import.meta.env.VITE_PASSWORD_RSA_PUB ?? ""),
+  });
+  // 路由跳转编排注入（登录落地/MFA 挑战页/登出回登录页）
+  setAppRouter(router);
+
   // 注入 RequestClient 回调（业务层 → 基础设施层）
   // 必须在 initStores 之后，因为 getToken 依赖 accessStore
   const accessStore = useAccessStore();
@@ -101,7 +129,7 @@ async function bootstrap(namespace: string) {
         const newToken = await refreshToken();
         if (newToken) {
           startRefreshTimer();
-          connectSSEServer();
+          connectSSEServer(import.meta.env.VITE_APP_SSE_URL ?? "/api/sse");
           console.log("[Bootstrap] session silently restored via refresh cookie");
         }
       } catch (e) {
@@ -112,14 +140,17 @@ async function bootstrap(namespace: string) {
     }
   }
 
-  // 配置路由及路由守卫（首个导航从这里开始，此刻 token 已就绪）
-  setupRouter(app);
-
-  // 国际化 i18n 配置
+  // 国际化 i18n 配置——必须在 setupRouter 之前：首个导航的守卫会调
+  // translateRouteTitle 更新 document.title，参数化后合并资源在 setupI18n 才注入，
+  // 若晚于首导航，业务命名空间（routes.*）缺失会让标签页标题停在原始 key。
   // defaultLocale 必须取已持久化的偏好 locale：initPreferences 内部的 handleUpdates
   // 会先按偏好 locale 预载语言包，这里若固定 zh-CN 会把已保存的 en-US 等偏好
   // 强行盖回默认值（实测 en-US 偏好启动后 html.lang 仍为 zh-CN）。
-  await setupI18n(app, { defaultLocale: preferences.app.locale });
+  // localesMap：包内置框架文案（core）+ 宿主业务文案（pages/routes/...）合并（同名宿主覆盖）
+  await setupI18n(app, { defaultLocale: preferences.app.locale, localesMap });
+
+  // 配置路由及路由守卫（首个导航从这里开始，此刻 token 与 i18n 已就绪）
+  setupRouter(app);
 
   // 全局错误观测：渲染函数/守卫抛出的异常若无人接管会静默吞掉，
   // 表现为 router-view 塌空白屏且零控制台输出，极难定位。这里强制落到

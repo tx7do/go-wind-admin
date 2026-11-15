@@ -1,6 +1,6 @@
 import { useMutation, type UseMutationOptions } from "@tanstack/vue-query";
 import { apiClient } from "@/api/client";
-import { RequestClient } from "@/core/transport/rest";
+import { RequestClient } from "@go-wind/admin-core";
 
 /**
  * 从MinIO下载文件

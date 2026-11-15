@@ -6,7 +6,7 @@ import { $t } from '@vben/locales';
 
 import { message } from 'ant-design-vue';
 
-import { globalSSEClient, SSE_EVENT } from '#/transport/sse';
+import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-core';
 import { fetchAiAgentApp, runAiAgentApp } from '#/api';
 
 const emit = defineEmits<{ success: [] }>();

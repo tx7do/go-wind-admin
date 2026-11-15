@@ -19,10 +19,10 @@ import type {
   identityservicev1_Tenant_Status as Tenant_Status,
   identityservicev1_Tenant_Type as Tenant_Type,
 } from "@/api/generated/admin/service/v1";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 import type { TagType } from "./shared";
 
 const t = i18n.global.t;

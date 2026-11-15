@@ -51,8 +51,8 @@ import { computed, ref } from "vue";
 import { ElTag, ElTimeline, ElTimelineItem } from "element-plus";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 import { fetchListAiAgentRuns } from "@/api/composables";
 
 const { t } = useI18n();

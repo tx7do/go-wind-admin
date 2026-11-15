@@ -153,7 +153,7 @@ import type {
   monitor_alertservicev1_MonitorAlertRule,
   monitor_alertservicev1_MonitorMetric,
 } from "@/api/generated/admin/service/v1";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import {
   useCreateMonitorAlertRule,

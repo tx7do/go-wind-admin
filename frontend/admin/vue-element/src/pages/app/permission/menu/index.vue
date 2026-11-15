@@ -83,9 +83,9 @@ import {
   useDeleteMenu,
   useSyncMenus,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { getRandomColor } from "@/utils/color";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { getRandomColor } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 import { accessRoutes } from "@/router/routes";
 
 const { mutateAsync: deleteMenu } = useDeleteMenu();

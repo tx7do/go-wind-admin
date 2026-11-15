@@ -54,8 +54,8 @@ import DOMPurify from "dompurify";
 import { apiClient } from "@/api/client";
 
 import { fetchListPrintTemplates } from "@/api/composables/print_template";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 
 // 行打印定式（docs/print_template.md §5）：宿主列表持本组件引用，
 // 行动作里 print(resourceKey, row)——模板按 resourceKey 精确匹配优先，回退通用（resourceKey 空）。

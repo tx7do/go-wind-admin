@@ -12,7 +12,7 @@ import { useTitle } from '@vueuse/core';
 
 import { $t, $te, setupI18n } from '#/locales';
 import { setupVueQuery } from '#/plugins/vue-query';
-import { type HttpResponse, RequestClient } from '#/transport/rest';
+import { type HttpResponse, RequestClient } from '@go-wind/admin-core';
 
 import { initComponentAdapter } from './adapter/component';
 import App from './app.vue';

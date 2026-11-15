@@ -147,7 +147,7 @@ import {
   useCreatePrintTemplate,
   useUpdatePrintTemplate,
 } from "@/api/composables/print_template";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const PAPER_SIZES = ["A4", "A3", "A5", "Letter", "Legal"];
 

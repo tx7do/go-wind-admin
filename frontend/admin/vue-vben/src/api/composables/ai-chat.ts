@@ -1,6 +1,6 @@
 import { apiClient } from '#/api/client';
 
-import { makeUpdateMask } from '#/transport/rest';
+import { makeUpdateMask } from '@go-wind/admin-core';
 
 // ==============================
 // AI 对话（会话 / 消息 / 对话发起）

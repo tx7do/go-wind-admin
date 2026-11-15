@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 import { traverseTreeValues } from "@/utils";
 
 import { coreRoutes, errorRoute, fallbackNotFoundRoute } from "./core.routes";
-import { mergeRouteModules } from "@/core/router";
+import { mergeRouteModules } from "@go-wind/admin-element";
 
 const dynamicRouteFiles = import.meta.glob("./modules/**/*.ts", {
   eager: true,

@@ -40,8 +40,8 @@ import { computed, reactive, ref, watch, onUnmounted } from "vue";
 import { ElButton, ElForm, ElFormItem, ElInput, ElMessage } from "element-plus";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
-import { useI18n } from "@/core/i18n";
-import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
+import { useI18n } from "@go-wind/admin-element";
+import { globalSSEClient, SSE_EVENT } from "@go-wind/admin-core";
 import { fetchAiAgentApp, runAiAgentApp } from "@/api/composables";
 
 const emit = defineEmits<{

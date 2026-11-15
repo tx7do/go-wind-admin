@@ -8,7 +8,7 @@ import { Modal, Select, notification } from 'ant-design-vue';
 import {
   fetchListPrintTemplates,
 } from '#/api/composables/print_template';
-import { PaginationQuery } from '#/transport/rest';
+import { PaginationQuery } from '@go-wind/admin-core';
 import { apiClient } from '#/api/client';
 import DOMPurify from 'dompurify';
 import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';

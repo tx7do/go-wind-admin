@@ -1,4 +1,4 @@
-export * from '#/transport/rest';
+export * from '@go-wind/admin-core';
 
 export { apiClient } from './client';
 export * from './composables';

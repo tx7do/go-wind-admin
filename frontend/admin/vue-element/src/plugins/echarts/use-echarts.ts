@@ -5,7 +5,7 @@ import type EchartsUI from "./echarts-ui.vue";
 import type { Ref } from "vue";
 import { computed, watch } from "vue";
 
-import { usePreferences } from "@/core/preferences";
+import { usePreferences } from "@go-wind/admin-element";
 
 import {
   tryOnUnmounted,

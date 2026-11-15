@@ -1,5 +1,5 @@
 import { apiClient } from "@/api/client";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 
 // ==============================
 // AI 知识库（RAG：文档切片 → embedding → 向量检索）

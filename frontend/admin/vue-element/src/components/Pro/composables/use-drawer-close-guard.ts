@@ -1,5 +1,5 @@
 import { ElMessageBox } from "element-plus";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 /**
  * 表单抽屉关闭守卫（规范见 docs/form_drawer_close_guard.md）

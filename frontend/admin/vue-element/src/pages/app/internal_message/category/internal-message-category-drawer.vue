@@ -57,7 +57,7 @@ import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { ref, reactive, computed, watch } from "vue";
 
 import { useCreateMessageCategory, useUpdateMessageCategory } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useDrawerCloseGuard } from "@/components/Pro/composables/use-drawer-close-guard";

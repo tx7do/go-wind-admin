@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { preferences, preferencesManager } from "@/core/preferences";
+import { preferences, preferencesManager } from "@go-wind/admin-element";
 
 import BaseLayout from "./BaseLayout.vue";
 import LayoutLogo from "./components/LayoutLogo.vue";

@@ -100,7 +100,7 @@ import {
   useCreateBiDashboard,
   useUpdateBiDashboard,
 } from "@/api/composables/bi_dashboard";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const emit = defineEmits<{ success: [] }>();
 

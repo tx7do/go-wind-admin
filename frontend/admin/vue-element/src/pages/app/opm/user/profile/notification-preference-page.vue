@@ -60,7 +60,7 @@ import {
   useMyNotifiableCategories,
   useUpdateMyNotificationPreference,
 } from "@/api/composables/notification-preference";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 /**
  * 个人中心「通知偏好」（通知域 P3）：

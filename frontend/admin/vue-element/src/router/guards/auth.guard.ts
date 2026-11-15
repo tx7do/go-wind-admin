@@ -3,8 +3,8 @@ import type { Router } from "vue-router";
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from "@/constants";
 
 import { accessRoutes, coreRouteNames } from "@/router/routes";
-import { useAccessStore, useAppUserStore } from "@/stores";
-import { useAuth, NetworkError } from "@/composables/use-auth";
+import { useAccessStore, useAppUserStore } from '@go-wind/admin-element';
+import { useAuth, NetworkError } from "@go-wind/admin-element";
 
 import { generateAccess } from "@/router/route-generator";
 import { fetchAllDictEntries } from "@/composables/use-dict-cache";

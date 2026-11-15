@@ -51,8 +51,8 @@ import { RouteLocationMatched } from "vue-router";
 import { compile } from "path-to-regexp";
 
 import { router } from "@/router";
-import { translateRouteTitle } from "@/core/i18n";
-import { preferences } from "@/core/preferences";
+import { translateRouteTitle } from "@go-wind/admin-element";
+import { preferences } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 const currentRoute = useRoute();

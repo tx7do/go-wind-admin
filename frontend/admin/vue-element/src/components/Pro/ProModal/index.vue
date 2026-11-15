@@ -41,7 +41,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import { computed, ref } from "vue";
 import { ElButton, ElDrawer, ElDialog, ElMessage } from "element-plus";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import ProForm from "../ProForm/index.vue";
 import type { ProModalConfig, ModalMode } from "./types";
 

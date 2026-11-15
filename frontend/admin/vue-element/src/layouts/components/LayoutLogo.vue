@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { preferences } from "@/core/preferences";
+import { preferences } from "@go-wind/admin-element";
 import logo from "@/assets/images/logo.png";
 
 defineProps({

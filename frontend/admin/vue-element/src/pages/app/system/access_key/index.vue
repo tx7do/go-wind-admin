@@ -43,13 +43,13 @@ import { ElTag, ElDialog, ElAlert, ElInput, ElButton, ElMessage, ElMessageBox } 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import AccessKeyDrawer from "./access-key-drawer.vue";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import {
   deleteAccessKey,
   fetchListAccessKeys,
   resetAccessKeySecret,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 const { t } = useI18n();
 

@@ -116,8 +116,8 @@ import {
   fetchListPlanModules,
 } from "@/api/composables";
 import type { identityservicev1_Plan as Plan } from "@/api/generated/admin/service/v1";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import { injectProModalApi } from "@/components/Pro";
 import ProModal from "@/components/Pro/ProModal/index.vue";

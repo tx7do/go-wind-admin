@@ -32,7 +32,7 @@ import {
   enableBoolToName,
   useDeleteDictType,
 } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { useDictViewStore } from "@/pages/app/system/dict/dict-view.state";
 
 const { mutateAsync: deleteDictType } = useDeleteDictType();

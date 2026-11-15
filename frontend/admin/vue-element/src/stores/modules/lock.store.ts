@@ -1,3 +1,4 @@
+import "pinia-plugin-persistedstate";
 import { defineStore } from "pinia";
 
 interface AppState {

@@ -31,7 +31,7 @@
 import { type RouteLocationNormalized, useRoute } from "vue-router";
 import { useTagsViewStore } from "./useTagsViewStore";
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { preferences, usePreferences } from "@/core/preferences";
+import { preferences, usePreferences } from "@go-wind/admin-element";
 import variables from "@/styles/variables.module.scss";
 import Error404 from "@/pages/core/error/404.vue";
 

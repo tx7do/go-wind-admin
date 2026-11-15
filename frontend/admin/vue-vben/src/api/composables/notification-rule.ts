@@ -9,7 +9,7 @@ import type {
   notificationservicev1_TestDispatchNotificationResponse,
   notificationservicev1_UpdateNotificationRuleRequest,
 } from '#/api/generated/admin/service/v1';
-import type { PaginationQuery } from '#/transport/rest';
+import type { PaginationQuery } from '@go-wind/admin-core';
 
 import { computed } from 'vue';
 

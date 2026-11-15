@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/vue-query';
 
 import { apiClient } from '#/api/client';
-import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-core';
 import type {
   access_keyservicev1_CreateAccessKeyResponse,
   access_keyservicev1_ResetAccessKeySecretRequest,

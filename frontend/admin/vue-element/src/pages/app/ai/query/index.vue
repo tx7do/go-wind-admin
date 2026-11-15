@@ -92,7 +92,7 @@ import { ElButton, ElInput, ElMessage, ElTable, ElTableColumn, ElTag } from "ele
 import { Icon } from "@iconify/vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import { i18n, useI18n } from "@/core/i18n";
+import { i18n, useI18n } from "@go-wind/admin-element";
 import { apiClient } from "@/api/client";
 import QueryResultCard from "./query-result-card.vue";
 

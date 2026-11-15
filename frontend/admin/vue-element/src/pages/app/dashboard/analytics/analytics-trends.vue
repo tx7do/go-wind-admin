@@ -6,7 +6,7 @@
 import type { LoginTrendResponse } from "@/api/generated/admin/service/v1";
 
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
-import { usePreferences } from "@/core/preferences";
+import { usePreferences } from "@go-wind/admin-element";
 import { getChartPrimary, getChartSecondaryText, hexToRgba } from "@/utils/chart-palette";
 
 const props = defineProps<{

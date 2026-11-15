@@ -47,7 +47,7 @@
 import path from "path-browserify";
 import { RouteRecordRaw, LocationQueryRaw, useRouter } from "vue-router";
 import { isExternal } from "@/utils";
-import { translateRouteTitle } from "@/core/i18n";
+import { translateRouteTitle } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineOptions({

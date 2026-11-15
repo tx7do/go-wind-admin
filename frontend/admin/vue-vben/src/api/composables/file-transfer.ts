@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/vue-query';
 
 import { apiClient } from '#/api/client';
-import { RequestClient } from '#/transport/rest';
+import { RequestClient } from '@go-wind/admin-core';
 
 /**
  * 从MinIO下载文件
@@ -9,7 +9,7 @@ import { RequestClient } from '#/transport/rest';
  * @param objectName 对象名称
  * @param preferPresignedUrl 是否优先使用预签名URL下载
  */
-export async function downloadFile(
+export async function downloadMinioFile(
   bucketName: string,
   objectName: string,
   preferPresignedUrl: boolean,
@@ -163,7 +163,7 @@ export function useDownloadFile(
       objectName,
       preferPresignedUrl = false,
     }) => {
-      return downloadFile(bucketName, objectName, preferPresignedUrl);
+      return downloadMinioFile(bucketName, objectName, preferPresignedUrl);
     },
     ...options,
   });

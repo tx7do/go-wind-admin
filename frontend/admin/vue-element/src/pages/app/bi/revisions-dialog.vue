@@ -50,7 +50,7 @@ import {
   useRestoreBiDashboardRevision,
 } from "@/api/composables/bi_dashboard";
 import { queryClient } from "@/plugins/vue-query";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 /**
  * 版本历史弹窗：每次保存留旧版快照（新快照在前），恢复 = 快照写回主表。

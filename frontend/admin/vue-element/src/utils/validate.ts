@@ -3,7 +3,7 @@
  */
 
 import type { FormItemRule } from "element-plus";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

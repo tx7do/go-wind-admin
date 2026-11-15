@@ -1,5 +1,5 @@
 import { apiClient } from "@/api/client";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 import type { access_keyservicev1_AccessKey as AccessKey } from "@/api/generated/admin/service/v1";
 
 /** 分页查询访问凭证 */

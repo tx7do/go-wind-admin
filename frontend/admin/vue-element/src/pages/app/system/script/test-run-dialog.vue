@@ -91,7 +91,7 @@ import {
   useTestRunScript,
 } from "@/api/composables";
 import type { scriptservicev1_Script, scriptservicev1_TestRunScriptResponse } from "@/api/generated/admin/service/v1";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const emit = defineEmits<{
   success: [];

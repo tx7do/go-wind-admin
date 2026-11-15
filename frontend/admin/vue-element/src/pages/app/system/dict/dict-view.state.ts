@@ -1,4 +1,4 @@
-import { preferences } from "@/core/preferences";
+import { preferences } from "@go-wind/admin-element";
 
 import { defineStore } from "pinia";
 
@@ -9,7 +9,7 @@ import type {
   dictservicev1_ListLanguageResponse as ListLanguageResponse,
 } from "@/api/generated/admin/service/v1";
 import { fetchListDictTypes, fetchListDictEntries, fetchListLanguages } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 /**
  * 字典视图状态接口

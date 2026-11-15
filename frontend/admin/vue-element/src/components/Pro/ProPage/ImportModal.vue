@@ -76,7 +76,7 @@ import type { FormInstance, FormRules, UploadInstance, UploadRawFile } from "ele
 import { genFileId } from "element-plus";
 import { useThrottleFn } from "@vueuse/core";
 import ExcelJS from "exceljs";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 
 const props = defineProps<{
   importsAction?: (data: Record<string, any>[]) => Promise<any>;

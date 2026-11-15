@@ -1,5 +1,5 @@
-import { useAccessStore } from "@/stores";
-import type { PaginationQuery } from "@/core/transport/rest";
+import { useAccessStore } from '@go-wind/admin-element';
+import type { PaginationQuery } from "@go-wind/admin-core";
 
 /**
  * 服务端全量导出（XLSX，后端统一行数上限）：URL 指向各资源的 :export 手动锚点，

@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { useWindowSize } from "@vueuse/core";
-import { useAccessStore } from "@/stores";
+import { useAccessStore } from '@go-wind/admin-element';
 
 import { useLayout } from "./useLayout";
 

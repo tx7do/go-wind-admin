@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePreferences } from "@/core/preferences";
+import { usePreferences } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineProps({

@@ -4,9 +4,9 @@
  */
 import { ref } from "vue";
 import type { dictservicev1_DictEntry } from "@/api/generated/admin/service/v1";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 import { fetchListDictTypes, fetchListDictEntries } from "@/api/composables/dict";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 // ==============================
 // 字典项缓存（模块级单例）

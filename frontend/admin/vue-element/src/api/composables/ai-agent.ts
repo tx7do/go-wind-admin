@@ -1,5 +1,5 @@
 import { apiClient } from "@/api/client";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 // ==============================
 // AI Agent 编排（可视化画布应用）

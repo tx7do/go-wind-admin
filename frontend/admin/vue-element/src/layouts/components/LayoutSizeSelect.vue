@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { preferences, preferencesManager } from "@/core/preferences";
+import { preferences, preferencesManager } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 const { t } = useI18n();

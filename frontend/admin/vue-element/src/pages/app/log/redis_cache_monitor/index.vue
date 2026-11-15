@@ -120,7 +120,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { formatDateTime } from "@/utils";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { useRedisCacheMonitorInfo } from "@/api/composables";
 import type {
   redis_cacheservicev1_RedisCacheMonitorInfo,

@@ -4,9 +4,9 @@
 import { ref, onMounted, onBeforeUnmount, toRaw } from "vue";
 import { RouteRecordRaw, LocationQueryRaw } from "vue-router";
 import { router } from "@/router";
-import { useAccessStore } from "@/stores";
+import { useAccessStore } from '@go-wind/admin-element';
 import { isExternal } from "@/utils";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 import { fetchSemanticSearch } from "@/api/composables/ai-content";
 
 const t = i18n.global.t;

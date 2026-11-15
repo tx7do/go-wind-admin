@@ -145,9 +145,9 @@ import {
   useUpdatePermission,
   buildPermissionGroupTree,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
-import { extractLeafIds } from "@/utils/format";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
+import { extractLeafIds } from "@go-wind/admin-core";
 
 const emit = defineEmits<{
   success: [];

@@ -91,8 +91,8 @@ import {
   useDeleteNotificationTemplate,
   useRenderNotificationTemplate,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { useI18n } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { useI18n } from "@go-wind/admin-element";
 
 const { t } = useI18n();
 

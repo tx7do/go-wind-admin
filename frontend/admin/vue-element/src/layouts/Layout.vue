@@ -9,10 +9,11 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 
-import { PreferencesPanel } from "@/core/preferences/components";
-import { LayoutType, preferences } from "@/core/preferences";
-import { useAuth } from "@/composables/use-auth";
-import { useAppUserStore, useLockStore } from "@/stores";
+import { PreferencesPanel } from '@go-wind/admin-element';
+import { LayoutType, preferences } from "@go-wind/admin-element";
+import { useAuth } from "@go-wind/admin-element";
+import { useAppUserStore } from '@go-wind/admin-element';
+import { useLockStore } from '@/stores';
 
 import { useLayout } from "./useLayout";
 

@@ -63,7 +63,7 @@ import {
 } from "element-plus";
 import type { printservicev1_PrintTemplate } from "@/api/generated/admin/service/v1";
 import { useGeneratePrintTemplate } from "@/api/composables/print_template";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const PAPER_SIZES = ["A4", "A5", "A3", "B5"];
 

@@ -6,7 +6,7 @@ import type {
   auditservicev1_LoginAuditLog_RiskLevel as LoginAuditLog_RiskLevel,
   auditservicev1_LoginAuditLog_Status as LoginAuditLog_Status,
 } from '#/api/generated/admin/service/v1';
-import type { PaginationQuery } from '#/transport/rest';
+import type { PaginationQuery } from '@go-wind/admin-core';
 
 import { computed } from 'vue';
 

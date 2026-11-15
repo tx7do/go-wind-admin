@@ -18,7 +18,7 @@ import {
   useDeletePlanModule,
   fetchListPlanModules,
 } from '#/api';
-import { PaginationQuery } from '#/transport/rest';
+import { PaginationQuery } from '@go-wind/admin-core';
 
 const { mutateAsync: createPlan } = useCreatePlan();
 const { mutateAsync: updatePlan } = useUpdatePlan();

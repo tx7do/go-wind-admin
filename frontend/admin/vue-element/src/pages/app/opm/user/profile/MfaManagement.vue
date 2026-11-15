@@ -82,7 +82,7 @@ import {
   useConfirmEnrollMfa,
   useDisableMfa,
 } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 // 已绑定的 TOTP 因子列表（不含 secret）
 const { data: statusData, refetch } = useGetMfaStatus();

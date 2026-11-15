@@ -3,8 +3,8 @@ import type { Router, RouteLocationNormalizedLoaded } from "vue-router";
 import { effectScope, watch } from "vue";
 
 import { startProgress, stopProgress } from "@/utils";
-import { preferences } from "@/core/preferences";
-import { i18n, translateRouteTitle } from "@/core/i18n";
+import { preferences } from "@go-wind/admin-element";
+import { i18n, translateRouteTitle } from "@go-wind/admin-element";
 
 /**
  * 根据当前路由和 i18n 状态更新浏览器标签页标题

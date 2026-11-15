@@ -15,8 +15,8 @@ import { apiClient } from '#/api/client';
 import { $t } from '#/locales';
 import { queryClient } from '#/plugins/vue-query';
 import { router } from '#/router';
-import { setCaptchaHeaders } from '#/transport/rest';
-import { globalSSEClient } from '#/transport/sse';
+import { setCaptchaHeaders } from '@go-wind/admin-core';
+import { globalSSEClient } from '@go-wind/admin-core';
 
 type RefreshTokenFunc = () => Promise<string> | string;
 

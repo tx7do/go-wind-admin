@@ -84,10 +84,10 @@
 import type { LocationQueryRaw, RouteRecordRaw } from "vue-router";
 import { useWindowSize } from "@vueuse/core";
 
-import { useAccessStore } from "@/stores";
+import { useAccessStore } from '@go-wind/admin-element';
 import { isExternal } from "@/utils";
-import { translateRouteTitle } from "@/core/i18n";
-import { preferences, preferencesManager, usePreferences } from "@/core/preferences";
+import { translateRouteTitle } from "@go-wind/admin-element";
+import { preferences, preferencesManager, usePreferences } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 import variables from "@/styles/variables.module.scss";

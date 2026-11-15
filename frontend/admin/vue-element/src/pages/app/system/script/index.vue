@@ -74,8 +74,8 @@ import {
   useDeleteScript,
   useUpdateScript,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 
 const { mutateAsync: deleteScript } = useDeleteScript();
 const { mutateAsync: updateScript } = useUpdateScript();

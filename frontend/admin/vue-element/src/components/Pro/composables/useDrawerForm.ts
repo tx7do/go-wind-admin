@@ -1,6 +1,6 @@
 import { computed, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import { cloneDeep } from "@/utils";
 import { useDrawerCloseGuard } from "./use-drawer-close-guard";

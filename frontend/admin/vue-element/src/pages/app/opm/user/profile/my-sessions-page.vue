@@ -58,7 +58,7 @@
 import { computed } from "vue";
 import { ElMessage } from "element-plus";
 import { formatDateTime } from "@/utils";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import {
   useListMyOnlineSessions,
   useRevokeMyOnlineSession,

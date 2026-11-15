@@ -55,7 +55,7 @@ import {
   fetchBiDashboard,
   useSaveBiDashboardPayload,
 } from "@/api/composables/bi_dashboard";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineOptions({ name: "BiDesignerPage" });

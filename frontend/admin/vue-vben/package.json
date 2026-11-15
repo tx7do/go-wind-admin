@@ -254,7 +254,8 @@
     "vxe-table": "catalog:",
     "watermark-js-plus": "catalog:",
     "zod": "catalog:",
-    "zod-defaults": "catalog:"
+    "zod-defaults": "catalog:",
+    "@go-wind/admin-core": "0.1.0"
   },
   "imports": {
     "#/*": [

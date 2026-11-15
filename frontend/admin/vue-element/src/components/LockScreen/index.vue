@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLockStore } from '@/stores';
 /**
  * 全屏锁屏遮罩（行为基准：vue-vben framework/effects/layouts/widgets/lock-screen）
  *
@@ -51,8 +52,7 @@ import { computed, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { preferences } from "@/core/preferences";
-import { useLockStore } from "@/stores";
+import { preferences } from "@go-wind/admin-element";
 
 const props = withDefaults(
   defineProps<{

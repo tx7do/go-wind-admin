@@ -103,7 +103,7 @@ import {
 
 import { fetchListScriptLogs } from "@/api/composables";
 import { usePurgeScriptLog } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const visible = ref(false);
 const loading = ref(false);

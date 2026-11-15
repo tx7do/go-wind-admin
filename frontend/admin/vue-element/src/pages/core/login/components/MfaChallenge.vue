@@ -34,9 +34,9 @@
 import { ref } from "vue";
 import { ElNotification } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
-import { useAuth } from "@/composables/use-auth";
-import { i18n } from "@/core/i18n";
-import { useAccessStore } from "@/stores";
+import { useAuth } from "@go-wind/admin-element";
+import { i18n } from "@go-wind/admin-element";
+import { useAccessStore } from '@go-wind/admin-element';
 
 const t = i18n.global.t;
 const router = useRouter();

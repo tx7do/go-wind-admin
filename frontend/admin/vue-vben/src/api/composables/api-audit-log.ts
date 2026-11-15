@@ -3,7 +3,7 @@ import type {
   auditservicev1_GetApiAuditLogRequest,
   auditservicev1_ListApiAuditLogResponse,
 } from '#/api/generated/admin/service/v1';
-import type { PaginationQuery } from '#/transport/rest';
+import type { PaginationQuery } from '@go-wind/admin-core';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 

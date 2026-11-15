@@ -101,8 +101,8 @@ import {
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import NotificationChannelDrawer from "./notification-channel-drawer.vue";
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 import type { notification_channelservicev1_NotificationChannel as NotificationChannel } from "@/api/generated/admin/service/v1";
 import {
   deleteNotificationChannel,

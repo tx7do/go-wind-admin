@@ -25,10 +25,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { ElCard, ElCol, ElProgress, ElRow, ElMessage } from "element-plus";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { serverExportFile } from "@/api/composables/server-export";
 

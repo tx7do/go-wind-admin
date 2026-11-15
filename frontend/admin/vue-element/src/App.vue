@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { TanstackQueryDevtools } from "@/plugins/vue-query";
 import { APP_PREFIX } from "@/constants";
-import { preferences, usePreferences } from "@/core/preferences";
+import { preferences, usePreferences } from "@go-wind/admin-element";
 
 const { isDark, getElementPlusLocale } = usePreferences();
 

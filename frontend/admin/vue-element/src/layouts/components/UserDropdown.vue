@@ -82,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAppUserStore } from '@go-wind/admin-element';
+import { useLockStore } from '@/stores';
 /**
  * 右上角用户下拉菜单（三端统一口径：头部卡 / 个人中心 / 收件箱 / 锁定屏幕 / 退出登录）
  *
@@ -95,9 +97,8 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { preferences, usePreferences } from "@/core/preferences";
-import { useAuth } from "@/composables/use-auth";
-import { useAppUserStore, useLockStore } from "@/stores";
+import { preferences, usePreferences } from "@go-wind/admin-element";
+import { useAuth } from "@go-wind/admin-element";
 
 const { t } = useI18n();
 const route = useRoute();

@@ -410,8 +410,8 @@ import { Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 import { VueFlow, useVueFlow } from "@vue-flow/core";
 
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 import {
   fetchAiAgentApp,
   fetchListAiAgentApps,

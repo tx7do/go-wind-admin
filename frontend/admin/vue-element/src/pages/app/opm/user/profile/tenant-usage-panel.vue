@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ElProgress, ElTag } from "element-plus";
 import { useMyTenantUsage } from "@/api/composables/my-tenant-usage";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 
 /**
  * 租户套餐用量面板（自取数）：用户数/存储占用 vs 配额上限的进度条。

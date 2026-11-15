@@ -109,7 +109,7 @@
 </template>
 <script setup lang="ts">
 import type { FormInstance } from "element-plus";
-import { useAuth } from "@/composables/use-auth";
+import { useAuth } from "@go-wind/admin-element";
 import { ssoEnabled, startSsoLogin } from "@/composables/sso";
 import { router } from "@/router";
 

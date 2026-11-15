@@ -205,8 +205,8 @@ import {
   useCreateMenu,
   useUpdateMenu,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t, $te } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t, $te } from "@go-wind/admin-element";
 
 const emit = defineEmits<{
   success: [];

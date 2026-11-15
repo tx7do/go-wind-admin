@@ -33,7 +33,7 @@ import { useI18n } from "vue-i18n";
 
 import { ArrowLeft, Refresh } from "@element-plus/icons-vue";
 
-import { preferencesManager } from "@/core/preferences/preferences";
+import { preferencesManager } from '@go-wind/admin-element';
 
 defineOptions({
   name: "Fallback",

@@ -5,7 +5,7 @@ import type {
   permissionservicev1_ListPermissionResponse as ListPermissionResponse,
 } from "@/api/generated/admin/service/v1";
 import { fetchListPermissionGroups, fetchListPermissions } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 /**
  * 权限视图状态接口

@@ -1,5 +1,5 @@
 import { apiClient } from "@/api/client";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 
 // ==============================
 // AI 对话（会话 / 消息 / 对话发起）

@@ -7,7 +7,7 @@ import type {
   monitor_alertservicev1_MonitorAlertRule,
   monitor_alertservicev1_UpdateMonitorAlertRuleRequest,
 } from "@/api/generated/admin/service/v1";
-import type { PaginationQuery } from "@/core/transport/rest";
+import type { PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 import { useMutation, type UseMutationOptions } from "@tanstack/vue-query";

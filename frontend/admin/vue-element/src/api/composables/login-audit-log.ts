@@ -9,10 +9,10 @@ import type {
   auditservicev1_LoginAuditLog_RiskLevel as LoginAuditLog_RiskLevel,
   auditservicev1_LoginAuditLog_Status as LoginAuditLog_Status,
 } from "@/api/generated/admin/service/v1";
-import type { PaginationQuery } from "@/core/transport/rest";
+import type { PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

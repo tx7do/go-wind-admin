@@ -88,7 +88,7 @@ import { ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
 import { methodList, useCreateApi, useUpdateApi } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const emit = defineEmits<{
   success: [];

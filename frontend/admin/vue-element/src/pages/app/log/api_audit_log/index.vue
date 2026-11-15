@@ -41,9 +41,9 @@ import {
   successToNameWithStatusCode,
   fetchListApiAuditLogs,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 import { exportAuditLogsServer } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const pageRef = ref();
 const drawerRef = ref();

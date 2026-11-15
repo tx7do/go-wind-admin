@@ -33,9 +33,9 @@ import SecureSettingPage from "./secure-setting-page.vue";
 import MySessionsPage from "./my-sessions-page.vue";
 import NotificationPreferencePage from "./notification-preference-page.vue";
 import TenantUsagePanel from "./tenant-usage-panel.vue";
-import { useAppUserStore } from "@/stores";
+import { useAppUserStore } from '@go-wind/admin-element';
 
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const activeTab = ref("1");
 

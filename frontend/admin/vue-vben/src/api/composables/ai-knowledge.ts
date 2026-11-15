@@ -1,6 +1,6 @@
 import { apiClient } from '#/api/client';
 
-import { makeUpdateMask } from '#/transport/rest';
+import { makeUpdateMask } from '@go-wind/admin-core';
 
 // ==============================
 // AI 知识库（RAG：文档切片 → embedding → 向量检索）

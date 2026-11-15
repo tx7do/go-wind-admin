@@ -6,8 +6,8 @@
 import type { StatusDistributionResponse } from "@/api/generated/admin/service/v1";
 
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
-import { $t } from "@/core/i18n";
-import { usePreferences } from "@/core/preferences";
+import { $t } from "@go-wind/admin-element";
+import { usePreferences } from "@go-wind/admin-element";
 import { CHART_PALETTE } from "@/utils/chart-palette";
 
 const props = defineProps<{

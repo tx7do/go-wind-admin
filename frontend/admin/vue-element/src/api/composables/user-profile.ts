@@ -19,7 +19,7 @@ import { apiClient } from "@/api/client";
 export async function getMe(): Promise<identityservicev1_User | null> {
   return apiClient.userProfileService.GetUser({});
 }
-import { makeUpdateMask } from "@/core/transport/rest";
+import { makeUpdateMask } from "@go-wind/admin-core";
 import { queryClient } from "@/plugins/vue-query";
 
 export function useGetUserProfile(options?: UseQueryOptions<identityservicev1_User | null, Error>) {
@@ -63,8 +63,8 @@ export function useChangePassword(
     // 后端 NeedDecrypt 要求 AES 密文传输（与登录同规），明文会被当密文解密导致校验必败
     mutationFn: async (data) =>
       apiClient.userProfileService.ChangePassword({
-        oldPassword: await encryptPasswordEnvelope(data.oldPassword ?? ""),
-        newPassword: await encryptPasswordEnvelope(data.newPassword ?? ""),
+        oldPassword: await encryptPasswordEnvelope(data.oldPassword ?? "", import.meta.env.VITE_PASSWORD_RSA_PUB ?? ""),
+        newPassword: await encryptPasswordEnvelope(data.newPassword ?? "", import.meta.env.VITE_PASSWORD_RSA_PUB ?? ""),
       }),
     ...options,
   });

@@ -21,12 +21,12 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { ElTag } from "element-plus";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import AiKnowledgeDrawer from "./ai-knowledge-drawer.vue";
 import DocsModal from "./docs-modal.vue";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 import type { aiservicev1_AiKnowledgeBase as AiKnowledgeBase } from "@/api/generated/admin/service/v1";
 import { deleteAiKnowledgeBase, fetchListAiKnowledgeBases } from "@/api/composables";
 

@@ -11,12 +11,12 @@ import {
   fetchListUserInbox,
   useMarkNotificationAsRead,
 } from "@/api/composables";
-import { useAppUserStore } from "@/stores";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useAppUserStore } from '@go-wind/admin-element';
+import { PaginationQuery } from "@go-wind/admin-core";
 import { router } from "@/router";
 import type { internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from "@/api/generated/admin/service/v1";
-import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
-import { i18n } from "@/core/i18n";
+import { globalSSEClient, SSE_EVENT } from "@go-wind/admin-core";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

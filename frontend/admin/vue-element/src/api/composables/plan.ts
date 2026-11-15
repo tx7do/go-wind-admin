@@ -21,10 +21,10 @@ import type {
   identityservicev1_Plan_Version as Plan_Version,
   identityservicev1_PlanQuota_QuotaType as PlanQuota_QuotaType,
 } from "@/api/generated/admin/service/v1";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

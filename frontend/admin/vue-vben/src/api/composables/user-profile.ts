@@ -19,7 +19,7 @@ import {
 
 import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
-import { makeUpdateMask } from '#/transport/rest';
+import { makeUpdateMask } from '@go-wind/admin-core';
 
 // 供非 Vue 上下文使用的纯函数
 export async function getMe(): Promise<identityservicev1_User | null> {

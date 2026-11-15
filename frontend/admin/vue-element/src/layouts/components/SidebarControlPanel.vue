@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { DArrowLeft, DArrowRight } from "@element-plus/icons-vue";
 import { ElIcon, ElTooltip } from "element-plus";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 
 defineProps<{
   /** 侧边栏是否折叠 */

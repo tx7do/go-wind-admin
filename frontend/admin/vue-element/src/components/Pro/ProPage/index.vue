@@ -143,9 +143,9 @@
 import { reactive, computed, ref, useSlots, watch, onBeforeUnmount } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRoute } from "vue-router";
-import { useI18n } from "@/core/i18n";
-import { preferences } from "@/core/preferences";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { preferences } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 import ProSearch from "../ProSearch/index.vue";
 import ProTable from "../ProTable/index.vue";

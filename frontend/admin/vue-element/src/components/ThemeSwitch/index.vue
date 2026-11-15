@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { Moon, Sunny } from "@element-plus/icons-vue";
-import { usePreferences } from "@/core/preferences";
+import { usePreferences } from "@go-wind/admin-element";
 
 const { isDark, toggleTheme } = usePreferences();
 

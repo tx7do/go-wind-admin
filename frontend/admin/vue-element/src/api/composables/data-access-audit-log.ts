@@ -7,10 +7,10 @@ import type {
   auditservicev1_ListDataAccessAuditLogResponse,
   auditservicev1_DataAccessAuditLog_AccessType as AccessType,
 } from "@/api/generated/admin/service/v1";
-import type { PaginationQuery } from "@/core/transport/rest";
+import type { PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

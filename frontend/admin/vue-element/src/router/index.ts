@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, createWebHistory } from "vue-router
 
 import { createRouterGuard } from "./guards";
 import { routes } from "./routes";
-import { resetStaticRoutes } from "@/core/router";
+import { resetStaticRoutes } from "@go-wind/admin-element";
 import { App } from "vue";
 
 /**

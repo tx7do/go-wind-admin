@@ -1,4 +1,4 @@
-import { hexToRgb } from "./color";
+import { hexToRgb } from "@go-wind/admin-core";
 
 /**
  * 图表数据色板（docs/design-language.md §4：数据色板 = 主色阶梯 + 语义色）。

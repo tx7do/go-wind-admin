@@ -34,7 +34,7 @@ import {
   ElTableColumn,
 } from "element-plus";
 import { EchartsUI, type EchartsUIType, useEcharts } from "@/plugins/echarts";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 
 interface RowT {
   cells: string[];

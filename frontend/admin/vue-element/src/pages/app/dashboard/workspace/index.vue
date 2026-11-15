@@ -135,12 +135,12 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { $t, i18n } from "@/core/i18n";
-import { useAppUserStore } from "@/stores";
+import { $t, i18n } from "@go-wind/admin-element";
+import { useAppUserStore } from '@go-wind/admin-element';
 import { useListMyOnlineSessions } from "@/api/composables/online-session";
 import { useListUserInbox } from "@/api/composables/internal-message";
-import { PaginationQuery } from "@/core/transport/rest";
-import { formatDateTime } from "@/utils/date";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { formatDateTime } from "@go-wind/admin-core";
 
 /**
  * 工作台：操作入口聚合页（概览组的第二页，与分析页的"数据洞察"分工）。

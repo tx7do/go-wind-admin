@@ -53,7 +53,7 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, ElButton, ElTabs, ElTabPane, ElCard } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 import { useUpdateUser } from "@/api/composables";
 import { TabEnum } from "@/pages/app/opm/user/detail/types";

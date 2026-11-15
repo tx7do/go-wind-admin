@@ -29,7 +29,7 @@ import { type internal_messageservicev1_InternalMessageRecipient as InternalMess
 import { $t } from '#/locales';
 import { router } from '#/router';
 import { useAuthStore } from '#/stores';
-import { globalSSEClient, SSE_EVENT } from '#/transport/sse';
+import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-core';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 // 语义搜索（pgvector 菜单索引）接入全局搜索面板；框架层经注册表解耦，不直接依赖本应用 API

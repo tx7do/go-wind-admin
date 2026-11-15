@@ -78,7 +78,7 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { ElButton, ElCard, ElMessage, ElTag } from "element-plus";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import { apiClient } from "@/api/client";
 import AnalyticsTrends from "./analytics-trends.vue";
 import type {
@@ -86,7 +86,7 @@ import type {
   AiInsightsResponse,
   LoginTrendResponse,
 } from "@/api/generated/admin/service/v1";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 // 指标/趋势/分布数据由父页面注入（复用页面已有的 dashboard 查询缓存，避免重复请求）
 const props = defineProps<{

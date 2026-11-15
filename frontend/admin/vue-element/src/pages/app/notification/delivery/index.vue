@@ -49,8 +49,8 @@ import {
   notificationDeliveryStatusToType,
 } from "@/api/composables";
 import { serverExportFile } from "@/api/composables/server-export";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 import { ElMessage } from "element-plus";
 
 /**

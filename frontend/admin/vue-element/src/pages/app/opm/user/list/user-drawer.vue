@@ -182,10 +182,10 @@ import {
   fetchListOrgUnits,
   fetchListPositions,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
-import { isFieldHidden as isFieldHiddenBase } from "@/core/access";
-import { useAccessStore } from "@/stores";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
+import { isFieldHidden as isFieldHiddenBase } from "@go-wind/admin-element";
+import { useAccessStore } from '@go-wind/admin-element';
 
 const emit = defineEmits<{
   success: [];

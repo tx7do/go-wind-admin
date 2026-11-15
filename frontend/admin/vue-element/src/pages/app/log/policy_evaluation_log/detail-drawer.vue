@@ -92,7 +92,7 @@ import { ref } from "vue";
 import { ElDivider, ElDescriptions, ElDescriptionsItem, ElTag } from "element-plus";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { formatDateTime } from "@/utils";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { successToType, successToName } from "@/api/composables";
 import type { permissionservicev1_PolicyEvaluationLog } from "@/api/generated/admin/service/v1";
 

@@ -1,7 +1,7 @@
 import { shallowRef, ref, reactive, computed } from "vue";
 import { DEFAULT_CURRENT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from "../constants";
-import { PaginationResult } from "@/core/transport/rest";
-import { createI18nGetErrorMsg } from "@/composables/use-request-error-msg";
+import { PaginationResult } from "@go-wind/admin-core";
+import { createI18nGetErrorMsg } from "@go-wind/admin-element";
 
 const getErrorMsg = createI18nGetErrorMsg();
 

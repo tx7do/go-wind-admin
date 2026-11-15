@@ -92,7 +92,7 @@ import { useDrawerCloseGuard } from "@/components/Pro/composables/use-drawer-clo
 import type {
   notificationservicev1_NotificationTemplate,
 } from "@/api/generated/admin/service/v1";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import {
   NOTIFICATION_TEMPLATE_UPDATE_MASK,

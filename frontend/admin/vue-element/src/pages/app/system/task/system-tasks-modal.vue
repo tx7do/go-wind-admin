@@ -157,7 +157,7 @@ import { computed, ref } from "vue";
 import { ElButton, ElDialog, ElMessage, ElTable, ElTableColumn, ElTag } from "element-plus";
 
 import { fetchInspectSystemTasks } from "@/api/composables";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 
 /**
  * 系统级常驻任务弹窗（方案 C'：只读 asynq Inspector，零新表）。

@@ -53,7 +53,7 @@ import { ElButton, ElMessage, ElPopconfirm, ElTag } from "element-plus";
 import { RefreshLeft } from "@element-plus/icons-vue";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import { listAiAgentRevisions, restoreAiAgentRevision } from "@/api/composables";
 
 const { t } = useI18n();

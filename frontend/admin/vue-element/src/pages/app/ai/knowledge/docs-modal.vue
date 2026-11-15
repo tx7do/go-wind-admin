@@ -69,7 +69,7 @@ import {
   ElTag,
 } from "element-plus";
 import { Icon } from "@iconify/vue";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import type { aiservicev1_AiDoc as AiDoc, aiservicev1_AiKnowledgeBase as AiKnowledgeBase } from "@/api/generated/admin/service/v1";
 import { deleteAiDoc, fetchListAiDocs, uploadAiDoc } from "@/api/composables";
 

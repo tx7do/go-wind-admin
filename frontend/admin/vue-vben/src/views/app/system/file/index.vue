@@ -28,7 +28,7 @@ import FileDrawer from './file-drawer.vue';
 
 const { mutateAsync: deleteFile } = useDeleteFile();
 const { mutateAsync: uploadFile } = useUploadFile();
-const { mutateAsync: downloadFile } = useDownloadFile();
+const { mutateAsync: downloadMinioFile } = useDownloadFile();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -168,7 +168,7 @@ async function handleUploadFile(options: any) {
 
 async function handleDownloadFile(row: any) {
   const objectName = row ? `${row.fileDirectory}/${row.saveFileName}` : '';
-  await downloadFile({
+  await downloadMinioFile({
     bucketName: row.bucketName,
     objectName,
     preferPresignedUrl: true,

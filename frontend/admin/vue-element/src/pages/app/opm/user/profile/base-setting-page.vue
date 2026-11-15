@@ -202,7 +202,7 @@ import {
 import { queryClient } from "@/plugins/vue-query";
 import { formatDateTime } from "@/utils";
 import type { identityservicev1_User } from "@/api/generated/admin/service/v1";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
 const { mutateAsync: uploadAvatar } = useUploadAvatar();

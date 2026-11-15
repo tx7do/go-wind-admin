@@ -40,7 +40,7 @@ import "@go-wind/bi-vue/style.css";
 import { layoutCharts } from "@go-wind/bi-core";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
 import { fetchBiDashboard } from "@/api/composables/bi_dashboard";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 

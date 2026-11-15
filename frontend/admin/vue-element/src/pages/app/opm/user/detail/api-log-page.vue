@@ -28,7 +28,7 @@ import { ElTag } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import {
   methodList,
   httpMethodTagTypeMap,
@@ -37,7 +37,7 @@ import {
   successToNameWithStatusCode,
   fetchListApiAuditLogs,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 import dayjs from "dayjs";
 
 const props = defineProps({

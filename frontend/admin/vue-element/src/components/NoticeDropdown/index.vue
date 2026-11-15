@@ -87,6 +87,7 @@ import { Check } from "@element-plus/icons-vue";
 import type { ElDropdown } from "element-plus";
 // dayjs 语言包按需显式加载：不 import 时 locale("zh-cn") 静默无效，相对时间回落英文
 import "dayjs/locale/zh-cn";
+import "dayjs/plugin/relativeTime";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import { dateUtil } from "@/utils";
 import { useNotice } from "./useNotice";

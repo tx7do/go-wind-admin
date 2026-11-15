@@ -6,7 +6,16 @@
     "lib": ["esnext", "dom"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      // vue 系类型统一指到宿主物理实例：@go-wind/admin-element 以 link/dist 形态消费时，
+      // 其 d.ts 里的 vue/vue-router/@tanstack 类型引用若按包所在树解析会形成同名类型
+      // 双实例（RouterClassic/RouteRecordRaw 私有字段互斥）。paths 对传递 d.ts 全局生效，
+      // 强制全部落回宿主唯一副本。
+      "vue": ["node_modules/vue"],
+      "vue-router": ["node_modules/vue-router"],
+      "pinia": ["node_modules/pinia"],
+      "@tanstack/vue-query": ["node_modules/@tanstack/vue-query"],
+      "vue-i18n": ["node_modules/vue-i18n"]
     },
 
     // 严格性和类型检查相关配置

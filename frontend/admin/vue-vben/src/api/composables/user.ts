@@ -22,7 +22,7 @@ import {
 
 import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
-import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-core';
 import { encryptPasswordEnvelope } from '#/utils';
 
 const t = i18n.global.t;

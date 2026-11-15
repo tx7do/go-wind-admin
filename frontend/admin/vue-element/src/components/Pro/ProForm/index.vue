@@ -65,7 +65,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import { ref, computed, onMounted, markRaw } from "vue";
 import { ElMessage } from "element-plus";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 import {
   ElForm,
   ElFormItem,

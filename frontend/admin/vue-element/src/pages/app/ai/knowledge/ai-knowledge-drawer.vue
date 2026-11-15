@@ -62,8 +62,8 @@ import {
 } from "element-plus";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 import { createAiKnowledgeBase, fetchListAiKnowledgeBases, fetchListAiProviders, updateAiKnowledgeBase } from "@/api/composables";
 
 const emit = defineEmits<{ success: [] }>();

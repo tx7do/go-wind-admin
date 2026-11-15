@@ -16,10 +16,10 @@ import type {
   identityservicev1_User_Gender as User_Gender,
   identityservicev1_User_Status as User_Status,
 } from "@/api/generated/admin/service/v1";
-import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
+import { makeUpdateMask, type PaginationQuery } from "@go-wind/admin-core";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 import { encryptPasswordEnvelope } from "@/utils";
 
 const t = i18n.global.t;
@@ -134,7 +134,7 @@ export function useUpdateUser(
       return apiClient.userService.Update({
         id,
         data: data as any,
-        password: password ? await encryptPasswordEnvelope(String(password)) : undefined,
+        password: password ? await encryptPasswordEnvelope(String(password), import.meta.env.VITE_PASSWORD_RSA_PUB ?? "") : undefined,
         updateMask: makeUpdateMask(Object.keys(data)),
       });
     },
@@ -169,7 +169,7 @@ export function useEditUserPassword(
     mutationFn: async (data) =>
       apiClient.userService.EditUserPassword({
         ...data,
-        newPassword: data.newPassword ? await encryptPasswordEnvelope(data.newPassword) : data.newPassword,
+        newPassword: data.newPassword ? await encryptPasswordEnvelope(data.newPassword, import.meta.env.VITE_PASSWORD_RSA_PUB ?? "") : data.newPassword,
       }),
     ...options,
   });

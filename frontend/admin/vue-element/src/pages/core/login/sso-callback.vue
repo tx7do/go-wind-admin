@@ -19,8 +19,8 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElButton, ElIcon, ElMessage, ElResult } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
-import { useAuth } from "@/composables/use-auth";
-import { useI18n } from "@/core/i18n";
+import { useAuth } from "@go-wind/admin-element";
+import { useI18n } from "@go-wind/admin-element";
 import { DEFAULT_HOME_PATH } from "@/constants";
 
 /**

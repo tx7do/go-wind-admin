@@ -71,7 +71,7 @@ import { ElMessage } from "element-plus";
 import { useGetUserProfile } from "@/api/composables";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const emit = defineEmits<{ switchTab: [key: string] }>();
 

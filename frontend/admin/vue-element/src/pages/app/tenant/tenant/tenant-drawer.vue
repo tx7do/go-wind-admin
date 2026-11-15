@@ -237,10 +237,10 @@ import {
   fetchListTenants,
   fetchListPlans,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 import type { identityservicev1_Plan as Plan } from "@/api/generated/admin/service/v1";
 import type { identityservicev1_Tenant as Tenant } from "@/api/generated/admin/service/v1";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import { injectProModalApi } from "@/components/Pro";
 import ProModal from "@/components/Pro/ProModal/index.vue";

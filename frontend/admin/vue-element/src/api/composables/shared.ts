@@ -4,8 +4,8 @@
  */
 import { computed } from "vue";
 import ExcelJS from "exceljs";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
 
 export const enableList = computed(() => [
   { value: "true", label: $t("enum.enable.true") },

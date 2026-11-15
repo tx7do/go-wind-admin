@@ -5,7 +5,7 @@ import type {
   identityservicev1_ListPlanResponse,
 } from "@/api/generated/admin/service/v1";
 import { fetchListPlans, fetchListPlanQuotas } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 /**
  * 套餐视图状态接口

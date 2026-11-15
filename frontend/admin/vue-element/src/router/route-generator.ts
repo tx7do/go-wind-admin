@@ -1,16 +1,16 @@
 import { ElMessage } from "element-plus";
 
 import { Layout } from "@/layouts";
-import { generateAccessible } from "@/core/router";
-import { preferences } from "@/core/preferences";
+import { generateAccessible } from "@go-wind/admin-element";
+import { preferences } from "@go-wind/admin-element";
 import { fetchNavigation } from "@/api/composables";
 import type {
   ComponentRecordType,
   GenerateMenuAndRoutesOptions,
   RouteRecordStringComponent,
-} from "@/core/router/types";
+} from '@go-wind/admin-element';
 
-import { i18n } from "@/core/i18n";
+import { i18n } from "@go-wind/admin-element";
 
 const t = i18n.global.t;
 

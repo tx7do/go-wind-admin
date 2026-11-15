@@ -93,7 +93,7 @@ import {
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
 import { configValueTypeList, useCreateConfig, useUpdateConfig } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 
 const emit = defineEmits<{
   success: [];

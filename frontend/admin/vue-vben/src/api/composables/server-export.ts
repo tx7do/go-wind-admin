@@ -1,6 +1,6 @@
 import { useAccessStore } from '@vben/stores';
 
-import type { PaginationQuery } from '#/transport/rest/pagination';
+import type { PaginationQuery } from '@go-wind/admin-core';
 
 /**
  * 服务端全量导出（XLSX，后端统一行数上限）：URL 指向各资源的 :export 手动锚点，

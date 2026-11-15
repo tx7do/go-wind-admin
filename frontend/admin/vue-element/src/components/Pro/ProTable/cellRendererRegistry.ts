@@ -14,8 +14,8 @@ import {
   ElSpace,
 } from "element-plus";
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { useAccess } from "@/core/access";
-import { $t } from "@/core/i18n";
+import { useAccess } from "@go-wind/admin-element";
+import { $t } from "@go-wind/admin-element";
 import type { ProTableColumn } from "./types";
 
 export interface CellRendererContext {

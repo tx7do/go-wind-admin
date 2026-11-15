@@ -29,8 +29,8 @@ import {
   ElMessage,
 } from "element-plus";
 import ExcelJS from "exceljs";
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 /**
  * 列表「导出全部」下拉（CSV / Excel / 服务端全量），与 react 端 TableExportButton、

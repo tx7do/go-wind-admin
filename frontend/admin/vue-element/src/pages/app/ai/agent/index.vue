@@ -44,8 +44,8 @@ import AiAgentCanvas from "./ai-agent-canvas.vue";
 import AiAgentRunDrawer from "./ai-agent-run-drawer.vue";
 import AiAgentRunsDrawer from "./ai-agent-runs-drawer.vue";
 import AiAgentRevisionsDrawer from "./ai-agent-revisions-drawer.vue";
-import { useI18n } from "@/core/i18n";
-import { PaginationQuery } from "@/core/transport/rest";
+import { useI18n } from "@go-wind/admin-element";
+import { PaginationQuery } from "@go-wind/admin-core";
 import { deleteAiAgentApp, fetchListAiAgentApps } from "@/api/composables";
 
 const { t } = useI18n();

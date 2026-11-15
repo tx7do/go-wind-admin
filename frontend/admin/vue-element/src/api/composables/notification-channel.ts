@@ -1,5 +1,5 @@
 import { apiClient } from "@/api/client";
-import { PaginationQuery } from "@/core/transport/rest";
+import { PaginationQuery } from "@go-wind/admin-core";
 
 // ==============================
 // 通知渠道（平台级配置）

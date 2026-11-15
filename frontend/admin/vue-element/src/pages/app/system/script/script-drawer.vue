@@ -109,7 +109,7 @@ import {
   useCreateScript,
   useUpdateScript,
 } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useDrawerCloseGuard } from "@/components/Pro/composables/use-drawer-close-guard";

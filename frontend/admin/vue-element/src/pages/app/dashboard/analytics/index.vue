@@ -75,7 +75,7 @@
 
 <script lang="ts" setup>
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import {
   useDashboardOverview,
   useLoginStatusDistribution,

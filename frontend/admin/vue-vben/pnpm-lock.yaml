@@ -335,7 +335,7 @@ catalogs:
       version: 6.0.4
     stylelint-prettier:
       specifier: ^5.0.2
-      version: 5.0.2
+      version: 5.1.0
     stylelint-scss:
       specifier: ^6.10.0
       version: 6.14.0
@@ -432,6 +432,9 @@ importers:
       '@ctrl/tinycolor':
         specifier: ^4.1.0
         version: 4.2.1
+      '@go-wind/admin-core':
+        specifier: 0.1.0
+        version: 0.1.0(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0)
       '@go-wind/bi-core':
         specifier: 0.2.3
         version: 0.2.3
@@ -936,7 +939,7 @@ importers:
         version: 6.0.4(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3))
       stylelint-prettier:
         specifier: 'catalog:'
-        version: 5.0.2(prettier@3.9.6)(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3))
+        version: 5.1.0(prettier@3.9.6)(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3))
       stylelint-scss:
         specifier: 'catalog:'
         version: 6.14.0(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3))
@@ -2815,6 +2818,9 @@ packages:
     resolution: {integrity: sha512-YTVITFGN0/24PxzXrwqCgnyd7njDuzp5ZvaCx5nq/jg55kUYd94Nj8UTchBdBofi/L0nwRfjGOg0E41d2u9T1w==}
     engines: {node: '>=6'}
 
+  '@go-wind/admin-core@0.1.0':
+    resolution: {integrity: sha512-cnKFjoLC9pea5UqZPi4FN9ablHuecb8Aapdw3LYP/6Nwox4/yBlJtl5FURuVEZs7xtTOI1jqcD1qQalgHSZMUw==, tarball: https://registry.npmjs.org/@go-wind/admin-core/-/admin-core-0.1.0.tgz}
+
   '@go-wind/bi-core@0.2.3':
     resolution: {integrity: sha512-q/PYuCds04f5v5ohBHiVpOE/Nhi7tvHlPiQT8QvrewhuP4ejfcN8Z7gZ8GTR1my/dsiskgQ0GWFl63lQPPl6cg==}
 
@@ -2904,8 +2910,12 @@ packages:
     resolution: {integrity: sha512-BcmHpb5bQyeVNrptC3UhzpBZB/YHHDoEREOUERrmF2BRxsyOEuRrq+Z96C/D4+2KJb8kuHiouzAei7BXlG0YYw==}
     engines: {node: '>= 16'}
 
-  '@intlify/shared@11.4.18':
-    resolution: {integrity: sha512-8q7UR/eAFP0xOZndaClKYeh/lWkcIPOZkWsU85CMR9BYLjTeaENpAFWfFBvuUI8fFz0BDtZvR/fgbwiiQaqcDg==}
+  '@intlify/shared@11.4.20':
+    resolution: {integrity: sha512-qg2pOSUU5Xr2fHZCmluah8h/g/4MG5RfzIZBVR8Id0/c2EKsCPtWvamSiVtwc+4VvYnEGQxZast7uQMTb6jP9A==}
+    engines: {node: '>= 22'}
+
+  '@intlify/shared@12.0.0-alpha.11':
+    resolution: {integrity: sha512-hOwvi2x0BbABV0MgmPHp+E5hL6y0Q+w4JzpNKAKXSjNuDYwzZgz/C9pfJ+kD98hSAiVjBCcCVHZ0MFnIdUUXtg==}
     engines: {node: '>= 22'}
 
   '@intlify/shared@12.0.0-alpha.9':
@@ -9115,8 +9125,8 @@ packages:
     peerDependencies:
       stylelint: ^14.0.0 || ^15.0.0 || ^16.0.1
 
-  stylelint-prettier@5.0.2:
-    resolution: {integrity: sha512-qJ+BN+1T2ZcKz9WIrv0x+eFGHzSUnXfXd5gL///T6XoJvr3D8/ztzz2fhtmXef7Vb8P33zBXmLTTveByr0nwBw==}
+  stylelint-prettier@5.1.0:
+    resolution: {integrity: sha512-YYu3C6AlovZkSUsgyANyxmrzKF6BlK85voexN+iLlh1i1Lgl0IeGhwqFiPHPX8cMSkX0AC2/oHi06j/5iXSWgA==}
     engines: {node: '>=18.12.0'}
     peerDependencies:
       prettier: '>=3.0.0'
@@ -9198,6 +9208,9 @@ packages:
 
   tailwind-merge@2.6.1:
     resolution: {integrity: sha512-Oo6tHdpZsGpkKG88HJ8RR1rg/RdnEkQEfMoEk2x1XRI3F1AxeU+ijRXpiVUF4UbLfcxxRGw6TbUINKYdWVsQTQ==}
+
+  tailwind-merge@3.7.0:
+    resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
 
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
@@ -12170,6 +12183,21 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.2.0
 
+  '@go-wind/admin-core@0.1.0(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0)':
+    dependencies:
+      '@microsoft/fetch-event-source': 2.0.1
+      axios: 1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0)
+      clsx: 2.1.1
+      crypto-js: 4.2.0
+      dayjs: 1.11.23
+      defu: 6.1.7
+      lodash.clonedeep: 4.5.0
+      nprogress: 0.2.0
+      tailwind-merge: 3.7.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   '@go-wind/bi-core@0.2.3':
     dependencies:
       echarts: 6.1.0
@@ -12241,7 +12269,7 @@ snapshots:
   '@intlify/bundle-utils@10.0.0(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))':
     dependencies:
       '@intlify/message-compiler': 12.0.0-alpha.9
-      '@intlify/shared': 12.0.0-alpha.9
+      '@intlify/shared': 12.0.0-alpha.11
       acorn: 8.18.0
       escodegen: 2.1.0
       estree-walker: 2.0.2
@@ -12269,7 +12297,9 @@ snapshots:
 
   '@intlify/shared@10.0.8': {}
 
-  '@intlify/shared@11.4.18': {}
+  '@intlify/shared@11.4.20': {}
+
+  '@intlify/shared@12.0.0-alpha.11': {}
 
   '@intlify/shared@12.0.0-alpha.9': {}
 
@@ -12277,8 +12307,8 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.0.0))
       '@intlify/bundle-utils': 10.0.0(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))
-      '@intlify/shared': 11.4.18
-      '@intlify/vue-i18n-extensions': 7.0.0(@intlify/shared@11.4.18)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
+      '@intlify/shared': 11.4.20
+      '@intlify/vue-i18n-extensions': 7.0.0(@intlify/shared@11.4.20)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
       '@rollup/pluginutils': 5.4.0(rollup@4.63.1)
       '@typescript-eslint/scope-manager': 8.69.0
       '@typescript-eslint/typescript-estree': 8.69.0(supports-color@10.0.0)(typescript@5.6.3)
@@ -12300,11 +12330,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@intlify/vue-i18n-extensions@7.0.0(@intlify/shared@11.4.18)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
+  '@intlify/vue-i18n-extensions@7.0.0(@intlify/shared@11.4.20)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@babel/parser': 7.29.7
     optionalDependencies:
-      '@intlify/shared': 11.4.18
+      '@intlify/shared': 11.4.20
       '@vue/compiler-dom': 3.5.38
       vue: 3.5.13(typescript@5.6.3)
       vue-i18n: 10.0.8(vue@3.5.13(typescript@5.6.3))
@@ -19064,7 +19094,7 @@ snapshots:
       postcss-sorting: 8.0.2(postcss@8.5.28)
       stylelint: 16.26.1(supports-color@10.0.0)(typescript@5.6.3)
 
-  stylelint-prettier@5.0.2(prettier@3.9.6)(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3)):
+  stylelint-prettier@5.1.0(prettier@3.9.6)(stylelint@16.26.1(supports-color@10.0.0)(typescript@5.6.3)):
     dependencies:
       prettier: 3.9.6
       prettier-linter-helpers: 1.0.1
@@ -19213,6 +19243,8 @@ snapshots:
   tagged-tag@1.0.0: {}
 
   tailwind-merge@2.6.1: {}
+
+  tailwind-merge@3.7.0: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.19):
     dependencies:

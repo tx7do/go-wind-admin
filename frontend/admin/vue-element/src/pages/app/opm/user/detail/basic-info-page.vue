@@ -109,13 +109,13 @@ import { computed, ref } from "vue";
 
 import { ElDescriptions, ElDescriptionsItem, ElAvatar, ElTag } from "element-plus";
 import { formatDateTime } from "@/utils";
-import { $t } from "@/core/i18n";
-import { isFieldHidden as isFieldHiddenBase } from "@/core/access";
-import { useAccessStore } from "@/stores";
+import { $t } from "@go-wind/admin-element";
+import { isFieldHidden as isFieldHiddenBase } from "@go-wind/admin-element";
+import { useAccessStore } from '@go-wind/admin-element';
 
 import { type identityservicev1_User as User } from "@/api/generated/admin/service/v1";
 import { genderToType, genderToName, fetchUser } from "@/api/composables";
-import { getCharColor, getRandomColor } from "@/utils/color";
+import { getCharColor, getRandomColor } from "@go-wind/admin-core";
 
 const props = defineProps({
   userId: { type: String, default: undefined },

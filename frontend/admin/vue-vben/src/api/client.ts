@@ -9,7 +9,7 @@ import {
   type ClientTransport,
   createApiClient,
 } from '#/api/generated/admin/service/v1';
-import { consumeCaptchaHeaders, requestApi } from '#/transport/rest';
+import { consumeCaptchaHeaders, requestApi } from '@go-wind/admin-core';
 
 const transport: ClientTransport = {
   unary(path, method, body, _meta) {

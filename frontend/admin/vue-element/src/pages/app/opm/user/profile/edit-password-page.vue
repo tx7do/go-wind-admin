@@ -52,8 +52,8 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
 import { useChangePassword } from "@/api/composables";
-import { useAuth } from "@/composables/use-auth";
-import { $t } from "@/core/i18n";
+import { useAuth } from "@go-wind/admin-element";
+import { $t } from "@go-wind/admin-element";
 
 const { mutateAsync: changePassword } = useChangePassword();
 const { forceLogout } = useAuth();

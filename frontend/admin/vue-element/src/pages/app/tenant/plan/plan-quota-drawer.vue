@@ -56,7 +56,7 @@ import type { FormInstance, FormRules } from "element-plus";
 
 import { planQuotaTypeList, useCreatePlanQuota, useUpdatePlanQuota } from "@/api/composables";
 import type { identityservicev1_PlanQuota as PlanQuota } from "@/api/generated/admin/service/v1";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 import { injectProModalApi } from "@/components/Pro";
 import ProModal from "@/components/Pro/ProModal/index.vue";

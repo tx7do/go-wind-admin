@@ -95,13 +95,13 @@ import {
   userStatusToName,
   useDeleteUser,
 } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
-import { $t } from "@/core/i18n";
-import { parseResourceHiddenFields } from "@/core/access";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { $t } from "@go-wind/admin-element";
+import { parseResourceHiddenFields } from "@go-wind/admin-element";
 import { router } from "@/router";
-import { getRandomColor } from "@/utils/color";
+import { getRandomColor } from "@go-wind/admin-core";
 import { useUserViewStore } from "./user-view.state";
-import { useAccessStore, useAppUserStore } from "@/stores";
+import { useAccessStore, useAppUserStore } from '@go-wind/admin-element';
 
 const { mutateAsync: deleteUser } = useDeleteUser();
 const userViewStore = useUserViewStore();

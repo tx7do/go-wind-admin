@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { preferencesManager } from "@/core/preferences";
-import type { SupportedLanguagesType } from "@/core/preferences";
-import { loadLocaleMessages } from "@/core/i18n";
+import { preferencesManager } from "@go-wind/admin-element";
+import type { SupportedLanguagesType } from "@go-wind/admin-element";
+import { loadLocaleMessages } from "@go-wind/admin-element";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineProps({

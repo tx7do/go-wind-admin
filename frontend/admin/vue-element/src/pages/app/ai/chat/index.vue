@@ -215,10 +215,10 @@ import { ElButton, ElInput, ElMessage, ElMessageBox, ElOption, ElSelect } from "
 import { Icon } from "@iconify/vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import { formatDate } from "@/utils";
-import { PaginationQuery } from "@/core/transport/rest";
-import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
+import { PaginationQuery } from "@go-wind/admin-core";
+import { globalSSEClient, SSE_EVENT } from "@go-wind/admin-core";
 import type {
   aiservicev1_AiConversation as AiConversation,
   aiservicev1_AiMessage as AiMessage,

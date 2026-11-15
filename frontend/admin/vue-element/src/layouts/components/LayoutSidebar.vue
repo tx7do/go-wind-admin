@@ -31,8 +31,8 @@ import path from "path-browserify";
 import type { MenuInstance } from "element-plus";
 import type { RouteRecordRaw } from "vue-router";
 
-import { usePreferences } from "@/core/preferences";
-import { preferences } from "@/core/preferences";
+import { usePreferences } from "@go-wind/admin-element";
+import { preferences } from "@go-wind/admin-element";
 import { isExternal } from "@/utils";
 
 import LayoutSidebarItem from "./LayoutSidebarItem.vue";

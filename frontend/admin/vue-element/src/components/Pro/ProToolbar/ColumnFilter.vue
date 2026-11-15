@@ -68,7 +68,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { ElCheckbox, ElButton, ElIcon, ElScrollbar } from "element-plus";
 import { Rank, ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
-import { useI18n } from "@/core/i18n";
+import { useI18n } from "@go-wind/admin-element";
 import Sortable from "sortablejs";
 import type { ProTableColumn } from "../ProTable/types";
 

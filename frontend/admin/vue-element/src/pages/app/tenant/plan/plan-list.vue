@@ -47,7 +47,7 @@ import {
   planVersionToName,
   useDeletePlan,
 } from "@/api/composables";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { usePlanViewStore } from "@/pages/app/tenant/plan/plan-view.state";
 
 const { mutateAsync: deletePlan } = useDeletePlan();

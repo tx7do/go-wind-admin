@@ -137,7 +137,7 @@ import { ref } from "vue";
 import { ElDivider, ElDescriptions, ElDescriptionsItem, ElTag } from "element-plus";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { formatDateTime } from "@/utils";
-import { $t } from "@/core/i18n";
+import { $t } from "@go-wind/admin-element";
 import { successToType, successToNameWithStatusCode, httpMethodTagTypeMap } from "@/api/composables";
 import type { auditservicev1_ApiAuditLog } from "@/api/generated/admin/service/v1";
 

@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { preferences, usePreferences } from "@/core/preferences";
+import { preferences, usePreferences } from "@go-wind/admin-element";
 import { ElTooltip } from "element-plus";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 

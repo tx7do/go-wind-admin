@@ -6,8 +6,8 @@
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { useAccessStore } from "@/stores";
-import { preferences, preferencesManager, usePreferences } from "@/core/preferences";
+import { useAccessStore } from '@go-wind/admin-element';
+import { preferences, preferencesManager, usePreferences } from "@go-wind/admin-element";
 
 export function useLayout() {
   const route = useRoute();

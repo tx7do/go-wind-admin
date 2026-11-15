@@ -247,10 +247,10 @@
 import { useRoute, useRouter, type RouteRecordRaw } from "vue-router";
 import { resolve } from "path-browserify";
 import { useSortable, type Sortable } from "@/composables/use-sortable";
-import { translateRouteTitle } from "@/core/i18n";
-import { useAccessStore } from "@/stores";
+import { translateRouteTitle } from "@go-wind/admin-element";
+import { useAccessStore } from '@go-wind/admin-element';
 import { useTagsViewStore, type TabState } from "./useTagsViewStore";
-import { preferences, updatePreferences } from "@/core/preferences";
+import { preferences, updatePreferences } from "@go-wind/admin-element";
 
 import {
   ArrowDown,

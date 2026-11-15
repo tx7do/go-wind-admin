@@ -25,7 +25,7 @@ import {
 import { apiClient } from '#/api/client';
 import { BasicLayout, IFrameView } from '#/layouts';
 import { queryClient } from '#/plugins/vue-query';
-import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@go-wind/admin-core';
 
 const t = i18n.global.t;
 
