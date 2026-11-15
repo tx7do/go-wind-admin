@@ -12,11 +12,13 @@
 ```
 backend/                    Go + Kratos + Ent（DI 手写装配 wiring_*.go，已弃用 Wire；HTTP :7788，SSE 网关 :7789）
 frontend/admin/
-├── react/                  React 19 + antd 6 + ProComponents + TanStack Query + zustand
-├── vue-element/            Vue 3 + Element Plus + vxe-table + TanStack vue-query + Pinia
-└── vue-vben/               Vben Admin 5.x 单包结构（src/ 应用 + framework/ 框架壳，原 apps/packages 已并入）+ Ant Design Vue
+├── react/                  React 19 + antd 6 + ProComponents + TanStack Query + zustand（机制层 = @go-wind/admin-react）
+├── vue-element/            Vue 3 + Element Plus + vxe-table + TanStack vue-query + Pinia（机制层 = @go-wind/admin-core + @go-wind/admin-element）
+└── vue-vben/               Vben Admin 5.x 分层形态（src/ 应用 + framework/effects/layouts+plugins 业务热区；基座 = @go-wind/admin-vben 源码形态包）+ Ant Design Vue
 docs/                       文档体系（总入口 docs/README.md：教程层 docs/tutorial/ + 参考层专题文档）
 ```
+
+> **三端机制层已抽包（2026-11-15 起）**：基座机制不再随本仓 merge 同步。全部发 npm（go-wind-ui 仓，changesets 自动发版）：react 机制层/ListTable/导出 = `@go-wind/admin-react`；vue 两端共享 transport/storage/utils/crypto = `@go-wind/admin-core`；element 绑定层（auth 编排/Pinia stores/路由工厂/偏好/i18n）= `@go-wind/admin-element`；vben 基座（preferences/stores/i18n/ui-kit，源码形态包）= `@go-wind/admin-vben`。**改基座 = 改 go-wind-ui 仓对应包 + changeset 发版，本端 `pnpm update <包>` 升级**。业务倒逼的框架修改仍直接改本仓（各端保留的热区见各端 AGENTS.md：element 的 layouts/登录壳、vben 的 framework/effects/layouts+plugins）。
 
 ## 三端门禁（必须保持全绿）
 

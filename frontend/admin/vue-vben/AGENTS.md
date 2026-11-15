@@ -47,26 +47,26 @@ Mentions, Rate, Divider, Space, DefaultButton, PrimaryButton, ApiTree
 | 表单赋值/取值 | `baseFormApi.setValues()` / `baseFormApi.getValues()` | 直接操作 DOM 或 ref |
 | 表单校验 | `baseFormApi.validate()` | 手动检查每个字段 |
 
-## 工程结构（单包化后，2026-10 起）
+## 工程结构（2026-11-15 起框架层抽包，分层形态）
 
-原 Vben 5 monorepo 的 26 个 packages/* 已并入 `framework/`，apps/ 已削平：
+原 Vben 5 monorepo 的 26 个 packages/* 曾并入 `framework/`（2026-10 单包化），2026-11-15 起进一步**分层抽包**：冻结/低频层（base/core/ui-kit/根级 constants-icons-locales-preferences-stores-types-utils + effects 的 access-hooks-common-ui）迁入 **@go-wind/admin-vben**（npm 源码形态包）；**业务倒逼修改热区 effects/layouts（站内信/登录面板）+ effects/plugins（vxe 工具栏）留宿主**，业务驱动的框架修改直接改宿主不跨仓。
 
 ```
 vue-vben/
-├── framework/            # 框架壳（原 26 包源码，保留包边界子目录，勿打平）
-│   ├── base/ core/ ui-kit/ effects/ + 根级(constants/icons/locales/preferences/stores/styles/types/utils)
+├── framework/            # 仅剩高频变异层：effects/layouts + effects/plugins
 ├── src/                  # 业务层（页面/路由/stores/api/adapter，见下）
-├── build-config/             # 工具链 workspace（vite-config/tailwind-config/tsconfig/node-utils/lint-configs）
-├── node_modules/         # 唯一依赖源（应用依赖全在根 package.json）
+├── build-config/         # 工具链 workspace（vite-config/tailwind-config/tsconfig/node-utils/lint-configs）
+├── node_modules/         # 依赖源（@go-wind/admin-vben 源码包经 node_modules/@go-wind/admin-vben junction 消费）
 └── vite.config.mts / tsconfig.json / index.html / .env*
 ```
 
-- **framework/node_modules 已删除**：早期为 compiler-sfc 类型解析建的 junction 兼容层，实测（dev+build 双验证）已不需要——vite root 在工程根后 tsconfck 命中根 tsconfig 的 paths 供类型解析。若未来某天 dev 白屏报 Failed to resolve extends base type，从 git 历史恢复 scripts/rebuild-framework-links.mjs 跑一次即可。
-- **框架包名即别名**：`@vben/*`、`@vben-core/*` 按 26 条映射解析到 framework/ 子目录（vite resolve.alias + tsconfig paths 双份，改包名/加子路径要两处同步）。子路径如 `@vben/styles/antd`、`@vben/plugins/echarts` 自然解析
+- **包消费方式（源码形态）**：`@vben/preferences`、`@vben-core/shared` 等 24 组旧 import 经 vite alias + tsconfig paths **重定向到 `node_modules/@go-wind/admin-vben/src/<子路径>`**（junction → go-wind-ui 仓）——源码直吃宿主管线：组件类型完整、tailwind content 扫包源（`build-config/tailwind-config` 已补扫）、locales 静态枚举（**node_modules 内 import.meta.glob 不展开**——包内禁用 glob 加载资源，见 0.1.3 修复）
+- **基座升级**：go-wind-ui 仓改 `packages/admin-vben` + changeset → push 自动发 npm → 本端 `pnpm update @go-wind/admin-vben`（本机 pnpm 死结绕法：node22 PATH + `npx pnpm@11.18.0 install`）
+- **保留的 frameworkAliases**：仅 `@vben/layouts`、`@vben/plugins` 两条指向宿主 framework/effects；vite resolve.dedupe **不可用于**该包（dedupe 不管预构建内部——包已 optimizeDeps.exclude + include 收编裸 CJS：dayjs 插件/lodash 系/json-bigint/vue-json-viewer/nprogress）
 - **命令从工程根跑且必须经 `pnpm run`**：`pnpm dev` / `pnpm build` / `pnpm typecheck`。env.ts 靠 `npm_lifecycle_script` 正则解析 `--mode`，直接调 `.bin/vite` 会丢 mode（端口回落 5173）
 - **build-config/ 是纯源码目录**（去微服务后无 package.json/dist）：vite.config.mts、tailwind.config.ts、eslint.config.ts 经 esbuild/jiti 直接吃 TS 源，改完即生效无需构建
 - **node ≥ 20.11 硬要求**（unplugin 顶层 import.meta.dirname）：本机 PATH 默认 node 20.10 会崩，dev/build 前置 scoop node：`export PATH="$HOME/scoop/apps/nodejs/current:$PATH"`
-- 主题色/暗亮的 CSS 变量由 `framework/core/preferences/update-css-variables.ts` 运行时注入；design-tokens 在 `framework/base/design/design-tokens/`
+- 主题色/暗亮的 CSS 变量由包内 preferences 运行时注入；design-tokens 在包 `src/base/design/design-tokens/`
 
 ### src/ 业务层结构
 
@@ -78,10 +78,9 @@ src/
 │   └── composables/      # ← Vue Query hooks 层：use*/fetch*/枚举工具
 ├── adapter/              # VbenForm + VxeTable 适配器配置
 ├── router/routes/modules/# ← 路由模块（按功能拆分）
-├── stores/               # Pinia 状态管理
+├── stores/               # Pinia 状态管理（authentication：token 刷新/MFA/SSO）
 ├── views/app/            # 业务页面（按功能模块组织）
-├── locales/langs/        # i18n 国际化文件（zh-CN/en-US: enum.json, menu.json, page.json, ui.json）
-└── transport/rest/       # HTTP 传输层（PaginationQuery, requestApi）
+└── locales/langs/        # i18n 应用文案（zh-CN/en-US: enum.json, menu.json, page.json, ui.json）
 ```
 
 ## 导入路径约定
