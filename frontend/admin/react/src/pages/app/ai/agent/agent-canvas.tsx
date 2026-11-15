@@ -374,7 +374,7 @@ export default function AgentCanvas({ open, app, onClose }: AgentCanvasProps) {
       title={`${t('canvas.title')} · ${app?.name ?? ''}`}
       open={open}
       onClose={onClose}
-      width="100%"
+      size="100%"
       // 全屏画布不需要遮罩：mask 会以同级 z-index 压住工具条（真实点击被拦，e2e 实证）
       mask={false}
       destroyOnHidden
@@ -556,7 +556,7 @@ function NodeConfigDrawer({
       title={`${t('canvas.config')} · ${node?.id ?? ''}`}
       open={open}
       onClose={onClose}
-      width={420}
+      size={420}
       // 画布内侧板不带 mask：配置时仍可直接操作画布与工具条（带 mask 会全屏拦截，e2e 实证）
       mask={false}
       destroyOnHidden
@@ -849,7 +849,7 @@ function TestRunDrawer({
         setResult(undefined);
         onClose();
       }}
-      width={480}
+      size={480}
       mask={false}
       destroyOnHidden
     >

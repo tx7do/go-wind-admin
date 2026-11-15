@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
 import {
@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiAgentApp as AiAgentApp } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@go-wind/admin-react';
-import { TABLE } from '@/config/constants';
+import { TABLE } from '@go-wind/admin-react';
 import {
   fetchListAiAgentApps,
   useDeleteAiAgentApp,

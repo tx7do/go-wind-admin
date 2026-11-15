@@ -11,7 +11,7 @@ import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
 import { apiClient } from '@/api/client';
 import { useI18n } from '@go-wind/admin-react';
-import { usePageFullscreen } from '@/hooks/usePageFullscreen';
+import { usePageFullscreen } from '@go-wind/admin-react';
 
 /** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
 const BI_SCHEMA_STORAGE_KEY = "bi:schema:default";

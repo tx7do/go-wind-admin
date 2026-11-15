@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import { Button, Tag, App } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, InfoCircleOutlined , SafetyOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePrintTemplateDialog } from '@/components/common/PrintTemplatePrint';
 
 import { PaginationQuery } from '@go-wind/admin-react';
-import { TABLE } from '@/config/constants';
+import { TABLE } from '@go-wind/admin-react';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import { fetchListUsers, useDeleteUser } from '@/api/hooks/user';
 import { useAdminResetMfa } from '@/api/hooks/mfa';

@@ -23,8 +23,8 @@ importers:
         specifier: ^2.8.10
         version: 2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@go-wind/admin-react':
-        specifier: 0.1.0
-        version: 0.1.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@ant-design/pro-components@2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@tanstack/react-query@5.107.1(@types/react@19.2.15)(react@19.2.6))(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react-i18next@17.0.8(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react-router-dom@6.30.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(zustand@5.0.13(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6)))
+        specifier: 0.2.0
+        version: 0.2.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@ant-design/pro-components@2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@tanstack/react-query@5.107.1(@types/react@19.2.15)(react@19.2.6))(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react-i18next@17.0.8(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react-router-dom@6.30.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(zustand@5.0.13(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6)))
       '@go-wind/bi-core':
         specifier: 0.2.3
         version: 0.2.3
@@ -1091,8 +1091,8 @@ packages:
     resolution: {integrity: sha512-YTVITFGN0/24PxzXrwqCgnyd7njDuzp5ZvaCx5nq/jg55kUYd94Nj8UTchBdBofi/L0nwRfjGOg0E41d2u9T1w==}
     engines: {node: '>=6'}
 
-  '@go-wind/admin-react@0.1.0':
-    resolution: {integrity: sha512-ct+uRc6rwJEx9xnQff2pmjhjhDLu1FEl85j7XsPoouZAiQ7tA+rZ81pOOsVn8ZnnFJvhcfG7HmTCjkI2wrkw8A==}
+  '@go-wind/admin-react@0.2.0':
+    resolution: {integrity: sha512-RDPQ8a2NGGcAjKqQyPbP6AKYruqYfadmQKT/rT3vtPz+eqO6FIzgcDlDvvNgdK2B4LMK1xInXkZVam+dCGjM2Q==}
     peerDependencies:
       '@ant-design/icons': '>=5.6.0'
       '@ant-design/pro-components': '>=2.8.0'
@@ -7702,7 +7702,7 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.2.0
 
-  '@go-wind/admin-react@0.1.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@ant-design/pro-components@2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@tanstack/react-query@5.107.1(@types/react@19.2.15)(react@19.2.6))(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react-i18next@17.0.8(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react-router-dom@6.30.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(zustand@5.0.13(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6)))':
+  '@go-wind/admin-react@0.2.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@ant-design/pro-components@2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@tanstack/react-query@5.107.1(@types/react@19.2.15)(react@19.2.6))(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react-i18next@17.0.8(i18next@26.2.0(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react-router-dom@6.30.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(zustand@5.0.13(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6)))':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@ant-design/pro-components': 2.8.10(antd@6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -7711,7 +7711,9 @@ snapshots:
       antd: 6.6.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       axios: 1.16.1
       dayjs: 1.11.20
+      echarts: 6.1.0
       i18next: 26.2.0(typescript@6.0.3)
+      lodash: 4.18.1
       nprogress: 0.2.0
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)

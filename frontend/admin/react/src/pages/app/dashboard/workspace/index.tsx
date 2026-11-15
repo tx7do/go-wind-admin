@@ -7,7 +7,7 @@ import {
   Card,
   Col,
   Empty,
-  List,
+  Listy,
   Row,
   Spin,
   Tag,
@@ -120,6 +120,7 @@ const Workspace = () => {
 
   const unreadCount = Number(inboxUnread?.total ?? 0); // uint64 → string，转回 number 供比较/展示
   const inboxItems = inboxRecentQuery.data?.items ?? [];
+  const sessionItems = sessionsQuery.data?.items ?? [];
 
   return (
     <ContentContainer heightMode="auto" scrollable padding="16px">
@@ -194,7 +195,7 @@ const Workspace = () => {
                 type="link"
                 size="small"
                 icon={<RightOutlined />}
-                iconPosition="end"
+                iconPlacement="end"
                 onClick={() => navigate('/internal-message/inbox')}
               >
                 {t('workspace.myMessages.viewAll')}
@@ -208,16 +209,32 @@ const Workspace = () => {
               </div>
             ) : inboxRecentQuery.isError ? (
               <Empty description={inboxRecentQuery.error.message} />
+            ) : inboxItems.length === 0 ? (
+              <Empty description={t('workspace.myMessages.empty')} />
             ) : (
-              <List
-                size="small"
-                dataSource={inboxItems}
-                locale={{ emptyText: t('workspace.myMessages.empty') }}
-                renderItem={(item) => {
+              <Listy
+                items={inboxItems}
+                rowKey="id"
+                /* Listy 的 item 默认样式带 hover 背景与"含最后一行"的分隔线，
+                   与原 List 的观感不同：hover 用透明背景压掉，分隔线改为在
+                   itemRender 里按 index 自绘（末行无线），padding 一并搬到行容器 */
+                styles={{ item: { padding: 0, background: 'transparent' } }}
+                itemRender={(item, index) => {
                   const unread = item.status === 'RECEIVED';
                   return (
-                    <List.Item
-                      style={{ cursor: 'pointer', padding: '8px 4px', gap: 8 }}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        width: '100%',
+                        padding: '8px 4px',
+                        cursor: 'pointer',
+                        borderBottom:
+                          index < inboxItems.length - 1
+                            ? '1px solid var(--ant-color-split)'
+                            : undefined,
+                      }}
                       onClick={() => navigate('/internal-message/inbox')}
                     >
                       <span
@@ -247,7 +264,7 @@ const Workspace = () => {
                       <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
                         {formatDateTime(item.createdAt as any)}
                       </Text>
-                    </List.Item>
+                    </div>
                   );
                 }}
               />
@@ -265,7 +282,7 @@ const Workspace = () => {
                 type="link"
                 size="small"
                 icon={<RightOutlined />}
-                iconPosition="end"
+                iconPlacement="end"
                 onClick={() => navigate('/system/online-sessions')}
               >
                 {t('workspace.mySessions.manage')}
@@ -278,13 +295,29 @@ const Workspace = () => {
               </div>
             ) : sessionsQuery.isError ? (
               <Empty description={sessionsQuery.error.message} />
+            ) : sessionItems.length === 0 ? (
+              <Empty description={t('workspace.mySessions.empty')} />
             ) : (
-              <List
-                size="small"
-                dataSource={sessionsQuery.data?.items ?? []}
-                locale={{ emptyText: t('workspace.mySessions.empty') }}
-                renderItem={(item) => (
-                  <List.Item style={{ padding: '8px 4px', gap: 8 }}>
+              <Listy
+                items={sessionItems}
+                rowKey="jti"
+                /* 与上方站内信列表同理：压掉 Listy 默认 hover/末行分隔线，
+                   分隔线按 index 自绘 */
+                styles={{ item: { padding: 0, background: 'transparent' } }}
+                itemRender={(item, index) => (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                      padding: '8px 4px',
+                      borderBottom:
+                        index < sessionItems.length - 1
+                          ? '1px solid var(--ant-color-split)'
+                          : undefined,
+                    }}
+                  >
                     <div
                       style={{
                         flex: 1,
@@ -307,7 +340,7 @@ const Workspace = () => {
                     <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
                       {formatDateTime(item.loginAt as any)}
                     </Text>
-                  </List.Item>
+                  </div>
                 )}
               />
             )}

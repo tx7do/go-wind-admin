@@ -115,7 +115,7 @@ export default function AccessKeyDrawer({
         formRef={formRef}
         drawerProps={{
           onClose: guardClose,
-          destroyOnClose: true,
+          destroyOnHidden: true,
           // antd6 Drawer width 已废弃：size 直接收数字
           size: 480,
         }}

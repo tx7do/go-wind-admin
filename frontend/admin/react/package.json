@@ -17,7 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/pro-components": "^2.8.10",
-    "@go-wind/admin-react": "0.1.0",
+    "@go-wind/admin-react": "0.2.0",
     "@go-wind/bi-core": "0.2.3",
     "@go-wind/bi-react": "0.3.0",
     "@go-wind/bi-vue": "0.3.0",

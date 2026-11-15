@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { List, Button, Drawer, Form, Input, App } from 'antd';
+import { Listy, Button, Drawer, Form, Input, App } from 'antd';
 import { MailOutlined, MobileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
@@ -111,27 +111,56 @@ const AccountBind = ({ onSwitchTab }: AccountBindProps) => {
 
   return (
     <>
-      <List
-        dataSource={bindList}
-        renderItem={(item) => (
-          <List.Item
-            actions={[
-              item.key === 'email' && (
+      {/* antd 6 弃用 List（提示改用 Listy），这里用 Listy + 自绘行还原原
+          List.Item.Meta(avatar) + actions 的观感：行距/配色按原 List 样式 token
+          写死（item padding 8px 0、头像右距 16、标题下 4px、描述用
+          colorTextDescription、actions 与内容间距 24px、按钮间 8px），
+          分隔线只在行间（末行无线）。 */}
+      <Listy
+        items={bindList}
+        rowKey="key"
+        styles={{ item: { padding: '8px 0', background: 'transparent' } }}
+        itemRender={(item, index) => (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 24,
+              borderBottom:
+                index < bindList.length - 1
+                  ? '1px solid var(--ant-color-split)'
+                  : undefined,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', flex: 1, minWidth: 0, gap: 16 }}>
+              {item.icon}
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: 14,
+                    color: 'var(--ant-color-text)',
+                    marginBottom: 4,
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div style={{ fontSize: 14, color: 'var(--ant-color-text-description)' }}>
+                  {item.description}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, gap: 8 }}>
+              {item.key === 'email' && (
                 <Button type="link" size="small" onClick={openBind}>
                   {user?.email ? t('accountBind.rebind') : t('accountBind.bindNow')}
                 </Button>
-              ),
+              )}
               <Button type="link" size="small" onClick={() => onSwitchTab('1')}>
                 {t('accountBind.modify')}
-              </Button>,
-            ].filter(Boolean)}
-          >
-            <List.Item.Meta
-              avatar={item.icon}
-              title={item.title}
-              description={item.description}
-            />
-          </List.Item>
+              </Button>
+            </div>
+          </div>
         )}
       />
 
@@ -139,8 +168,8 @@ const AccountBind = ({ onSwitchTab }: AccountBindProps) => {
         title={t('accountBind.bindEmailTitle')}
         open={bindOpen}
         onClose={guardClose}
-        width={480}
-        destroyOnClose
+        size={480}
+        destroyOnHidden
         footer={
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
             <Button onClick={guardClose}>{t('common:button.cancel')}</Button>

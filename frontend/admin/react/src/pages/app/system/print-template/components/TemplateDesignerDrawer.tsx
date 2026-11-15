@@ -240,7 +240,7 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
         title={templateTitle(t, mode)}
         open={open}
         onClose={guardClose}
-        width="100%"
+        size="100%"
         destroyOnHidden
         footer={
           <Space style={{ float: 'right' }}>

@@ -40,7 +40,7 @@ export default function AgentRevisionsDrawer({
       title={`${t('revisions.title')} · ${app?.name ?? ''}`}
       open={open}
       onClose={onClose}
-      width={640}
+      size={640}
       destroyOnHidden
     >
       {revisions.length === 0 && !revisionsQuery.isFetching && (

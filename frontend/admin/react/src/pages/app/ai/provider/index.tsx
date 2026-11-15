@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
 import { Button, Tag, Tooltip, App } from 'antd';
@@ -12,7 +12,7 @@ import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListAiProviders, useDeleteAiProvider } from '@/api/hooks/ai-provider';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
-import { TABLE } from '@/config/constants';
+import { TABLE } from '@go-wind/admin-react';
 import AiProviderDrawer from './components/AiProviderDrawer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 

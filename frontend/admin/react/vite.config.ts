@@ -23,6 +23,16 @@ export default defineConfig(({mode}) => {
     return {
         base: '/',
         plugins: createVitePlugins(),
+        // react 宿主里有真实 Vue 运行时：BI 设计器（@go-wind/bi-react 内部以
+        // createApp 桥接 @go-wind/bi-vue 的 Vue canvas）与 json-editor-vue。
+        // Vue 的 esm-bundler 构建要求 bundler 注入这三个特性开关（否则 dev 警告、
+        // prod 无法按开关 tree-shake）。OPTIONS_API 保守开——json-editor-vue 走
+        // Options API；devtools 与 hydration 调试细节仅 prod 生效，按需关掉。
+        define: {
+            __VUE_OPTIONS_API__: 'true',
+            __VUE_PROD_DEVTOOLS__: 'false',
+            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+        },
         optimizeDeps: {
             // editor-react 产物含 monaco 的 `?worker` 导入，依赖优化器处理不了，必须走源码链路。
             // 被 exclude 的子树其传递依赖同样不预构建，其中两类是裸 CJS、浏览器解析不了具名导出：

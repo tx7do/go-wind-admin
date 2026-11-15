@@ -56,7 +56,7 @@ export default function AgentRunsDrawer({
       title={`${t('runs.title')} · ${app?.name ?? ''}`}
       open={open}
       onClose={onClose}
-      width={640}
+      size={640}
       destroyOnHidden
     >
       {runs.length === 0 && !runsQuery.isFetching && (

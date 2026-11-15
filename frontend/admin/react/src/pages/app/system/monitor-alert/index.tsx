@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import TableActions from '@/components/common/TableActions';
 import {
   DrawerForm,
@@ -25,7 +25,7 @@ import type {
   monitor_alertservicev1_UpdateMonitorAlertRuleRequest,
 } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@go-wind/admin-react';
-import { TABLE } from '@/config/constants';
+import { TABLE } from '@go-wind/admin-react';
 import {
   fetchListMonitorAlertRules,
   useCreateMonitorAlertRule,

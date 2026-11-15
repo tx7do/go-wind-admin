@@ -21,33 +21,6 @@ export const ROUTES = {
 export type RouteKey = keyof typeof ROUTES;
 export type RoutePath = (typeof ROUTES)[RouteKey];
 
-// ========== 表格配置 ==========
-export const TABLE = {
-  /** 默认每页条数 */
-  DEFAULT_PAGE_SIZE: 20,
-  /** 每页条数选项 */
-  PAGE_SIZE_OPTIONS: ['10', '20', '50', '100'],
-  /** 最大每页条数 */
-  MAX_PAGE_SIZE: 100,
-  /** 表格组件内部高度 */
-  COMPONENT_HEIGHTS: {
-    /** 工具栏高度 */
-    TOOLBAR: 50,
-    /** 分页器高度 */
-    PAGINATION: 50,
-    /** 表头高度 */
-    HEADER: 50,
-    /** 搜索表单高度（展开时）*/
-    SEARCH_FORM: 80,
-  },
-  /** 表格滚动配置 */
-  SCROLL_CONFIG: {
-    /** 默认最小高度 */
-    MIN_HEIGHT: 300,
-    /** 额外边距 */
-    OFFSET: 16,
-  },
-} as const;
 
 // ========== 布局高度配置 ==========
 export const LAYOUT_HEIGHTS = {

@@ -89,6 +89,14 @@ ele 圆形 SVG 图标钮 / vben 框架 `VbenIconButton` + Maximize/Minimize 图�
   **挂载时快照**，换目标必须换 key 强制重挂载（react 桥接壳尤其注意）。
 - 自动保存基线必须用「首帧 emit 定基线」：`normalizeSchema` 补默认值后画布规范化
   JSON 与服务端原文永不相等，拿原文当基线挡不住回显误保存。
+- **react 宿主内有真实 Vue 运行时**：`@go-wind/bi-react` 内部以 `createApp` 桥接
+  `@go-wind/bi-vue` 的 Vue canvas（vue 是 peer 依赖）。Vue 的 esm-bundler 构建要求
+  bundler 注入三个特性开关，否则 dev 控制台报
+  "Feature flags __VUE_OPTIONS_API__ ... are not explicitly defined"、prod 无法按开关
+  tree-shake——宿主 vite 配置需 `define`：
+  `__VUE_OPTIONS_API__: 'true'`（保守开，json-editor-vue 走 Options API）、
+  `__VUE_PROD_DEVTOOLS__: 'false'`、`__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'`。
+  react 端已配（vite.config.ts），其他宿主接入设计器时同样需要。
 
 ## 已知边界 / 后续
 

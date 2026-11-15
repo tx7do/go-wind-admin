@@ -24,7 +24,6 @@ import './styles/skeleton-force-dark.css';
 import './styles/pro-layout-overrides.css';
 import './styles/pro-components-dark.css';
 import './styles/semantic-text.css';
-import './styles/list-table.css';
 
 import './index.css';
 import App from './app.tsx';

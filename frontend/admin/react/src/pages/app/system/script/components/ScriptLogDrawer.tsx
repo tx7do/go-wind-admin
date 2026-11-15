@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import { Button, Drawer, Popconfirm, Tag, Tooltip, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import type { scriptservicev1_ScriptLog as ScriptLog } from '@/api/generated/adm
 import { PaginationQuery } from '@go-wind/admin-react';
 import { fetchListScriptLogs, usePurgeScriptLogs } from '@/api/hooks/script-log';
 import { useProTableScrollY } from '@go-wind/admin-react';
-import { TABLE } from '@/config/constants.ts';
+import { TABLE } from '@go-wind/admin-react';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 

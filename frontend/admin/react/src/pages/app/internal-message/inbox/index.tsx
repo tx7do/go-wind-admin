@@ -3,7 +3,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import dayjs, { type Dayjs } from 'dayjs';
 import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import { Button, Tag, App } from 'antd';
 import { DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';

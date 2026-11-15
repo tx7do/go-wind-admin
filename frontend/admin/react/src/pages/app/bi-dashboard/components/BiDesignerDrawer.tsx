@@ -164,7 +164,7 @@ const BiDesignerDrawer: React.FC<BiDesignerDrawerProps> = ({
       title={title}
       open={open}
       onClose={guardClose}
-      width="100%"
+      size="100%"
       destroyOnHidden
       styles={{ body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
       footer={

@@ -1,12 +1,13 @@
 import { useRef } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import dayjs, { type Dayjs } from 'dayjs';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import { Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { auditservicev1_ApiAuditLog as ApiAuditLog } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@go-wind/admin-react';
-import { TABLE, METHOD_LIST } from '@/config/constants';
+import { METHOD_LIST } from '@/config/constants';
+import { TABLE } from '@go-wind/admin-react';
 import { fetchListApiAuditLogs } from '@/api/hooks/api-audit-log';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import { searchOptionRender } from '@/components/common/searchSubmitter';

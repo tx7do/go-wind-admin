@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
-import ListTable from '@/components/common/ListTable';
+import { ListTable } from '@go-wind/admin-react';
 import { Button, Popconfirm, Tag, App, Space } from 'antd';
 import {
   EditOutlined,

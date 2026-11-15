@@ -84,7 +84,7 @@ const AiGenerateModal: React.FC<AiGenerateModalProps> = ({ open, onClose, onGene
       onOk={handleGenerate}
       confirmLoading={submitting}
       okText={t('aiGenerate')}
-      maskClosable={false}
+      mask={{ closable: false }}
       destroyOnHidden
       width={560}
     >
