@@ -114,6 +114,36 @@ README 三个语言版本 15/13/13、教程 02/01/04 各 11/10/8。
 
 需要真正保持一致的只有一处：`docs/design-language.md` 是视觉权威值表，如果你改了自己这一端的颜色/圆角，改它，不用管另两端。
 
+## 6. 机制包：下游怎么消费、怎么跟基座升级
+
+选定一端做二开后，登录/令牌轮换/SSE/路由工厂/偏好主题这些**机制**不必从本仓拷贝——它们已抽成 npm 包（go-wind-ui 仓，changesets 自动发版）。**页面与业务永远在宿主 `src/`**，包只管"壳怎么转"。
+
+| 端 | 依赖 | 形态 |
+|---|---|---|
+| react | `@go-wind/admin-react` | 常规构建包（lib + d.ts） |
+| vue-element | `@go-wind/admin-core` + `@go-wind/admin-element` | 常规构建包 |
+| vue-vben | `@go-wind/admin-vben` | **源码形态包**（宿主直接引其 `src/`，免 build） |
+
+### 消费要点（按端）
+
+**react**：`npm i @go-wind/admin-react`，bootstrap 里注入 `configureAdminRuntime({ isDev, apiBaseUrl })`，AuthGateway/路由工厂照 `frontend/admin/react/src/bootstrap.ts` 的注入清单逐项对齐。注意 `optimizeDeps.include` 需含 `'react-dom'`（包 peers 不进预构建，缺了会拿到 raw CJS 白屏）。
+
+**vue-element**：两个包一起装；宿主合并 i18n 资源时必须保留 ns 包装层 `{ core: coreContent, ...host }`（core.json 文件名即 ns 名，平铺会丢 `core.notice.*`）；`setupI18n` 必须在 `setupRouter` **之前**；refresh 注入用纯 API 的 `refreshTokenService`（防 gateway 循环）。全清单见 `frontend/admin/vue-element/src/bootstrap.ts`。
+
+**vue-vben**：源码形态包有三条宿主约定（缺一即断）：
+
+1. `tsconfig.json` paths 把 `@go-wind/admin-vben/src/*` 直指 `node_modules/@go-wind/admin-vben/src/*` 子路径，且 **vue 系依赖物理映射到本仓 node_modules**（防 vue 类型双实例：RouterClassic 私有字段互斥）；
+2. `vite.config.mts` 的 `optimizeDeps.exclude` 含 `@go-wind/admin-vben` 与其别名子树（被排除子树里的裸 CJS 依赖要显式 `include`）；包内代码不能用 `import.meta.glob`（vite 跳过 node_modules，glob 恒空——包内已静态枚举，宿主新增语言时在宿主侧合并）；
+3. 业务热区 `framework/effects/layouts`、`framework/effects/plugins` **不在包里**，留在本仓——下游拿到的是"基座内核 + 热区源码"，改热区不跨仓、改内核走发版。
+
+### 升级基座
+
+```bash
+pnpm update @go-wind/admin-react   # 或 admin-core / admin-element / admin-vben
+```
+
+上游发版节奏：改 go-wind-ui 对应包 → `npx changeset` → push，Release 工作流自动 publish + 打 tag。**包的 dependencies 是 publish 快照**——依赖有改必须发新版，改本地 node_modules 无效。vben 源码包升级后重跑 `typecheck`（paths 直指源码，类型错误当场暴露，这是源码形态的代价也是收益）。
+
 ## 深读
 
 - [tutorial/02 从零跑起来](./tutorial/02-get-it-running.md) —— 三端各自的启动命令与端口

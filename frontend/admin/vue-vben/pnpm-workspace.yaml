@@ -206,4 +206,4 @@ minimumReleaseAgeExclude:
   - '@worm-vue3-print/canvas@1.3.11'
   - '@worm-vue3-print/core@1.3.11'
   - '@go-wind/admin-core@0.1.0'
-  - '@go-wind/admin-vben@0.1.1 || 0.1.2 || 0.1.3'
+  - '@go-wind/admin-vben@0.1.1 || 0.1.2 || 0.1.3 || 0.1.4'
