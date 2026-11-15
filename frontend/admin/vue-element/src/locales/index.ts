@@ -14,11 +14,14 @@ export const localesMap: Record<string, () => Promise<{ default: unknown }>> = O
   [...new Set([...Object.keys(coreLocaleModules), ...Object.keys(hostLocalesMap)])].map((lang) => [
     lang,
     async () => {
-      const core = (await coreLocaleModules[lang]?.()) as { default?: unknown } | undefined;
-      const host = (await hostLocalesMap[lang]?.()) as { default?: unknown } | undefined;
+      // 包 core.json 的内容整体构成「core」命名空间（文件名即 ns 名，与原
+      // loadLocalesMapFromDir 语义一致）——必须包一层 core 键再合并，否则
+      // t('core.notice.*') 会因顶层缺 core 段而整片 raw。
+      const core = (await coreLocaleModules[lang]?.()) as { default?: Record<string, unknown> } | undefined;
+      const host = (await hostLocalesMap[lang]?.()) as { default?: Record<string, unknown> } | undefined;
       return {
         default: {
-          ...((core?.default as Record<string, unknown>) ?? {}),
+          core: (core?.default ?? {}) as Record<string, unknown>,
           ...((host?.default as Record<string, unknown>) ?? {}),
         },
       };
