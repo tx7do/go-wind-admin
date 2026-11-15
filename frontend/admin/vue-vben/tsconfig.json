@@ -11,94 +11,94 @@
         "./generated/*"
       ],
       "@vben-core/shared": [
-        "framework/base/shared/index.ts"
+        "node_modules/@go-wind/admin-vben/src/base/shared/constants/index.ts"
       ],
       "@vben-core/shared/*": [
-        "framework/base/shared/*"
+        "node_modules/@go-wind/admin-vben/src/base/shared/*"
       ],
       "@vben-core/typings": [
-        "framework/base/typings/index.ts"
+        "node_modules/@go-wind/admin-vben/src/base/typings/index.ts"
       ],
       "@vben-core/typings/*": [
-        "framework/base/typings/*"
+        "node_modules/@go-wind/admin-vben/src/base/typings/*"
       ],
       "@vben-core/icons": [
-        "framework/base/icons/index.ts"
+        "node_modules/@go-wind/admin-vben/src/base/icons/index.ts"
       ],
       "@vben-core/icons/*": [
-        "framework/base/icons/*"
+        "node_modules/@go-wind/admin-vben/src/base/icons/*"
       ],
       "@vben-core/design": [
-        "framework/base/design/index.ts"
+        "node_modules/@go-wind/admin-vben/src/base/design/index.ts"
       ],
       "@vben-core/design/*": [
-        "framework/base/design/*"
+        "node_modules/@go-wind/admin-vben/src/base/design/*"
       ],
       "@vben-core/composables": [
-        "framework/core/composables/index.ts"
+        "node_modules/@go-wind/admin-vben/src/core/composables/index.ts"
       ],
       "@vben-core/composables/*": [
-        "framework/core/composables/*"
+        "node_modules/@go-wind/admin-vben/src/core/composables/*"
       ],
       "@vben-core/preferences": [
-        "framework/core/preferences/index.ts"
+        "node_modules/@go-wind/admin-vben/src/core/preferences/index.ts"
       ],
       "@vben-core/preferences/*": [
-        "framework/core/preferences/*"
+        "node_modules/@go-wind/admin-vben/src/core/preferences/*"
       ],
       "@vben-core/shadcn-ui": [
-        "framework/ui-kit/shadcn-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/shadcn-ui/index.ts"
       ],
       "@vben-core/shadcn-ui/*": [
-        "framework/ui-kit/shadcn-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/shadcn-ui/*"
       ],
       "@vben-core/form-ui": [
-        "framework/ui-kit/form-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/form-ui/index.ts"
       ],
       "@vben-core/form-ui/*": [
-        "framework/ui-kit/form-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/form-ui/*"
       ],
       "@vben-core/popup-ui": [
-        "framework/ui-kit/popup-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/popup-ui/index.ts"
       ],
       "@vben-core/popup-ui/*": [
-        "framework/ui-kit/popup-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/popup-ui/*"
       ],
       "@vben-core/menu-ui": [
-        "framework/ui-kit/menu-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/menu-ui/index.ts"
       ],
       "@vben-core/menu-ui/*": [
-        "framework/ui-kit/menu-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/menu-ui/*"
       ],
       "@vben-core/layout-ui": [
-        "framework/ui-kit/layout-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/layout-ui/index.ts"
       ],
       "@vben-core/layout-ui/*": [
-        "framework/ui-kit/layout-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/layout-ui/*"
       ],
       "@vben-core/tabs-ui": [
-        "framework/ui-kit/tabs-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/tabs-ui/index.ts"
       ],
       "@vben-core/tabs-ui/*": [
-        "framework/ui-kit/tabs-ui/*"
+        "node_modules/@go-wind/admin-vben/src/ui-kit/tabs-ui/*"
       ],
       "@vben/access": [
-        "framework/effects/access/index.ts"
+        "node_modules/@go-wind/admin-vben/src/effects/access/index.ts"
       ],
       "@vben/access/*": [
-        "framework/effects/access/*"
+        "node_modules/@go-wind/admin-vben/src/effects/access/*"
       ],
       "@vben/common-ui": [
-        "framework/effects/common-ui/index.ts"
+        "node_modules/@go-wind/admin-vben/src/effects/common-ui/index.ts"
       ],
       "@vben/common-ui/*": [
-        "framework/effects/common-ui/*"
+        "node_modules/@go-wind/admin-vben/src/effects/common-ui/*"
       ],
       "@vben/hooks": [
-        "framework/effects/hooks/index.ts"
+        "node_modules/@go-wind/admin-vben/src/effects/hooks/index.ts"
       ],
       "@vben/hooks/*": [
-        "framework/effects/hooks/*"
+        "node_modules/@go-wind/admin-vben/src/effects/hooks/*"
       ],
       "@vben/layouts": [
         "framework/effects/layouts/index.ts"
@@ -112,59 +112,53 @@
       "@vben/plugins/*": [
         "framework/effects/plugins/*"
       ],
-      "@vben/request": [
-        "framework/effects/request/index.ts"
-      ],
-      "@vben/request/*": [
-        "framework/effects/request/*"
-      ],
       "@vben/constants": [
-        "framework/constants/index.ts"
+        "node_modules/@go-wind/admin-vben/src/constants/index.ts"
       ],
       "@vben/constants/*": [
-        "framework/constants/*"
+        "node_modules/@go-wind/admin-vben/src/constants/*"
       ],
       "@vben/icons": [
-        "framework/icons/index.ts"
+        "node_modules/@go-wind/admin-vben/src/icons/index.ts"
       ],
       "@vben/icons/*": [
-        "framework/icons/*"
+        "node_modules/@go-wind/admin-vben/src/icons/*"
       ],
       "@vben/locales": [
-        "framework/locales/index.ts"
+        "node_modules/@go-wind/admin-vben/src/locales/index.ts"
       ],
       "@vben/locales/*": [
-        "framework/locales/*"
+        "node_modules/@go-wind/admin-vben/src/locales/*"
       ],
       "@vben/preferences": [
-        "framework/preferences/index.ts"
+        "node_modules/@go-wind/admin-vben/src/preferences/index.ts"
       ],
       "@vben/preferences/*": [
-        "framework/preferences/*"
+        "node_modules/@go-wind/admin-vben/src/preferences/*"
       ],
       "@vben/stores": [
-        "framework/stores/index.ts"
+        "node_modules/@go-wind/admin-vben/src/stores/index.ts"
       ],
       "@vben/stores/*": [
-        "framework/stores/*"
+        "node_modules/@go-wind/admin-vben/src/stores/*"
       ],
       "@vben/styles": [
-        "framework/styles/index.ts"
+        "node_modules/@go-wind/admin-vben/src/styles/index.ts"
       ],
       "@vben/styles/*": [
-        "framework/styles/*"
+        "node_modules/@go-wind/admin-vben/src/styles/*"
       ],
       "@vben/types": [
-        "framework/types/index.ts"
+        "node_modules/@go-wind/admin-vben/src/types/index.ts"
       ],
       "@vben/types/*": [
-        "framework/types/*"
+        "node_modules/@go-wind/admin-vben/src/types/*"
       ],
       "@vben/utils": [
-        "framework/utils/index.ts"
+        "node_modules/@go-wind/admin-vben/src/utils/index.ts"
       ],
       "@vben/utils/*": [
-        "framework/utils/*"
+        "node_modules/@go-wind/admin-vben/src/utils/*"
       ]
     }
   },
@@ -174,6 +168,7 @@
     }
   ],
   "include": [
+    "node_modules/@go-wind/admin-vben/src/types/global.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",

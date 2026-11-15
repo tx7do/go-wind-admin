@@ -255,7 +255,8 @@
     "watermark-js-plus": "catalog:",
     "zod": "catalog:",
     "zod-defaults": "catalog:",
-    "@go-wind/admin-core": "0.1.0"
+    "@go-wind/admin-core": "0.1.0",
+    "@go-wind/admin-vben": "0.1.2"
   },
   "imports": {
     "#/*": [

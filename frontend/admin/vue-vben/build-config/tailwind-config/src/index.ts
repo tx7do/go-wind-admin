@@ -23,7 +23,9 @@ packages.forEach((pkg) => {
 });
 
 // 框架层已并入根 framework/ 目录（非 workspace 包），content 需显式补扫
-const frameworkContent = `${path
+// 已抽入 @go-wind/admin-vben 源码包（node_modules link）：原子类随宿主 tailwind 编译
+    const vbenPkgContent = `${path.join(rootDir, 'node_modules/@go-wind/admin-vben').replaceAll('\\','/')}/**/*.{vue,js,ts,jsx,tsx,html}`;
+    const frameworkContent = `${path
   .join(rootDir, 'framework')
   .replaceAll('\\', '/')}/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}`;
 
@@ -123,6 +125,8 @@ const customColors = {
 export default {
   content: [
     './index.html',
+    vbenPkgContent,
+
     frameworkContent,
     ...tailwindPackages.map((item) =>
       path.join(item, 'src/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}'),
