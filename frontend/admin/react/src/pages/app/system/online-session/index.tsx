@@ -12,7 +12,7 @@ import {
   fetchListOnlineSessions,
   useForceLogoutSession,
 } from '@/api/hooks/online-session';
-import TableExportButton from '@/components/common/TableExportButton';
+import { TableExportButton } from '@go-wind/admin-react';
 import { TABLE } from '@go-wind/admin-react';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';

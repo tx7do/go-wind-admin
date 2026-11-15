@@ -10,7 +10,7 @@ import type { auditservicev1_LoginAuditLog as LoginAuditLog } from '@/api/genera
 import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@go-wind/admin-react';
 import { fetchListLoginAuditLogs } from '@/api/hooks/login-audit-log';
-import { exportAuditLogs, type AuditExportFormat } from '@/utils/csv';
+import { exportAuditLogs, type AuditExportFormat } from '@go-wind/admin-react';
 import { exportAuditLogsServer } from '@/api/hooks/audit-export';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';

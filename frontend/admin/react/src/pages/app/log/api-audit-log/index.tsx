@@ -11,7 +11,7 @@ import { PaginationQuery } from '@go-wind/admin-react';
 import { METHOD_LIST } from '@/config/constants';
 import { TABLE } from '@go-wind/admin-react';
 import { fetchListApiAuditLogs } from '@/api/hooks/api-audit-log';
-import { exportAuditLogs, type AuditExportFormat } from '@/utils/csv';
+import { exportAuditLogs, type AuditExportFormat } from '@go-wind/admin-react';
 import { exportAuditLogsServer } from '@/api/hooks/audit-export';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';

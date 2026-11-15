@@ -28,7 +28,8 @@ import { encryptPasswordEnvelope } from '@/utils';
  */
 export async function bootstrap() {
   // 运行时开关注入（包内不读 import.meta.env——lib 构建会把它静态替换成包构建时的值）
-  configureAdminRuntime({ isDev: import.meta.env.DEV });
+  // apiBaseUrl：serverExportFile 拼服务端全量导出地址用（与 RequestClient.init 同源）
+  configureAdminRuntime({ isDev: import.meta.env.DEV, apiBaseUrl: import.meta.env.VITE_API_URL });
   configureQueryClient({ isDev: import.meta.env.DEV });
 
   // 认证数据面注入：机制（token 内存态/刷新调度/MFA 挑战/登出清理）在包内，

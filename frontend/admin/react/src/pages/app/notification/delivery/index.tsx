@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ListTable } from '@go-wind/admin-react';
-import TableExportButton from '@/components/common/TableExportButton';
+import { TableExportButton } from '@go-wind/admin-react';
 import { Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type {
