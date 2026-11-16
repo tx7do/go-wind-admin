@@ -1,0 +1,21 @@
+{
+  "moduleName": "权限",
+  "name": "权限名称",
+  "code": "权限编码",
+  "path": "树路径",
+  "groupId": "分组",
+  "groupName": "分组名称",
+  "menuIds": "关联菜单",
+  "apiIds": "关联API",
+  "menuIdsPlaceholder": "请选择关联菜单",
+  "apiIdsPlaceholder": "请选择关联API",
+  "treeExpandAll": "展开",
+  "treeCollapseAll": "折叠",
+  "selectAll": "全选",
+  "deselectAll": "取选",
+  "description": "权限描述",
+  "button": {
+    "create": "创建权限",
+    "syncPermissions": "同步权限"
+  }
+}

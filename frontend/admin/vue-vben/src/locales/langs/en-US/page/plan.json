@@ -1,0 +1,17 @@
+{
+  "moduleName": "Plan",
+  "name": "Name",
+  "version": "Version",
+  "expiryPolicy": "Expiry Policy",
+  "dataRetentionDays": "Data Retention Days",
+  "planList": "Plan List",
+  "planQuotaList": "Plan Quota List",
+  "planQuota": "Plan Quota",
+  "quotaType": "Quota Type",
+  "quotaValue": "Quota Value",
+  "plan": "Associated Plan",
+  "moduleWhitelist": "Module Whitelist",
+  "button": {
+    "create": "Create"
+  }
+}

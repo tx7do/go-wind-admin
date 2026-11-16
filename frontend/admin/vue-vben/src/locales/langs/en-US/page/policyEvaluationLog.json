@@ -1,0 +1,23 @@
+{
+  "moduleName": "Policy Evaluation Logs",
+  "createdAt": "Logged At",
+  "result": "Result",
+  "policyId": "Policy ID",
+  "permissionId": "Permission ID",
+  "userId": "User ID",
+  "membershipId": "Membership ID",
+  "requestMethod": "Method",
+  "requestPath": "Request Path",
+  "tenantId": "Tenant ID",
+  "ipAddress": "IP Address",
+  "traceId": "Trace ID",
+  "effectDetails": "Effect Details",
+  "evaluationContext": "Evaluation Context",
+  "scopeSql": "Generated SQL",
+  "logHash": "Log Hash",
+  "signature": "Signature",
+  "sectionBasic": "Basic Info",
+  "sectionOther": "Other Info",
+  "resultPass": "Pass",
+  "resultDenied": "Denied"
+}

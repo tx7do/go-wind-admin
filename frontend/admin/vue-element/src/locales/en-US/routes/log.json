@@ -1,0 +1,10 @@
+{
+  "moduleName": "Audit Logs",
+  "loginAuditLog": "Login Logs",
+  "apiAuditLog": "API Logs",
+  "operationAuditLog": "Operation Logs",
+  "dataAccessAuditLog": "Data Logs",
+  "permissionAuditLog": "Permission Logs",
+  "policyEvaluationLog": "Policy Evaluation Logs",
+  "redisCacheMonitor": "Redis Cache Monitor"
+}

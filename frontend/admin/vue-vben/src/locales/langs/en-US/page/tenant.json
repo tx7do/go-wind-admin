@@ -1,0 +1,42 @@
+{
+  "moduleName": "Tenant",
+  "name": "Tenant Name",
+  "code": "Tenant Code",
+  "type": "Tenant Type",
+  "auditStatus": "Audit Status",
+  "adminSetting": "Admin Account Settings",
+  "lastLoginAt": "Last Login At",
+  "lastLoginIp": "Last Login IP",
+  "logoUrl": "Logo URL",
+  "industry": "Industry",
+  "subscriptionPlan": "Subscription Plan",
+  "expiredAt": "Expiration Date",
+  "memberCount": "Member Count",
+  "subscriptionAt": "Subscription Date",
+  "unsubscribeAt": "Unsubscribe Date",
+  "adminUserName": "Admin Username",
+  "adminPassword": "Initial Password",
+  "adminPasswordConfirm": "Confirm Password",
+  "adminMobile": "Admin Mobile",
+  "adminEmail": "Admin Email",
+  "usageSection": "Usage & Quotas",
+  "usageUserCount": "Current User Count",
+  "usageStorage": "Storage Used",
+  "usageApiCalls": "API Call Count",
+  "usagePlan": "Subscription Plan",
+  "usageNoPlan": "No plan associated",
+  "cleanupData": "Cleanup Data",
+  "cleanupConfirmTitle": "Confirm Tenant Data Cleanup",
+  "cleanupConfirmDesc": "This will hard-delete all business data for this tenant, keeping the tenant record but setting its status to OFF. This is irreversible. Continue?",
+  "cleanupSuccess": "Tenant data cleaned up",
+  "cleanupFailed": "Cleanup failed",
+  "button": {
+    "create": "Create Tenant"
+  },
+  "notification": {
+    "tenant_code_exists": "Tenant code already exists, please change and try again!",
+    "user_username_exists": "Admin username already exists, please change and try again!"
+  },
+  "quotaType": "Quota Type",
+  "tenant_code_exists": "Tenant code already exists"
+}

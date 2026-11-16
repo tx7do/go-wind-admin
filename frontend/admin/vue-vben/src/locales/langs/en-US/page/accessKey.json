@@ -1,0 +1,22 @@
+{
+  "moduleName": "credential",
+  "name": "Credential Name",
+  "status": "Status",
+  "statusOn": "Enabled",
+  "statusOff": "Disabled",
+  "expiresAt": "Expires At",
+  "expiresAtHint": "Leave empty for no expiry",
+  "lastUsedAt": "Last Used",
+  "secretDialogTitle": "Save your Secret now",
+  "secretDialogHint": "The secret is shown only once; the server stores only its SHA-256 digest.",
+  "secretCopied": "Secret copied",
+  "accessKeyLabel": "Access Key",
+  "create": "New Credential",
+  "deleteConfirm": "Delete this {moduleName}? Machine token exchange stops immediately.",
+  "lastUsed": "Last Used",
+  "createdAt": "Created At",
+  "resetSecret": "Reset Secret",
+  "resetConfirm": "Generate a new secret? The old secret stops working immediately; issued tokens stay valid until expiry.",
+  "resetSuccess": "Secret reset",
+  "resetFailed": "Reset failed"
+}

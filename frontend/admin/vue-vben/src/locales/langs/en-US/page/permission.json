@@ -1,0 +1,21 @@
+{
+  "moduleName": "Permission",
+  "name": "Permission Name",
+  "code": "Permission Code",
+  "path": "Tree Path",
+  "groupId": "Group",
+  "groupName": "Group Name",
+  "menuIds": "Associated Menus",
+  "apiIds": "Associated APIs",
+  "menuIdsPlaceholder": "Select associated menus",
+  "apiIdsPlaceholder": "Select associated APIs",
+  "treeExpandAll": "Expand",
+  "treeCollapseAll": "Collapse",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect",
+  "description": "Permission Description",
+  "button": {
+    "create": "Create Permission",
+    "syncPermissions": "Sync Permissions"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "moduleName": "AI Assistant",
+  "agents": "Agent Apps",
+  "chat": "AI Assistant",
+  "providers": "AI Providers",
+  "knowledge": "Knowledge Bases",
+  "query": "AI Query",
+  "usage": "Usage"
+}

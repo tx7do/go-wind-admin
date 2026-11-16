@@ -1,0 +1,20 @@
+{
+  "moduleName": "Redis缓存监控",
+  "dbSizeCardTitle": "键总数",
+  "dbSize": "键总数(DBSIZE)",
+  "infoCardTitle": "INFO 段",
+  "noInfo": "暂无 INFO 数据",
+  "collapse": "收起",
+  "expand": "展开",
+  "noEntries": "该段无条目",
+  "collapsed": "已收起，点击标题展开",
+  "slowlogCardTitle": "慢日志",
+  "noSlowlog": "暂无慢日志",
+  "slowlogId": "日志ID",
+  "createdAt": "发生时间",
+  "durationUsec": "耗时(μs)",
+  "clientAddr": "客户端地址",
+  "clientName": "客户端名称",
+  "args": "命令参数",
+  "disclaimer": "本页为只读监控视图，所有数据来自 Redis INFO/DBSIZE/SLOWLOG，不执行任何写操作。"
+}

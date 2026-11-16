@@ -1,0 +1,15 @@
+{
+  "moduleName": "System Management",
+  "dict": "Dictionary Management",
+  "file": "File Management",
+  "task": "Task Management",
+  "loginPolicy": "Login Policy",
+  "language": "Language Management",
+  "onlineSessions": "Online Users",
+  "serverMonitor": "Server Monitor",
+  "scripts": "Scripts",
+  "config": "Config Management",
+  "printTemplates": "Print Templates",
+  "accessKeys": "OpenAPI Credentials",
+  "monitorAlerts": "Monitor Alerts"
+}

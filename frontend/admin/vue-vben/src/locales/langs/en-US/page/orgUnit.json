@@ -1,0 +1,24 @@
+{
+  "moduleName": "Organization List",
+  "name": "Organization Name",
+  "code": "Unique Code",
+  "parentId": "Parent Organization",
+  "type": "Organization Type",
+  "isLegalEntity": "Is Legal Entity",
+  "businessScope": "Business Scope",
+  "registrationNumber": "Registration Number",
+  "taxId": "Tax ID",
+  "address": "Address",
+  "phone": "Phone",
+  "email": "Contact Email",
+  "timezone": "Timezone",
+  "country": "Country Code",
+  "leaderId": "Leader ID",
+  "leaderName": "Leader Name",
+  "contactUserId": "Contact User ID",
+  "contactUserName": "Contact User Name",
+  "description": "Description",
+  "button": {
+    "create": "Create Organization"
+  }
+}

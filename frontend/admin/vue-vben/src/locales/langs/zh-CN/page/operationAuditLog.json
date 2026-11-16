@@ -1,0 +1,23 @@
+{
+  "moduleName": "操作日志",
+  "createdAt": "日志时间",
+  "username": "操作者名",
+  "resourceType": "资源类型",
+  "resourceId": "资源ID",
+  "action": "动作",
+  "beforeData": "变更前数据",
+  "afterData": "变更后数据",
+  "sensitiveLevel": "敏感等级",
+  "requestId": "请求ID",
+  "success": "操作状态",
+  "ipAddress": "IP地址",
+  "geoLocation": "地理位置",
+  "failureReason": "失败原因",
+  "userId": "操作者ID",
+  "tenantName": "租户名称",
+  "traceId": "追踪ID",
+  "logHash": "日志哈希",
+  "signature": "数字签名",
+  "sectionBasic": "基本信息",
+  "sectionOther": "其他信息"
+}

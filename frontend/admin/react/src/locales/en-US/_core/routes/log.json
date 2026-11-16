@@ -1,0 +1,10 @@
+{
+  "api-audit-log": "API Logs",
+  "data-access-audit-log": "Data Logs",
+  "log": "Audit Logs",
+  "login-audit-log": "Login Logs",
+  "operation-audit-log": "Operation Logs",
+  "permission-audit-log": "Permission Logs",
+  "policy-evaluation-log": "Policy Evaluation Logs",
+  "redis-cache-monitor": "Redis Cache Monitor"
+}

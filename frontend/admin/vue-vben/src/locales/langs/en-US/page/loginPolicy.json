@@ -1,0 +1,11 @@
+{
+  "moduleName": "Login Policy",
+  "targetId": "Target User ID",
+  "type": "Restriction Type",
+  "method": "Restriction Method",
+  "value": "Restriction Value",
+  "reason": "Restriction Reason",
+  "button": {
+    "create": "Create Policy"
+  }
+}

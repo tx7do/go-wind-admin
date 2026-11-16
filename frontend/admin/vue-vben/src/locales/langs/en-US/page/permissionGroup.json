@@ -1,0 +1,10 @@
+{
+  "moduleName": "Permission Groups",
+  "name": "Group Name",
+  "module": "Module",
+  "parentId": "Parent Group",
+  "button": {
+    "create": "Create Group"
+  },
+  "moduleOther": "Other"
+}

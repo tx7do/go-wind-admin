@@ -1,0 +1,23 @@
+{
+  "moduleName": "Operation Logs",
+  "createdAt": "Logged At",
+  "username": "Operator",
+  "resourceType": "Resource Type",
+  "resourceId": "Resource ID",
+  "action": "Action",
+  "beforeData": "Before",
+  "afterData": "After",
+  "sensitiveLevel": "Sensitivity Level",
+  "requestId": "Request ID",
+  "success": "Status",
+  "ipAddress": "IP Address",
+  "geoLocation": "Geolocation",
+  "failureReason": "Failure Reason",
+  "userId": "User ID",
+  "tenantName": "Tenant Name",
+  "traceId": "Trace ID",
+  "logHash": "Log Hash",
+  "signature": "Signature",
+  "sectionBasic": "Basic Info",
+  "sectionOther": "Other Info"
+}

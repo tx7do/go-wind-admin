@@ -1,0 +1,18 @@
+{
+  "moduleName": "文件",
+  "fileName": "原始文件名",
+  "saveFileName": "存储名",
+  "bucketName": "存储桶",
+  "fileDirectory": "目录",
+  "provider": "OSS提供商",
+  "fileGuid": "GUID",
+  "extension": "文件扩展名",
+  "size": "大小",
+  "createdBy": "上传人",
+  "createdAt": "上传时间",
+  "button": {
+    "create": "创建文件",
+    "upload": "上传文件",
+    "download": "下载文件"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "serverFull": "服务端全量 (XLSX)",
+  "serverSuccess": "已开始下载",
+  "serverFailed": "服务端导出失败"
+}

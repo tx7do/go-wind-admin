@@ -1,0 +1,22 @@
+{
+  "moduleName": "Permission Logs",
+  "createdAt": "Logged At",
+  "username": "Operator",
+  "requestId": "Request ID",
+  "ipAddress": "IP Address",
+  "geoLocation": "Geolocation",
+  "operatorId": "Operator ID",
+  "operatorName": "Operator Username",
+  "targetType": "Target Type",
+  "targetId": "Target ID",
+  "targetName": "Target Name",
+  "action": "Action",
+  "reason": "Change Reason",
+  "newValue": "After",
+  "oldValue": "Before",
+  "tenantId": "Tenant ID",
+  "logHash": "Log Hash",
+  "signature": "Signature",
+  "sectionBasic": "Basic Info",
+  "sectionOther": "Other Info"
+}

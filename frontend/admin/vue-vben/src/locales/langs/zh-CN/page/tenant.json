@@ -1,0 +1,42 @@
+{
+  "moduleName": "租户",
+  "name": "租户名称",
+  "code": "租户编码",
+  "type": "租户类型",
+  "auditStatus": "审核状态",
+  "adminSetting": "管理员账号配置",
+  "lastLoginAt": "最后登录时间",
+  "lastLoginIp": "最后登录IP",
+  "logoUrl": "LOGO地址",
+  "industry": "所属行业",
+  "subscriptionPlan": "订阅套餐",
+  "expiredAt": "到期时间",
+  "memberCount": "成员数量",
+  "subscriptionAt": "订阅时间",
+  "unsubscribeAt": "退订时间",
+  "adminUserName": "管理员用户名",
+  "adminPassword": "初始密码",
+  "adminPasswordConfirm": "确认密码",
+  "adminMobile": "手机号",
+  "adminEmail": "电子邮箱",
+  "usageSection": "用量与配额",
+  "usageUserCount": "当前用户数",
+  "usageStorage": "存储占用",
+  "usageApiCalls": "API 调用次数",
+  "usagePlan": "订阅套餐",
+  "usageNoPlan": "未关联套餐",
+  "cleanupData": "清理数据",
+  "cleanupConfirmTitle": "确认清理租户数据",
+  "cleanupConfirmDesc": "此操作将硬删该租户的全部业务数据，保留租户记录并将状态改为 OFF，不可恢复。确定继续吗？",
+  "cleanupSuccess": "租户数据已清理",
+  "cleanupFailed": "清理失败",
+  "button": {
+    "create": "创建租户"
+  },
+  "notification": {
+    "tenant_code_exists": "租户编码已存在，请更换后重新创建！",
+    "user_username_exists": "管理员用户名已存在，请更换后重新创建！"
+  },
+  "quotaType": "配额类型",
+  "tenant_code_exists": "租户编码已存在"
+}

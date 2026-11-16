@@ -1,0 +1,9 @@
+{
+  "moduleName": "Personal Center",
+  "profile": "Personal Information",
+  "settings": "Profile Center",
+  "security": "Security Settings",
+  "customize": "Interface Customization",
+  "notification": "Notifications",
+  "internalMessage": "Inbox"
+}

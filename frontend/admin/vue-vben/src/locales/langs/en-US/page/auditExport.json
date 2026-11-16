@@ -1,0 +1,5 @@
+{
+  "serverFull": "Server-side full (XLSX)",
+  "serverSuccess": "Download started",
+  "serverFailed": "Server-side export failed"
+}

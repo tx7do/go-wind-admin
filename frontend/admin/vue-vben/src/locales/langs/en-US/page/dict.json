@@ -1,0 +1,18 @@
+{
+  "moduleName": "Dictionary",
+  "dictType": "Dictionary Type",
+  "dictEntry": "Dictionary Entry",
+  "dictTypeList": "Dictionary Type List",
+  "dictEntryList": "Dictionary Entry List",
+  "typeCode": "Code",
+  "typeName": "Type Name",
+  "entryLabel": "Label",
+  "entryValue": "Value",
+  "numericValue": "Numeric Value",
+  "typeId": "Dictionary Type",
+  "languageCode": "Language Code",
+  "languageName": "Language Name",
+  "button": {
+    "create": "Create"
+  }
+}

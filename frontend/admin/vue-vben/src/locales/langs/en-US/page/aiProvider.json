@@ -1,0 +1,27 @@
+{
+  "moduleName": "AI provider",
+  "name": "Name",
+  "modelType": "Deployment",
+  "modelTypeLocal": "Local",
+  "modelTypeCloud": "Cloud",
+  "modelName": "Model name",
+  "baseUrl": "Base URL",
+  "organization": "Organization",
+  "apiKey": "API Key",
+  "apiKeyKeepExisting": "Leave empty to keep the saved key",
+  "localHost": "Host",
+  "localPort": "Port",
+  "timeoutSeconds": "Connect timeout (s)",
+  "systemPrompt": "System prompt",
+  "isDefault": "Default provider",
+  "isEnabled": "Enabled",
+  "endpoint": "Endpoint",
+  "remark": "Remark",
+  "apiKeyHintLabel": "Current key",
+  "notSet": "Not set",
+  "enabledOn": "Enabled",
+  "enabledOff": "Disabled",
+  "button": {
+    "create": "Create provider"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "moduleName": "消息分类",
+  "name": "分类名称",
+  "code": "分类编码",
+  "parentId": "父节点",
+  "button": {
+    "create": "创建分类"
+  }
+}

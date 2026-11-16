@@ -1,0 +1,9 @@
+{
+  "title": "SSO 回调",
+  "failed": "SSO 登录失败",
+  "backToLogin": "返回登录页",
+  "redirecting": "SSO 登录中，即将跳转…",
+  "missingParams": "回调缺少 code 或 state 参数",
+  "button": "使用企业账号登录",
+  "or": "或"
+}

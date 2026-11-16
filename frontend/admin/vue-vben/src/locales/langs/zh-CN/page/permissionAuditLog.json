@@ -1,0 +1,22 @@
+{
+  "moduleName": "权限变更日志",
+  "createdAt": "日志时间",
+  "username": "操作者名",
+  "requestId": "请求ID",
+  "ipAddress": "IP地址",
+  "geoLocation": "地理位置",
+  "operatorId": "操作者ID",
+  "operatorName": "操作者用户名",
+  "targetType": "目标类型",
+  "targetId": "目标ID",
+  "targetName": "目标名称",
+  "action": "动作",
+  "reason": "变更原因",
+  "newValue": "变更后数据",
+  "oldValue": "变更前数据",
+  "tenantId": "租户ID",
+  "logHash": "日志哈希",
+  "signature": "数字签名",
+  "sectionBasic": "基本信息",
+  "sectionOther": "其他信息"
+}

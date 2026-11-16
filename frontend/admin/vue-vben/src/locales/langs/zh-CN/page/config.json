@@ -1,0 +1,13 @@
+{
+  "moduleName": "参数",
+  "name": "参数名称",
+  "key": "参数键名",
+  "value": "参数键值",
+  "valueType": "值类型",
+  "isBuiltIn": "内置参数",
+  "builtInTag": "内置",
+  "customTag": "自定义",
+  "button": {
+    "create": "新建参数"
+  }
+}

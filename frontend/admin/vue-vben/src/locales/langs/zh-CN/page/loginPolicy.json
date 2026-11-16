@@ -1,0 +1,11 @@
+{
+  "moduleName": "登录策略",
+  "targetId": "目标用户ID",
+  "type": "限制类型",
+  "method": "限制方式",
+  "value": "限制值",
+  "reason": "限制原因",
+  "button": {
+    "create": "创建限制"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "moduleName": "Menu",
+  "name": "Title",
+  "type": "Type",
+  "icon": "Icon",
+  "path": "Route",
+  "component": "Component Path",
+  "show": "Show",
+  "isExt": "External Link",
+  "keepAlive": "Keep Alive",
+  "affixTab": "Affix Tab",
+  "hideInMenu": "Hide in Menu",
+  "hideChildrenInMenu": "Hide Child Menus",
+  "hideInTab": "Hide in Tab Bar",
+  "hideInBreadcrumb": "Hide in Breadcrumb",
+  "parentId": "Parent Menu",
+  "authority": "Permission Identifier",
+  "order": "Order",
+  "title": "Menu Title",
+  "advancedSettings": "Advanced Settings",
+  "tips": {
+    "authority": "Multiple permissions separated by commas, e.g.: sys:user:add,sys:user:edit"
+  },
+  "button": {
+    "create": "Create Menu",
+    "sync": "Sync Menus"
+  },
+  "text": {
+    "do_you_want_sync_menus": "Menus from the current frontend routes will be merged into the server: missing menus are added and existing ones updated in place (menu IDs and role-menu assignments are preserved); extra menus on the server are kept. Continue?"
+  },
+  "system": {
+    "accessKeys": "OpenAPI Credentials"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "moduleName": "系统管理",
+  "dict": "字典管理",
+  "file": "文件管理",
+  "task": "任务管理",
+  "loginPolicy": "登录策略",
+  "language": "语言管理",
+  "onlineSessions": "在线用户",
+  "serverMonitor": "服务监控",
+  "scripts": "脚本管理",
+  "config": "参数管理",
+  "printTemplates": "打印模板",
+  "accessKeys": "OpenAPI 凭证",
+  "monitorAlerts": "监控告警"
+}

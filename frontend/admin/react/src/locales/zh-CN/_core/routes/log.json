@@ -1,0 +1,10 @@
+{
+  "api-audit-log": "API日志",
+  "data-access-audit-log": "数据日志",
+  "log": "日志审计",
+  "login-audit-log": "登录日志",
+  "operation-audit-log": "操作日志",
+  "permission-audit-log": "权限日志",
+  "policy-evaluation-log": "策略评估日志",
+  "redis-cache-monitor": "Redis缓存监控"
+}

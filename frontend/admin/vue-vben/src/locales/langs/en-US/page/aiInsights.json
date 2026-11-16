@@ -1,0 +1,19 @@
+{
+  "title": "AI Security & Anomaly Insights",
+  "subtitle": "24h audit trail · behavior pattern mining",
+  "scan": "Scan now",
+  "rescan": "Rescan",
+  "empty": "Click \"Scan now\" and AI will mine the last 24h of audit details for anomalies.",
+  "trend7d": "7-Day Login Trend",
+  "failRate": "Login Failure Rate",
+  "points": "AI Insights",
+  "assessment": "AI Assessment",
+  "todayLoginCount": "Today's Logins",
+  "todayOperationCount": "Today's Operations",
+  "userCount": "Total Users",
+  "roleCount": "Total Roles",
+  "bruteForceTitle": "Possible credential guessing: {count} failed logins for account {username} in 24h",
+  "nightOpsTitle": "Off-hours activity: account {username} ran {count} operations between 00:00-06:00 local time",
+  "failedOpsTitle": "Clustered failures: account {username} had {count} failed operations ({total} total) in 24h",
+  "sensitiveOpsTitle": "{count} sensitive operations detected (delete/export/authorization changes)"
+}

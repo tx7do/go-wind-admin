@@ -1,0 +1,12 @@
+{
+  "moduleName": "Language",
+  "languageName": "Language Name",
+  "languageCode": "Language Code",
+  "nativeName": "Native Name",
+  "isEnabled": "Enabled",
+  "isDefault": "Default",
+  "button": {
+    "create": "Create Language",
+    "update": "Update Language"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "moduleName": "Message",
+  "title": "Title",
+  "content": "Message Content",
+  "type": "Message Type",
+  "status": "Status",
+  "categoryName": "Category",
+  "senderName": "Sender",
+  "senderSystem": "System",
+  "categoryId": "Category",
+  "createdAt": "Received At",
+  "readAt": "Read At",
+  "detail": "Message Detail",
+  "button": {
+    "create": "Create Message",
+    "markAsRead": "Mark as Read",
+    "markAllRead": "Mark All Read"
+  },
+  "drawer": {
+    "create": "Create Message",
+    "update": "Update Message"
+  },
+  "sendScope": "Send To",
+  "sendScopeAll": "All Users",
+  "sendScopeUsers": "Selected Users",
+  "targetUsers": "Recipients"
+}

@@ -1,0 +1,21 @@
+{
+  "moduleName": "知识库",
+  "name": "名称",
+  "description": "描述",
+  "provider": "向量化提供商",
+  "embeddingModel": "Embedding 模型",
+  "docCount": "文档数",
+  "docs": "文档",
+  "docName": "文档名称",
+  "docContentPlaceholder": "粘贴文档纯文本内容（切片后向量化入库）",
+  "docStatus": "状态",
+  "docChunks": "切片数",
+  "noDocs": "暂无文档",
+  "upload": "上传入库",
+  "deleteDocConfirm": "确定删除该文档吗？切片将一并删除。",
+  "action": "操作",
+  "uploadSuccess": "入库成功，共 {chunks} 个切片",
+  "button": {
+    "create": "创建知识库"
+  }
+}

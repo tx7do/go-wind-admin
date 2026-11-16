@@ -1,0 +1,11 @@
+{
+  "monthTokens": "本月已用 tokens",
+  "monthCalls": "本月调用次数",
+  "quota": "配额用量",
+  "model": "模型",
+  "promptTokens": "输入 tokens",
+  "completionTokens": "输出 tokens",
+  "totalTokens": "总 tokens",
+  "duration": "耗时",
+  "time": "调用时间"
+}

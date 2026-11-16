@@ -1,0 +1,7 @@
+{
+  "moduleName": "Notifications",
+  "channels": "Notification Channels",
+  "rules": "Notification Routing Rules",
+  "deliveries": "Notification Deliveries",
+  "templates": "Templates"
+}

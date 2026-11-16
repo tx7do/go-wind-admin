@@ -6,7 +6,8 @@
 import { useAuthStore } from '@go-wind/admin-react';
 import { type authenticationservicev1_LoginRequest } from '@/api/generated/admin/service/v1';
 import { useUserStore } from '@go-wind/admin-react';
-import { fetchUserProfile, fetchGenerateCaptcha } from '@/api/hooks';
+import { fetchGenerateCaptcha } from '@/api/hooks/auth';
+import { fetchUserProfile } from '@/api/hooks/user-profile';
 import { fetchMyPermissionCode } from '@/api/hooks/admin-portal';
 
 /**

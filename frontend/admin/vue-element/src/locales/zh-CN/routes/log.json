@@ -1,0 +1,10 @@
+{
+  "moduleName": "日志审计",
+  "loginAuditLog": "登录日志",
+  "apiAuditLog": "API日志",
+  "operationAuditLog": "操作日志",
+  "dataAccessAuditLog": "数据日志",
+  "permissionAuditLog": "权限日志",
+  "policyEvaluationLog": "策略评估日志",
+  "redisCacheMonitor": "Redis缓存监控"
+}

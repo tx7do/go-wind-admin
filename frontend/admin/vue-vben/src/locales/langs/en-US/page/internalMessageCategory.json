@@ -1,0 +1,9 @@
+{
+  "moduleName": "Message Categories",
+  "name": "Category Name",
+  "code": "Category Code",
+  "parentId": "Parent",
+  "button": {
+    "create": "Create Category"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "moduleName": "权限分组",
+  "name": "分组名称",
+  "module": "业务模块",
+  "parentId": "上级分组",
+  "button": {
+    "create": "创建分组"
+  },
+  "moduleOther": "其他"
+}

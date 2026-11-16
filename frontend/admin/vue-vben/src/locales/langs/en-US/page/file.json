@@ -1,0 +1,18 @@
+{
+  "moduleName": "File",
+  "fileName": "Original Filename",
+  "saveFileName": "Saved Filename",
+  "bucketName": "Bucket",
+  "fileDirectory": "Directory",
+  "provider": "OSS Provider",
+  "fileGuid": "GUID",
+  "extension": "Extension",
+  "size": "Size",
+  "createdBy": "Uploaded By",
+  "createdAt": "Uploaded At",
+  "button": {
+    "create": "Create File",
+    "upload": "Upload File",
+    "download": "Download File"
+  }
+}

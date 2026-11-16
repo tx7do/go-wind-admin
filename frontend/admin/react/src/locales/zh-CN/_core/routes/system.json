@@ -1,0 +1,15 @@
+{
+  "accessKeys": "OpenAPI 凭证",
+  "configs": "参数管理",
+  "dict": "字典管理",
+  "files": "文件管理",
+  "languages": "语言管理",
+  "login-policies": "登录策略",
+  "monitor-alerts": "监控告警",
+  "online-sessions": "在线用户",
+  "print-templates": "打印模板",
+  "scripts": "脚本管理",
+  "server-monitor": "服务监控",
+  "system": "系统管理",
+  "tasks": "任务管理"
+}

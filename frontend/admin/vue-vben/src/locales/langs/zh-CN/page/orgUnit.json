@@ -1,0 +1,24 @@
+{
+  "moduleName": "组织列表",
+  "name": "组织名称",
+  "code": "唯一编码",
+  "parentId": "上级组织",
+  "type": "组织类型",
+  "isLegalEntity": "是否为法定主体",
+  "businessScope": "核心业务范围",
+  "registrationNumber": "注册号",
+  "taxId": "税号",
+  "address": "详细地址",
+  "phone": "联系电话",
+  "email": "联系邮箱",
+  "timezone": "时区",
+  "country": "地区代码",
+  "leaderId": "负责人ID",
+  "leaderName": "负责人名称",
+  "contactUserId": "业务联系人ID",
+  "contactUserName": "业务联系人名称",
+  "description": "组织描述",
+  "button": {
+    "create": "创建组织"
+  }
+}

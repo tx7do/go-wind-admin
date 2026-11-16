@@ -24,6 +24,42 @@ const localesMap = loadLocalesMapFromDir(
   /\.\/langs\/([^/]+)\/(.*)\.json$/,
   modules,
 );
+
+/**
+ * loadLocalesMapFromDir 把「路径段（含 /）」当单个顶层键（如 "menu/system"），
+ * 拆分到子目录的语言包（menu/<组>.json、page/<模块>.json）需还原成嵌套树并深合并，
+ * $t('menu.system.*')、$t('page.<模块>.*') 才能解析。新增模块只加文件，不改共享大 JSON。
+ */
+function denormalizeSlashKeys(
+  messages: Record<string, any>,
+): Record<string, any> {
+  const mergeValue = (target: Record<string, any>, key: string, value: any) => {
+    const existing = target[key];
+    if (
+      existing &&
+      typeof existing === 'object' &&
+      value &&
+      typeof value === 'object'
+    ) {
+      for (const [k, v] of Object.entries(value)) mergeValue(existing, k, v);
+    } else {
+      target[key] = value;
+    }
+  };
+  const tree: Record<string, any> = {};
+  for (const [key, value] of Object.entries(messages)) {
+    const segs = key.split('/');
+    let node = tree;
+    for (let i = 0; i < segs.length - 1; i++) {
+      const seg = segs[i]!;
+      if (!(node[seg] instanceof Object)) node[seg] = {};
+      node = node[seg];
+    }
+    mergeValue(node, segs[segs.length - 1]!, value);
+  }
+  return tree;
+}
+
 /**
  * 加载应用特有的语言包
  * 这里也可以改造为从服务端获取翻译数据
@@ -34,7 +70,10 @@ async function loadMessages(lang: SupportedLanguagesType) {
     localesMap[lang]?.(),
     loadThirdPartyMessage(lang),
   ]);
-  return appLocaleMessages?.default;
+  return denormalizeSlashKeys((appLocaleMessages?.default ?? {}) as Record<
+    string,
+    any
+  >);
 }
 
 /**

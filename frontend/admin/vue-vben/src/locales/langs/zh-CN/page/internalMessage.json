@@ -1,0 +1,27 @@
+{
+  "moduleName": "站内信",
+  "title": "消息标题",
+  "content": "消息内容",
+  "type": "消息类型",
+  "status": "状态",
+  "categoryName": "消息分类",
+  "senderName": "发送人",
+  "senderSystem": "系统",
+  "categoryId": "消息分类",
+  "createdAt": "接收时间",
+  "readAt": "已读时间",
+  "detail": "消息详情",
+  "button": {
+    "create": "创建消息",
+    "markAsRead": "标记为已读",
+    "markAllRead": "全部已读"
+  },
+  "drawer": {
+    "create": "创建消息",
+    "update": "更新消息"
+  },
+  "sendScope": "发送范围",
+  "sendScopeAll": "全员",
+  "sendScopeUsers": "指定用户",
+  "targetUsers": "接收用户"
+}

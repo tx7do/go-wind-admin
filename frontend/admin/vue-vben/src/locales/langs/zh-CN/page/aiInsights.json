@@ -1,0 +1,19 @@
+{
+  "title": "AI 安全与异常洞察",
+  "subtitle": "近 24 小时审计明细 · 行为模式挖掘",
+  "scan": "开始扫描",
+  "rescan": "重新扫描",
+  "empty": "点击「开始扫描」，AI 将挖掘近 24 小时审计明细中的异常模式。",
+  "trend7d": "近 7 天登录趋势",
+  "failRate": "登录失败率",
+  "points": "AI 洞察",
+  "assessment": "AI 总体评估",
+  "todayLoginCount": "今日登录",
+  "todayOperationCount": "今日操作",
+  "userCount": "用户总数",
+  "roleCount": "角色总数",
+  "bruteForceTitle": "疑似口令尝试：账号 {username} 24h 内登录失败 {count} 次",
+  "nightOpsTitle": "非常规时段操作：账号 {username} 在本地 0-6 点执行了 {count} 次操作",
+  "failedOpsTitle": "操作失败集中：账号 {username} 24h 内失败操作 {count} 次（共 {total} 次）",
+  "sensitiveOpsTitle": "存在 {count} 条敏感操作（删除/导出/授权变更）"
+}

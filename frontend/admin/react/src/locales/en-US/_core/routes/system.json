@@ -1,0 +1,15 @@
+{
+  "accessKeys": "OpenAPI Credentials",
+  "configs": "Config Management",
+  "dict": "Dictionary Management",
+  "files": "File Management",
+  "languages": "Language Management",
+  "login-policies": "Login Policy",
+  "monitor-alerts": "Monitor Alerts",
+  "online-sessions": "Online Users",
+  "print-templates": "Print Templates",
+  "scripts": "Scripts",
+  "server-monitor": "Server Monitor",
+  "system": "System Management",
+  "tasks": "Task Management"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "SSO Callback",
+  "failed": "SSO login failed",
+  "backToLogin": "Back to login",
+  "redirecting": "Signing in with SSO…",
+  "missingParams": "Missing code or state parameter",
+  "button": "Sign in with SSO",
+  "or": "or"
+}

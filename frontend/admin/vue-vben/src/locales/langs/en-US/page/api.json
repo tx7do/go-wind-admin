@@ -1,0 +1,12 @@
+{
+  "moduleName": "API Resources",
+  "path": "Path",
+  "method": "Method",
+  "module": "Module",
+  "moduleDescription": "Module Description",
+  "operation": "Operation",
+  "button": {
+    "create": "Create API",
+    "sync": "Sync API"
+  }
+}

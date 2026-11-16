@@ -1,0 +1,11 @@
+{
+  "monthTokens": "Tokens this month",
+  "monthCalls": "Calls this month",
+  "quota": "Quota usage",
+  "model": "Model",
+  "promptTokens": "Prompt tokens",
+  "completionTokens": "Completion tokens",
+  "totalTokens": "Total tokens",
+  "duration": "Duration",
+  "time": "Call time"
+}

@@ -1,0 +1,38 @@
+{
+  "moduleName": "角色",
+  "name": "角色名称",
+  "code": "角色值",
+  "reservedCode": "该角色值为系统保留（platform: / template: / tenant:manager），禁止使用",
+  "description": "角色描述",
+  "isProtected": "内置角色",
+  "apis": "分配API",
+  "permissions": "分配权限",
+  "tenantName": "所属租户",
+  "button": {
+    "create": "创建角色"
+  },
+  "dataScope": "数据权限范围",
+  "orgUnits": "授权组织单元",
+  "fieldPerm": {
+    "title": "字段权限",
+    "userTitle": "字段权限（User）",
+    "roleTitle": "字段权限（Role）",
+    "hint": "勾选的字段对该角色用户不可见：列表/详情不再显示，且不能通过创建/编辑写入（重新登录后生效）。",
+    "field": {
+      "email": "邮箱",
+      "mobile": "手机号",
+      "telephone": "固定电话",
+      "address": "地址",
+      "region": "区域",
+      "lastLoginAt": "最后登录时间",
+      "lastLoginIp": "最后登录 IP",
+      "permissions": "权限集（角色绑定的权限列表）"
+    }
+  },
+  "parentName": "父角色",
+  "parentId": "父角色",
+  "parentIdPlaceholder": "选择父角色（可选）",
+  "permCapHint": "可选权限已收窄为父角色的授权范围",
+  "permTrimConfirmTitle": "权限收敛确认",
+  "permTrimConfirmContent": "该角色有 {count} 个权限点超出父角色的授权范围，保存后将被移除。是否继续？"
+}

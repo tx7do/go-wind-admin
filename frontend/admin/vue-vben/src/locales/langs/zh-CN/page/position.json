@@ -1,0 +1,15 @@
+{
+  "moduleName": "职位",
+  "name": "职位名称",
+  "parentId": "上级职位",
+  "orgUnit": "所属组织",
+  "orgUnitId": "所属组织ID",
+  "orgUnitName": "所属组织名称",
+  "description": "职责描述",
+  "type": "职位类型",
+  "code": "唯一编码",
+  "headcount": "编制人数",
+  "button": {
+    "create": "创建职位"
+  }
+}

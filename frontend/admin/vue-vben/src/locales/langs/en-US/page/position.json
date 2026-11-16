@@ -1,0 +1,15 @@
+{
+  "moduleName": "Position",
+  "name": "Position Name",
+  "parentId": "Parent Position",
+  "orgUnit": "Organization",
+  "orgUnitId": "Organization ID",
+  "orgUnitName": "Organization Name",
+  "description": "Description",
+  "type": "Position Type",
+  "code": "Unique Code",
+  "headcount": "Headcount",
+  "button": {
+    "create": "Create Position"
+  }
+}

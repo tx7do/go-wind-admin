@@ -1,0 +1,22 @@
+{
+  "moduleName": "访问凭证",
+  "name": "凭证名称",
+  "status": "状态",
+  "statusOn": "启用",
+  "statusOff": "停用",
+  "expiresAt": "过期时间",
+  "expiresAtHint": "留空表示长期有效",
+  "lastUsedAt": "最近使用",
+  "secretDialogTitle": "请立即保存密钥（Secret）",
+  "secretDialogHint": "密钥仅此一次明文展示，服务端只保存 SHA-256 摘要，关闭后无法再查看。",
+  "secretCopied": "密钥已复制",
+  "accessKeyLabel": "Access Key",
+  "create": "新建凭证",
+  "deleteConfirm": "Delete this {moduleName}? Machine token exchange stops immediately.",
+  "lastUsed": "Last Used",
+  "createdAt": "Created At",
+  "resetSecret": "重置密钥",
+  "resetConfirm": "生成新密钥？旧密钥立即失效，已签发的令牌在过期前仍有效。",
+  "resetSuccess": "密钥已重置",
+  "resetFailed": "重置失败"
+}

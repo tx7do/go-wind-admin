@@ -1,0 +1,18 @@
+{
+  "title": "AI Query",
+  "ask": "Ask",
+  "inputPlaceholder": "Ask in natural language, e.g. which account had the most failed logins in the last 24h?",
+  "emptyDesc": "Query platform data in natural language. AI generates read-only SQL and returns results (platform admins only)",
+  "thinking": "Generating SQL and querying…",
+  "generatedSql": "Generated SQL (read-only)",
+  "noRows": "The query returned no data.",
+  "answerTag": "Answer",
+  "failed": "Query failed",
+  "sample1": "How many users are in the system?",
+  "sample2": "Which account had the most failed logins in the last 24h?",
+  "sample3": "Count users per role",
+  "lang": "en-US",
+  "viewChart": "Chart",
+  "viewTable": "Table",
+  "rowCount": "{count} rows"
+}

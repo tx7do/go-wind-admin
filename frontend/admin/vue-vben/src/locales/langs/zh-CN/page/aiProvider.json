@@ -1,0 +1,27 @@
+{
+  "moduleName": "AI 提供商",
+  "name": "名称",
+  "modelType": "部署形态",
+  "modelTypeLocal": "本地模型",
+  "modelTypeCloud": "云端模型",
+  "modelName": "模型名称",
+  "baseUrl": "API 地址",
+  "organization": "Organization",
+  "apiKey": "API Key",
+  "apiKeyKeepExisting": "留空表示不修改已保存的 Key",
+  "localHost": "主机",
+  "localPort": "端口",
+  "timeoutSeconds": "连接超时（秒）",
+  "systemPrompt": "系统提示词",
+  "isDefault": "默认提供商",
+  "isEnabled": "启用",
+  "endpoint": "端点",
+  "remark": "备注",
+  "apiKeyHintLabel": "当前 Key",
+  "notSet": "未设置",
+  "enabledOn": "启用",
+  "enabledOff": "禁用",
+  "button": {
+    "create": "创建提供商"
+  }
+}

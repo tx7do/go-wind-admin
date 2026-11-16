@@ -18,7 +18,7 @@ import {
   logoutMutation,
   refreshTokenMutation,
   verifyMfaMutation,
-} from '@/api';
+} from '@/api/hooks/auth';
 import { apiClient } from '@/api/client';
 import { fetchUserProfile } from '@/api/hooks/user-profile';
 import { encryptPasswordEnvelope } from '@/utils';
