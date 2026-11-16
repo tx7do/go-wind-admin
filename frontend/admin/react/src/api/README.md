@@ -420,9 +420,9 @@ export function useCreateUser() {
    }
    ```
 
-3. **导出模块** (`src/api/hooks/index.ts`)
+3. **使用**：页面直接从模块文件导入（无 barrel 登记点）
    ```typescript
-   export * from './xxx';
+   import { useListXxx, fetchListXxx } from '@/api/hooks/xxx';
    ```
 
 ### Q4: 如何处理分页查询？

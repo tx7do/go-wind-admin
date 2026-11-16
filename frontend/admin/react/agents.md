@@ -275,12 +275,16 @@ i18n.t('key', { ns: 'common' });
 12. **错误处理铁律（不吞错）**: 任何 catch 至少二选一——`console.error/warn` 带出**原始错误对象**，或重新抛出。用户可见的 message/notification 不等于日志（只有翻译文案，排查靠控制台原始错误）。合法裸 catch 仅限纯本地 best-effort 兜底且注释写明原因。历史教训：静默吞错曾让认证链路 bug 排查数日（每层都被上一层话术掩盖）
 13. **scroll.x 必须 ≥ 列宽总和**: 手写 `scroll={{ x: N }}` 时 N 小于各列 width 之和会让 rc-table 给表头/表体不一致的宽度基准，固定右列（fixed:'right'）的表头会比表体左偏一个滚动条宽度（2026-11-08 实测于打印模板页：x:1200 < 列总和 1460 → 表头左偏 15px）。改列宽时同步改 x，或直接删掉 x 让 `ListTable` 自动补
 
+## 目录所有权与上游同步（二开必读）
+
+2026-11-16 起本端按「二开只新增文件」布局：新增模块触碰的文件全部在你自己的命名空间下，与上游零交集——`pages/app/<你的模块>/`、`api/hooks/<你的>.ts`（页面直连导入，**无 barrel 登记点**）、`locales/<lang>/_modules/<你的>.json`、`router/modules/<你的域>.tsx`、`locales/<lang>/_core/routes/<你的域>.json`。路由与 i18n 均 glob 自动注册，菜单同步由路由树自动推导。上游演示页（`pages/app/system` 等）是参照实现，要定制先**复制再改**；merge 上游的冲突处理（lockfile / `api/generated/` 不手解、modify/delete 统一 keep deleted）见 `docs/adopt-one-frontend.md` §7。
+
 ## 新增完整功能模块清单
 
 当需要新增一个完整的业务模块时，按以下顺序操作：
 
 1. **翻译文件**: `src/locales/zh-CN/_modules/xxx.json` + `src/locales/en-US/_modules/xxx.json`
 2. **页面组件**: `src/pages/app/xxx/index.tsx`
-3. **API Hooks**: `src/api/hooks/xxx.ts`（通过 `apiClient` 直调）+ 在 `src/api/hooks/index.ts` 导出
+3. **API Hooks**: `src/api/hooks/xxx.ts`（通过 `apiClient` 直调），页面直接从 `@/api/hooks/xxx` 导入（无 barrel 登记点）
 4. **路由**: `src/router/modules/xxx.tsx`（自动导入）
 5. **权限控制（可选）**: 配置 `meta.authority` 并在页面中使用 `useAccess()`

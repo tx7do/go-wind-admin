@@ -257,7 +257,7 @@ const xxx: RouteRecordRaw[] = [
     name: "Xxx",
     component: () => import("@/pages/app/xxx/index.vue"),
     meta: {
-      title: "routes.xxx",            // i18n key（routes.json 里的点号键）
+      title: "routes.xxx",            // i18n 点号键（locales/<lang>/routes/<组>.json，按域拆分）
       icon: "lucide:folder",          // Iconify 图标
       authority: ["permission_code"], // 权限码
     },
@@ -268,7 +268,7 @@ export default xxx;
 
 > `default` 必须是 **数组**：`src/router/routes/index.ts` 用 `mergeRouteModules`（`src/core/router/utils/merge-route-modules.ts`）把每个模块的 `default` 当 `RouteRecordRaw[]` 展开，导出单个对象会让路由静默丢失。业务模块通常再包一层 `component: Layout` + `redirect` + `children`，参见 `routes/modules/app/opm.ts`。
 
-**2. 翻译文本** — `src/locales/zh-CN/routes.json` 和 `src/locales/en-US/routes.json`
+**2. 翻译文本** — `src/locales/zh-CN/routes/<组>.json` 和 `src/locales/en-US/routes/<组>.json`（按域拆分，组装时深合并回单一 `routes` 命名空间）
 
 **3. 页面组件** — `src/pages/app/xxx/index.vue`
 

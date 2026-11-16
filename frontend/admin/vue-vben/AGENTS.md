@@ -80,7 +80,7 @@ src/
 ├── router/routes/modules/# ← 路由模块（按功能拆分）
 ├── stores/               # Pinia 状态管理（authentication：token 刷新/MFA/SSO）
 ├── views/app/            # 业务页面（按功能模块组织）
-└── locales/langs/        # i18n 应用文案（zh-CN/en-US: enum.json, menu.json, page.json, ui.json）
+└── locales/langs/        # i18n 应用文案（zh-CN/en-US: enum.json, ui.json + menu/<组>.json + page/<模块>.json，组装时深合并）
 ```
 
 ## 导入路径约定
@@ -364,13 +364,17 @@ const [BaseForm, baseFormApi] = useVbenForm({
 
 ---
 
+## 目录所有权与上游同步（二开必读）
+
+新增模块的文件触点全部落在你自己的命名空间：`views/app/<你的模块>/`、`api/composables/<你的>.ts`、`locales/langs/<lang>/menu/<你的组>.json`、`locales/langs/<lang>/page/<你的模块>.json`、`router/routes/modules/app/<你的组>.ts`（路由与 i18n 均 glob 自动注册，menu/page 按模块拆分后由宿主 `locales/index.ts` 深合并回 `menu.*` / `page.*` 命名空间）。唯一共享登记点是 `api/composables/index.ts` 追加一行 `export *`——append-only，merge 冲突两边都保留即可。上游演示页要定制先**复制再改**；merge 升级 runbook 见 `docs/adopt-one-frontend.md` §7。
+
 ## 新建业务模块 Checklist
 
 ```
 - [ ] Step 1: 确认 generated 层已有类型（protobuf 已生成）
 - [ ] Step 2: 创建 composables 层（src/api/composables/xxx.ts）
 - [ ] Step 3: 注册导出（composables/index.ts）
-- [ ] Step 4: 添加 i18n 翻译（zh-CN + en-US 的 enum.json, menu.json, page.json）
+- [ ] Step 4: 添加 i18n 翻译（zh-CN + en-US：enum.json、menu/<组>.json、page/<模块>.json）
 - [ ] Step 5: 创建路由模块（router/routes/modules/app/xxx.ts）
 - [ ] Step 6: 创建视图页面（views/app/xxx/）
 ```

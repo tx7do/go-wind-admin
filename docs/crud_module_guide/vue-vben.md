@@ -26,8 +26,8 @@ Stack: Vben Admin single-package (single-package pnpm project) — Vue 3.5 + Ant
 
 **Edit (5):**
 5. `src/api/composables/index.ts` — add `export * from './<entity>';` (only manual registration)
-6. `src/locales/langs/zh-CN/menu.json` + `en-US/menu.json` — menu title
-7. `src/locales/langs/zh-CN/page.json` + `en-US/page.json` — page copy
+6. `src/locales/langs/zh-CN/menu/<group>.json` + `en-US/menu/<group>.json` — menu title (per-group file)
+7. `src/locales/langs/zh-CN/page/<entity>.json` + `en-US/page/<entity>.json` — page copy (per-module file)
 8. `src/locales/langs/zh-CN/enum.json` + `en-US/enum.json` — per-module enums (if any)
 9. `ui.json` is **usually untouched** — `ui.notification.*_success/failed`, `ui.modal.create/update`, `ui.button.ok/cancel` already exist.
 
@@ -100,15 +100,17 @@ export * from './<entity>';
 ```
 Without this, `#/api` won't expose the hooks or enum utils.
 
-## Step 3 — i18n (4 json × 2 languages, mirror key-for-key)
+## Step 3 — i18n (json per module × 2 languages, mirror key-for-key)
 
-- `langs/zh-CN/menu.json` + `en-US/menu.json` — add the menu title under the domain (or new domain):
+Menu and page copy are split per top-level key (`menu/<group>.json`, `page/<entity>.json`); `src/locales/index.ts` denormalizes the slash keys back into nested namespaces, so `$t('menu.<group>.*')` / `$t('page.<entity>.*')` keep working.
+
+- `langs/zh-CN/menu/<group>.json` + `en-US/menu/<group>.json` — menu title for the domain (or new domain):
   ```json
-  "<group>": { "moduleName": "<中文域>", "<entity>": "<中文>管理" }
+  { "moduleName": "<中文域>", "<entity>": "<中文>管理" }
   ```
-- `langs/zh-CN/page.json` + `en-US/page.json` — add page copy:
+- `langs/zh-CN/page/<entity>.json` + `en-US/page/<entity>.json` — page copy:
   ```json
-  "<entity>": { "moduleName": "...", "name": "名称", "code": "编码", "button": { "create": "新建" } }
+  { "moduleName": "...", "name": "名称", "code": "编码", "button": { "create": "新建" } }
   ```
 - `langs/zh-CN/enum.json` + `en-US/enum.json` — add per-module enums (`enum.<entity>.<type>.<VALUE>`); reuse `enum.status.*` if that suffices.
 - `ui.json` — only edit if you need a framework-level string that doesn't exist (rare). `ui.notification.create_success`, `ui.modal.create`, `ui.button.ok`, `ui.placeholder.input/select`, `ui.text.do_you_want_delete` (with `{{moduleName}}` interpolation) already exist.

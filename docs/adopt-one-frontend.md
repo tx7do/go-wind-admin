@@ -1,6 +1,6 @@
 # 只保留一个前端：裁剪步骤与代价
 
-> 读者：拿本项目做二开、只打算长期维护**一套**前端的团队。读完你会得到：删掉另外两端的完整步骤，以及三处会"悄悄回流"的耦合点。
+> 读者：拿本项目做二开、只打算长期维护**一套**前端的团队。读完你会得到：删掉另外两端的完整步骤、三处会"悄悄回流"的耦合点，以及**目录所有权契约与 merge 升级 runbook**（§7——加模块只新增文件、merge 上游零冲突的操作规程）。
 >
 > **先说定位**：仓库里有三个前端目录，是为了让用 React 的团队和用 Vue 的团队**各取所需**，不是给某一个团队同时供两套、更不是要求你维护三套。"三端都可用"由上游维护者负责；你只需要那一个能跑起来的目录。
 >
@@ -143,6 +143,65 @@ pnpm update @go-wind/admin-react   # 或 admin-core / admin-element / admin-vben
 ```
 
 上游发版节奏：改 go-wind-ui 对应包 → `npx changeset` → push，Release 工作流自动 publish + 打 tag。**包的 dependencies 是 publish 快照**——依赖有改必须发新版，改本地 node_modules 无效。vben 源码包升级后重跑 `typecheck`（paths 直指源码，类型错误当场暴露，这是源码形态的代价也是收益）。
+
+## 7. 目录所有权契约与升级 runbook
+
+> 2026-11-16 起生效。目标：二开加模块 = **纯新增文件**，merge 上游时结构性零冲突。
+> 机制层（登录/令牌/SSE/路由工厂/偏好/表格）已抽包、走 §6 的 `pnpm update`，不在 git merge 路径上；
+> 本章管的是仓库里剩下的部分——app 壳、演示业务页、生成产物与 locale。
+
+### 7.1 谁拥有哪些目录
+
+**二开拥有**（上游承诺：永不触碰、不重命名、不移动）。三端同构，命名各异：
+
+| 内容 | react | vue-element | vue-vben |
+|---|---|---|---|
+| 业务页面 | `src/pages/app/<自己的模块>/` | `src/pages/app/<自己的模块>/` | `src/views/app/<自己的模块>/` |
+| API hooks | `src/api/hooks/<自己的>.ts`（页面直连导入，无登记点） | `src/api/composables/<自己的>.ts` | 同 element |
+| 页面文案 | `src/locales/<lang>/_modules/<自己的>.json` | `src/locales/<lang>/pages/<自己的>.json` | `src/locales/langs/<lang>/page/<自己的模块>.json` |
+| 路由 | `src/router/modules/<自己的域>.tsx` | `src/router/routes/modules/app/<自己的域>.ts` | `src/router/routes/modules/app/<自己的域>.ts` |
+| 路由标题 | `src/locales/<lang>/_core/routes/<自己的域>.json` | `src/locales/<lang>/routes/<自己的域>.json` | `src/locales/langs/<lang>/menu/<自己的域>.json` |
+
+路由与 i18n 全部 `import.meta.glob` 自动注册；菜单同步由路由树自动推导，**不存在**菜单清单登记文件。
+
+**上游拥有**（二开不碰；上游重构会小步走）：`bootstrap/app/main`、`layouts/`、偏好配置（react `src/core`、vben `preferences.ts`）、`router` 入口与 guards、`api/client.ts`、`api/generated/`（重生成产物）、locale 框架级文件（react `_core/common` 等、element `app/common/enum/preferences/validation.json`、vben `enum/ui.json`）、`components/`、`stores/`、`utils/`。
+
+**残留缝**（双方都可能编辑的共享文件，全仓仅剩一处）：
+
+- vue-element 的 `src/api/composables/index.ts`、vue-vben 的 `src/api/composables/index.ts`（+ `src/api/index.ts` 转出）：加模块追加一行 `export * from './<entity>';`。**追加式**——冲突是行级追加，机械解决（两边都保留）。react 端 barrel 已删（2026-11-16），无缝。
+
+### 7.2 定制上游页：复制再改
+
+上游演示页（如 `system/user`）是**参照实现**。要定制就复制到自己命名空间再改（如 `pages/app/my-user/`）；上游页保持可干净覆盖。直接改上游页的后果：上游每次修这页你都冲突，且上游修复要你人工 port。删掉上游演示页也可以，但上游改动它们时 merge 会出现 modify/delete 冲突，按 7.3 的第三条统一处理。
+
+### 7.3 git merge 升级 runbook
+
+```bash
+git fetch upstream && git merge upstream/main
+```
+
+冲突三定律：
+
+1. **lockfile 不手解**：`package.json` 手解后，删掉 `package-lock.json`/`pnpm-lock.yaml` 重装重生成——lockfile 冲突手解必错；
+2. **`api/generated/` 不手解**：解完 proto 相关冲突后跑 `make ts` 重生成（确定性产物，重生成即消除冲突）；
+3. **modify/delete 冲突**（你删掉的上游演示页被上游改了）：统一 keep deleted（`git rm`）。
+
+然后：
+
+```bash
+cd frontend/admin/<端> && npm install        # 或 pnpm install，重建 lockfile
+cd backend && make ts                        # 裁剪过的仓只跑保留端那条 buf 模板（见 §3 第 2 步）
+# 跑你那端门禁（命令见根 AGENTS.md 三端门禁表）
+```
+
+机制层升级不走 merge，走 §6 的 `pnpm update @go-wind/admin-*`。**节奏建议**：出现 `feat(frontend)!:` 这类 breaking 提交尽快跟；平时每两周一次——长周期不 merge 是冲突的最大来源，比任何文件布局都致命。
+
+### 7.4 上游纪律（给上游维护者）
+
+- 机制改动只走 go-wind-ui 包发版，不在三端 `src/` 里直接改机制代码；
+- 新增演示模块遵守"一模块一文件"（路由/文案/hooks 各自成文件），不新设集中式登记点；
+- 残留缝文件（element/vben `composables/index.ts`）只做行追加；要重命名/移动**二开拥有**的路径，先在文档公告（这是给下游的 breaking change）；
+- locale 组装的斜杠键深合并语义（element/vben 宿主 `locales/index.ts` 的 `denormalizeSlashKeys`、react 的 `routes/*.json` 合并）是宿主契约，改动须同步本文档与各端 AGENTS.md。
 
 ## 深读
 

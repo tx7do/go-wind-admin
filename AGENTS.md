@@ -83,6 +83,7 @@ gow 未覆盖的任务（三端 TS 生成 `make ts`、OpenAPI `make openapi`、`
 - 查询/分页规则：`docs/list_query_rule.md`
 - **改一个字段速查**：`docs/field_change_guide.md`（给**已有**资源加字段的四档判定 + 命令数 + 文件清单，含"哪些事明确不用做"）——本仓最高频的任务，别套用 04 章的新模块流程；接到"加个字段/页面少一列"这类需求先读它
 - **新增 CRUD 模块全流程**：`docs/crud_module_guide/`（新增完整业务模块的端到端手册：README 跨端编排与通用陷阱、backend.md 后端全流程与样例镜像索引、三端各自的页面实现参考；正文为英文原稿）——接到「新增模块/新增资源/新建管理页」这类需求、动工新增整个模块前先读它；只给已有资源加字段读上面的速查，别套新模块流程
+- **二开隔离契约**：`docs/adopt-one-frontend.md` §7（目录所有权：二开目录上游永不触碰；残留缝 = element/vben composables barrel 追加一行；merge 升级 runbook：lockfile/generated 不手解、modify/delete 统一 keep deleted）——改上游演示页、动残留缝文件或替二开排 merge 冲突前必读；上游新增演示模块一律"一模块一文件"
 - 脚本系统：`docs/script_system.md`（Lua/JS 脚本级插件：钩子点/定时任务/HTTP 出站/安全模型；改钩子点或模块先读它）
 - 认证与令牌链路：`docs/authentication.md`（登录全流程/令牌与刷新轮换/MFA/限流策略/会话吊销/已知问题；改登录、令牌、刷新、MFA、限流或登录策略前先读它）
 - 多租户隔离：`docs/tenant_isolation.md`（上下文链路/HTTP 闸门/数据层读写隔离/套餐联动/覆盖边界与排障；改隔离层、Api 表、套餐门禁或给新表接租户前先读它）

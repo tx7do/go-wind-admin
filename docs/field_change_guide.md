@@ -97,7 +97,7 @@ Create/Update 两处**仍然是 `SetNillable<字段>(…)`，只是实参要过�
 |---|---|---|---|
 | **react** | `src/pages/app/system/dict/DictTypeList.tsx:50` `columns` 数组 | 同目录 `DictTypeDrawer.tsx`：表单项 `:126+`、编辑回填 `:45-48`、新建默认值 `:109` | `src/locales/{zh-CN,en-US}/_modules/dict-type.json` |
 | **vue-element** | `src/pages/app/system/dict/dict-type-list.vue`：`table.columns:85`（`prop` camelCase）、需要可搜时 `search.fields:49` | 同目录 `dict-type-drawer.vue`：`ElFormItem` 区 `:17-52`、新建默认值 `defaults:88-93`、**编辑回填 `:113-116`（逐字段手写）**、校验 `formRules:99-106` | `src/locales/{zh-CN,en-US}/pages/dict.json` |
-| **vue-vben** | `src/views/app/system/dict/dict-type-list.vue:73` `columns`（`field` camelCase） | 同目录 `dict-type-drawer.vue:33` `useVbenForm` 的 `schema` | `src/locales/langs/{zh-CN,en-US}/page.json` |
+| **vue-vben** | `src/views/app/system/dict/dict-type-list.vue:73` `columns`（`field` camelCase） | 同目录 `dict-type-drawer.vue:33` `useVbenForm` 的 `schema` | `src/locales/langs/{zh-CN,en-US}/page/dict.json`（按模块拆分） |
 
 四处容易漏的：
 
@@ -105,7 +105,7 @@ Create/Update 两处**仍然是 `SetNillable<字段>(…)`，只是实参要过�
   `setFieldsValue({...})`、element `dict-type-drawer.vue:113-116` 的 `drawer.formData.xxx = row.xxx ?? …`。
   漏了这一处，新建正常、**一编辑该字段就空**（vben 是整行 `baseFormApi.setValues(row)`，`:130`，不用逐字段加）。
 - **hooks / composables 不用碰。** `react/src/api/hooks/dict.ts`、`vue-*/src/api/composables/dict.ts` 里没有任何字段名，字段跟着生成的类型走。
-- **词条文件布局三端不同**，且 vben 是**共用一个大 `page.json`**：两种语言都要加，只加 `zh-CN` 会在英文界面露出 key。react 用扁平 camelCase 键（`typeName` / `typeNamePlaceholder` / `requiredTypeName` 一族）。
+- **词条文件布局三端不同**，但都是**按模块拆文件**（react `_modules/<entity>.json`、element `pages/<entity>.json`、vben `page/<entity>.json`）：两种语言都要加，只加 `zh-CN` 会在英文界面露出 key。react 用扁平 camelCase 键（`typeName` / `typeNamePlaceholder` / `requiredTypeName` 一族）。
 - **表单校验另写一处**：element 的 `formRules:99` 与 `defaults:88` 是分开的两个对象，只加 `ElFormItem` 会得到一个能留空的必填字段。
 
 改完跑你那一端的门禁（三端表见根 [AGENTS.md](../AGENTS.md)）：react `npm run typecheck`；vue-element `npx vue-tsc --noEmit`；vue-vben `pnpm run typecheck`。

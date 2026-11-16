@@ -38,7 +38,7 @@ src/
 │   └── access/             # 权限控制
 ├── pages/app/              # 业务页面（按模块分目录）
 ├── locales/                # 翻译资源（zh-CN / en-US）
-│   └── zh-CN/              # app.json, common.json, core.json, enum.json, preferences.json, routes.json, validation.json, pages/*.json
+│   └── zh-CN/              # app.json, common.json, core.json, enum.json, preferences.json, validation.json, pages/*.json, routes/<组>.json（路由标题按域拆分）
 ├── router/routes/modules/app/  # ⭐ 动态路由（自动扫描）
 ├── constants/index.ts      # 全局常量（DRAWER_WIDTH 等）
 ├── layouts/                # 布局组件
@@ -281,6 +281,10 @@ interface ProPageConfig<T = any, Q = any> {
 
 ---
 
+## 目录所有权与上游同步（二开必读）
+
+新增模块的文件触点全部落在你自己的命名空间：`pages/app/<你的模块>/`、`api/composables/<你的>.ts`、`locales/<lang>/pages/<你的>.json`、`locales/<lang>/routes/<你的组>.json`、`router/routes/modules/app/<你的组>.ts`（路由与 i18n 均 glob 自动注册，routes 按组拆分后由宿主 `locales/index.ts` 深合并）。唯一共享登记点是 `api/composables/index.ts` 追加一行 `export *`——append-only，merge 冲突两边都保留即可。上游演示页要定制先**复制再改**；merge 升级 runbook 见 `docs/adopt-one-frontend.md` §7。
+
 ## 新建 CRUD 模块清单
 
 创建新业务模块时，按以下顺序处理 **9 个文件**（新建 6 个、编辑 3 处既有文件；以 product 为例）：
@@ -292,7 +296,7 @@ interface ProPageConfig<T = any, Q = any> {
 | 3 | `src/locales/zh-CN/pages/product.json` | 中文翻译 |
 | 4 | `src/locales/en-US/pages/product.json` | 英文翻译 |
 | 5 | `src/locales/zh-CN/enum.json` | 追加枚举翻译 |
-| 6 | `src/locales/zh-CN/routes.json` | 追加路由标题 |
+| 6 | `src/locales/zh-CN/routes/<组>.json` | 追加路由标题（按域拆分，无共享 routes.json） |
 | 7 | `src/router/routes/modules/app/product.ts` | 路由配置 |
 | 8 | `src/pages/app/product/index.vue` | 列表页（ProPage 配置） |
 | 9 | `src/pages/app/product/product-drawer.vue` | 抽屉表单（ProModal + ElForm `:rules` + useDrawerForm，`defineExpose({ open })`） |

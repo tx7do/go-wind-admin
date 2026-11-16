@@ -132,7 +132,8 @@ cd backend/app/admin/service && make build
 - **`PaginationQuery` 必须 `new` 实例化**（`.toRawParams()` 依赖实例 getter），对象字面量直接崩。
 
 i18n：页面文案全部走 `$t`/`t` + locale JSON（`import.meta.glob` 自动注册，别手动注册）；
-菜单标题在单独的 `routes.json`（react/vue-element）/ `menu.json`（vben），路由 `meta.title`
+菜单标题单独放（react `_core/routes/<域>.json`、vue-element `routes/<组>.json`、vben
+`menu/<组>.json`，均按域拆分后深合并回原命名空间），路由 `meta.title`
 指过去。三端的已知坑（搜索表单布局、窄栏定式、EP Splitter、IAB 截图假回归等）见各端
 `frontend/admin/*/AGENTS.md`——那是各端工程约定的权威文档。
 

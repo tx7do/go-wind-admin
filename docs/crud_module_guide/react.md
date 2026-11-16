@@ -26,13 +26,16 @@ Stack: React 19 + Ant Design v6 + ProComponents 2 + TanStack React Query 5 + Zus
 Plus optional `constants.ts` next to `index.tsx` for enum maps (recommended when there are enums).
 
 **Edit (2):**
-6. `src/api/hooks/index.ts` — add `export * from './<entity>';` (the **only** manual registration point)
-7. `src/locales/zh-CN/_core/routes.json` + `en-US` — add the menu title key referenced by `meta.title`
+6. `src/router/modules/<domain>.tsx` — add the route object (skip if the route already exists)
+7. `src/locales/<lang>/_core/routes/<domain>.json` — add the menu title key referenced by `meta.title` (per-domain file, one per `router/modules/<domain>.tsx`)
+
+There is **no hooks barrel registration** — pages import hooks directly from `@/api/hooks/<entity>`.
 
 `src/api/client.ts` is **never edited** — `apiClient.<entity>Service` is auto-generated.
 
 i18n and routes are auto-discovered via `import.meta.glob`:
 - locales: `src/locales/<lang>/_modules/*.json` → namespace = filename. No registration.
+- route titles: `src/locales/<lang>/_core/routes/*.json` → merged into the single `routes` namespace. Per-domain files; no central registry.
 - routes: `src/router/modules/*.tsx` → default OR named export. No registration.
 - pages: scanned for the dynamic-routing backend mode (pageMap). No registration.
 
@@ -61,7 +64,7 @@ i18n and routes are auto-discovered via `import.meta.glob`:
 ```
 Namespace = filename, so `useTranslation('<entity>')` reads this. Interpolation is `{{var}}`, never `#{var}` or `${var}`.
 
-Add the **menu title** to `src/locales/zh-CN/_core/routes.json` (and en-US mirror): `"products": "商品管理"`. The route `meta.title` points here with the `'routes:'` prefix (see Step 5).
+Add the **menu title** to `src/locales/zh-CN/_core/routes/<domain>.json` (and en-US mirror): `"products": "商品管理"`. The route `meta.title` points here with the `'routes:'` prefix (see Step 5).
 
 `common` namespace already has `common:button.submit/cancel`, `common:button.*` — reuse for buttons.
 
@@ -135,13 +138,13 @@ export function useDelete<Entity>(options?: UseMutationOptions<{}, Error, <entit
 
 `onSuccess` invalidation is **not** written inside the hook — it's written in the calling component (Step 4), so the component controls what to refresh.
 
-## Step 3 — Register hooks export
+## Step 3 — Import hooks (no registration)
 
-Edit `src/api/hooks/index.ts`, add under the appropriate grouping comment:
+There is no hooks barrel to register in. Pages import hooks directly from the module file:
 ```ts
-export * from './<entity>';
+import { fetchList<Entity>s, useCreate<Entity>, useUpdate<Entity>, useDelete<Entity> } from '@/api/hooks/<entity>';
 ```
-This is the only manual registration step in the entire react flow. Forget it and imports from `@/api/hooks` won't resolve.
+The `src/api/hooks/index.ts` barrel was removed (2026-11-16) so that adding a module means adding files only — no shared registration point, and upstream/second-party merges never conflict on an index file.
 
 ## Step 4 — List page
 
@@ -296,7 +299,7 @@ export default <group>Routes;
 
 Rules:
 - `element` uses `createLazyRoute(() => import('@/pages/app/.../<entity>'))` — point at the **directory**, not `index.tsx`. Do not use bare `lazy()` or `import()`.
-- `meta.title` MUST have the `'routes:'` prefix and the key MUST exist in `routes.json` (Step 1) — otherwise the menu title is blank.
+- `meta.title` MUST have the `'routes:'` prefix and the key MUST exist in `_core/routes/<domain>.json` (Step 1) — otherwise the menu title is blank.
 - `icon` is an Iconify string (`'lucide:xxx'`), not an antd Icon component.
 - `path` is relative (no leading `/`), auto-joined to the parent.
 - For access control use `authority: ['sys:<group>:view']` (an **array**). The codebase currently has `permission: '...'` (string, commented out) in places — that field is NOT in the `RouteMeta` type and won't enforce. Use `authority`.
@@ -313,7 +316,7 @@ Rules:
 
 5. **`useUpdate<Entity>` signature is fixed** `{ id, values: Record<string, any> }`. It builds `updateMask` via `makeUpdateMask(Object.keys(values))` (which also appends `'id'`). Don't call `Update` directly.
 
-6. **`meta.title` needs the `'routes:'` prefix and a matching `routes.json` key.** The route's own page copy lives in `_modules/<entity>.json` (no prefix). Two different files, two different responsibilities.
+6. **`meta.title` needs the `'routes:'` prefix and a matching key in `_core/routes/<domain>.json`.** The route's own page copy lives in `_modules/<entity>.json` (no prefix). Two different files, two different responsibilities.
 
 7. **`message` comes from `App.useApp()`.** Bare `message.success(...)` from antd top-level import works visually but loses theme/context.
 

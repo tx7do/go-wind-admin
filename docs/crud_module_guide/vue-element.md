@@ -26,7 +26,7 @@ Stack: Vue 3.5 + Vite + TypeScript + Element Plus 2 + vxe-table 4 + Pinia 3 + @t
 
 **Edit (4):**
 6. `src/api/composables/index.ts` — add `export * from "./<entity>";` (only manual registration)
-7. `src/locales/zh-CN/routes.json` + `en-US/routes.json` — add menu title key
+7. `src/locales/zh-CN/routes/<group>.json` + `en-US/routes/<group>.json` — add menu title key (per-group file)
 8. `src/locales/zh-CN/enum.json` + `en-US/enum.json` — add per-module enum values (if any)
 9. Route file (see Step 5)
 
@@ -254,7 +254,7 @@ For complex forms (tree selection, multi-step), hand-roll state and `handleSubmi
 ```
 Namespace = `pages.<entity>` (path-derived). `$t('pages.<entity>.name')` reads it. Page `<script setup>` and `<template>` use `$t`; composables use `t = i18n.global.t`.
 
-Edit `src/locales/zh-CN/routes.json` (and en-US): under the appropriate domain object, add the menu key (e.g. `"opm": { ..., "<entity>": "<中文>管理" }`). Edit `enum.json` similarly for any new enum values, under `enum.<entity>.<type>.<VALUE>`.
+Edit `src/locales/zh-CN/routes/<group>.json` (and en-US): add the menu key (e.g. `"<entity>": "<中文>管理"`). One file per functional domain — these are merged into the single `routes` namespace by `src/locales/index.ts` (slash-key denormalization). Edit `enum.json` similarly for any new enum values, under `enum.<entity>.<type>.<VALUE>`.
 
 `common.json` already has `button.*`, `table.*`, `placeholder.*`, `validation.*`, `notification.*`, `modal.*`, `section.*` — reuse, don't redefine.
 
@@ -268,7 +268,7 @@ Add a child entry:
   meta: {
     order: 3,
     icon: 'lucide:box',
-    title: 'routes.<group>.<entity>',       // matches the routes.json key
+    title: 'routes.<group>.<entity>',       // matches the key in routes/<group>.json
     authority: ['sys:platform_admin', 'sys:tenant_manager'],   // role codes, ARRAY
   },
   component: () => import('@/pages/app/<group>/<entity>/index.vue'),

@@ -182,7 +182,7 @@ import type { AppRouteObject } from '@/core/router';
 1. **创建页面组件**：`src/pages/app/<module>/<page>/index.tsx`
 2. **添加路由配置**：在 `src/router/modules/` 下对应文件中添加路由（使用 `createLazyRoute` 懒加载）
 3. **添加翻译文件**：在 `src/locales/zh-CN/_modules/` 和 `en-US/_modules/` 下添加对应 JSON
-4. **添加 API Hook**（如需）：在 `src/api/hooks/` 下封装（内部直调 `apiClient`），并在 `src/api/hooks/index.ts` 导出
+4. **添加 API Hook**（如需）：在 `src/api/hooks/` 下封装（内部直调 `apiClient`），页面直接从 `@/api/hooks/<模块>` 导入（无 barrel 登记点）
 
 ### 代码提交规范
 
@@ -348,7 +348,7 @@ Vite 的 HMR 通常能自动刷新。如果遇到状态残留，尝试手动刷�
 
 1. 后端 proto 就位后执行 `cd backend && make ts`，刷新 `src/api/generated/`（本端 `package.json` 无 `generate:api` 脚本）
 2. 在 `src/api/hooks/` 下创建 React Query Hook，内部直调 `apiClient.xxxService.Method()`（无 service 层）
-3. 在 `src/api/hooks/index.ts` 追加 `export * from './xxx';`，页面组件 import Hook 使用
+3. 页面组件直接 `import { ... } from '@/api/hooks/xxx'` 使用 Hook（无 `index.ts` barrel，新增模块零登记）
 
 ### Q: 生产构建如何分析包体积？
 

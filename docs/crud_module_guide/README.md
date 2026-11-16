@@ -138,9 +138,9 @@ These recur on every module regardless of framework. Read them once here, then t
    - vue-vben: `gridApi.reload()` (typically wired into the drawer's `onOpenChange`)
 
 6. **i18n files auto-register via `import.meta.glob` — do not manually register them.** Adding a new locale JSON under the right folder is enough. But the *route menu title* lives in a separate file, and each end addresses it differently — copy the wrong style and the menu renders the raw key:
-   - react: `meta.title: 'routes:xxx'` — the colon is the i18next **namespace** separator; keys live in `src/locales/<lang>/_core/routes.json`.
-   - vue-element: `meta.title: 'routes.<group>.<page>'` — a plain vue-i18n dotted key (no namespace prefix, no `routes:` colon), resolved from `src/locales/zh-CN/routes.json`.
-   - vue-vben: `meta.title: $t('menu.<group>.<page>')` — translated eagerly with `$t` imported from `#/locales` in the route file, keys in `src/locales/langs/<lang>/menu.json`.
+   - react: `meta.title: 'routes:xxx'` — the colon is the i18next **namespace** separator; keys live in `src/locales/<lang>/_core/routes/<domain>.json` (per-domain files merged into one `routes` namespace).
+   - vue-element: `meta.title: 'routes.<group>.<page>'` — a plain vue-i18n dotted key (no namespace prefix, no `routes:` colon), resolved from `src/locales/zh-CN/routes/<group>.json` (per-group files merged into one `routes` namespace).
+   - vue-vben: `meta.title: $t('menu.<group>.<page>')` — translated eagerly with `$t` imported from `#/locales` in the route file, keys in `src/locales/langs/<lang>/menu/<group>.json` (per-group files merged into one `menu` namespace).
 
 7. **No error swallowing — in any framework.** Every `catch` must either log the **original error object** (`console.error(...)`/`console.warn(...)`) or rethrow it. A user-visible notification/Message is NOT logging (it carries only translated text; debugging needs the raw error in the console). Bare `catch {}` is acceptable only for pure local best-effort fallbacks, with a comment explaining why. The composables/mutation layer generated for a new module must not swallow mutation errors — surface them via notification + console, or rethrow.
 
