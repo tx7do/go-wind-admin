@@ -8,10 +8,29 @@ import { overridesPreferences } from './preferences';
  */
 async function initApplication() {
   // name用于指定项目唯一标识
-  // 用于区分不同项目的偏好设置以及存储数据的key前缀以及其他一些需要隔离的数据
+  // 用于区分不同项目的偏好设置以及存储数据的key前缀以及其他一些需要隔离的数据。
+  // 不拼 VITE_APP_VERSION：版本进前缀会让每次发版都把用户偏好/页签静默清空
+  // （此前 VITE_APP_VERSION 未定义还产出过 "gowind-admin-undefined-dev" 这种键）。
   const env = import.meta.env.PROD ? 'prod' : 'dev';
-  const appVersion = import.meta.env.VITE_APP_VERSION;
-  const namespace = `${import.meta.env.VITE_APP_NAMESPACE}-${appVersion}-${env}`;
+  const namespace = `${import.meta.env.VITE_APP_NAMESPACE}-${env}`;
+
+  // 存储键迁移：历史前缀拼过 VITE_APP_VERSION（有值时如 gowind-admin-5.4.8-dev，
+  // 未定义时是 gowind-admin-undefined-dev），统一收敛到 `${ns}-${env}`。只搬
+  // 能匹配旧形态（版本段+环境段）的本应用键；现役键与新前缀同名键不动。
+  // 本段可在外部包升级窗口过后移除。
+  const ns = import.meta.env.VITE_APP_NAMESPACE;
+  const legacyRe = new RegExp(`^${ns}-.+?-${env}(?=:|-)`);
+  const currentRe = new RegExp(`^${ns}-${env}(?=:|-)`);
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (!key || key.startsWith(`${ns}-`) === false || currentRe.test(key)) continue;
+    if (!legacyRe.test(key)) continue;
+    const nextKey = key.replace(legacyRe, `${ns}-${env}`);
+    if (localStorage.getItem(nextKey) === null) {
+      localStorage.setItem(nextKey, localStorage.getItem(key)!);
+    }
+    localStorage.removeItem(key);
+  }
 
   // app偏好设置初始化
   await initPreferences({

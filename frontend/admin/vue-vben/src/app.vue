@@ -7,11 +7,9 @@ import { preferences, usePreferences } from '@vben/preferences';
 import { App, ConfigProvider, theme } from 'ant-design-vue';
 
 import { antdLocale } from '#/locales';
-import { TanstackQueryDevtools } from '#/plugins/vue-query';
+import { showVueQueryDevtools, TanstackQueryDevtools } from '#/plugins/vue-query';
 
 defineOptions({ name: 'App' });
-
-const isDev = import.meta.env.DEV;
 
 const { isDark } = usePreferences();
 const { tokens } = useAntdDesignTokens();
@@ -48,8 +46,9 @@ const tokenTheme = computed(() => {
     <App>
       <RouterView />
     </App>
-    <!-- Vue Query Devtools（仅开发环境） -->
-    <TanstackQueryDevtools v-if="isDev" />
+    <!-- Vue Query Devtools（仅开发环境）：用显式开关而非 isDev 判断——
+         VITE_QUERY_DEVTOOLS=false 时组件值为 null，模板条件若仍为真会 createVNode(null) 告警 -->
+    <TanstackQueryDevtools v-if="showVueQueryDevtools" />
   </ConfigProvider>
 </template>
 

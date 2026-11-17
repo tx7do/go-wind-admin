@@ -18,15 +18,19 @@ export const queryClient = new QueryClient({
   },
 });
 
-/** Vue Query Devtools 组件（仅开发环境加载，生产环境为 null；
- *  另设 VITE_QUERY_DEVTOOLS=false 可在 dev 下关闭——悬浮球会遮挡右下角弹层按钮） */
-export const TanstackQueryDevtools =
-  import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS !== 'false'
-    ? defineAsyncComponent(async () => {
-        const m = await import('@tanstack/vue-query-devtools');
-        return m.VueQueryDevtools;
-      })
-    : null;
+/** devtools 渲染开关：仅 dev 且未被 VITE_QUERY_DEVTOOLS=false 关闭（悬浮球会遮挡
+ *  右下角弹层按钮）。app.vue 的 v-if 必须用这个开关——组件值在关闭时是 null，
+ *  直接拿组件当模板条件会 createVNode(null)（Invalid vnode type 告警）。 */
+export const showVueQueryDevtools =
+  import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS !== 'false';
+
+/** Vue Query Devtools 组件（仅开发环境加载，生产环境为 null） */
+export const TanstackQueryDevtools = showVueQueryDevtools
+  ? defineAsyncComponent(async () => {
+      const m = await import('@tanstack/vue-query-devtools');
+      return m.VueQueryDevtools;
+    })
+  : null;
 
 export function setupVueQuery(app: App) {
   app.use(VueQueryPlugin, {
