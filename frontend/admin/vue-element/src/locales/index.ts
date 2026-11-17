@@ -53,10 +53,22 @@ export const localesMap: Record<string, () => Promise<{ default: unknown }>> = O
       // t('core.notice.*') 会因顶层缺 core 段而整片 raw。
       const core = (await coreLocaleModules[lang]?.()) as { default?: Json } | undefined;
       const host = (await hostLocalesMap[lang]?.()) as { default?: Json } | undefined;
+      const hostTree = denormalizeSlashKeys((host?.default as Json) ?? {});
+
+      // core 命名空间深合并：宿主 core.json 逐键覆盖包内置（文案跟着视图走，
+      // 登录/品牌等宿主视图的文案归宿主管，包里那份只是起步默认值）。
+      // 此前是宿主 core.json 整体顶掉包 core——宿主少写一个键就整片 raw。
+      const mergedCore = ((core?.default ?? {}) as Json) ?? {};
+      const hostCore = hostTree.core;
+      if (hostCore && typeof hostCore === "object") {
+        for (const [key, value] of Object.entries(hostCore)) mergeValue(mergedCore, key, value);
+      }
+      delete hostTree.core;
+
       return {
         default: {
-          core: (core?.default ?? {}) as Json,
-          ...denormalizeSlashKeys((host?.default as Json) ?? {}),
+          core: mergedCore,
+          ...hostTree,
         },
       };
     },
