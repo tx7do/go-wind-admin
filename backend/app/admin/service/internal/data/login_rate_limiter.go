@@ -125,6 +125,27 @@ func (l *LoginRateLimiter) IsLocked(ctx context.Context, ip, username string) (b
 	return false, nil
 }
 
+// FailureAttempts 返回当前 IP/用户名双维度中的最大失败计数（不自增）。
+// 供渐进式验证码闸门读取：失败计数达阈值前登录不强制验证码。
+// Redis 不可用返回 0（与 IsLocked/CheckAndIncr 的 fail-open 语义一致）。
+func (l *LoginRateLimiter) FailureAttempts(ctx context.Context, ip, username string) int {
+	if l == nil || l.rdb == nil {
+		return 0
+	}
+	maxAttempts := 0
+	for _, key := range l.failKeys(ip, username) {
+		cnt, rerr := l.rdb.Get(ctx, key).Int64()
+		if rerr != nil && rerr != redis.Nil {
+			l.log.Errorf(ctx, "get login fail counter failed (key=%s): %s", key, rerr.Error())
+			continue
+		}
+		if int(cnt) > maxAttempts {
+			maxAttempts = int(cnt)
+		}
+	}
+	return maxAttempts
+}
+
 // Reset 登录成功后清零失败计数。
 func (l *LoginRateLimiter) Reset(ctx context.Context, ip, username string) {
 	if l == nil || l.rdb == nil {

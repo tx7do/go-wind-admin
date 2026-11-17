@@ -122,6 +122,43 @@ func TestLoginRateLimiter_IsLockedAndReset(t *testing.T) {
 	require.Equal(t, 1, attempts, "Reset 后计数应从 1 重新开始")
 }
 
+// TestLoginRateLimiter_FailureAttempts 验证渐进式验证码闸门的只读计数：
+// 无失败时为 0（首次登录不要求验证码）；失败后返回双维度最大值且不自增；
+// Reset（登录成功）归零；nil 限流器（Redis 不可用降级）返回 0；TTL 过期自然清零。
+func TestLoginRateLimiter_FailureAttempts(t *testing.T) {
+	l, mr := newLoginRateLimiterForTest(t)
+	ctx := context.Background()
+
+	require.Equal(t, 0, l.FailureAttempts(ctx, "10.0.0.1", "alice"), "空表计数应为 0（首次登录不要求验证码）")
+
+	// 用户名维度 2 次、IP 维度 1 次失败：应取双维度最大值
+	_, _, _, err := l.CheckAndIncr(ctx, "10.0.0.1", "alice")
+	require.NoError(t, err)
+	_, _, _, err = l.CheckAndIncr(ctx, "10.0.0.2", "alice")
+	require.NoError(t, err)
+	require.Equal(t, 2, l.FailureAttempts(ctx, "10.0.0.1", "alice"), "应取双维度最大失败数")
+
+	// 只读语义：连续读取不增长计数
+	require.Equal(t, 2, l.FailureAttempts(ctx, "10.0.0.1", "alice"), "FailureAttempts 不应自增计数")
+
+	// 其他人不被连累
+	require.Equal(t, 0, l.FailureAttempts(ctx, "10.0.0.9", "carol"), "全新维度不应被别人的失败连累")
+
+	l.Reset(ctx, "10.0.0.1", "alice")
+	require.Equal(t, 0, l.FailureAttempts(ctx, "10.0.0.1", "alice"), "Reset 后应归零（登录成功回到免验证码态）")
+
+	// Redis 不可用降级：nil 限流器返回 0（fail-open，登录不被堵死）
+	var nilLimiter *LoginRateLimiter
+	require.Equal(t, 0, nilLimiter.FailureAttempts(ctx, "10.0.0.1", "alice"))
+
+	// 时钟快进越过 TTL：计数过期后回到 0（验证码要求随窗口自然解除）
+	_, _, _, err = l.CheckAndIncr(ctx, "10.0.0.1", "alice")
+	require.NoError(t, err)
+	require.Equal(t, 1, l.FailureAttempts(ctx, "10.0.0.1", "alice"))
+	mr.FastForward(loginFailKeyTTL + time.Second)
+	require.Equal(t, 0, l.FailureAttempts(ctx, "10.0.0.1", "alice"), "TTL 过期后计数应自然清零")
+}
+
 // TestLoginRateLimiter_WindowExpiry 验证失败计数的滑动窗口：
 // 首次失败才设 TTL，窗口过后计数自然过期、锁定解除、重新从 1 计。
 func TestLoginRateLimiter_WindowExpiry(t *testing.T) {
