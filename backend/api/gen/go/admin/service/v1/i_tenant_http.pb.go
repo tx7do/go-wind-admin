@@ -29,6 +29,9 @@ const OperationTenantServiceDelete = "/admin.service.v1.TenantService/Delete"
 const OperationTenantServiceGet = "/admin.service.v1.TenantService/Get"
 const OperationTenantServiceGetUsage = "/admin.service.v1.TenantService/GetUsage"
 const OperationTenantServiceList = "/admin.service.v1.TenantService/List"
+const OperationTenantServiceListDeletedTenants = "/admin.service.v1.TenantService/ListDeletedTenants"
+const OperationTenantServicePurgeTenant = "/admin.service.v1.TenantService/PurgeTenant"
+const OperationTenantServiceRestoreTenant = "/admin.service.v1.TenantService/RestoreTenant"
 const OperationTenantServiceTenantExists = "/admin.service.v1.TenantService/TenantExists"
 const OperationTenantServiceUpdate = "/admin.service.v1.TenantService/Update"
 
@@ -47,6 +50,12 @@ type TenantServiceHTTPServer interface {
 	GetUsage(context.Context, *v11.GetTenantUsageRequest) (*v11.TenantUsage, error)
 	// List 获取租户列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListTenantResponse, error)
+	// ListDeletedTenants 回收站：分页查询已删除（停车）租户
+	ListDeletedTenants(context.Context, *v1.PagingRequest) (*v11.ListTenantResponse, error)
+	// PurgeTenant 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+	PurgeTenant(context.Context, *v11.PurgeTenantRequest) (*emptypb.Empty, error)
+	// RestoreTenant 回收站：恢复租户（清理删除标记并置回在营态）
+	RestoreTenant(context.Context, *v11.RestoreTenantRequest) (*emptypb.Empty, error)
 	// TenantExists 租户是否存在
 	TenantExists(context.Context, *v11.TenantExistsRequest) (*v11.TenantExistsResponse, error)
 	// Update 更新租户
@@ -64,6 +73,9 @@ func RegisterTenantServiceHTTPServer(s *http.Server, srv TenantServiceHTTPServer
 	r.GET("/admin/v1/tenants:exists", _TenantService_TenantExists0_HTTP_Handler(srv))
 	r.GET("/admin/v1/tenants/{id}/usage", _TenantService_GetUsage0_HTTP_Handler(srv))
 	r.POST("/admin/v1/tenants/{id}/cleanup", _TenantService_CleanupData0_HTTP_Handler(srv))
+	r.GET("/admin/v1/tenants/trash", _TenantService_ListDeletedTenants0_HTTP_Handler(srv))
+	r.POST("/admin/v1/tenants/{id}/restore", _TenantService_RestoreTenant0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/tenants/{id}/purge", _TenantService_PurgeTenant0_HTTP_Handler(srv))
 }
 
 func _TenantService_List35_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
@@ -264,6 +276,72 @@ func _TenantService_CleanupData0_HTTP_Handler(srv TenantServiceHTTPServer) func(
 	}
 }
 
+func _TenantService_ListDeletedTenants0_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.PagingRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTenantServiceListDeletedTenants)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListDeletedTenants(ctx, req.(*v1.PagingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListTenantResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _TenantService_RestoreTenant0_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.RestoreTenantRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTenantServiceRestoreTenant)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RestoreTenant(ctx, req.(*v11.RestoreTenantRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _TenantService_PurgeTenant0_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.PurgeTenantRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTenantServicePurgeTenant)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.PurgeTenant(ctx, req.(*v11.PurgeTenantRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type TenantServiceHTTPClient interface {
 	// CleanupData 清理租户数据
 	CleanupData(ctx context.Context, req *v11.CleanupTenantDataRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -279,6 +357,12 @@ type TenantServiceHTTPClient interface {
 	GetUsage(ctx context.Context, req *v11.GetTenantUsageRequest, opts ...http.CallOption) (rsp *v11.TenantUsage, err error)
 	// List 获取租户列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListTenantResponse, err error)
+	// ListDeletedTenants 回收站：分页查询已删除（停车）租户
+	ListDeletedTenants(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListTenantResponse, err error)
+	// PurgeTenant 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+	PurgeTenant(ctx context.Context, req *v11.PurgeTenantRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// RestoreTenant 回收站：恢复租户（清理删除标记并置回在营态）
+	RestoreTenant(ctx context.Context, req *v11.RestoreTenantRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// TenantExists 租户是否存在
 	TenantExists(ctx context.Context, req *v11.TenantExistsRequest, opts ...http.CallOption) (rsp *v11.TenantExistsResponse, err error)
 	// Update 更新租户
@@ -385,6 +469,48 @@ func (c *TenantServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingReq
 	opts = append(opts, http.Operation(OperationTenantServiceList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListDeletedTenants 回收站：分页查询已删除（停车）租户
+func (c *TenantServiceHTTPClientImpl) ListDeletedTenants(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListTenantResponse, error) {
+	var out v11.ListTenantResponse
+	pattern := "/admin/v1/tenants/trash"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationTenantServiceListDeletedTenants))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// PurgeTenant 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+func (c *TenantServiceHTTPClientImpl) PurgeTenant(ctx context.Context, in *v11.PurgeTenantRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/tenants/{id}/purge"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationTenantServicePurgeTenant))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RestoreTenant 回收站：恢复租户（清理删除标记并置回在营态）
+func (c *TenantServiceHTTPClientImpl) RestoreTenant(ctx context.Context, in *v11.RestoreTenantRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/tenants/{id}/restore"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationTenantServiceRestoreTenant))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	"github.com/go-kratos/kratos/v2/errors"
+
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
@@ -391,4 +393,28 @@ func (s *TenantService) CleanupData(ctx context.Context, req *identityV1.Cleanup
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
+}
+
+// ListDeletedTenants 回收站：分页查询已删除（停车）租户。
+//
+// 契约面先行（issue #3）：行为面暂由 Rust 旗舰实现承载（rushwind-admin，
+// 删除=停车 deleted_at+OFF 语义）；Go 侧 tenant 尚无软删 mixin（Delete 为
+// 硬删，ent schema 未挂 DeletedAt），停车语义落地前返回未实现。
+func (s *TenantService) ListDeletedTenants(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
+	return nil, errors.Unimplemented("UNIMPLEMENTED",
+		"tenant recycle bin rides the rust flagship; go soft-delete pending")
+}
+
+// RestoreTenant 回收站：恢复停车租户（清删除标记并置回在营态）。
+// 同上：契约先行，行为面待 Go 侧软删语义落地。
+func (s *TenantService) RestoreTenant(ctx context.Context, req *identityV1.RestoreTenantRequest) (*emptypb.Empty, error) {
+	return nil, errors.Unimplemented("UNIMPLEMENTED",
+		"tenant recycle bin rides the rust flagship; go soft-delete pending")
+}
+
+// PurgeTenant 回收站：彻底删除停车租户（硬删行与残余关联，不可逆）。
+// 同上：契约先行，行为面待 Go 侧软删语义落地。
+func (s *TenantService) PurgeTenant(ctx context.Context, req *identityV1.PurgeTenantRequest) (*emptypb.Empty, error) {
+	return nil, errors.Unimplemented("UNIMPLEMENTED",
+		"tenant recycle bin rides the rust flagship; go soft-delete pending")
 }

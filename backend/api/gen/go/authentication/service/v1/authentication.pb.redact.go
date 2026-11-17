@@ -216,7 +216,7 @@ func (x *LoginRequest) Redact() {
 	// Safe field: UserId
 
 	// Redacting field: Password
-	PasswordTmp := ``
+	PasswordTmp := ""
 	x.Password = &PasswordTmp
 
 	// Safe field: RefreshToken

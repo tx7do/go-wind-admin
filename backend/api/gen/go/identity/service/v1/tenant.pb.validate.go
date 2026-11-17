@@ -2413,3 +2413,211 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CleanupTenantDataRequestValidationError{}
+
+// Validate checks the field values on RestoreTenantRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RestoreTenantRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RestoreTenantRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RestoreTenantRequestMultiError, or nil if none found.
+func (m *RestoreTenantRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RestoreTenantRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return RestoreTenantRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// RestoreTenantRequestMultiError is an error wrapping multiple validation
+// errors returned by RestoreTenantRequest.ValidateAll() if the designated
+// constraints aren't met.
+type RestoreTenantRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RestoreTenantRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RestoreTenantRequestMultiError) AllErrors() []error { return m }
+
+// RestoreTenantRequestValidationError is the validation error returned by
+// RestoreTenantRequest.Validate if the designated constraints aren't met.
+type RestoreTenantRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RestoreTenantRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RestoreTenantRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RestoreTenantRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RestoreTenantRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RestoreTenantRequestValidationError) ErrorName() string {
+	return "RestoreTenantRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RestoreTenantRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRestoreTenantRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RestoreTenantRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RestoreTenantRequestValidationError{}
+
+// Validate checks the field values on PurgeTenantRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PurgeTenantRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PurgeTenantRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PurgeTenantRequestMultiError, or nil if none found.
+func (m *PurgeTenantRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PurgeTenantRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return PurgeTenantRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PurgeTenantRequestMultiError is an error wrapping multiple validation errors
+// returned by PurgeTenantRequest.ValidateAll() if the designated constraints
+// aren't met.
+type PurgeTenantRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PurgeTenantRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PurgeTenantRequestMultiError) AllErrors() []error { return m }
+
+// PurgeTenantRequestValidationError is the validation error returned by
+// PurgeTenantRequest.Validate if the designated constraints aren't met.
+type PurgeTenantRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PurgeTenantRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PurgeTenantRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PurgeTenantRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PurgeTenantRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PurgeTenantRequestValidationError) ErrorName() string {
+	return "PurgeTenantRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PurgeTenantRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPurgeTenantRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PurgeTenantRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PurgeTenantRequestValidationError{}

@@ -7915,6 +7915,84 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/tenants/trash:
+        get:
+            tags:
+                - TenantService
+            description: 回收站：分页查询已删除（停车）租户
+            operationId: TenantService_ListDeletedTenants
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListTenantResponse'
     /admin/v1/tenants/{id}:
         get:
             tags:
@@ -8000,6 +8078,44 @@ paths:
                     application/json:
                         schema:
                             $ref: '#/components/schemas/CleanupTenantDataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/tenants/{id}/purge:
+        delete:
+            tags:
+                - TenantService
+            description: 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+            operationId: TenantService_PurgeTenant
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/tenants/{id}/restore:
+        post:
+            tags:
+                - TenantService
+            description: 回收站：恢复租户（清理删除标记并置回在营态）
+            operationId: TenantService_RestoreTenant
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RestoreTenantRequest'
                 required: true
             responses:
                 "200":
@@ -10025,7 +10141,9 @@ components:
                     type: string
                 userId:
                     type: string
-                    description: "管理端重置：指定目标用户（不传=操作当前登录用户）。\r\n 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。"
+                    description: |-
+                        管理端重置：指定目标用户（不传=操作当前登录用户）。
+                         仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
             description: Disable / remove
         DistributionItem:
             type: object
@@ -13469,6 +13587,14 @@ components:
                     type: string
                     description: 快照ID
             description: 恢复版本 - 请求（把快照的 payload/name 写回主表，版本号 +1；恢复前先快照当前版本）
+        RestoreTenantRequest:
+            type: object
+            properties:
+                id:
+                    readOnly: true
+                    type: string
+                    description: 租户ID
+            description: 恢复租户请求（回收站：把停车租户置回在营态）
         RevokeMessageRequest:
             type: object
             properties:

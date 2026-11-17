@@ -45,6 +45,15 @@ service TenantService {
 
   // 清理租户数据
   rpc CleanupData (CleanupTenantDataRequest) returns (google.protobuf.Empty) {}
+
+  // 回收站：分页查询已删除（停车）租户
+  rpc ListDeletedTenants (pagination.PagingRequest) returns (ListTenantResponse) {}
+
+  // 回收站：恢复租户（清理删除标记并置回在营态）
+  rpc RestoreTenant (RestoreTenantRequest) returns (google.protobuf.Empty) {}
+
+  // 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+  rpc PurgeTenant (PurgeTenantRequest) returns (google.protobuf.Empty) {}
 }
 
 // 租户
@@ -349,6 +358,22 @@ message TenantUsage {
 
 // 清理租户数据 - 请求
 message CleanupTenantDataRequest {
+  int64 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "租户ID", read_only: true},
+    json_name = "id"
+  ]; // 租户ID
+}
+
+// 恢复租户请求（回收站：把停车租户置回在营态）
+message RestoreTenantRequest {
+  int64 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "租户ID", read_only: true},
+    json_name = "id"
+  ]; // 租户ID
+}
+
+// 彻底删除租户请求（回收站：硬删停车租户及其残余关联行，不可逆）
+message PurgeTenantRequest {
   int64 id = 1 [
     (gnostic.openapi.v3.property) = {description: "租户ID", read_only: true},
     json_name = "id"

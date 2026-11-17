@@ -11647,6 +11647,18 @@ export interface TenantService {
   CleanupData(
     request: identityservicev1_CleanupTenantDataRequest,
   ): Promise<wellKnownEmpty>;
+  // 回收站：分页查询已删除（停车）租户
+  ListDeletedTenants(
+    request: pagination_PagingRequest,
+  ): Promise<identityservicev1_ListTenantResponse>;
+  // 回收站：恢复租户（清理删除标记并置回在营态）
+  RestoreTenant(
+    request: identityservicev1_RestoreTenantRequest,
+  ): Promise<wellKnownEmpty>;
+  // 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+  PurgeTenant(
+    request: identityservicev1_PurgeTenantRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createTenantServiceClient(
@@ -11839,6 +11851,98 @@ export function createTenantServiceClient(
         method: 'CleanupData',
       }) as Promise<wellKnownEmpty>;
     },
+    ListDeletedTenants(request) {
+      const path = `/admin/v1/tenants/trash`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'TenantService',
+        method: 'ListDeletedTenants',
+      }) as Promise<identityservicev1_ListTenantResponse>;
+    },
+    RestoreTenant(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/tenants/${request.id}/restore`;
+      const bodyMap = { ...request } as Record<string, unknown>;
+      delete bodyMap["id"];
+      const body = JSON.stringify(bodyMap);
+      return transport.unary(path, 'POST', body, {
+        service: 'TenantService',
+        method: 'RestoreTenant',
+      }) as Promise<wellKnownEmpty>;
+    },
+    PurgeTenant(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/tenants/${request.id}/purge`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'TenantService',
+        method: 'PurgeTenant',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 租户列表 - 答复
@@ -12002,6 +12106,16 @@ export type identityservicev1_GetTenantUsageRequest = {
 
 // 清理租户数据 - 请求
 export type identityservicev1_CleanupTenantDataRequest = {
+  id: string | undefined;
+};
+
+// 恢复租户请求（回收站：把停车租户置回在营态）
+export type identityservicev1_RestoreTenantRequest = {
+  id: string | undefined;
+};
+
+// 彻底删除租户请求（回收站：硬删停车租户及其残余关联行，不可逆）
+export type identityservicev1_PurgeTenantRequest = {
   id: string | undefined;
 };
 

@@ -76,4 +76,26 @@ service TenantService {
       body: "*"
     };
   }
+
+  // 回收站：分页查询已删除（停车）租户
+  rpc ListDeletedTenants (pagination.PagingRequest) returns (identity.service.v1.ListTenantResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/tenants/trash"
+    };
+  }
+
+  // 回收站：恢复租户（清理删除标记并置回在营态）
+  rpc RestoreTenant (identity.service.v1.RestoreTenantRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/tenants/{id}/restore"
+      body: "*"
+    };
+  }
+
+  // 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+  rpc PurgeTenant (identity.service.v1.PurgeTenantRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/tenants/{id}/purge"
+    };
+  }
 }
