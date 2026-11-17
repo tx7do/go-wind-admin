@@ -10,11 +10,12 @@ import {
   ProFormCheckbox,
   ProFormDependency,
 } from '@ant-design/pro-components';
-import { Divider, App } from 'antd';
+import { Divider, App, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { permissionservicev1_Menu as Menu } from '@/api/generated/admin/service/v1';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
+import IconPicker from '@/components/common/IconPicker';
 import { useCreateMenu, useUpdateMenu, fetchListMenus } from '@/api/hooks/menu';
 import { PaginationQuery } from '@go-wind/admin-react';
 import {
@@ -160,7 +161,29 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, mode, data, onClose, onSu
       if (mode === 'create') {
         await createMutation.mutateAsync({ data: payload as any });
       } else if (data?.id) {
-        await updateMutation.mutateAsync({ id: data.id, values: payload });
+        // updateMask 必须给出 meta.xxx 点路径：后端 menu_repo 只从带 "meta." 前缀的
+        // 掩码路径里提取 meta 子字段（metaPaths），裸 "meta" 会让 meta 整体静默不更新
+        await updateMutation.mutateAsync({
+          id: data.id,
+          values: payload,
+          updateMask: [
+            'type',
+            'status',
+            'path',
+            'component',
+            'parentId',
+            'meta.title',
+            'meta.order',
+            'meta.icon',
+            'meta.authority',
+            'meta.keepAlive',
+            'meta.affixTab',
+            'meta.hideInMenu',
+            'meta.hideChildrenInMenu',
+            'meta.hideInBreadcrumb',
+            'meta.hideInTab',
+          ],
+        });
       }
     } finally {
       setConfirmLoading(false);
@@ -248,19 +271,17 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, mode, data, onClose, onSu
         }}
       />
 
-      {/* 图标 - 仅非按钮类型 */}
+      {/* 图标 - 仅非按钮类型；IconPicker 经 Form.Item 挂进 DrawerForm 同一表单 */}
       <ProFormDependency name={['type']}>
         {({ type }) => {
           if (isButton(type)) return null;
           return (
-            <ProFormText
-              name="meta.icon"
-              label={t('icon')}
-              placeholder={t('iconPlaceholder')}
-              fieldProps={{
-                allowClear: true,
-              }}
-            />
+            <Form.Item name="meta.icon" label={t('icon')}>
+              <IconPicker
+                placeholder={t('iconPlaceholder')}
+                searchPlaceholder={t('iconSearchPlaceholder')}
+              />
+            </Form.Item>
           );
         }}
       </ProFormDependency>

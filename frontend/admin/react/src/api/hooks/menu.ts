@@ -61,14 +61,26 @@ export function useCreateMenu(
 }
 
 export function useUpdateMenu(
-  options?: UseMutationOptions<{}, Error, { id: string; values: Record<string, any> }>,
+  options?: UseMutationOptions<
+    {},
+    Error,
+    { id: string; values: Record<string, any>; updateMask?: string[] }
+  >,
 ) {
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: Record<string, any> }) =>
+    mutationFn: ({
+      id,
+      values,
+      updateMask,
+    }: {
+      id: string;
+      values: Record<string, any>;
+      updateMask?: string[];
+    }) =>
       apiClient.menuService.Update({
         id,
         data: { ...values } as any,
-        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+        updateMask: makeUpdateMask(updateMask ?? Object.keys(values ?? {})),
       }),
     ...options,
   });

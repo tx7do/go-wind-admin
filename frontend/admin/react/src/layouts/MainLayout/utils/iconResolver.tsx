@@ -1,6 +1,8 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import * as Icons from '@ant-design/icons';
+// 本地注册 lucide 集合：iconify 名称离线可渲染，不必等 api.iconify.design 回包
+import '@/components/common/iconifyOffline';
 
 /**
  * 根据图标名称字符串解析为图标组件
