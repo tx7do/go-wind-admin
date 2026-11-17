@@ -13,8 +13,24 @@ import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 
 // 直接导出函数，供非 Vue 上下文使用
+// 渐进式验证码（issue #1）：dist 的 use-auth 吞掉登录错误只回 {userInfo:null}，
+// 页面无法区分「密码错」与「需要验证码」——gateway 是宿主代码，错误必经此层，
+// 在此截获最后Reject对象供页面读取 reason。
+let lastLoginReject: any = null;
+
+export function consumeLastLoginReject(): any {
+  const e = lastLoginReject;
+  lastLoginReject = null;
+  return e;
+}
+
 export async function login(request: authenticationservicev1_LoginRequest) {
-  return apiClient.authenticationService.Login(request);
+  try {
+    return await apiClient.authenticationService.Login(request);
+  } catch (e) {
+    lastLoginReject = e;
+    throw e;
+  }
 }
 
 export async function logout() {

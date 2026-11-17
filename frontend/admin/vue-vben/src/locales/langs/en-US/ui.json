@@ -288,7 +288,8 @@
       "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout",
       "INVALID_TENANT": "Tenant, username, or password is incorrect. Please try again.",
       "CAPTCHA_INVALID": "The captcha is incorrect. Please try again.",
-      "TOO_MANY_ATTEMPTS": "Too many failed attempts. Please try again later."
+      "TOO_MANY_ATTEMPTS": "Too many failed attempts. Please try again later.",
+      "CAPTCHA_REQUIRED": "Please complete the captcha first"
     }
   },
   "import": {

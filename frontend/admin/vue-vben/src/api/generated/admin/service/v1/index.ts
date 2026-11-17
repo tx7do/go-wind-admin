@@ -38,6 +38,8 @@ export type AdminErrorReason =
   | 'BAD_GATEWAY'
   // 400
   | 'BAD_REQUEST'
+  | 'CAPTCHA_INVALID'
+  | 'CAPTCHA_REQUIRED'
   // 409
   | 'CONFLICT'
   // 417
@@ -63,6 +65,7 @@ export type AdminErrorReason =
   | 'INTERNAL_SERVER_ERROR'
   | 'INVALID_GRANT_TYPE'
   | 'INVALID_PASSWORD'
+  | 'INVALID_TENANT'
   | 'INVALID_TOKEN'
   | 'INVALID_USERID'
   // 411

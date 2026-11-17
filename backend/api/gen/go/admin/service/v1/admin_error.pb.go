@@ -32,6 +32,9 @@ const (
 	AdminErrorReason_INVALID_USERID     AdminErrorReason = 2 // 用户ID无效
 	AdminErrorReason_INVALID_TOKEN      AdminErrorReason = 3 // token无效
 	AdminErrorReason_INVALID_PASSWORD   AdminErrorReason = 4 // 密码无效
+	AdminErrorReason_CAPTCHA_INVALID    AdminErrorReason = 5 // 验证码无效（登录页按此 reason 映射「验证码错误」文案）
+	AdminErrorReason_INVALID_TENANT     AdminErrorReason = 6 // 租户无效（登录页按此 reason 并入「租户、用户名或密码错误」统一文案）
+	AdminErrorReason_CAPTCHA_REQUIRED   AdminErrorReason = 7 // 需要验证码（渐进式：同一 ip+用户名失败达阈值后登录要求验证码，缺失即此 reason）
 	// 401
 	AdminErrorReason_UNAUTHORIZED            AdminErrorReason = 100 // 未授权
 	AdminErrorReason_USER_FREEZE             AdminErrorReason = 101 // 用户被冻结
@@ -131,6 +134,9 @@ var (
 		2:    "INVALID_USERID",
 		3:    "INVALID_TOKEN",
 		4:    "INVALID_PASSWORD",
+		5:    "CAPTCHA_INVALID",
+		6:    "INVALID_TENANT",
+		7:    "CAPTCHA_REQUIRED",
 		100:  "UNAUTHORIZED",
 		101:  "USER_FREEZE",
 		103:  "INCORRECT_APP_SECRET",
@@ -186,6 +192,9 @@ var (
 		"INVALID_USERID":                  2,
 		"INVALID_TOKEN":                   3,
 		"INVALID_PASSWORD":                4,
+		"CAPTCHA_INVALID":                 5,
+		"INVALID_TENANT":                  6,
+		"CAPTCHA_REQUIRED":                7,
 		"UNAUTHORIZED":                    100,
 		"USER_FREEZE":                     101,
 		"INCORRECT_APP_SECRET":            103,
@@ -268,13 +277,16 @@ var File_admin_service_v1_admin_error_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_admin_error_proto_rawDesc = "" +
 	"\n" +
-	"\"admin/service/v1/admin_error.proto\x12\x10admin.service.v1\x1a\x13errors/errors.proto*\xc6\f\n" +
+	"\"admin/service/v1/admin_error.proto\x12\x10admin.service.v1\x1a\x13errors/errors.proto*\x97\r\n" +
 	"\x10AdminErrorReason\x12\x15\n" +
 	"\vBAD_REQUEST\x10\x00\x1a\x04\xa8E\x90\x03\x12\x1c\n" +
 	"\x12INVALID_GRANT_TYPE\x10\x01\x1a\x04\xa8E\x90\x03\x12\x18\n" +
 	"\x0eINVALID_USERID\x10\x02\x1a\x04\xa8E\x90\x03\x12\x17\n" +
 	"\rINVALID_TOKEN\x10\x03\x1a\x04\xa8E\x90\x03\x12\x1a\n" +
-	"\x10INVALID_PASSWORD\x10\x04\x1a\x04\xa8E\x90\x03\x12\x16\n" +
+	"\x10INVALID_PASSWORD\x10\x04\x1a\x04\xa8E\x90\x03\x12\x19\n" +
+	"\x0fCAPTCHA_INVALID\x10\x05\x1a\x04\xa8E\x90\x03\x12\x18\n" +
+	"\x0eINVALID_TENANT\x10\x06\x1a\x04\xa8E\x90\x03\x12\x1a\n" +
+	"\x10CAPTCHA_REQUIRED\x10\a\x1a\x04\xa8E\x90\x03\x12\x16\n" +
 	"\fUNAUTHORIZED\x10d\x1a\x04\xa8E\x91\x03\x12\x15\n" +
 	"\vUSER_FREEZE\x10e\x1a\x04\xa8E\x91\x03\x12\x1e\n" +
 	"\x14INCORRECT_APP_SECRET\x10g\x1a\x04\xa8E\x91\x03\x12 \n" +

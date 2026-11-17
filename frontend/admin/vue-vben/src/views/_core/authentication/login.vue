@@ -17,7 +17,10 @@ defineOptions({ name: 'Login' });
 
 const authStore = useAuthStore();
 
-// 验证码状态
+// 验证码状态。渐进式（issue #1）：初始不要求验证码，后端对同一
+// ip+用户名失败达阈值后的登录投递 CAPTCHA_REQUIRED reason，收到才亮
+// 验证码输入与图片（图片拉取也随之懒加载）。
+const captchaRequired = ref(false);
 const captchaId = ref('');
 const captchaImage = ref('');
 const captchaLoading = ref(false);
@@ -58,7 +61,9 @@ async function refreshCaptcha() {
 }
 
 onMounted(() => {
-  refreshCaptcha();
+  if (captchaRequired.value) {
+    refreshCaptcha();
+  }
   // SSO 开关探测：失败/未配置都不显示按钮（非关键路径，静默降级）
   ssoEnabled()
     .then((v) => (ssoOn.value = v))
@@ -160,18 +165,26 @@ const formSchema = computed((): VbenFormSchema[] => {
       label: $t('authentication.password'),
       rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
     },
-    {
-      component: 'VbenInput',
-      componentProps: {
-        placeholder: $t('authentication.captchaTip'),
-        autocomplete: 'off',
-        class: 'w-auto flex-1 min-w-0',
-      },
-      fieldName: 'captchaValue',
-      label: $t('authentication.captcha'),
-      rules: z.string().min(1, { message: $t('authentication.captchaTip') }),
-      suffix: renderCaptchaImage,
-    },
+    // 渐进式验证码：未触发要求时字段不渲染（form-api 对被删字段显式
+    // 清值，重新点亮时输入框/校验干净回归）。
+    ...(captchaRequired.value
+      ? [
+          {
+            component: 'VbenInput',
+            componentProps: {
+              placeholder: $t('authentication.captchaTip'),
+              autocomplete: 'off',
+              class: 'w-auto flex-1 min-w-0',
+            },
+            fieldName: 'captchaValue',
+            label: $t('authentication.captcha'),
+            rules: z
+              .string()
+              .min(1, { message: $t('authentication.captchaTip') }),
+            suffix: renderCaptchaImage,
+          },
+        ]
+      : []),
   ];
 });
 
@@ -179,11 +192,19 @@ const formSchema = computed((): VbenFormSchema[] => {
 async function handleSubmit(values: Record<string, any>) {
   const result = await authStore.authLogin({
     ...values,
-    captchaId: captchaId.value,
+    captchaId: captchaRequired.value ? captchaId.value : undefined,
   });
-  // 登录失败时刷新验证码
-  if (!result?.userInfo) {
+  // 渐进式验证码：后端要求验证码（CAPTCHA_REQUIRED）时点亮输入与图片；
+  // 已处于要求态的失败则刷新图片。
+  if (result?.captchaRequired && !captchaRequired.value) {
+    captchaRequired.value = true;
     refreshCaptcha();
+    return;
+  }
+  if (!result?.userInfo) {
+    if (captchaRequired.value) {
+      refreshCaptcha();
+    }
   }
 }
 </script>

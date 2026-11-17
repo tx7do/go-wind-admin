@@ -81,6 +81,48 @@ func ErrorInvalidPassword(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, AdminErrorReason_INVALID_PASSWORD.String(), fmt.Sprintf(format, args...))
 }
 
+// 验证码无效（登录页按此 reason 映射「验证码错误」文案）
+func IsCaptchaInvalid(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AdminErrorReason_CAPTCHA_INVALID.String() && e.Code == 400
+}
+
+// 验证码无效（登录页按此 reason 映射「验证码错误」文案）
+func ErrorCaptchaInvalid(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, AdminErrorReason_CAPTCHA_INVALID.String(), fmt.Sprintf(format, args...))
+}
+
+// 租户无效（登录页按此 reason 并入「租户、用户名或密码错误」统一文案）
+func IsInvalidTenant(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AdminErrorReason_INVALID_TENANT.String() && e.Code == 400
+}
+
+// 租户无效（登录页按此 reason 并入「租户、用户名或密码错误」统一文案）
+func ErrorInvalidTenant(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, AdminErrorReason_INVALID_TENANT.String(), fmt.Sprintf(format, args...))
+}
+
+// 需要验证码（渐进式：同一 ip+用户名失败达阈值后登录要求验证码，缺失即此 reason）
+func IsCaptchaRequired(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AdminErrorReason_CAPTCHA_REQUIRED.String() && e.Code == 400
+}
+
+// 需要验证码（渐进式：同一 ip+用户名失败达阈值后登录要求验证码，缺失即此 reason）
+func ErrorCaptchaRequired(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, AdminErrorReason_CAPTCHA_REQUIRED.String(), fmt.Sprintf(format, args...))
+}
+
 // 401
 func IsUnauthorized(err error) bool {
 	if err == nil {

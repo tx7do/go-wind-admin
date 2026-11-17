@@ -227,6 +227,7 @@ export function getErrorMsg(error: unknown) {
         USER_NOT_FOUND: 'credentialMismatch',
         INVALID_TENANT: 'credentialMismatch',
         CAPTCHA_INVALID: 'captchaInvalid',
+        CAPTCHA_REQUIRED: 'captchaRequiredReason',
         TOO_MANY_ATTEMPTS: 'tooManyAttempts',
       };
       const loginKey = loginReasonKeys[reason];

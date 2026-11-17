@@ -14,6 +14,9 @@ enum AdminErrorReason {
     INVALID_USERID = 2 [(errors.code) = 400];// 用户ID无效
     INVALID_TOKEN = 3 [(errors.code) = 400];// token无效
     INVALID_PASSWORD = 4 [(errors.code) = 400];// 密码无效
+    CAPTCHA_INVALID = 5 [(errors.code) = 400];// 验证码无效（登录页按此 reason 映射「验证码错误」文案）
+    INVALID_TENANT = 6 [(errors.code) = 400];// 租户无效（登录页按此 reason 并入「租户、用户名或密码错误」统一文案）
+    CAPTCHA_REQUIRED = 7 [(errors.code) = 400];// 需要验证码（渐进式：同一 ip+用户名失败达阈值后登录要求验证码，缺失即此 reason）
 
     // 401
     UNAUTHORIZED = 100 [(errors.code) = 401]; // 未授权

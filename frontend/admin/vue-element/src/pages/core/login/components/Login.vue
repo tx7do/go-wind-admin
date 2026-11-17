@@ -56,8 +56,8 @@
         </el-form-item>
       </el-tooltip>
 
-      <!-- 验证码 -->
-      <el-form-item prop="captchaCode">
+      <!-- 验证码：渐进式，后端要求时才出现 -->
+      <el-form-item v-if="captchaRequired" prop="captchaCode">
         <div class="captcha-row">
           <el-input
             v-model.trim="loginFormData.captchaCode"
@@ -110,6 +110,7 @@
 <script setup lang="ts">
 import type { FormInstance } from "element-plus";
 import { useAuth } from "@go-wind/admin-element";
+import { consumeLastLoginReject } from "@/api/composables";
 import { ssoEnabled, startSsoLogin } from "@/composables/sso";
 import { router } from "@/router";
 
@@ -128,7 +129,10 @@ const ssoOn = ref(false);
 onMounted(() => {
   ssoEnabled().then((v) => (ssoOn.value = v)).catch(() => (ssoOn.value = false));
 });
-// 验证码状态
+// 验证码状态。渐进式（issue #1）：初始不要求，后端对失败达阈值的登录
+// 投递 CAPTCHA_REQUIRED reason（经 gateway 的 consumeLastLoginReject 截获）
+// 才点亮验证码输入与图片，图片拉取随之懒加载。
+const captchaRequired = ref(false);
 const captchaId = ref("");
 const captchaImage = ref("");
 // 记住我
@@ -163,13 +167,17 @@ const loginRules = computed(() => {
         trigger: "blur",
       },
     ],
-    captchaCode: [
-      {
-        required: true,
-        trigger: "blur",
-        message: t("core.login.message.captchaCode.required"),
-      },
-    ],
+    // 渐进式验证码：未要求时规则不出场（el-form validate-on-rule-change
+    // 已关，动态展开不会触发全表重校）。
+    captchaCode: captchaRequired.value
+      ? [
+          {
+            required: true,
+            trigger: "blur",
+            message: t("core.login.message.captchaCode.required"),
+          },
+        ]
+      : [],
   };
 });
 
@@ -185,7 +193,9 @@ async function refreshCaptcha() {
 }
 
 onMounted(() => {
-  refreshCaptcha();
+  if (captchaRequired.value) {
+    refreshCaptcha();
+  }
 });
 
 /**
@@ -242,9 +252,22 @@ async function handleLoginSubmit() {
         await router.push(safePath);
       }
     );
-    // authStore.login 永不抛错：失败（含验证码错误、MFA 闸门）以 userInfo 缺失表达，据此刷新验证码。
+    // authStore.login 永不抛错：失败（含验证码错误、MFA 闸门）以 userInfo 缺失表达。
+    // 渐进式验证码：gateway 截获的 reject 带 CAPTCHA_REQUIRED reason 时点亮
+    // 验证码并拉图；已处于要求态的失败刷新图片。
     if (!result?.userInfo) {
-      refreshCaptcha();
+      const reject = consumeLastLoginReject();
+      const required =
+        reject?.reason === "CAPTCHA_REQUIRED" ||
+        reject?.metadata?.captchaRequired;
+      if (required && !captchaRequired.value) {
+        captchaRequired.value = true;
+        refreshCaptcha();
+        return;
+      }
+      if (captchaRequired.value) {
+        refreshCaptcha();
+      }
     }
   } finally {
     loading.value = false;

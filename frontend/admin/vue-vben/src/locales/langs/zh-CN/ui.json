@@ -288,7 +288,8 @@
       "NETWORK_CONNECT_TIMEOUT_ERROR": "网络连接超时",
       "INVALID_TENANT": "租户、用户名或密码错误，请重新输入",
       "CAPTCHA_INVALID": "验证码错误，请重新输入",
-      "TOO_MANY_ATTEMPTS": "登录失败次数过多，请稍后再试"
+      "TOO_MANY_ATTEMPTS": "登录失败次数过多，请稍后再试",
+      "CAPTCHA_REQUIRED": "请先完成验证码校验"
     }
   },
   "import": {
