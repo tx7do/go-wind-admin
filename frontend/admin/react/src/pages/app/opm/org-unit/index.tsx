@@ -228,7 +228,10 @@ const OrgUnitManagement = () => {
             />
           </Splitter.Panel>
           <Splitter.Panel>
-            <div style={{ height: '100%', paddingLeft: 8 }}>
+            {/* ref 必须挂在 ListTable 的直接包裹层：useProTableScrollY 测这个容器
+                的高度反推 .ant-table-body 的高（scroll.y），漏挂则 scroll.y 恒为
+                初始值、卡片不撑满面板高度（右侧列表悬空，页面下半截留白） */}
+            <div ref={containerRef} style={{ height: '100%', paddingLeft: 8 }}>
           <ListTable<OrgUnit>
             actionRef={actionRef}
             columns={columns}
