@@ -11,6 +11,7 @@ import { notification } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   fetchListApis,
+  httpMethodTagColor,
   methodList,
   PaginationQuery,
   useDeleteApi,
@@ -103,7 +104,12 @@ const gridOptions: VxeGridProps<Api> = {
   columns: [
     { title: $t('ui.table.description'), field: 'description', align: 'left' },
     { title: $t('page.api.path'), field: 'path', align: 'left' },
-    { title: $t('page.api.method'), field: 'method', width: 80 },
+    {
+      title: $t('page.api.method'),
+      field: 'method',
+      slots: { default: 'apiMethod' },
+      width: 90,
+    },
     { title: $t('page.api.module'), field: 'module' },
     {
       title: $t('page.api.moduleDescription'),
@@ -242,6 +248,11 @@ function buildRowActions(): TableAction[] {
         </a-popconfirm>
         <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="apis" />
         <TableAddButton @click="handleCreate" />
+      </template>
+      <template #apiMethod="{ row }">
+        <a-tag :color="httpMethodTagColor(row.method)">
+          {{ row.method }}
+        </a-tag>
       </template>
       <template #action="{ row }">
         <TableActions :row="row" :actions="buildRowActions()" />

@@ -64,19 +64,22 @@ export const methodList = [
   { value: 'DELETE', label: 'DELETE' },
 ];
 
-// HTTP 方法对应的 Tag 颜色类型
-export const httpMethodTagTypeMap: Record<
-  string,
-  'danger' | 'info' | 'primary' | 'success' | 'warning'
-> = {
+// HTTP 方法对应的 a-tag 预设色（对齐 react 基准 METHOD_COLOR_MAP：
+// GET 绿 / POST 蓝 / PUT 橙 / DELETE 红，其余中性）。API 管理页与抽屉共用。
+export const httpMethodTagColorMap: Record<string, string> = {
   GET: 'success',
-  POST: 'primary',
+  POST: 'processing',
   PUT: 'warning',
-  DELETE: 'danger',
-  PATCH: 'info',
-  HEAD: 'info',
-  OPTIONS: 'info',
+  DELETE: 'error',
+  PATCH: 'default',
+  HEAD: 'default',
+  OPTIONS: 'default',
 };
+
+/** HTTP 方法对应的 a-tag 预设色，无匹配时回退中性 default */
+export function httpMethodTagColor(method: string | undefined): string {
+  return httpMethodTagColorMap[method || ''] || 'default';
+}
 
 export const statusList = computed(() => [
   { value: 'ON', label: $t('enum.status.ON') },
