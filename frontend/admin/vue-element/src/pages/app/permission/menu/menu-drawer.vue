@@ -64,7 +64,11 @@
       </ElFormItem>
 
       <ElFormItem v-if="!isButton(formData.type)" :label="$t('pages.menu.icon')" prop="meta.icon">
-        <IconSelect v-model="formData.meta.icon" prefix="lucide" />
+        <!-- 不传 prefix：IconSelect（本地 assets SVG + EP 图标）没有 iconify 集合
+             前缀的概念，prefix 是 vben 端 IconPicker 的 prop，移植时误带——
+             未声明的 attr 会穿透到根 div 且 el.prefix 是 DOM 只读属性，
+             打开抽屉即抛 TypeError: Cannot set property prefix -->
+        <IconSelect v-model="formData.meta.icon" />
       </ElFormItem>
 
       <ElFormItem v-if="!isButton(formData.type)" :label="$t('pages.menu.path')" prop="path">

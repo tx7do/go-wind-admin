@@ -22,7 +22,13 @@
               class="size-full"
             />
           </div>
-          <span class="flex-auto">{{ $t(scope.row.meta?.title) }}</span>
+          <!-- meta.title 可为空（BUTTON 型菜单常无 meta）：$t(undefined) 会抛
+               SyntaxError: Invalid arguments 打崩 VxeTableBody 渲染（整页表格
+               空白 + tableBodyElem.querySelector 连锁报错）。空标题回退路由名，
+               与 vben 基准端同款守卫。 -->
+          <span class="flex-auto">
+            {{ scope.row.meta?.title ? $t(scope.row.meta.title) : (scope.row.name ?? "-") }}
+          </span>
         </div>
       </template>
 
