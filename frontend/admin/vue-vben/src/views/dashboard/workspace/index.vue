@@ -276,10 +276,14 @@ const sessionItems = computed(
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.2s;
-  background: hsl(var(--accent)) /* 主题 accent 淡底，明暗两态自适应 */;
+  /* 底色=前景色低透明度水洗（react 基准同语义：antd color-fill-quaternary→tertiary，
+     暗态白 8%→12%、亮态黑 4%→6%；--foreground 自带明暗翻转，一处写平两态）。
+     不用实底 --accent：暗态 hsl(216 5% 19%) ≈ #2E3033 比 #111827 卡面亮一整档
+     且是低饱和中性灰，在藏蓝画布上整排灰块（灰度过大即此）。 */
+  background: hsl(var(--foreground) / 8%);
 
   &:hover {
-    background: hsl(var(--accent-dark));
+    background: hsl(var(--foreground) / 12%);
   }
 
   &__icon {
