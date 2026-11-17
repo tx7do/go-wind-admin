@@ -7919,7 +7919,10 @@ paths:
         get:
             tags:
                 - TenantService
-            description: 回收站：分页查询已删除（停车）租户
+            description: |-
+                回收站：分页查询已删除（停车）租户
+                （注册序刻意置于 Get({id}) 之前——gorilla/gen-http 都是先注册者优先，
+                字面段被先注册的参数段吸收即成 shadow，挂载面直接跳过，路由就死了）
             operationId: TenantService_ListDeletedTenants
             parameters:
                 - name: page

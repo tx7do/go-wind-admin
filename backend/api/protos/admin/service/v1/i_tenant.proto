@@ -17,6 +17,30 @@ service TenantService {
     };
   }
 
+  // 回收站：分页查询已删除（停车）租户
+  //（注册序刻意置于 Get({id}) 之前——gorilla/gen-http 都是先注册者优先，
+  //字面段被先注册的参数段吸收即成 shadow，挂载面直接跳过，路由就死了）
+  rpc ListDeletedTenants (pagination.PagingRequest) returns (identity.service.v1.ListTenantResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/tenants/trash"
+    };
+  }
+
+  // 回收站：恢复租户（清理删除标记并置回在营态）
+  rpc RestoreTenant (identity.service.v1.RestoreTenantRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/tenants/{id}/restore"
+      body: "*"
+    };
+  }
+
+  // 回收站：彻底删除租户（硬删行与残余关联，不可逆）
+  rpc PurgeTenant (identity.service.v1.PurgeTenantRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/tenants/{id}/purge"
+    };
+  }
+
   // 获取租户数据
   rpc Get (identity.service.v1.GetTenantRequest) returns (identity.service.v1.Tenant) {
     option (google.api.http) = {
@@ -77,25 +101,4 @@ service TenantService {
     };
   }
 
-  // 回收站：分页查询已删除（停车）租户
-  rpc ListDeletedTenants (pagination.PagingRequest) returns (identity.service.v1.ListTenantResponse) {
-    option (google.api.http) = {
-      get: "/admin/v1/tenants/trash"
-    };
-  }
-
-  // 回收站：恢复租户（清理删除标记并置回在营态）
-  rpc RestoreTenant (identity.service.v1.RestoreTenantRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/admin/v1/tenants/{id}/restore"
-      body: "*"
-    };
-  }
-
-  // 回收站：彻底删除租户（硬删行与残余关联，不可逆）
-  rpc PurgeTenant (identity.service.v1.PurgeTenantRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/admin/v1/tenants/{id}/purge"
-    };
-  }
 }
