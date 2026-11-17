@@ -144,15 +144,17 @@ const gridOptions: VxeGridProps<Position> = {
   },
 
   columns: [
-    { title: $t('page.position.name'), field: 'name' },
-    { title: $t('page.position.code'), field: 'code' },
+    // 弹性列一律给 minWidth（同 org_unit：裸弹性列在窄视口被钳到 40px 且溢出被
+    // 裁剪——表头折行、固定列前露画布黑带、滚动失灵）。
+    { title: $t('page.position.name'), field: 'name', minWidth: 140 },
+    { title: $t('page.position.code'), field: 'code', minWidth: 100 },
     {
       title: $t('page.position.type'),
       field: 'type',
       slots: { default: 'type' },
       width: 95,
     },
-    { title: $t('page.position.description'), field: 'description' },
+    { title: $t('page.position.description'), field: 'description', minWidth: 120 },
     {
       title: $t('page.position.orgUnitName'),
       field: 'orgUnitName',
@@ -172,7 +174,7 @@ const gridOptions: VxeGridProps<Position> = {
       formatter: 'formatDateTime',
       width: 140,
     },
-    { title: $t('ui.table.remark'), field: 'remark' },
+    { title: $t('ui.table.remark'), field: 'remark', minWidth: 100 },
     {
       title: $t('ui.table.action'),
       field: 'action',
