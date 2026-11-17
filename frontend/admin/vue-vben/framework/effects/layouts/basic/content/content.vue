@@ -90,7 +90,17 @@ function transformComponent(
   <div class="relative h-full">
     <IFrameRouterView />
     <RouterView v-slot="{ Component, route }">
-      <Transition :name="getTransitionName(route)" appear mode="out-in">
+      <!-- 显式 duration：Transition 结束判定走 Vue 内置计时器兜底，不依赖
+           transitionend/animationend 事件——部分内嵌 webview（软件渲染路径）
+           不派发这两类事件，纯 CSS 判定会让路由视图永久冻结在 leave 阶段，
+           换页后 URL 已变而画面停在旧页。毫秒值与 fade-slide 的 CSS 时长
+           （0.3s）对齐。 -->
+      <Transition
+        :duration="300"
+        :name="getTransitionName(route)"
+        appear
+        mode="out-in"
+      >
         <KeepAlive
           v-if="keepAlive"
           :exclude="getExcludeCachedTabs"

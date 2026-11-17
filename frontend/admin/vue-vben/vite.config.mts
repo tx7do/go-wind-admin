@@ -94,6 +94,14 @@ export default defineConfig(async () => {
           '@vben/access',
           '@vben/common-ui',
           '@vben/hooks',
+          // 这三个曾漏出 exclude：被预构建成 .vite/deps/@vben_locales.js 等，
+          // 而包内组件的相对 import 走 .pnpm 源码路径——同一 locales 模块
+          // 出现两个 createI18n 实例，包组件侧 composer 全空，登录页按钮/
+          // 记住我等文案渲染成裸 key 且永不自愈（locale 切换只重渲染
+          // 实例 A 侧文本）。alias 到包内源码的裸说明符必须全部 exclude。
+          '@vben/locales',
+          '@vben/icons',
+          '@vben/constants',
           '@vben/preferences',
           '@vben/stores',
           '@vben/types',
