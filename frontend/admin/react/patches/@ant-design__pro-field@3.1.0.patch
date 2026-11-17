@@ -1,0 +1,52 @@
+diff --git a/es/components/TreeSelect/index.js b/es/components/TreeSelect/index.js
+index a10d1c99ac298a77f1d2ce74ae30f071c6ce2b4c..ca9cdee23830e632fb9c7691b657513da8ed2373 100644
+--- a/es/components/TreeSelect/index.js
++++ b/es/components/TreeSelect/index.js
+@@ -130,9 +130,9 @@ var FieldTreeSelect = function FieldTreeSelect(_ref, ref) {
+       spinning: loading,
+       children: /*#__PURE__*/_jsx(TreeSelect, _objectSpread(_objectSpread({
+         open: open,
+-        onDropdownVisibleChange: function onDropdownVisibleChange(isOpen) {
+-          var _fieldProps$onDropdow;
+-          fieldProps === null || fieldProps === void 0 || (_fieldProps$onDropdow = fieldProps.onDropdownVisibleChange) === null || _fieldProps$onDropdow === void 0 || _fieldProps$onDropdow.call(fieldProps, isOpen);
++        onOpenChange: function onOpenChange(isOpen) {
++          var _fieldProps$onOpenCha;
++          fieldProps === null || fieldProps === void 0 || (_fieldProps$onOpenCha = fieldProps.onOpenChange) === null || _fieldProps$onOpenCha === void 0 || _fieldProps$onOpenCha.call(fieldProps, isOpen);
+           setOpen(isOpen);
+         },
+         ref: treeSelectRef,
+@@ -153,7 +153,7 @@ var FieldTreeSelect = function FieldTreeSelect(_ref, ref) {
+             children: [item.label, " ", itemIndex < valuesLength - 1 ? ',' : '']
+           });
+         } : undefined,
+-        bordered: !light
++        variant: light ? 'borderless' : 'outlined'
+       }, fieldProps), {}, {
+         treeData: options,
+         showSearch: showSearch,
+diff --git a/lib/components/TreeSelect/index.js b/lib/components/TreeSelect/index.js
+index 7123aec84a4ede3d9b35f20c086fbeec63120c11..92d820b78494532505c1e14752794f636a309fb2 100644
+--- a/lib/components/TreeSelect/index.js
++++ b/lib/components/TreeSelect/index.js
+@@ -134,9 +134,9 @@ var FieldTreeSelect = function FieldTreeSelect(_ref, ref) {
+       spinning: loading,
+       children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_antd.TreeSelect, (0, _objectSpread2.default)((0, _objectSpread2.default)({
+         open: open,
+-        onDropdownVisibleChange: function onDropdownVisibleChange(isOpen) {
+-          var _fieldProps$onDropdow;
+-          fieldProps === null || fieldProps === void 0 || (_fieldProps$onDropdow = fieldProps.onDropdownVisibleChange) === null || _fieldProps$onDropdow === void 0 || _fieldProps$onDropdow.call(fieldProps, isOpen);
++        onOpenChange: function onOpenChange(isOpen) {
++          var _fieldProps$onOpenCha;
++          fieldProps === null || fieldProps === void 0 || (_fieldProps$onOpenCha = fieldProps.onOpenChange) === null || _fieldProps$onOpenCha === void 0 || _fieldProps$onOpenCha.call(fieldProps, isOpen);
+           setOpen(isOpen);
+         },
+         ref: treeSelectRef,
+@@ -157,7 +157,7 @@ var FieldTreeSelect = function FieldTreeSelect(_ref, ref) {
+             children: [item.label, " ", itemIndex < valuesLength - 1 ? ',' : '']
+           });
+         } : undefined,
+-        bordered: !light
++        variant: light ? 'borderless' : 'outlined'
+       }, fieldProps), {}, {
+         treeData: options,
+         showSearch: showSearch,

@@ -11,5 +11,6 @@ minimumReleaseAgeExclude:
   - '@worm-vue3-print/core@1.3.11'
   - '@go-wind/admin-react@0.3.1'
 patchedDependencies:
+  '@ant-design/pro-field@3.1.0': patches/@ant-design__pro-field@3.1.0.patch
   '@ant-design/pro-form@2.32.0': patches/@ant-design__pro-form@2.32.0.patch
   '@rc-component/table@1.11.1': patches/@rc-component__table@1.11.1.patch
