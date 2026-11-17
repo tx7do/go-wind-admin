@@ -97,7 +97,7 @@
   "restore": "Restore",
   "purge": "Delete Permanently",
   "activeTenants": "Active",
-  "restoreConfirm": "Restore \"{name}\"?",
+  "restoreConfirm": "Restore \"{{name}}\"?",
   "purgeConfirmTitle": "Delete permanently?",
   "purgeConfirmDesc": "Purged data cannot be recovered. Proceed with caution.",
   "restoreSuccess": "Restored",

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { persistKey } from '@/utils/persist-key';
+
 interface LockState {
   isLockScreen: boolean;
   lockScreenPassword?: string;
@@ -23,7 +25,7 @@ export const useLockStore = create<LockState>()(
       unlockScreen: () => set({ isLockScreen: false, lockScreenPassword: undefined }),
     }),
     {
-      name: 'lock-storage',
+      name: persistKey('lock-storage'),
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         isLockScreen: state.isLockScreen,

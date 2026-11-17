@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { persistKey } from '@/utils/persist-key';
+
 export interface TabItem {
   key: string;
   path: string;
@@ -183,7 +185,7 @@ export const useTabsStore = create<TabsState>()(
       },
     }),
     {
-      name: 'app-tabs',
+      name: persistKey('app-tabs'),
       // 只有当 preferences.tabbar.persist 为 true 时才持久化
       // 这里我们先存储，在组件层根据配置决定是否使用
       partialize: (state) => ({ tabs: state.tabs }),

@@ -21,6 +21,7 @@ import { usePageRefreshStore } from '@/stores/pageRefresh';
 import { getIconFromName } from '../../utils/iconResolver';
 import './tabsbar.css';
 import { useTranslation } from 'react-i18next';
+import { persistKey } from '@/utils/persist-key';
 
 interface TabItem {
   key: string;
@@ -193,9 +194,9 @@ export const Index = () => {
   useEffect(() => {
     if (!tabbarConfig.persist) {
       // 如果不启用持久化，清除存储的标签页
-      const stored = localStorage.getItem('app-tabs');
+      const stored = localStorage.getItem(persistKey('app-tabs'));
       if (stored) {
-        localStorage.removeItem('app-tabs');
+        localStorage.removeItem(persistKey('app-tabs'));
         // 重新初始化 store
         useTabsStore.setState({ tabs: [] });
       }

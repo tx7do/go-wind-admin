@@ -17,6 +17,29 @@ interface UsePageTitleOptions {
   updateDocumentTitle?: boolean;
 }
 
+/** 路由标题翻译：menu:/routes: 前缀与裸 key 统一走 routes 命名空间
+ *  （带 defaultValue 兜底）。导出共享给全局 document.title 更新器
+ *  （src/router/useDocumentTitle.ts），避免翻译规则双份漂移。 */
+export const translateRouteTitle = (
+  title: string,
+  tMenu: (key: string, options?: { defaultValue?: string }) => string,
+): string => {
+  if (title.startsWith('menu:')) {
+    return tMenu(title.substring(5), { defaultValue: title });
+  } else if (title.startsWith('routes:')) {
+    return tMenu(title.substring(7), { defaultValue: title });
+  } else if (title.startsWith('menu.')) {
+    // 后端菜单种子键（menu.*）在 routes 命名空间按全键嵌套存放（routes.json
+    // 的 menu 段），不剥前缀——剥掉的形态会撞上根级扁平键（如 ai/system）
+    return tMenu(title, { defaultValue: title });
+  } else if (title.startsWith('routes.')) {
+    return tMenu(title.substring(7), { defaultValue: title });
+  } else {
+    // 否则直接翻译
+    return tMenu(title, { defaultValue: title });
+  }
+};
+
 export const usePageTitle = ({
   manual,
   routeTitle,
@@ -30,26 +53,7 @@ export const usePageTitle = ({
 
   // 翻译标题的工具函数
   const translateTitle = useCallback(
-    (title: string): string => {
-      // 如果 title 是 i18n key (以 'menu:' 或 'routes:' 开头)，进行翻译
-      if (title.startsWith('menu:')) {
-        const keyName = title.substring(5);
-        return tMenu(keyName, { defaultValue: title });
-      } else if (title.startsWith('routes:')) {
-        const keyName = title.substring(7);
-        return tMenu(keyName, { defaultValue: title });
-      } else if (title.startsWith('menu.')) {
-        // 后端菜单种子键（menu.*）在 routes 命名空间按全键嵌套存放（routes.json
-        // 的 menu 段），不剥前缀——剥掉的形态会撞上根级扁平键（如 ai/system）
-        return tMenu(title, { defaultValue: title });
-      } else if (title.startsWith('routes.')) {
-        const keyName = title.substring(7);
-        return tMenu(keyName, { defaultValue: title });
-      } else {
-        // 否则直接翻译
-        return tMenu(title, { defaultValue: title });
-      }
-    },
+    (title: string): string => translateRouteTitle(title, tMenu),
     [tMenu],
   );
 

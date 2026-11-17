@@ -15,10 +15,27 @@
     <title>%VITE_APP_TITLE%</title>
     <link rel="icon" href="/favicon.ico" />
     <!--
+      持久化键命名空间（由 vite 注入 VITE_APP_NAMESPACE，见 .env）：
+      admin-react 的 persistKey 与宿主 stores 的 persistKey 都读这个 dataset，
+      为 localStorage 键加前缀，隔离同一 origin:port 上不同应用的存储。
+      必须位于所有模块脚本之前（ESM 是 deferred 的，内联脚本先执行）。
+    -->
+    <script>
+      (function () {
+        var ns = '%VITE_APP_NAMESPACE%';
+        // 未配置（占位符未被替换）时保持裸键兼容
+        if (ns && ns.indexOf('%') === -1) {
+          document.documentElement.dataset.gowindStorageNs = ns;
+        }
+      })();
+    </script>
+    <!--
       预绘制主题注入（必须保持同步、位于 head 内）：
       React 启动前先从 localStorage('app-preferences') 读取持久化的主题 mode，
       立即在 <html> 上设置 data-theme 与页面底色，避免每次刷新先闪默认背景
       再被 ThemeProvider 纠正（底色竞态/闪烁）。
+      键名带命名空间感知：先读 <ns>:app-preferences（包键命名空间化后的形态），
+      回退裸 app-preferences（存量兼容/包版本未发布时）。
       底色常量须与 src/core/preferences/config/darkTheme.ts 保持一致：
       dark=#0B0F19，light=#f5f5f5。
     -->
@@ -28,7 +45,10 @@
         var LIGHT_BG = '#f5f5f5';
         var mode = 'dark'; // 与 defaultPreferences.theme.mode 默认值一致
         try {
-          var raw = window.localStorage.getItem('app-preferences');
+          var ns = document.documentElement.dataset.gowindStorageNs;
+          var raw =
+            window.localStorage.getItem((ns ? ns + ':' : '') + 'app-preferences') ||
+            window.localStorage.getItem('app-preferences');
           if (raw) {
             var saved = JSON.parse(raw);
             var m =
