@@ -22,8 +22,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0
       '@go-wind/admin-element':
-        specifier: 0.1.0
-        version: 0.1.0(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)
+        specifier: 0.1.1
+        version: 0.1.1(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)
       '@go-wind/bi-core':
         specifier: 0.2.3
         version: 0.2.3
@@ -936,8 +936,8 @@ packages:
   '@go-wind/admin-core@0.1.0':
     resolution: {integrity: sha512-cnKFjoLC9pea5UqZPi4FN9ablHuecb8Aapdw3LYP/6Nwox4/yBlJtl5FURuVEZs7xtTOI1jqcD1qQalgHSZMUw==}
 
-  '@go-wind/admin-element@0.1.0':
-    resolution: {integrity: sha512-hUAzoov3q2IjUyc9IKg8+XQGEdvqIIvZT7dj2l9N4+HXmc48xqH0rfSRxJH/gDPtIlC1eBnEXrcJkw5si0cuig==}
+  '@go-wind/admin-element@0.1.1':
+    resolution: {integrity: sha512-15ve0gkvYn/+qlRYYacLgIxjK0JPlqqrXgso7RlJ8lNx9NNUevVAySFNou4RnxrH+S4CR5/hYw+TKBi5Ffb0Zg==}
     peerDependencies:
       '@tanstack/vue-query': '>=5.0.0'
       element-plus: '>=2.8.0'
@@ -4398,6 +4398,10 @@ packages:
     resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.33:
+    resolution: {integrity: sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -6102,7 +6106,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@go-wind/admin-element@0.1.0(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)':
+  '@go-wind/admin-element@0.1.1(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)':
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.13(typescript@5.9.3))
       '@go-wind/admin-core': 0.1.0
@@ -9708,13 +9712,19 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
-  postcss-sorting@10.0.0(postcss@8.5.32):
+  postcss-sorting@10.0.0(postcss@8.5.33):
     dependencies:
-      postcss: 8.5.32
+      postcss: 8.5.33
 
   postcss-value-parser@4.2.0: {}
 
   postcss@8.5.32:
+    dependencies:
+      nanoid: 3.3.20
+      picocolors: 1.1.1
+      source-map-js: 1.2.2
+
+  postcss@8.5.33:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -10256,8 +10266,8 @@ snapshots:
 
   stylelint-order@8.1.2(stylelint@17.16.0(typescript@5.9.3)):
     dependencies:
-      postcss: 8.5.32
-      postcss-sorting: 10.0.0(postcss@8.5.32)
+      postcss: 8.5.33
+      postcss-sorting: 10.0.0(postcss@8.5.33)
       stylelint: 17.16.0(typescript@5.9.3)
 
   stylelint-prettier@5.0.3(prettier@3.9.10)(stylelint@17.16.0(typescript@5.9.3)):

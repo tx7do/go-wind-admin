@@ -54,7 +54,7 @@
     "@element-plus/icons-vue": "^2.3.2",
     "@fontsource/noto-sans-sc": "^5.2.9",
     "@go-wind/admin-core": "0.1.0",
-    "@go-wind/admin-element": "0.1.0",
+    "@go-wind/admin-element": "0.1.1",
     "@go-wind/bi-core": "0.2.3",
     "@go-wind/bi-vue": "0.3.0",
     "@go-wind/editor-vue": "0.2.4",
