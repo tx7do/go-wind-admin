@@ -1,6 +1,13 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd" @edit="handleEdit">
+    <ProPage
+      ref="pageRef"
+      :config="pageConfig"
+      @add="handleAdd"
+      @edit="handleEdit"
+      @toolbar="handleToolbar"
+      @operate="handleOperate"
+    >
       <!-- 类型 -->
       <template #type="scope: any">
         <ElTag size="small" round :type="tenantTypeToType(scope.row.type)">
@@ -30,9 +37,9 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { ElTag } from "element-plus";
+import { ElMessage, ElMessageBox, ElTag } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
-import type { ProPageConfig } from "@/components/Pro/ProPage/types";
+import type { ProPageConfig, ToolsButton } from "@/components/Pro/ProPage/types";
 import { useProModal } from "@/components/Pro";
 import TenantDrawer from "./tenant-drawer.vue";
 
@@ -47,14 +54,22 @@ import {
   tenantTypeToType,
   tenantTypeToName,
   fetchListTenants,
+  fetchTrashTenants,
   useDeleteTenant,
+  usePurgeTenant,
+  useRestoreTenant,
 } from "@/api/composables";
 import { PaginationQuery } from "@go-wind/admin-core";
 import { $t } from "@go-wind/admin-element";
 
 const { mutateAsync: deleteTenant } = useDeleteTenant();
+const { mutateAsync: restoreTenant } = useRestoreTenant();
+const { mutateAsync: purgeTenant } = usePurgeTenant();
 
 const pageRef = ref();
+
+// 回收站二态（issue #3）：active=在营名录 / trash=已删除（停车）租户
+const trashMode = ref(false);
 
 // useProModal 连接 TenantDrawer 组件
 const [ConnectedDrawer, modalApi] = useProModal({
@@ -111,7 +126,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
   table: {
     listAction: async (query: any) => {
       const { page, pageSize, ...queryParams } = query;
-      const result = await fetchListTenants(
+      const fetcher = trashMode.value ? fetchTrashTenants : fetchListTenants;
+      const result = await fetcher(
         new PaginationQuery({
           paging: { page: page || 1, pageSize: pageSize || 10 },
           formValues: queryParams,
@@ -122,8 +138,16 @@ const pageConfig = computed<ProPageConfig>(() => ({
     deleteAction: async (ids: string) => {
       await deleteTenant({ id: ids as any });
     },
-    toolbar: [],
-    toolbarRight: ["add"],
+    toolbar: [
+      {
+        name: "toggleTrash",
+        label: trashMode.value
+          ? $t("pages.tenant.activeTenants")
+          : $t("pages.tenant.trash"),
+        icon: "lucide:trash-2",
+      } as ToolsButton,
+    ],
+    toolbarRight: trashMode.value ? [] : ["add"],
     defaultToolbar: ["exports", "imports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: false },
     columns: [
@@ -154,15 +178,31 @@ const pageConfig = computed<ProPageConfig>(() => ({
         fixed: "right",
         width: 150,
         cellType: "tool",
-        buttons: [
-          { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
-          {
-            name: "delete",
-            label: $t("common.button.delete"),
-            icon: "lucide:trash-2",
-            attrs: { type: "danger" },
-          },
-        ],
+        buttons:
+          trashMode.value
+            ? [
+                {
+                  name: "restore",
+                  label: $t("pages.tenant.restore"),
+                  icon: "lucide:archive-restore",
+                  attrs: { type: "success" },
+                },
+                {
+                  name: "purge",
+                  label: $t("pages.tenant.purge"),
+                  icon: "lucide:trash-2",
+                  attrs: { type: "danger" },
+                },
+              ]
+            : [
+                { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
+                {
+                  name: "delete",
+                  label: $t("common.button.delete"),
+                  icon: "lucide:trash-2",
+                  attrs: { type: "danger" },
+                },
+              ],
       },
     ],
   },
@@ -175,6 +215,46 @@ function handleAdd() {
 
 function handleEdit(row: any) {
   modalApi.open({ create: false, row });
+}
+
+async function handleToolbar(name: string) {
+  if (name !== "toggleTrash") return;
+  trashMode.value = !trashMode.value;
+  pageRef.value?.refresh();
+}
+
+async function handleOperate(data: { name: string; row: any }) {
+  const { name, row } = data;
+  if (!row?.id) return;
+  if (name === "restore") {
+    await ElMessageBox.confirm(
+      $t("pages.tenant.restoreConfirm", {
+        moduleName: $t("pages.tenant.moduleName"),
+      }),
+      $t("common.title.confirm"),
+      { type: "warning", lockScroll: false }
+    ).catch(() => Promise.reject("cancel"));
+    try {
+      await restoreTenant({ id: row.id });
+      ElMessage.success($t("pages.tenant.restoreSuccess"));
+    } catch (error: any) {
+      ElMessage.error(error?.message || $t("common.message.operationFailed"));
+    }
+    pageRef.value?.refresh();
+  } else if (name === "purge") {
+    await ElMessageBox.confirm(
+      $t("pages.tenant.purgeConfirmDesc"),
+      $t("pages.tenant.purgeConfirmTitle"),
+      { type: "warning", lockScroll: false }
+    ).catch(() => Promise.reject("cancel"));
+    try {
+      await purgeTenant({ id: row.id });
+      ElMessage.success($t("pages.tenant.purgeSuccess"));
+    } catch (error: any) {
+      ElMessage.error(error?.message || $t("common.message.operationFailed"));
+    }
+    pageRef.value?.refresh();
+  }
 }
 </script>
 

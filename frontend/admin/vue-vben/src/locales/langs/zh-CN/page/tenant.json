@@ -38,5 +38,14 @@
     "user_username_exists": "管理员用户名已存在，请更换后重新创建！"
   },
   "quotaType": "配额类型",
-  "tenant_code_exists": "租户编码已存在"
+  "tenant_code_exists": "租户编码已存在",
+  "trash": "回收站",
+  "restore": "恢复",
+  "purge": "彻底删除",
+  "activeTenants": "在营租户",
+  "restoreConfirm": "确认恢复该{moduleName}吗？",
+  "purgeConfirmTitle": "确认彻底删除？",
+  "purgeConfirmDesc": "彻底删除后数据不可恢复，请谨慎操作。",
+  "restoreSuccess": "恢复成功",
+  "purgeSuccess": "已彻底删除"
 }

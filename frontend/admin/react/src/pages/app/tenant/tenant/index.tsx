@@ -3,14 +3,25 @@ import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { TableExportButton } from '@go-wind/admin-react';
 import TableActions from '@/components/common/TableActions';
 import { ListTable } from '@go-wind/admin-react';
-import { Tag, Button, App } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Segmented, Tag, Button, App } from 'antd';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  UndoOutlined,
+} from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { identityservicev1_Tenant } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@go-wind/admin-react';
 import { TABLE } from '@go-wind/admin-react';
-import { fetchListTenants, useDeleteTenant } from '@/api/hooks/tenant';
+import {
+  fetchListTenants,
+  fetchTrashTenants,
+  useDeleteTenant,
+  usePurgeTenant,
+  useRestoreTenant,
+} from '@/api/hooks/tenant';
 import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import {
@@ -43,6 +54,9 @@ const TenantList = () => {
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [selectedTenant, setSelectedTenant] = useState<identityservicev1_Tenant | undefined>();
 
+  // 回收站二态（issue #3）：active=在营名录 / trash=已删除（停车）租户
+  const [viewMode, setViewMode] = useState<'active' | 'trash'>('active');
+
   const tenantTypeMap = getTenantTypeMap(t);
   const auditStatusMap = getAuditStatusMap(t);
   const tenantStatusMap = getTenantStatusMap(t);
@@ -53,6 +67,28 @@ const TenantList = () => {
       message.success(t('deleteSuccess'));
       actionRef.current?.reload();
       queryClient.invalidateQueries({ queryKey: ['listTenants'] });
+    },
+    onError: (error: Error) => {
+      message.error(error.message || t('deleteFailed'));
+    },
+  });
+
+  // 回收站：恢复 / 彻底删除
+  const restoreMutation = useRestoreTenant({
+    onSuccess: () => {
+      message.success(t('restoreSuccess'));
+      actionRef.current?.reload();
+      queryClient.invalidateQueries({ queryKey: ['trashTenants'] });
+    },
+    onError: (error: Error) => {
+      message.error(error.message || t('deleteFailed'));
+    },
+  });
+  const purgeMutation = usePurgeTenant({
+    onSuccess: () => {
+      message.success(t('purgeSuccess'));
+      actionRef.current?.reload();
+      queryClient.invalidateQueries({ queryKey: ['trashTenants'] });
     },
     onError: (error: Error) => {
       message.error(error.message || t('deleteFailed'));
@@ -176,29 +212,57 @@ const TenantList = () => {
       render: (_, record) => (
         <TableActions
           record={record}
-          actions={[
-            {
-              key: 'edit',
-              label: t('common:button.edit'),
-              icon: <EditOutlined />,
-              onClick: () => {
-                setDrawerMode('edit');
-                setSelectedTenant(record);
-                setDrawerOpen(true);
-              },
-            },
-            {
-              key: 'delete',
-              label: t('common:button.delete'),
-              icon: <DeleteOutlined />,
-              danger: true,
-              confirm: {
-                title: t('deleteConfirmTitle'),
-                description: t('deleteConfirmDesc', { name: record.name }),
-              },
-              onClick: () => record.id && deleteMutation.mutate({ id: record.id }),
-            },
-          ]}
+          actions={
+            viewMode === 'trash'
+              ? [
+                  {
+                    key: 'restore',
+                    label: t('restore'),
+                    icon: <UndoOutlined />,
+                    confirm: {
+                      title: t('restoreConfirm', { name: record.name }),
+                    },
+                    onClick: () =>
+                      record.id && restoreMutation.mutate({ id: record.id }),
+                  },
+                  {
+                    key: 'purge',
+                    label: t('purge'),
+                    icon: <DeleteOutlined />,
+                    danger: true,
+                    confirm: {
+                      title: t('purgeConfirmTitle'),
+                      description: t('purgeConfirmDesc'),
+                    },
+                    onClick: () =>
+                      record.id && purgeMutation.mutate({ id: record.id }),
+                  },
+                ]
+              : [
+                  {
+                    key: 'edit',
+                    label: t('common:button.edit'),
+                    icon: <EditOutlined />,
+                    onClick: () => {
+                      setDrawerMode('edit');
+                      setSelectedTenant(record);
+                      setDrawerOpen(true);
+                    },
+                  },
+                  {
+                    key: 'delete',
+                    label: t('common:button.delete'),
+                    icon: <DeleteOutlined />,
+                    danger: true,
+                    confirm: {
+                      title: t('deleteConfirmTitle'),
+                      description: t('deleteConfirmDesc', { name: record.name }),
+                    },
+                    onClick: () =>
+                      record.id && deleteMutation.mutate({ id: record.id }),
+                  },
+                ]
+          }
         />
       ),
     },
@@ -231,8 +295,11 @@ const TenantList = () => {
                     : undefined,
               });
 
-              // 调用 API
-              const response = await fetchListTenants(query);
+              // 调用 API（回收站模式下走已删除列表）
+              const response =
+                viewMode === 'trash'
+                  ? await fetchTrashTenants(query)
+                  : await fetchListTenants(query);
 
               // ProTable 要求返回格式：{ data, total, success }
               return {
@@ -253,20 +320,37 @@ const TenantList = () => {
               showQuickJumper: true,
             }}
             toolBarRender={() => [
-              <TableExportButton key="export" fetcher={fetchListTenants} columns={columns} filename="tenants" />,
-              <Button
-                key="create"
-                color="primary"
-                variant="outlined"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setDrawerMode('create');
-                  setSelectedTenant(undefined);
-                  setDrawerOpen(true);
+              <Segmented
+                key="viewMode"
+                size="small"
+                value={viewMode}
+                onChange={(value) => {
+                  setViewMode(value as 'active' | 'trash');
+                  actionRef.current?.reload();
                 }}
-              >
-                {t('common:button.add')}
-              </Button>,
+                options={[
+                  { label: t('activeTenants'), value: 'active' },
+                  { label: t('trash'), value: 'trash' },
+                ]}
+              />,
+              viewMode === 'active' && (
+                <TableExportButton key="export" fetcher={fetchListTenants} columns={columns} filename="tenants" />
+              ),
+              viewMode === 'active' && (
+                <Button
+                  key="create"
+                  color="primary"
+                  variant="outlined"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setDrawerMode('create');
+                    setSelectedTenant(undefined);
+                    setDrawerOpen(true);
+                  }}
+                >
+                  {t('common:button.add')}
+                </Button>
+              ),
             ]}
             options={{
               density: true,

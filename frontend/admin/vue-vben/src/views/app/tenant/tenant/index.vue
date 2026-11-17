@@ -1,10 +1,14 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+// 包内 iconify 集未导出 ArchiveRestore —— 宿主自建（同 createIconifyIcon 工厂）
+import { createIconifyIcon } from '@vben/icons';
+
+const LucideArchiveRestore = createIconifyIcon('lucide:archive-restore');
 
 import { notification } from 'ant-design-vue';
 
@@ -12,6 +16,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type identityservicev1_Tenant as Tenant } from '#/api';
 import {
   fetchListTenants,
+  fetchTrashTenants,
   PaginationQuery,
   tenantAuditStatusList,
   tenantAuditStatusToColor,
@@ -23,6 +28,8 @@ import {
   tenantTypeToColor,
   tenantTypeToName,
   useDeleteTenant,
+  usePurgeTenant,
+  useRestoreTenant,
 } from '#/api';
 import { $t } from '#/locales';
 import TableActions from '#/components/TableActions.vue';
@@ -33,6 +40,11 @@ import TableExportButton from '#/components/TableExportButton.vue';
 import TenantDrawer from './tenant-drawer.vue';
 
 const { mutateAsync: deleteTenant } = useDeleteTenant();
+const { mutateAsync: restoreTenant } = useRestoreTenant();
+const { mutateAsync: purgeTenant } = usePurgeTenant();
+
+// 回收站二态（issue #3）：active=在营名录 / trash=已删除（停车）租户
+const viewMode = ref<'active' | 'trash'>('active');
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -122,7 +134,9 @@ const gridOptions: VxeGridProps<Tenant> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
-        return await fetchListTenants(
+        const fetcher =
+          viewMode.value === 'trash' ? fetchTrashTenants : fetchListTenants;
+        return await fetcher(
           new PaginationQuery({
             paging: {
               page: page.currentPage,
@@ -235,8 +249,67 @@ async function handleDelete(row: any) {
   }
 }
 
-/* 操作列描述符：编辑行内、删除 Popconfirm 确认（≤3 个全行内，定式由 TableActions 统一执行） */
+/* 回收站：恢复停车租户（code/name 已被在营租户占用时后端报错） */
+async function handleRestore(row: any) {
+  try {
+    await restoreTenant({ id: row.id });
+    notification.success({ message: $t('page.tenant.restoreSuccess') });
+    await gridApi.reload();
+  } catch (error: any) {
+    notification.error({
+      message: error?.message || $t('ui.notification.delete_failed'),
+    });
+  }
+}
+
+/* 回收站：彻底删除（不可逆） */
+async function handlePurge(row: any) {
+  try {
+    await purgeTenant({ id: row.id });
+    notification.success({ message: $t('page.tenant.purgeSuccess') });
+    await gridApi.reload();
+  } catch (error: any) {
+    notification.error({
+      message: error?.message || $t('ui.notification.delete_failed'),
+    });
+  }
+}
+
+/* 回收站模式切换：重查（视图切换由 query 分叉承担） */
+function handleViewModeChange(mode: 'active' | 'trash') {
+  viewMode.value = mode;
+  gridApi.reload();
+}
+
+/* 操作列描述符：在营=编辑/删除，回收站=恢复/彻底删除（≤3 个全行内，定式由 TableActions 统一执行） */
 function buildRowActions(): TableAction[] {
+  if (viewMode.value === 'trash') {
+    return [
+      {
+        key: 'restore',
+        label: $t('page.tenant.restore'),
+        icon: h(LucideArchiveRestore),
+        success: true,
+        confirm: {
+          title: $t('page.tenant.restoreConfirm', {
+            moduleName: $t('page.tenant.moduleName'),
+          }),
+        },
+        onClick: handleRestore,
+      },
+      {
+        key: 'purge',
+        label: $t('page.tenant.purge'),
+        icon: h(LucideTrash2),
+        danger: true,
+        confirm: {
+          title: $t('page.tenant.purgeConfirmTitle'),
+          description: $t('page.tenant.purgeConfirmDesc'),
+        },
+        onClick: handlePurge,
+      },
+    ];
+  }
   return [
     {
       key: 'edit',
@@ -262,10 +335,34 @@ function buildRowActions(): TableAction[] {
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('menu.tenant.member')">
+    <Grid
+      :table-title="
+        viewMode === 'trash'
+          ? $t('page.tenant.trash')
+          : $t('menu.tenant.member')
+      "
+    >
       <template #toolbar-tools>
-        <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="tenants" />
-        <TableAddButton @click="handleCreate" />
+        <a-radio-group
+          size="small"
+          :value="viewMode"
+          class="mr-2"
+          @change="(e: any) => handleViewModeChange(e.target.value)"
+        >
+          <a-radio-button value="active">
+            {{ $t('page.tenant.activeTenants') }}
+          </a-radio-button>
+          <a-radio-button value="trash">
+            {{ $t('page.tenant.trash') }}
+          </a-radio-button>
+        </a-radio-group>
+        <TableExportButton
+          v-if="viewMode === 'active'"
+          :fetcher="exportFetcher"
+          :columns="gridOptions.columns"
+          filename="tenants"
+        />
+        <TableAddButton v-if="viewMode === 'active'" @click="handleCreate" />
       </template>
 
       <template #status="{ row }">

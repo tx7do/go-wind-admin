@@ -38,5 +38,14 @@
     "user_username_exists": "Admin username already exists, please change and try again!"
   },
   "quotaType": "Quota Type",
-  "tenant_code_exists": "Tenant code already exists"
+  "tenant_code_exists": "Tenant code already exists",
+  "trash": "Recycle Bin",
+  "restore": "Restore",
+  "purge": "Delete Permanently",
+  "activeTenants": "Active",
+  "restoreConfirm": "Restore this {moduleName}?",
+  "purgeConfirmTitle": "Delete permanently?",
+  "purgeConfirmDesc": "Purged data cannot be recovered. Proceed with caution.",
+  "restoreSuccess": "Restored",
+  "purgeSuccess": "Deleted permanently"
 }

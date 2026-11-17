@@ -92,5 +92,14 @@
   "cleanupConfirmTitle": "Confirm Tenant Data Cleanup",
   "cleanupConfirmDesc": "This will hard-delete all business data for this tenant (users, roles, orgs, files, etc.), keeping the tenant record but setting its status to OFF. This is irreversible. Continue?",
   "cleanupSuccess": "Tenant data cleaned up",
-  "cleanupFailed": "Cleanup failed"
+  "cleanupFailed": "Cleanup failed",
+  "trash": "Recycle Bin",
+  "restore": "Restore",
+  "purge": "Delete Permanently",
+  "activeTenants": "Active",
+  "restoreConfirm": "Restore \"{name}\"?",
+  "purgeConfirmTitle": "Delete permanently?",
+  "purgeConfirmDesc": "Purged data cannot be recovered. Proceed with caution.",
+  "restoreSuccess": "Restored",
+  "purgeSuccess": "Deleted permanently"
 }

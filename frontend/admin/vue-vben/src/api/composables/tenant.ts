@@ -3,6 +3,8 @@ import type {
   identityservicev1_CreateTenantWithAdminUserRequest,
   identityservicev1_DeleteTenantRequest,
   identityservicev1_CleanupTenantDataRequest,
+  identityservicev1_PurgeTenantRequest,
+  identityservicev1_RestoreTenantRequest,
   identityservicev1_GetTenantRequest,
   identityservicev1_GetTenantUsageRequest,
   identityservicev1_ListTenantResponse,
@@ -48,6 +50,16 @@ export async function fetchListTenants(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listTenants', params],
     queryFn: () => apiClient.tenantService.List(params.toRawParams()),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
+/** 回收站列表：已删除（停车）租户（issue #3） */
+export async function fetchTrashTenants(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['trashTenants', params],
+    queryFn: () => apiClient.tenantService.ListDeletedTenants(params.toRawParams()),
     staleTime: 0,
     retry: 0,
   });
@@ -118,6 +130,34 @@ export function useDeleteTenant(
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.tenantService.Delete(req),
+    ...options,
+  });
+}
+
+/** 回收站：恢复停车租户（issue #3） */
+export function useRestoreTenant(
+  options?: UseMutationOptions<
+    object,
+    Error,
+    identityservicev1_RestoreTenantRequest
+  >,
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.tenantService.RestoreTenant(req),
+    ...options,
+  });
+}
+
+/** 回收站：彻底删除停车租户（不可逆，issue #3） */
+export function usePurgeTenant(
+  options?: UseMutationOptions<
+    object,
+    Error,
+    identityservicev1_PurgeTenantRequest
+  >,
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.tenantService.PurgeTenant(req),
     ...options,
   });
 }
