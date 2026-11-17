@@ -138,6 +138,9 @@ func (Tenant) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID64{},
 		mixin.Remark{},
+		// 回收站（issue #3）：删除=停车（deleted_at + status OFF），查询过滤
+		// 走带 SkipSoftDelete 旁路的本仓版软删 mixin（见 soft_delete_mixin.go）。
+		SoftDelete{},
 	}
 }
 

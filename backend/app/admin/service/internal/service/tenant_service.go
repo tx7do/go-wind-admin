@@ -394,25 +394,45 @@ func (s *TenantService) CleanupData(ctx context.Context, req *identityV1.Cleanup
 }
 
 // ListDeletedTenants 回收站：分页查询已删除（停车）租户。
-//
-// 契约面先行（issue #3）：行为面暂由 Rust 旗舰实现承载（rushwind-admin，
-// 删除=停车 deleted_at+OFF 语义）；Go 侧 tenant 尚无软删 mixin（Delete 为
-// 硬删，ent schema 未挂 DeletedAt），停车语义落地前返回未实现。
+// 行为面已落地：删除=停车（deleted_at + status OFF，见 TenantRepo.Delete），
+// 本查询带 SkipSoftDelete 旁路 + DeletedAtNotNil 收窄。
 func (s *TenantService) ListDeletedTenants(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
-	return nil, adminV1.ErrorNotImplemented(
-		"tenant recycle bin rides the rust flagship; go soft-delete pending")
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+	return s.tenantRepo.ListDeleted(ctx, req)
 }
 
 // RestoreTenant 回收站：恢复停车租户（清删除标记并置回在营态）。
-// 同上：契约先行，行为面待 Go 侧软删语义落地。
 func (s *TenantService) RestoreTenant(ctx context.Context, req *identityV1.RestoreTenantRequest) (*emptypb.Empty, error) {
-	return nil, adminV1.ErrorNotImplemented(
-		"tenant recycle bin rides the rust flagship; go soft-delete pending")
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+	if req == nil || req.GetId() == 0 {
+		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.tenantRepo.Restore(ctx, req.GetId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // PurgeTenant 回收站：彻底删除停车租户（硬删行与残余关联，不可逆）。
-// 同上：契约先行，行为面待 Go 侧软删语义落地。
+// 先清租户用量/配额残余（复用 CleanupTenantData，其内部会把租户置 OFF——
+// 停车行本就是 OFF，幂等），再硬删行。
 func (s *TenantService) PurgeTenant(ctx context.Context, req *identityV1.PurgeTenantRequest) (*emptypb.Empty, error) {
-	return nil, adminV1.ErrorNotImplemented(
-		"tenant recycle bin rides the rust flagship; go soft-delete pending")
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+	if req == nil || req.GetId() == 0 {
+		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.tenantUsageRepo.CleanupTenantData(ctx, req.GetId()); err != nil {
+		s.log.Errorf(ctx, "purge tenant: cleanup residual data failed: %s", err.Error())
+		return nil, err
+	}
+	if err := s.tenantRepo.Purge(ctx, req.GetId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }

@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -18,6 +19,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+	"go-wind-admin/app/admin/service/internal/data/ent/schema"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
@@ -274,6 +276,13 @@ func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identit
 
 	if ret, err := builder.Save(ctx); err != nil {
 		r.log.Errorf(ctx, "insert tenant failed: %s", err.Error())
+		// 唯一索引不含软删位：回收站停车行的 name/code 仍占用唯一键，重名/重码
+		// 会撞 DB 约束——映射成明确提示（可从回收站恢复或彻底删除后重试）。
+		var constraintErr *ent.ConstraintError
+		if errors.As(err, &constraintErr) {
+			return nil, identityV1.ErrorBadRequest(
+				"tenant name or code already exists (possibly parked in recycle bin)")
+		}
 		return nil, identityV1.ErrorInternalServerError("insert tenant failed")
 	} else {
 		return r.mapper.ToDTO(ret), nil
@@ -347,21 +356,121 @@ func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId
 	return nil
 }
 
+// Delete 回收站语义（issue #3）：删除=停车——置 deleted_at 并把状态拨 OFF，
+// 行保留在库；在营查询经 SoftDelete 拦截器自然过滤，恢复走 Restore，
+// 彻底删除走 Purge。此前此处的 DeleteOneID 是硬删，租户直接蒸发。
 func (r *TenantRepo) Delete(ctx context.Context, req *identityV1.DeleteTenantRequest) error {
 	if req == nil {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
-	if err := r.entClient.Client().Tenant.DeleteOneID(req.GetId()).Exec(ctx); err != nil {
+	err := r.entClient.Client().Tenant.UpdateOneID(req.GetId()).
+		SetDeletedAt(time.Now()).
+		SetStatus(tenant.StatusOff).
+		Exec(ctx)
+	if err != nil {
 		if ent.IsNotFound(err) {
 			return identityV1.ErrorNotFound("tenant not found")
 		}
 
-		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "soft delete (park) tenant failed: %s", err.Error())
 
 		return identityV1.ErrorInternalServerError("delete failed")
 	}
 
+	return nil
+}
+
+// ListDeleted 回收站列表：分页查询已停车（deleted_at 非空）租户。
+// 带 SkipSoftDelete 旁路绕过软删过滤，再显式用 DeletedAtNotNil 收窄范围。
+func (r *TenantRepo) ListDeleted(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
+	if req == nil {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	ctx = schema.SkipSoftDelete(ctx)
+
+	builder := r.entClient.Client().Tenant.Query().WithPlan().Where(tenant.DeletedAtNotNil())
+	countBuilder := r.entClient.Client().Tenant.Query().Where(tenant.DeletedAtNotNil())
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if err != nil {
+		r.log.Errorf(ctx, "parse list param error [%s]", err.Error())
+		return nil, identityV1.ErrorBadRequest("invalid query parameter")
+	}
+
+	entities, err := builder.All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query deleted tenant list failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("query tenant trash list failed")
+	}
+
+	dtos := make([]*identityV1.Tenant, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		if entity.Edges.Plan != nil {
+			dto.PlanId = &entity.Edges.Plan.ID
+		}
+		dtos = append(dtos, dto)
+	}
+
+	if len(whereSelectors) != 0 {
+		countBuilder.Modify(whereSelectors...)
+	}
+	count, err := countBuilder.Count(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query deleted tenant count failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("query count failed")
+	}
+
+	return &identityV1.ListTenantResponse{
+		Total: int64(count),
+		Items: dtos,
+	}, nil
+}
+
+// Restore 回收站：恢复停车租户——清 deleted_at 并把状态拨回 ON。
+func (r *TenantRepo) Restore(ctx context.Context, id int64) error {
+	err := r.entClient.Client().Tenant.UpdateOneID(id).
+		ClearDeletedAt().
+		SetStatus(tenant.StatusOn).
+		Exec(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return identityV1.ErrorNotFound("tenant not found")
+		}
+
+		r.log.Errorf(ctx, "restore parked tenant failed: %s", err.Error())
+
+		return identityV1.ErrorInternalServerError("restore tenant failed")
+	}
+	return nil
+}
+
+// Purge 回收站：彻底删除停车租户（硬删行，不可逆）。
+// 前置校验目标确属停车行——在营租户不允许走此路径，防误操作直接蒸发。
+func (r *TenantRepo) Purge(ctx context.Context, id int64) error {
+	checkCtx := schema.SkipSoftDelete(ctx)
+	exist, err := r.entClient.Client().Tenant.Query().
+		Where(tenant.ID(id), tenant.DeletedAtNotNil()).
+		Exist(checkCtx)
+	if err != nil {
+		r.log.Errorf(ctx, "check parked tenant exist failed: %s", err.Error())
+		return identityV1.ErrorInternalServerError("purge tenant check failed")
+	}
+	if !exist {
+		return identityV1.ErrorNotFound("parked tenant not found")
+	}
+
+	if err := r.entClient.Client().Tenant.DeleteOneID(id).Exec(ctx); err != nil {
+		if ent.IsNotFound(err) {
+			return identityV1.ErrorNotFound("tenant not found")
+		}
+
+		r.log.Errorf(ctx, "purge tenant failed: %s", err.Error())
+
+		return identityV1.ErrorInternalServerError("purge tenant failed")
+	}
 	return nil
 }
 

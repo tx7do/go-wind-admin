@@ -9312,7 +9312,8 @@ func (c *TenantClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *TenantClient) Interceptors() []Interceptor {
-	return c.inters.Tenant
+	inters := c.inters.Tenant
+	return append(inters[:len(inters):len(inters)], tenant.Interceptors[:]...)
 }
 
 func (c *TenantClient) mutate(ctx context.Context, m *TenantMutation) (Value, error) {

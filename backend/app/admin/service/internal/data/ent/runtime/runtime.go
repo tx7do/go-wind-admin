@@ -1676,6 +1676,8 @@ func init() {
 	// task.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	task.IDValidator = taskDescID.Validators[0].(func(int64) error)
 	tenantMixin := schema.Tenant{}.Mixin()
+	tenantMixinInters4 := tenantMixin[4].Interceptors()
+	tenant.Interceptors[0] = tenantMixinInters4[0]
 	tenantMixinFields0 := tenantMixin[0].Fields()
 	_ = tenantMixinFields0
 	tenantFields := schema.Tenant{}.Fields()
