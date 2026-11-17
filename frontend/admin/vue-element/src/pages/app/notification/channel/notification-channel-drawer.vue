@@ -98,14 +98,18 @@
         <ElFormItem :label="t('pages.notification_channel.webhookSecret')" prop="webhookSecret">
           <ElInput
             v-model="drawer.formData.webhookSecret"
-            type="password"
-            show-password
+            :type="webhookSecretVisible ? 'text' : 'password'"
             :placeholder="
               isCreate
                 ? t('pages.notification_channel.webhookSecretPlaceholder')
                 : t('pages.notification_channel.webhookSecretKeepHint')
             "
-          />
+          >
+            <template #suffix>
+              <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+              <PasswordToggle v-model="webhookSecretVisible" />
+            </template>
+          </ElInput>
           <div class="field-tip">{{ t("pages.notification_channel.webhookSecretHint") }}</div>
         </ElFormItem>
       </template>
@@ -148,14 +152,18 @@
           <ElInput
             v-else
             v-model="drawer.formData.settings[field.name!] as string"
-            :type="field.type === 'password' || field.sensitive ? 'password' : 'text'"
-            show-password
+            :type="extSecretVisible[field.name!] ? 'text' : field.type === 'password' || field.sensitive ? 'password' : 'text'"
             :placeholder="
               isCreate
                 ? (field.placeholder ?? t('pages.notification_channel.ext.placeholder'))
                 : t('pages.notification_channel.ext.secretKeepHint')
             "
-          />
+          >
+            <template v-if="field.type === 'password' || field.sensitive" #suffix>
+              <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+              <PasswordToggle v-model="extSecretVisible[field.name!]" />
+            </template>
+          </ElInput>
           <div v-if="field.hint" class="field-tip">{{ field.hint }}</div>
         </ElFormItem>
       </template>
@@ -182,14 +190,18 @@
         <ElFormItem :label="t('pages.notification_channel.smsAccessSecret')" prop="smsAccessSecret">
           <ElInput
             v-model="drawer.formData.smsAccessSecret"
-            type="password"
-            show-password
+            :type="smsAccessSecretVisible ? 'text' : 'password'"
             :placeholder="
               isCreate
                 ? t('pages.notification_channel.smsAccessSecretPlaceholder')
                 : t('pages.notification_channel.smsAccessSecretKeepHint')
             "
-          />
+          >
+            <template #suffix>
+              <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+              <PasswordToggle v-model="smsAccessSecretVisible" />
+            </template>
+          </ElInput>
           <div class="field-tip">{{ t("pages.notification_channel.smsAccessSecretHint") }}</div>
         </ElFormItem>
 
@@ -242,10 +254,14 @@
         <ElFormItem :label="t('pages.notification_channel.password')" prop="password">
           <ElInput
             v-model="drawer.formData.password"
-            type="password"
-            show-password
+            :type="smtpPasswordVisible ? 'text' : 'password'"
             :placeholder="isCreate ? t('pages.notification_channel.passwordPlaceholder') : t('pages.notification_channel.passwordKeepHint')"
-          />
+          >
+            <template #suffix>
+              <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+              <PasswordToggle v-model="smtpPasswordVisible" />
+            </template>
+          </ElInput>
         </ElFormItem>
 
         <ElFormItem :label="t('pages.notification_channel.smtpFrom')" prop="smtpFrom">
@@ -381,6 +397,13 @@ const { t } = useI18n();
 
 const formRef = ref();
 const isCreate = ref(true);
+
+// 各密码/密钥字段的明文开关（PasswordToggle 眼睛，见模板注释）。
+// ext 动态字段按字段名分键；静态字段各持一个。
+const extSecretVisible = reactive<Record<string, boolean>>({});
+const webhookSecretVisible = ref(false);
+const smsAccessSecretVisible = ref(false);
+const smtpPasswordVisible = ref(false);
 
 /**
  * 载荷模板的可引用变量清单。不写进词条，两个原因：这些名字是接口契约的一部分

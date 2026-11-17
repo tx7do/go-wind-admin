@@ -10,32 +10,41 @@
       <ElFormItem :label="$t('pages.user.form.oldPassword')" prop="oldPassword">
         <ElInput
           v-model="formData.oldPassword"
-          type="password"
+          :type="oldPwdVisible ? 'text' : 'password'"
           :placeholder="$t('common.placeholder.input')"
-          show-password
           clearable
-        />
+        >
+          <template #suffix>
+            <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+            <PasswordToggle v-model="oldPwdVisible" />
+          </template>
+        </ElInput>
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.user.form.newPassword')" prop="newPassword">
         <ElInput
           v-model="formData.newPassword"
-          type="password"
+          :type="newPwdVisible ? 'text' : 'password'"
           :placeholder="$t('common.placeholder.input')"
-          show-password
-          strength="strong"
           clearable
-        />
+        >
+          <template #suffix>
+            <PasswordToggle v-model="newPwdVisible" />
+          </template>
+        </ElInput>
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.user.form.confirmPassword')" prop="confirmPassword">
         <ElInput
           v-model="formData.confirmPassword"
-          type="password"
+          :type="confirmPwdVisible ? 'text' : 'password'"
           :placeholder="$t('common.placeholder.input')"
-          show-password
           clearable
-        />
+        >
+          <template #suffix>
+            <PasswordToggle v-model="confirmPwdVisible" />
+          </template>
+        </ElInput>
       </ElFormItem>
     </ElForm>
 
@@ -67,6 +76,11 @@ const formData = reactive({
   newPassword: "",
   confirmPassword: "",
 });
+
+// 各密码字段明文开关（PasswordToggle 眼睛）
+const oldPwdVisible = ref(false);
+const newPwdVisible = ref(false);
+const confirmPwdVisible = ref(false);
 
 // 表单验证规则
 const formRules = {

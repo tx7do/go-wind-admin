@@ -43,14 +43,20 @@
           <el-input
             v-model.trim="loginFormData.password"
             :placeholder="t('core.login.password')"
-            type="password"
+            :type="passwordVisible ? 'text' : 'password'"
             autocomplete="current-password"
-            show-password
             @keyup="checkCapsLock"
             @keyup.enter="handleLoginSubmit"
           >
             <template #prefix>
               <el-icon><Lock /></el-icon>
+            </template>
+            <!-- 对齐 react/vben（antd defaultIconRender = visible ? Eye : EyeInvisible）：
+                 眼睛恒显、点按切明文，可见态显示睁眼（View）、隐藏态显示闭眼（Hide）。
+                 不用 el-input 的 show-password——2.14 起它含 !!nativeInputValue
+                 守卫，输入框为空时不渲染图标，与另两端行为不一致。 -->
+            <template #suffix>
+              <PasswordToggle v-model="passwordVisible" />
             </template>
           </el-input>
         </el-form-item>
@@ -125,6 +131,8 @@ const isCapsLock = ref(false);
 
 // SSO 开关（后端未配置 OIDC 时按钮不渲染）
 const ssoOn = ref(false);
+// 密码明文开关（suffix 眼睛按钮，见模板注释）
+const passwordVisible = ref(false);
 
 onMounted(() => {
   ssoEnabled().then((v) => (ssoOn.value = v)).catch(() => (ssoOn.value = false));
@@ -161,11 +169,8 @@ const loginRules = computed(() => {
         trigger: "blur",
         message: t("core.login.message.password.required"),
       },
-      {
-        min: 5,
-        message: t("core.login.message.password.min"),
-        trigger: "blur",
-      },
+      // 不设 min 长度规则：react/vben 两端均只做必填（密码策略由后端管），
+      // 此前的 min:5 还与包文案「密码不能少于6位」互相矛盾。
     ],
     // 渐进式验证码：未要求时规则不出场（el-form validate-on-rule-change
     // 已关，动态展开不会触发全表重校）。
@@ -300,6 +305,7 @@ function checkCapsLock(event: KeyboardEvent) {
     color: #1a1d28;
   }
 }
+
 
 .captcha-row {
   display: flex;

@@ -62,12 +62,16 @@
       <div class="lock-dialog__name">{{ displayName }}</div>
       <el-input
         v-model="lockPassword"
-        type="password"
-        show-password
+        :type="lockPwdVisible ? 'text' : 'password'"
         autocomplete="new-password"
         size="large"
         :placeholder="t('common.lockScreen.placeholder')"
-      />
+      >
+        <template #suffix>
+          <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+          <PasswordToggle v-model="lockPwdVisible" />
+        </template>
+      </el-input>
       <el-button
         class="lock-dialog__submit"
         type="primary"
@@ -122,6 +126,7 @@ const displayName = computed(
 
 const lockDialogVisible = ref(false);
 const lockPassword = ref("");
+const lockPwdVisible = ref(false);
 
 function handleProfileClick() {
   router.push({ name: "UserProfile" });

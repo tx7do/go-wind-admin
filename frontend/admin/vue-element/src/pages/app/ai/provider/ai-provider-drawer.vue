@@ -51,10 +51,14 @@
         <ElFormItem :label="t('pages.ai_provider.apiKey')" prop="apiKey">
           <ElInput
             v-model="drawer.formData.apiKey"
-            type="password"
-            show-password
+            :type="apiKeyVisible ? 'text' : 'password'"
             :placeholder="isCreate ? t('pages.ai_provider.apiKeyPlaceholder') : t('pages.ai_provider.apiKeyKeepExisting')"
-          />
+          >
+            <template #suffix>
+              <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+              <PasswordToggle v-model="apiKeyVisible" />
+            </template>
+          </ElInput>
           <div v-if="!isCreate && currentHint" class="field-tip">
             {{ t("pages.ai_provider.apiKeyHintLabel") }}: {{ currentHint }}
           </div>
@@ -125,6 +129,7 @@ const { t } = useI18n();
 const formRef = ref<FormInstance>();
 
 const currentHint = ref("");
+const apiKeyVisible = ref(false);
 
 const isCreate = computed(() => drawer.isCreate.value);
 

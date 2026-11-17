@@ -17,13 +17,17 @@
         <el-input
           v-model="password"
           class="lock-screen__input"
-          type="password"
-          show-password
+          :type="pwdVisible ? 'text' : 'password'"
           autocomplete="off"
           size="large"
           :placeholder="t('common.lockScreen.placeholder')"
           @input="error = ''"
-        />
+        >
+          <template #suffix>
+            <!-- 自实现眼睛：EP 2.14 的 show-password 空值不渲染图标，见 PasswordToggle -->
+            <PasswordToggle v-model="pwdVisible" />
+          </template>
+        </el-input>
         <p v-if="error" class="lock-screen__error">{{ error }}</p>
         <el-button class="lock-screen__btn" type="primary" size="large" @click="handleSubmit">
           {{ t("common.lockScreen.entry") }}
@@ -71,6 +75,7 @@ const visible = computed(() => preferences.widget.lockScreen && lockStore.isLock
 const now = ref(new Date());
 const showUnlockForm = ref(false);
 const password = ref("");
+const pwdVisible = ref(false);
 const error = ref("");
 
 const hour = computed(() => String(now.value.getHours()).padStart(2, "0"));
