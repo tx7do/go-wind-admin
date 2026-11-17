@@ -1,9 +1,9 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
-import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { ColPage, Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
@@ -28,12 +28,25 @@ import TableAddButton from '#/components/TableAddButton.vue';
 import TableExportButton from '#/components/TableExportButton.vue';
 
 import OrgDrawer from './org-drawer.vue';
+import OrgTreePanel from '../user/list/org-list.vue';
+
+// 左树选中机构（issue #5：左树右表布局）；undefined = 全部
+const selectedOrgId = ref<string | undefined>(undefined);
+const selectedOrgKey = ref<(number | string)[]>([]);
+
+function handleOrgSelect(node: any) {
+  // 左树用于导航聚焦：选中后按该机构过滤右表（parentId 精确匹配——
+  // _id 后缀键在 makeQueryString 里不加 __contains，走 exact）。
+  selectedOrgId.value = node?.id ? String(node.id) : undefined;
+  selectedOrgKey.value = node?.id ? [`${node.parentId ?? ''}-${node.id}`] : [];
+  // gridApi 在本文件后段才解构（模板事件晚于装配，运行时必然就绪）
+  gridApi?.reload();
+}
 
 const { mutateAsync: deleteOrgUnit } = useDeleteOrgUnit();
 
 const formOptions: VbenFormProps = {
   // 默认展开
-  collapsed: false,
   // 控制表单是否显示折叠按钮
   showCollapseButton: false,
   // 按下回车时是否提交表单
@@ -102,11 +115,15 @@ const gridOptions: VxeGridProps<OrgUnit> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
-
+        // 左树选中机构注入 parentId 过滤（_id 后缀走精确匹配，issue #5）
+        const merged = { ...formValues };
+        if (selectedOrgId.value) {
+          merged.parentId = selectedOrgId.value;
+        }
         return await fetchListOrgUnits(
           new PaginationQuery({
             paging: { page: page.currentPage, pageSize: page.pageSize },
-            formValues,
+            formValues: merged,
           }),
         );
       },
@@ -239,7 +256,26 @@ function buildRowActions(): TableAction[] {
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('menu.opm.orgUnit')">
+    <ColPage
+      auto-content-height
+      :left-collapsed-width="0"
+      :left-collapsible="false"
+      :left-max-width="40"
+      :left-min-width="20"
+      :left-width="25"
+      :right-width="75"
+      :resizable="true"
+      :split-handle="true"
+      :split-line="true"
+    >
+      <template #left>
+        <OrgTreePanel
+          v-model:selected-keys="selectedOrgKey"
+          @org-select="handleOrgSelect"
+        />
+      </template>
+      <div class="ml-3 h-full">
+        <Grid :table-title="$t('menu.opm.orgUnit')">
       <template #toolbar-tools>
         <a-button class="mr-2" @click="expandAll">
           {{ $t('ui.tree.expand_all') }}
@@ -260,10 +296,12 @@ function buildRowActions(): TableAction[] {
           {{ orgUnitTypeToName(row.type) }}
         </a-tag>
       </template>
-      <template #action="{ row }">
-        <TableActions :row="row" :actions="buildRowActions()" />
-      </template>
-    </Grid>
+          <template #action="{ row }">
+            <TableActions :row="row" :actions="buildRowActions()" />
+          </template>
+        </Grid>
+      </div>
+    </ColPage>
     <Drawer />
   </Page>
 </template>

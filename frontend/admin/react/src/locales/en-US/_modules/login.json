@@ -1,0 +1,5 @@
+{
+    "credentialMismatch": "Tenant, username, or password is incorrect. Please try again.",
+    "captchaInvalid": "The captcha is incorrect. Please try again.",
+    "tooManyAttempts": "Too many failed attempts. Please try again later."
+}

@@ -219,6 +219,20 @@ export function getErrorMsg(error: unknown) {
   if (resData) {
     const { reason } = resData;
     if (reason) {
+      // 登录面的凭据/验证码/限流 reason 不在包内 common 表（包 dist 不随宿主
+      // 发版），由宿主 login 命名空间承接（issue #1）：凭据三族（密码/用户名/
+      // 租户）统一口径，验证码与限流各自成键。
+      const loginReasonKeys: Record<string, string> = {
+        INVALID_PASSWORD: 'credentialMismatch',
+        USER_NOT_FOUND: 'credentialMismatch',
+        INVALID_TENANT: 'credentialMismatch',
+        CAPTCHA_INVALID: 'captchaInvalid',
+        TOO_MANY_ATTEMPTS: 'tooManyAttempts',
+      };
+      const loginKey = loginReasonKeys[reason];
+      if (loginKey) {
+        return i18n.t(loginKey, { ns: 'login' });
+      }
       const key = i18nPrefix + `reason.${reason}`;
       // 使用 i18n.exists() 时需要指定命名空间
       if (i18n.exists(key, { ns: 'common' })) {

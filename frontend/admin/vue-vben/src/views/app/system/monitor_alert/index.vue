@@ -69,7 +69,6 @@ function channelToName(channel?: string) {
 }
 
 const formOptions = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

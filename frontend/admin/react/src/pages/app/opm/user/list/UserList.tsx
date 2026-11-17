@@ -262,7 +262,7 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
       <div
         ref={containerRef}
         className="page-container-content"
-        style={{ padding: '0 8px', height: '100%' }}
+        style={{ padding: '0 0 0 8px', height: '100%' }}
       >
         <ListTable<any>
           actionRef={actionRef}

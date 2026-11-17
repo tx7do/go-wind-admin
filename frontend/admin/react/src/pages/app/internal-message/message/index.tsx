@@ -167,7 +167,7 @@ const InternalMessageList = () => {
             rowKey="id"
             search={{ optionRender: searchOptionRender,
               labelWidth: 'auto',
-              defaultCollapsed: false,
+              defaultCollapsed: true,
             }}
             pagination={false}
             toolBarRender={() => [

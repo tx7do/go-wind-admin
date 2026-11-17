@@ -192,7 +192,7 @@ const OnlineSessionPage = () => {
           rowKey={(record) => `${record.clientType}-${record.userId}-${record.jti}`}
           search={{ optionRender: searchOptionRender,
             labelWidth: 'auto',
-            defaultCollapsed: false,
+            defaultCollapsed: true,
           }}
           polling={30}
           pagination={{

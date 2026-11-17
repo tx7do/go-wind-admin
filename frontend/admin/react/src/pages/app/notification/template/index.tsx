@@ -245,7 +245,7 @@ const NotificationTemplatePage = () => {
             return { data: response.items || [], total: Number(response.total ?? 0), success: true };
           }}
           rowKey="id"
-          search={{ optionRender: searchOptionRender, labelWidth: 'auto', defaultCollapsed: false }}
+          search={{ optionRender: searchOptionRender, labelWidth: 'auto', defaultCollapsed: true }}
           pagination={{
             defaultPageSize: TABLE.DEFAULT_PAGE_SIZE,
             showSizeChanger: true,

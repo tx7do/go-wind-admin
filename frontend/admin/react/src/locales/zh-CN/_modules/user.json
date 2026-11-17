@@ -68,5 +68,7 @@
   "resetMfaConfirmTitle": "重置该用户的 MFA？",
   "resetMfaConfirmDesc": "将清空其 TOTP 认证器绑定，用户下次登录无需二次验证，需重新绑定。",
   "resetMfaSuccess": "MFA 已重置",
-  "resetMfaFailed": "MFA 重置失败"
+  "resetMfaFailed": "MFA 重置失败",
+  "currentSelection": "当前选择",
+  "allUnits": "全部机构"
 }

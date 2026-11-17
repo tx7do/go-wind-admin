@@ -3,7 +3,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { TableExportButton } from '@go-wind/admin-react';
 import TableActions from '@/components/common/TableActions';
 import { ListTable } from '@go-wind/admin-react';
-import { Button, Tag, App } from 'antd';
+import { Button, Splitter, Tag, App } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -20,6 +20,7 @@ import { useProTableScrollY } from '@go-wind/admin-react';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { getStatusMap, getStatusOptions, getOrgTypeMap, getOrgTypeOptions } from './constants';
 import OrgDrawer from './components/OrgDrawer';
+import OrgList from '../user/list/OrgList';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 
@@ -44,6 +45,17 @@ const OrgUnitManagement = () => {
 
   // 树数据
   const [treeData, setTreeData] = useState<OrgUnit[]>([]);
+
+  // 左树选中（issue #5：左树右表）；undefined = 全部。键与用户页树同构
+  // （`${parentId}-${id}`）；右表按 parentId 精确过滤（_id 后缀键走 exact）。
+  const [selectedOrgNode, setSelectedOrgNode] = useState<any | null>(null);
+  const selectedOrgKey: React.Key | undefined = selectedOrgNode
+    ? `${selectedOrgNode.parentId ?? ''}-${selectedOrgNode.id ?? ''}`
+    : undefined;
+  const handleOrgNodeSelect = (node: any | null) => {
+    setSelectedOrgNode(node);
+    actionRef.current?.reload();
+  };
 
   const statusMap = getStatusMap(t);
   const orgTypeMap = getOrgTypeMap(t);
@@ -204,17 +216,32 @@ const OrgUnitManagement = () => {
   return (
     <>
       <ContentContainer heightMode="fixed" padding="16px" bottomMargin={0}>
-        <div ref={containerRef} className="page-container-content">
+        <Splitter style={{ height: '100%' }}>
+          <Splitter.Panel defaultSize="25%" min="15%" max="40%">
+            <OrgList
+              currentOrgUnitId={undefined}
+              currentTenantId={undefined}
+              onTenantSelect={() => {}}
+              onOrgSelect={() => {}}
+              externalSelectedKey={selectedOrgKey}
+              onOrgSelectNode={handleOrgNodeSelect}
+            />
+          </Splitter.Panel>
+          <Splitter.Panel>
+            <div style={{ height: '100%', paddingLeft: 8 }}>
           <ListTable<OrgUnit>
             actionRef={actionRef}
             columns={columns}
             request={async (params, _sorter, _filter) => {
+              const formEntries = Object.entries(params).filter(
+                ([key]) => !['current', 'pageSize'].includes(key),
+              );
+              // 左树选中注入 parentId（_id 后缀键走精确匹配）
+              if (selectedOrgNode?.id) {
+                formEntries.push(['parentId', String(selectedOrgNode.id)]);
+              }
               const query = new PaginationQuery({
-                formValues: Object.fromEntries(
-                  Object.entries(params).filter(
-                    ([key]) => !['current', 'pageSize'].includes(key),
-                  ),
-                ),
+                formValues: Object.fromEntries(formEntries),
               });
 
               const response = await fetchListOrgUnits(query);
@@ -232,7 +259,7 @@ const OrgUnitManagement = () => {
             rowKey="id"
             search={{ optionRender: searchOptionRender,
               labelWidth: 'auto',
-              defaultCollapsed: false,
+              defaultCollapsed: true,
             }}
             pagination={false}
             toolBarRender={() => [
@@ -276,7 +303,9 @@ const OrgUnitManagement = () => {
               onExpandedRowsChange: (keys) => setExpandedRowKeys(keys),
             }}
           />
-        </div>
+            </div>
+          </Splitter.Panel>
+        </Splitter>
       </ContentContainer>
 
       {/* 组织架构编辑/创建 Drawer */}

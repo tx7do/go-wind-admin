@@ -40,7 +40,6 @@
             <template v-else>
               <h2 class="form-title">
                 {{ t("core.login.welcomeTitle") }}
-                <span class="wave">👋</span>
               </h2>
               <p class="form-subtitle">{{ t("core.login.welcomeSubtitle") }}</p>
             </template>
@@ -264,12 +263,6 @@ const formComponents = {
         font-weight: 600;
         color: var(--el-text-color-primary);
         margin: 0 0 8px 0;
-
-        .wave {
-          display: inline-block;
-          animation: wave 2.5s infinite;
-          transform-origin: 70% 70%;
-        }
       }
 
     // 次要档统一吃 token：原两态写死 #6b7a8d / #6b7280，暗色实测 4.05 < 4.5
@@ -294,33 +287,6 @@ const formComponents = {
     }
   }
 
-  }
-}
-
-@keyframes wave {
-  0% {
-    transform: rotate(0deg);
-  }
-  10% {
-    transform: rotate(14deg);
-  }
-  20% {
-    transform: rotate(-8deg);
-  }
-  30% {
-    transform: rotate(14deg);
-  }
-  40% {
-    transform: rotate(-4deg);
-  }
-  50% {
-    transform: rotate(10deg);
-  }
-  60% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(0deg);
   }
 }
 

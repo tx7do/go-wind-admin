@@ -20,5 +20,7 @@
   "description": "Description",
   "button": {
     "create": "Create Organization"
-  }
+  },
+  "currentSelection": "Current selection",
+  "allUnits": "All units"
 }

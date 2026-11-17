@@ -34,7 +34,6 @@ const { mutateAsync: deleteInternalMessage } = useDeleteInternalMessage();
 
 const formOptions: VbenFormProps = {
   // 默认展开
-  collapsed: false,
   // 控制表单是否显示折叠按钮
   showCollapseButton: false,
   // 按下回车时是否提交表单

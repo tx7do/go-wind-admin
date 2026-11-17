@@ -15,5 +15,7 @@
   "description": "描述",
   "remark": "备注",
   "createdAt": "创建时间",
-  "legalEntity": "法人实体信息"
+  "legalEntity": "法人实体信息",
+  "currentSelection": "当前选择",
+  "allUnits": "全部机构"
 }

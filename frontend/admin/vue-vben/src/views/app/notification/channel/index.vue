@@ -83,7 +83,6 @@ const extTypeGroups = computed(() => {
 });
 
 const formOptions = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

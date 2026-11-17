@@ -4,6 +4,7 @@ import {
   ExpandOutlined,
   ShrinkOutlined,
   CloseCircleOutlined,
+  FolderOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,10 @@ interface OrgListProps {
   currentTenantId: string | undefined;
   onTenantSelect: (tenantId: string | undefined) => void;
   onOrgSelect: (orgUnitId: string | undefined) => void;
+  /** 外部选中态（组织架构页复用，issue #5）：传入后组件不触碰用户页 store
+      的 currentOrgUnitId，选中以本键回显、完整节点经 onOrgSelectNode 上抛 */
+  externalSelectedKey?: React.Key | undefined;
+  onOrgSelectNode?: (node: any | null) => void;
 }
 
 /**
@@ -29,6 +34,8 @@ const OrgList: React.FC<OrgListProps> = ({
   currentTenantId,
   onTenantSelect,
   onOrgSelect,
+  externalSelectedKey,
+  onOrgSelectNode,
 }) => {
   const { t } = useTranslation('user');
   const { message } = App.useApp();
@@ -39,6 +46,8 @@ const OrgList: React.FC<OrgListProps> = ({
 
   // 组织树
   const [treeData, setTreeData] = useState<any[]>([]);
+  // 左栏三段式回显（issue #4）：当前选择 → 搜索框 → 机构树
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = useState('');
@@ -122,9 +131,19 @@ const OrgList: React.FC<OrgListProps> = ({
     setSelectedKeys(keys);
     if (keys.length > 0) {
       const node = info.node;
-      onOrgSelect(node?.id);
+      setSelectedTitle(String(node?.title ?? ''));
+      if (externalSelectedKey !== undefined) {
+        onOrgSelectNode?.(node ?? null);
+      } else {
+        onOrgSelect(node?.id);
+      }
     } else {
-      onOrgSelect(undefined);
+      setSelectedTitle('');
+      if (externalSelectedKey !== undefined) {
+        onOrgSelectNode?.(null);
+      } else {
+        onOrgSelect(undefined);
+      }
     }
   };
 
@@ -180,8 +199,13 @@ const OrgList: React.FC<OrgListProps> = ({
 
   // 取消选中
   const handleClearSelect = () => {
+    setSelectedTitle('');
     setSelectedKeys([]);
-    onOrgSelect(undefined);
+    if (externalSelectedKey !== undefined) {
+      onOrgSelectNode?.(null);
+    } else {
+      onOrgSelect(undefined);
+    }
   };
 
   const { token } = theme.useToken();
@@ -213,6 +237,34 @@ const OrgList: React.FC<OrgListProps> = ({
           marginBottom: 8,
         }}>
           {t('searchOrg')}
+        </div>
+
+        {/* 当前选择回显（issue #4）：三段式第一段 */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 13,
+            marginBottom: 8,
+            minWidth: 0,
+          }}
+          title={selectedTitle}
+        >
+          <span style={{ color: token.colorTextSecondary, whiteSpace: 'nowrap' }}>
+            {t('currentSelection')}:
+          </span>
+          <span
+            style={{
+              color: token.colorTextHeading,
+              fontWeight: 500,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {selectedTitle || t('allUnits')}
+          </span>
         </div>
 
         {/* 租户选择器（仅非租户用户可见） */}
@@ -250,7 +302,13 @@ const OrgList: React.FC<OrgListProps> = ({
           blockNode
           expandedKeys={expandedKeys}
           autoExpandParent={autoExpandParent}
-          selectedKeys={selectedKeys}
+          selectedKeys={
+            externalSelectedKey !== undefined
+              ? externalSelectedKey
+                ? [externalSelectedKey]
+                : []
+              : selectedKeys
+          }
           treeData={treeData}
           onExpand={(keys) => {
             setExpandedKeys(keys);
@@ -260,14 +318,23 @@ const OrgList: React.FC<OrgListProps> = ({
           titleRender={(nodeData: any) => {
             const title = nodeData.title as string;
             const q = searchValue.trim();
-            if (!q || !title) return title;
-            const idx = title.toLowerCase().indexOf(q.toLowerCase());
-            if (idx === -1) return title;
+            const highlighted = (() => {
+              if (!q || !title) return title;
+              const idx = title.toLowerCase().indexOf(q.toLowerCase());
+              if (idx === -1) return title;
+              return (
+                <span>
+                  {title.substring(0, idx)}
+                  <span style={{ color: token.colorPrimary }}>{title.substring(idx, idx + q.length)}</span>
+                  {title.substring(idx + q.length)}
+                </span>
+              );
+            })();
+            // 节点图标（issue #4）：树节点视觉锚点
             return (
-              <span>
-                {title.substring(0, idx)}
-                <span style={{ color: token.colorPrimary }}>{title.substring(idx, idx + q.length)}</span>
-                {title.substring(idx + q.length)}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                <FolderOutlined style={{ color: token.colorTextSecondary, fontSize: 14 }} />
+                {highlighted}
               </span>
             );
           }}

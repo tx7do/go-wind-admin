@@ -42,7 +42,6 @@ const SORT_FIELD_MAP: Record<string, string> = {
 };
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

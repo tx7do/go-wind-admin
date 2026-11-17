@@ -24,6 +24,9 @@ const props = reactive({
     <template #left>
       <OrgList />
     </template>
-    <UserList />
+    <!-- 分割线右侧同距（issue #4）：左栏 m-3 与右侧 ml-3 对称 -->
+    <div class="ml-3 h-full">
+      <UserList />
+    </div>
   </ColPage>
 </template>

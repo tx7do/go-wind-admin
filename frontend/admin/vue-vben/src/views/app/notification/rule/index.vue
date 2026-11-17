@@ -54,7 +54,6 @@ const { mutateAsync: deleteRule } = useDeleteNotificationRule();
 const { mutateAsync: testDispatch } = useTestDispatchNotification();
 
 const formOptions = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

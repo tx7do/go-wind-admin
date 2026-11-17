@@ -2,6 +2,15 @@
   <div class="dept-container">
     <ElCard class="card-flat" shadow="never" :body-style="{ padding: '12px' }">
       <div class="toolbar-container">
+        <!-- 当前选择回显（issue #4）：三段式第一段 -->
+        <div class="current-node" :title="selectedTitle">
+          <span class="current-label">{{
+            $t("pages.org_unit.currentSelection")
+          }}</span>
+          <span class="current-value">{{
+            selectedTitle || $t("pages.org_unit.allUnits")
+          }}</span>
+        </div>
         <!-- 租户选择器 -->
         <div v-if="!userViewStore.isTenantUser()" class="toolbar-item">
           <span class="toolbar-label">{{ $t("routes.tenant.member") }}</span>
@@ -64,7 +73,7 @@
       :props="{ label: 'label', children: 'children' }"
       :expand-on-click-node="false"
       :default-expanded-keys="expandedKeys"
-      :default-checked-keys="selectedKeys"
+      :default-checked-keys="effectiveSelectedKeys"
       node-key="key"
       highlight-current
       class="tree-container"
@@ -72,6 +81,9 @@
     >
       <template #default="{ node }">
         <span class="tree-node-label">
+          <ElIcon :size="14" class="node-icon">
+            <Folder />
+          </ElIcon>
           <span v-if="searchValue && String(node.label).indexOf(searchValue) > -1">
             {{ String(node.label).substring(0, String(node.label).indexOf(searchValue)) }}
             <span class="highlight-text">{{ searchValue }}</span>
@@ -105,13 +117,29 @@ import {
   ElDropdownMenu,
   ElDropdownItem,
 } from "element-plus";
-import { More, Search, Expand, Fold, CircleClose } from "@element-plus/icons-vue";
+import { More, Search, Expand, Fold, CircleClose, Folder } from "@element-plus/icons-vue";
 import { $t } from "@go-wind/admin-element";
 
 import { type identityservicev1_OrgUnit as OrgUnit } from "@/api/generated/admin/service/v1";
 import { useUserViewStore } from "./user-view.state";
 
 const userViewStore = useUserViewStore();
+
+// 复用面（issue #5）：组织架构页以事件形态接入——v-model:selectedKeys 回显
+// 选中，@org-select 透传节点（null = 取消）。用户页零 props 行为不变。
+const props = defineProps<{ selectedKeys?: (number | string)[] }>();
+const emit = defineEmits<{
+  (e: "org-select", node: any): void;
+  (e: "update:selectedKeys", keys: (number | string)[]): void;
+}>();
+const localSelectedKeys = ref<(number | string)[]>([]);
+const effectiveSelectedKeys = computed(
+  () => props.selectedKeys ?? localSelectedKeys.value,
+);
+function commitSelectedKeys(keys: (number | string)[]) {
+  localSelectedKeys.value = keys;
+  emit("update:selectedKeys", keys);
+}
 
 const toolbarList = [
   {
@@ -141,6 +169,8 @@ const autoExpandParent = ref<boolean>(true);
 
 const treeData = ref<any[]>([]);
 const selectedKeys = ref<(number | string)[]>([]);
+// 左栏三段式回显（issue #4）：当前选择 → 搜索框 → 机构树
+const selectedTitle = ref<string>("");
 
 const tenantOptions = computed(() =>
   (userViewStore.tenantList.items ?? []).map((t: any) => ({
@@ -229,6 +259,11 @@ function handleMenuUnselectedAll() {
  * 选中组织单元
  */
 function handleSelectOrgUnit(node: any) {
+  // 非 store 接入形态（组织架构页）：只发事件，不触碰用户页 store。
+  if (props.selectedKeys !== undefined) {
+    emit("org-select", node);
+    return;
+  }
   userViewStore.setCurrentOrgUnitId(node ? node.id || null : null);
 }
 
@@ -236,7 +271,9 @@ function handleSelectOrgUnit(node: any) {
  * 选中单个节点
  */
 function handleSelectNode(node: TreeNode) {
+  commitSelectedKeys([(node as any).key]);
   selectedKeys.value = [(node as any).key];
+  selectedTitle.value = String((node as any).label ?? "");
   handleSelectOrgUnit(node);
 }
 
@@ -246,7 +283,9 @@ function handleTenantChanged(value: any) {
 }
 
 function clearSelection() {
+  commitSelectedKeys([]);
   selectedKeys.value = [];
+  selectedTitle.value = "";
   handleSelectOrgUnit(null);
 }
 
@@ -397,12 +436,42 @@ onMounted(async () => {
     }
   }
 
+  .current-node {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 13px;
+    margin-bottom: 8px;
+
+    .current-label {
+      color: var(--el-text-color-secondary);
+      white-space: nowrap;
+    }
+
+    .current-value {
+      color: var(--el-text-color-primary);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
   .tree-node-label {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-right: 8px;
+
+    .node-icon {
+      flex: 0 0 auto;
+      color: var(--el-text-color-secondary);
+    }
   }
 
   .highlight-text {

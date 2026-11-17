@@ -24,7 +24,6 @@ import type { TableAction } from '#/components/TableActions.vue';
 const { mutateAsync: forceLogout } = useForceLogoutSession();
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

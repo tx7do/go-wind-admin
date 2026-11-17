@@ -20,5 +20,7 @@
   "description": "组织描述",
   "button": {
     "create": "创建组织"
-  }
+  },
+  "currentSelection": "当前选择",
+  "allUnits": "全部机构"
 }

@@ -30,7 +30,6 @@ const { mutateAsync: deleteDashboard } = useDeleteBiDashboard();
 const { mutateAsync: copyDashboard } = useCopyBiDashboard();
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

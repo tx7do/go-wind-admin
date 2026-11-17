@@ -31,7 +31,6 @@ const { mutateAsync: deletePermissionGroup } = useDeletePermissionGroup();
 
 const formOptions: VbenFormProps = {
   // 默认展开
-  collapsed: false,
   // 控制表单是否显示折叠按钮
   showCollapseButton: false,
   // 按下回车时是否提交表单
@@ -89,6 +88,9 @@ const gridOptions: VxeGridProps<PermissionGroup> = {
     isCurrent: true,
   },
   treeConfig: {
+    // 后端 List 返回平铺 items，transform 让 vxe 按 rowField/parentField
+    // 自行组树（issue #9：分组列表体现上下级关系）
+    transform: true,
     parentField: 'parentId',
     rowField: 'id',
     expandAll: true,

@@ -37,7 +37,6 @@ const resetSecretValue = ref('');
 const resettingId = ref('');
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

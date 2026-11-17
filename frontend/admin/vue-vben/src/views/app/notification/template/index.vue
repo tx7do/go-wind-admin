@@ -40,7 +40,6 @@ const { mutateAsync: deleteTemplate } = useDeleteNotificationTemplate();
 const { mutateAsync: renderTemplate } = useRenderNotificationTemplate();
 
 const formOptions = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

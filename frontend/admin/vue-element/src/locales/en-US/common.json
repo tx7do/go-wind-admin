@@ -269,8 +269,8 @@
       "unknownError": "Request error occurred, please try again later"
     },
     "reason": {
-      "INVALID_PASSWORD": "Invalid password, please re-enter",
-      "USER_NOT_FOUND": "User not found",
+      "INVALID_PASSWORD": "Tenant, username, or password is incorrect. Please try again.",
+      "USER_NOT_FOUND": "Tenant, username, or password is incorrect. Please try again.",
       "USER_DISABLED": "User has been disabled",
       "USER_LOCKED": "User has been locked",
       "TOKEN_EXPIRED": "Token has expired",
@@ -326,7 +326,10 @@
       "NOT_EXTENDED": "Not extended",
       "NETWORK_AUTHENTICATION_REQUIRED": "Network authentication required",
       "NETWORK_READ_TIMEOUT_ERROR": "Network read timeout",
-      "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout"
+      "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout",
+      "INVALID_TENANT": "Tenant, username, or password is incorrect. Please try again.",
+      "CAPTCHA_INVALID": "The captcha is incorrect. Please try again.",
+      "TOO_MANY_ATTEMPTS": "Too many failed attempts. Please try again later."
     },
     "status": {
       "400": "Bad request",

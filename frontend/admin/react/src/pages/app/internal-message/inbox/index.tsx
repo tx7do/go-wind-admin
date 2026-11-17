@@ -284,7 +284,7 @@ const InboxList = () => {
           rowKey="id"
           search={{ optionRender: searchOptionRender,
             labelWidth: 'auto',
-            defaultCollapsed: false,
+            defaultCollapsed: true,
             // 全局 span 8，各字段再乘自己的 colSize（标题 1 / 状态 0.625 / 接收时间
             // 1.375）= 8/5/11 共 24 一行放下：状态列最窄（标签短、下拉瘦），
             // 让宽给内容固有宽约 390px 的双输入区间控件

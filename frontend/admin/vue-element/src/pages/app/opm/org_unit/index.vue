@@ -1,12 +1,18 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage
-      ref="pageRef"
-      :config="pageConfig"
-      @add="handleAdd"
-      @edit="handleEdit"
-      @toolbar="handleToolbar"
-    >
+    <!-- 左树右表（issue #5）：左栏机构树导航，右栏组织列表按 parentId 过滤 -->
+    <ProSplitter :left-size="25" :left-min-size="20" :left-max-size="40" :right-size="75" :stack-below="1200">
+      <template #left>
+        <OrgList v-model:selected-keys="selectedOrgKeys" @org-select="handleOrgSelect" />
+      </template>
+      <template #right>
+        <ProPage
+          ref="pageRef"
+          :config="pageConfig"
+          @add="handleAdd"
+          @edit="handleEdit"
+          @toolbar="handleToolbar"
+        >
       <!-- 类型 -->
       <template #type="scope: any">
         <ElTag size="small" round :type="orgUnitTypeToType(scope.row.type)">
@@ -14,13 +20,15 @@
         </ElTag>
       </template>
 
-      <!-- 状态 -->
-      <template #status="scope: any">
-        <ElTag size="small" effect="plain" round :type="orgUnitStatusToType(scope.row.status)">
-          {{ orgUnitStatusToName(scope.row.status) }}
-        </ElTag>
+        <!-- 状态 -->
+        <template #status="scope: any">
+          <ElTag size="small" effect="plain" round :type="orgUnitStatusToType(scope.row.status)">
+            {{ orgUnitStatusToName(scope.row.status) }}
+          </ElTag>
+        </template>
+        </ProPage>
       </template>
-    </ProPage>
+    </ProSplitter>
 
     <!-- 新增/编辑抽屉 -->
     <OrgDrawer ref="drawerRef" @success="handleSuccess" />
@@ -33,7 +41,9 @@ import { ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig, ToolsButton } from "@/components/Pro/ProPage/types";
+import ProSplitter from "@/components/Pro/ProSplitter/index.vue";
 import OrgDrawer from "./org-drawer.vue";
+import OrgList from "../user/list/org-list.vue";
 
 import {
   orgUnitStatusToType,
@@ -51,6 +61,15 @@ const { mutateAsync: deleteOrgUnit } = useDeleteOrgUnit();
 
 const pageRef = ref();
 const drawerRef = ref();
+
+// 左树选中（issue #5）：键与树同构 `${parentId}-${id}`；右表按 parentId
+// 精确过滤（_id 后缀键不加 __contains，走 exact）。
+const selectedOrgKeys = ref<(number | string)[]>([]);
+const selectedOrgNode = ref<any | null>(null);
+function handleOrgSelect(node: any) {
+  selectedOrgNode.value = node ?? null;
+  pageRef.value?.refresh?.();
+}
 
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
@@ -86,6 +105,10 @@ const pageConfig = computed<ProPageConfig>(() => ({
   table: {
     listAction: async (query: any) => {
       const { page, pageSize, ...queryParams } = query;
+      // 左树选中注入 parentId（_id 后缀键走精确匹配）
+      if (selectedOrgNode.value?.id) {
+        queryParams.parentId = String(selectedOrgNode.value.id);
+      }
       const result = await fetchListOrgUnits(
         new PaginationQuery({
           paging: { page: page || 1, pageSize: pageSize || 100 },

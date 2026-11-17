@@ -156,7 +156,7 @@ export default function AccessKeyPage() {
           actionRef={actionRef}
           columns={columns}
           rowKey="id"
-          search={{ optionRender: searchOptionRender, labelWidth: 'auto', defaultCollapsed: false }}
+          search={{ optionRender: searchOptionRender, labelWidth: 'auto', defaultCollapsed: true }}
           scroll={{ y: tableScrollY }}
           pagination={{
             defaultPageSize: 20,

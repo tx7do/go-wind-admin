@@ -122,7 +122,6 @@ async function handleExportAll(info: { key: string | number }) {
 }
 
 const formOptions = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

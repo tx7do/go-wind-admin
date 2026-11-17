@@ -212,7 +212,7 @@ async function handleSubmit(values: Record<string, any>) {
         <h2
           class="text-foreground mb-3 text-3xl font-bold leading-9 tracking-tight lg:text-4xl"
         >
-          {{ $t('authentication.welcomeBack') }} 👋🏻
+          {{ $t('authentication.welcomeBack') }}
         </h2>
         <p class="text-muted-foreground text-sm lg:text-md">
           {{ $t('authentication.loginSubtitle') }}

@@ -27,7 +27,6 @@ import AiGenerateDrawer from './ai-generate-drawer.vue';
 const { mutateAsync: deleteTemplate } = useDeletePrintTemplate();
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

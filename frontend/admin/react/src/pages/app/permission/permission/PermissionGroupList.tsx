@@ -193,7 +193,7 @@ const PermissionGroupList: React.FC<PermissionGroupListProps> = ({
           rowKey="id"
           search={{ optionRender: searchOptionRender,
             labelWidth: 'auto',
-            defaultCollapsed: false,
+            defaultCollapsed: true,
             span: 12,
           }}
           pagination={false}

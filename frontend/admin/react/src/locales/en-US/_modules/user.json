@@ -68,5 +68,7 @@
   "resetMfaConfirmTitle": "Reset MFA for this user?",
   "resetMfaConfirmDesc": "This will remove their TOTP binding. Next login will skip MFA until re-enrolled.",
   "resetMfaSuccess": "MFA reset successfully",
-  "resetMfaFailed": "Failed to reset MFA"
+  "resetMfaFailed": "Failed to reset MFA",
+  "currentSelection": "Current selection",
+  "allUnits": "All units"
 }

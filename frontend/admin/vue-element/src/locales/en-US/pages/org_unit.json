@@ -15,5 +15,7 @@
   "description": "Description",
   "remark": "Remark",
   "createdAt": "Created At",
-  "legalEntity": "Legal Entity Information"
+  "legalEntity": "Legal Entity Information",
+  "currentSelection": "Current selection",
+  "allUnits": "All units"
 }

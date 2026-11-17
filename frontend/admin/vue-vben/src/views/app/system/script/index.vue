@@ -40,7 +40,6 @@ const testRunResult = ref<any>();
 const testRunLoading = ref(false);
 
 const formOptions: VbenFormProps = {
-  collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [

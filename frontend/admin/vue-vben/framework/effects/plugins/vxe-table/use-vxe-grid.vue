@@ -225,6 +225,10 @@ const [Form, formApi] = useTableForm({
     },
   },
   showCollapseButton: true,
+  // 查询条件区默认收起为一行（issue #2）：列表区让出空间，超出项折叠进
+  // 「展开」按钮；页面需要常驻展开的显式传 collapsed: false 覆盖。
+  collapsed: true,
+  collapsedRows: 1,
   // 搜索栏按钮统一（三端对齐 ele）：搜索（实心蓝+放大镜）在前、重置（文字样式+循环箭头）在后；
   // icon 尺寸须钉住（lucide-vue-next 默认 width=24）；间距与y轴对齐由全局 .ant-btn flex 基座负责
   // （framework/styles/antd/index.css），此处不再手写 svg 对齐类
@@ -239,7 +243,11 @@ const [Form, formApi] = useTableForm({
     icon: h(LucideRefreshCw),
     type: 'text',
   },
-  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  // 等分三列改 auto-fill 流式（issue #2）：各条件按内容宽度自适应落位，
+  // 长短不一时不再出现大片空白；折叠限宽计算（expandable.ts）按 DOM 实测
+  // 行数走，与列策略解耦，auto-fill 下同样成立。
+  wrapperClass:
+    'grid-cols-1 md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]',
 });
 
 const showTableTitle = computed(() => {
