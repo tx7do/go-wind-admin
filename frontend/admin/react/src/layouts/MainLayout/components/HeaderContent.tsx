@@ -99,6 +99,12 @@ const LanguageTranslateIcon = () => (
   </svg>
 );
 
+/**
+ * 窄屏隐藏面包屑的档位（三端统一，权威值见 docs/design-language.md §4）：
+ * 1024 即 vben 头部 `hidden lg:block` 的 lg 断点，不是本端自定的新数。
+ */
+const HEADER_BREADCRUMB_MIN_VIEWPORT = 1024;
+
 /** 键位提示条的小 kbd 徽标（与触发条上的 Ctrl K 同族样式） */
 const searchHintKbdStyle: React.CSSProperties = {
   display: 'inline-flex',
@@ -255,6 +261,20 @@ export const HeaderContent = ({
   // 面包屑偏好设置
   const breadcrumbPreferences = usePreferencesStore((state) => state.preferences.breadcrumb);
   const breadcrumbStyleType = breadcrumbPreferences?.styleType ?? 'normal';
+
+  // 三端统一硬闸：视口宽 < 1024px 整体隐藏面包屑。1024 不是新值——它就是 vben
+  // 头部 `hidden lg:block` 的 lg 档（CSSOM 现量：@media (min-width: 1024px)）。
+  // 容量判据（下面 fit 逻辑）继续生效，作为宽屏但文案过长时的第二道防线。
+  const [viewportWideEnough, setViewportWideEnough] = useState(
+    () => window.innerWidth >= HEADER_BREADCRUMB_MIN_VIEWPORT,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${HEADER_BREADCRUMB_MIN_VIEWPORT}px)`);
+    const sync = () => setViewportWideEnough(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   // ======== 面包屑过窄整体隐藏（对齐 vben：宁可无面包屑，不要挤压/截断） ========
   // 自然宽（wrap.scrollWidth）> 头部分配宽（wrap.clientWidth）→ 整体隐藏
@@ -917,14 +937,14 @@ export const HeaderContent = ({
           }}
         />
 
-        {/* 面包屑（过窄整体隐藏，见上方 hook 注释） */}
+        {/* 面包屑（窄屏硬闸 + 过窄整体隐藏，见上方 hook 注释） */}
         <div
           ref={breadcrumbWrapRef}
           style={{
             display: 'flex',
             minWidth: 0,
             overflow: 'hidden',
-            ...(breadcrumbHidden
+            ...(breadcrumbHidden || !viewportWideEnough
               ? { visibility: 'hidden', width: 0, flexShrink: 0 }
               : {}),
           }}

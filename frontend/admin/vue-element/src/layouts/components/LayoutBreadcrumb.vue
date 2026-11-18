@@ -1,5 +1,5 @@
 <template>
-  <div ref="wrapRef" v-show="visible && !hiddenByWidth" class="breadcrumb-wrap">
+  <div ref="wrapRef" v-show="visible && !hiddenByWidth && breadcrumbWideEnough" class="breadcrumb-wrap">
     <el-breadcrumb class="breadcrumb" :class="breadcrumbClass" separator=">">
     <!-- 首页图标 -->
     <el-breadcrumb-item
@@ -64,6 +64,12 @@ const pathCompile = (path: string) => {
 
 // 面包屑偏好
 const breadcrumbPrefs = computed(() => preferences.breadcrumb);
+
+// 三端统一硬闸：视口宽 < 1024px 整体隐藏面包屑。1024 不是新值——它就是 vben 头部
+// `hidden lg:block` 的 lg 档（CSSOM 现量：@media (min-width: 1024px)）。
+// 下方的容量判据继续生效，作为宽屏但文案过长时的第二道防线。
+const HEADER_BREADCRUMB_MIN_VIEWPORT = 1024;
+const breadcrumbWideEnough = useMediaQuery(`(min-width: ${HEADER_BREADCRUMB_MIN_VIEWPORT}px)`);
 
 const breadcrumbs = ref<Array<RouteLocationMatched>>([]);
 
