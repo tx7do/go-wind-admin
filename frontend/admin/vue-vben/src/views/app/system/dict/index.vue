@@ -1,7 +1,7 @@
 ﻿<script lang="ts" setup>
 import { reactive } from 'vue';
 
-import { ColPage } from '@vben/common-ui';
+import SplitPane from '#/components/SplitPane.vue';
 
 import DictEntryList from '#/views/app/system/dict/dict-entry-list.vue';
 import DictTypeList from '#/views/app/system/dict/dict-type-list.vue';
@@ -20,10 +20,10 @@ const props = reactive({
 </script>
 
 <template>
-  <ColPage auto-content-height v-bind="props">
+  <SplitPane auto-content-height v-bind="props">
     <template #left>
       <DictTypeList />
     </template>
     <DictEntryList />
-  </ColPage>
+  </SplitPane>
 </template>

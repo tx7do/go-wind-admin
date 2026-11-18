@@ -1,7 +1,7 @@
 ﻿<script lang="ts" setup>
 import { reactive } from 'vue';
 
-import { ColPage } from '@vben/common-ui';
+import SplitPane from '#/components/SplitPane.vue';
 
 import PermissionGroupList from '#/views/app/permission/permission/permission-group-list.vue';
 import PermissionList from '#/views/app/permission/permission/permission-list.vue';
@@ -20,10 +20,10 @@ const props = reactive({
 </script>
 
 <template>
-  <ColPage auto-content-height v-bind="props">
+  <SplitPane auto-content-height v-bind="props">
     <template #left>
       <PermissionGroupList />
     </template>
     <PermissionList />
-  </ColPage>
+  </SplitPane>
 </template>

@@ -3,7 +3,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { h, ref } from 'vue';
 
-import { ColPage, Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
@@ -22,6 +22,7 @@ import {
   useDeleteOrgUnit,
 } from '#/api';
 import { $t } from '#/locales';
+import SplitPane from '#/components/SplitPane.vue';
 import TableActions from '#/components/TableActions.vue';
 import type { TableAction } from '#/components/TableActions.vue';
 import TableAddButton from '#/components/TableAddButton.vue';
@@ -259,7 +260,7 @@ function buildRowActions(): TableAction[] {
 
 <template>
   <Page auto-content-height>
-    <ColPage
+    <SplitPane
       auto-content-height
       :left-collapsed-width="0"
       :left-collapsible="false"
@@ -304,7 +305,7 @@ function buildRowActions(): TableAction[] {
           </template>
         </Grid>
       </div>
-    </ColPage>
+    </SplitPane>
     <Drawer />
   </Page>
 </template>

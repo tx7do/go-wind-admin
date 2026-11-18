@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive } from 'vue';
 
-import { ColPage } from '@vben/common-ui';
+import SplitPane from '#/components/SplitPane.vue';
 
 import PlanQuotaList from '#/views/app/tenant/plan/plan-quota-list.vue';
 import PlanList from '#/views/app/tenant/plan/plan-list.vue';
@@ -20,10 +20,10 @@ const props = reactive({
 </script>
 
 <template>
-  <ColPage auto-content-height v-bind="props">
+  <SplitPane auto-content-height v-bind="props">
     <template #left>
       <PlanList />
     </template>
     <PlanQuotaList />
-  </ColPage>
+  </SplitPane>
 </template>

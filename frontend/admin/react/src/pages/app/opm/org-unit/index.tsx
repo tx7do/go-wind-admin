@@ -2,8 +2,9 @@ import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { TableExportButton } from '@go-wind/admin-react';
 import TableActions from '@/components/common/TableActions';
+import SplitPane from '@/components/common/SplitPane';
 import { ListTable } from '@go-wind/admin-react';
-import { Button, Splitter, Tag, App } from 'antd';
+import { Button, Tag, App } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -216,8 +217,8 @@ const OrgUnitManagement = () => {
   return (
     <>
       <ContentContainer heightMode="fixed" padding="16px" bottomMargin={0}>
-        <Splitter style={{ height: '100%' }}>
-          <Splitter.Panel defaultSize="25%" min="15%" max="40%">
+        <SplitPane>
+          <SplitPane.Panel defaultSize="25%" min="15%" max="40%">
             <OrgList
               currentOrgUnitId={undefined}
               currentTenantId={undefined}
@@ -226,8 +227,8 @@ const OrgUnitManagement = () => {
               externalSelectedKey={selectedOrgKey}
               onOrgSelectNode={handleOrgNodeSelect}
             />
-          </Splitter.Panel>
-          <Splitter.Panel>
+          </SplitPane.Panel>
+          <SplitPane.Panel>
             {/* ref 必须挂在 ListTable 的直接包裹层：useProTableScrollY 测这个容器
                 的高度反推 .ant-table-body 的高（scroll.y），漏挂则 scroll.y 恒为
                 初始值、卡片不撑满面板高度（右侧列表悬空，页面下半截留白） */}
@@ -307,8 +308,8 @@ const OrgUnitManagement = () => {
             }}
           />
             </div>
-          </Splitter.Panel>
-        </Splitter>
+          </SplitPane.Panel>
+        </SplitPane>
       </ContentContainer>
 
       {/* 组织架构编辑/创建 Drawer */}

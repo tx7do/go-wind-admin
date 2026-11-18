@@ -1,7 +1,7 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
     <!-- 左树右表（issue #5）：左栏机构树导航，右栏组织列表按 parentId 过滤 -->
-    <ProSplitter :left-size="25" :left-min-size="20" :left-max-size="40" :right-size="75" :stack-below="1200">
+    <ProSplitter :left-size="25" :left-min-size="20" :left-max-size="40" :right-size="75">
       <template #left>
         <OrgList v-model:selected-keys="selectedOrgKeys" @org-select="handleOrgSelect" />
       </template>
