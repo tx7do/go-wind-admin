@@ -8,6 +8,67 @@
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-18
+
+### 变更
+
+- **ID 全链定版 int64（破坏性）**：全部资源 ID 从 uint32 经 uint64 收敛到有符号 int64——
+  proto/ent/手写代码与上游 pin 同步切换，三端 TS 生成代码重生成 + 前端 ID 字符串化；
+  [docs/field_change_guide.md](./docs/field_change_guide.md) 与 crud 指南/教程/专题文档同步 64 位口径。
+  **升级注意：ent 自动迁移把 ID 列加宽为 bigint（uint32 存量值无损）；三端生成代码已随仓提交，
+  采用者无需自行 `make ts`；二开模块的自有 ID 字段请按新口径对齐。**
+- **三端机制层抽包发 npm（破坏性）**：基座机制不再随本仓 merge 同步——react 机制层
+  （shell 机制/ListTable/通用 hooks/导出引擎）= `@go-wind/admin-react`（本版随宿主升到 0.3.1）；
+  vue 两端共享 transport/storage/utils/crypto = `@go-wind/admin-core`；element 绑定层
+  （auth 编排/Pinia stores/路由工厂/偏好/i18n）= `@go-wind/admin-element`；vben 基座
+  （preferences/stores/i18n/ui-kit，源码形态包，宿主随本版升到 0.1.5，中途修复 json-bigint
+  拖累 JsonViewer）= `@go-wind/admin-vben`。全部经 go-wind-ui 仓 changesets 发版，本端
+  `pnpm update <包>` 升级。**升级注意：三端 import 拓扑变化，二开者按
+  [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md) §7 的目录所有权契约与 merge
+  runbook 处理升级冲突（lockfile/generated 不手解）。**
+- **三端 locale 按模块拆分（破坏性）**：共享登记缝消灭——locale 按模块拆文件、
+  react 删除 hooks barrel；core 文案收归宿主全量自持（包内死数据清空，深合并逐键覆盖）。
+  二开升级冲突面收窄为"一模块一文件"。
+
+### 新增
+
+- **租户回收站**（issue #3）：删租户不再物理删除——delete 停车（软删 + 带旁路的软删拦截器，
+  唯一索引×软删的约束映射一并处理），`/tenants/trash` 列表 / `/tenants/{id}/restore` 恢复 /
+  `/tenants/{id}/purge` 彻底清除三个 RPC；三端同一管理页 active/trash 两态切换。
+  **部署注意：三个新端点须重启后端（二进制内 openapi.yaml 已重建）后在管理页「接口同步」
+  登记 Api 表，否则租户闸门 fail-closed 403。**
+- **渐进式验证码**（issue #1 建议项）：登录不再常显验证码——同一 ip+用户名的失败计数达到
+  阈值（`captchaRequiredThreshold`，现值 1）后才强制；验证码 id/value 经 `X-Captcha-Id` /
+  `X-Captcha-Value` Header 传递，后端以 `CAPTCHA_REQUIRED` / `CAPTCHA_INVALID` reason 驱动
+  三端登录页点亮验证码字段；Redis/验证码服务不可用时 fail-open。
+- **菜单 IconPicker（react 先行，ele/vben 待移植）**：菜单抽屉新增可搜索图标选择器，
+  列表直接穿图标展示（依赖下方 menu meta 双 bug 修复打通）。
+- **标签标题全局更新器（react）**：登录页/错误页此前裸应用名——按路由 meta 全局更新 document.title。
+- **存储键命名空间隔离**：三端 localStorage 键隔离（element/vben 去 undefined 前缀 + 泛化迁移，
+  react 包键隔离随 `@go-wind/admin-react` 0.3.1 生效）——同机多项目部署不再互相污染。
+- **响应式两道门禁**：<1024 视口顶栏面包屑整体隐藏（vben 本有 `hidden lg:block`，react/ele
+  以同一谓词补齐，容量判据保留作第二道防线）；<720 视口分栏（左树右表/拆分面板）三端统一堆叠为纵向。
+- **API 管理页方法列色标（vben）**：GET 绿 / POST 蓝 / PUT 橙 / DELETE 红（shared
+  http-method 色表，antd 预设色对齐 react 基准）。
+
+### 修复
+
+- **后端 menu meta 双 bug**：UpdateMenu 的 field-mask 遇点路径（`meta.icon` 等）被拍平拒绝、
+  NULL meta 列合并时被吞——菜单 meta 此前"保存 200 不落库"，IconPicker 链路正是被它挡住。
+- **九项 UX 问题波**（issues #1/#2/#4/#5/#9 前端面）：三端登录文案统一、flow-form 查询区、
+  组织树面板重构、左树组织页、权限抽屉选项缓存。
+- **vue-element**：菜单页裸 `$t(meta?.title)` 遇空 title 行抛 SyntaxError 打崩 VxeTableBody
+  （对齐 vben 守卫）；MenuDrawer 误传的 `prefix` 属性穿透根 div 撞 DOM 只读属性开抽屉必炸；
+  密码眼睛统一 `PasswordToggle`（EP 2.14 空值不渲染图标 quirk，13 处清齐）。
+- **vue-vben**：out-in+KeepAlive 路由视图 `:key=fullPath` 致查询变化跳过登录表单挂载（webview
+  硬化系列，含 dev 双 i18n 实例、转场显式时长）；devtools null vnode 与存储前缀；树+表页混合列宽
+  窄视口压扁出黑带（org-unit/position 弹性列补 minWidth）；工作台快捷入口实底 accent 灰块改
+  前景色水洗；API 管理页 EP 风格死导出替换。
+- **react**：org-unit 表格 scroll-y 钩子的 containerRef 未挂载致卡片下方留死区；antd6 TreeSelect
+  弃用警告以 pnpm patch 迁移 pro-field 注入的旧 props（上游迁移后撤 patch）。
+- **契约面**：`/tenants/trash` 逃出 gorilla 路由遮蔽（注册顺序修正）+ stub 补真实错误面；
+  vue 两端 i18n 修复批次。
+
 ## [1.6.0] - 2026-11-09
 
 ### 新增
