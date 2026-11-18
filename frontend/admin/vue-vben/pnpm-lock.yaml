@@ -436,8 +436,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0)
       '@go-wind/admin-vben':
-        specifier: 0.1.4
-        version: 0.1.4(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
+        specifier: 0.1.5
+        version: 0.1.5(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
       '@go-wind/bi-core':
         specifier: 0.2.3
         version: 0.2.3
@@ -2824,8 +2824,8 @@ packages:
   '@go-wind/admin-core@0.1.0':
     resolution: {integrity: sha512-cnKFjoLC9pea5UqZPi4FN9ablHuecb8Aapdw3LYP/6Nwox4/yBlJtl5FURuVEZs7xtTOI1jqcD1qQalgHSZMUw==, tarball: https://registry.npmjs.org/@go-wind/admin-core/-/admin-core-0.1.0.tgz}
 
-  '@go-wind/admin-vben@0.1.4':
-    resolution: {integrity: sha512-eUTksRxw7bXJ15iSDh8xPASay//Yxo5t7O14Nl0lR6WaGrc8qZPkZbBfFi6hVlmfjT+AU9yPXhCDhe3pR9pT4g==}
+  '@go-wind/admin-vben@0.1.5':
+    resolution: {integrity: sha512-+JfHCv01eSL/a1w3OZ2EbxyTXQbQqokeA1TSKPa0cRLjp8zi8kjRvP7J/Eph9LJaxMih3LKfm+8MhkrcC7I5KA==}
     peerDependencies:
       '@iconify/vue': '>=4.0.0'
       '@tanstack/vue-query': '>=5.0.0'
@@ -12267,7 +12267,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@go-wind/admin-vben@0.1.4(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
+  '@go-wind/admin-vben@0.1.5(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@ctrl/tinycolor': 4.2.1
       '@iconify/vue': 4.2.0(vue@3.5.13(typescript@5.6.3))
