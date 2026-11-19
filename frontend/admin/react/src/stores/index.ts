@@ -2,3 +2,4 @@
 export * from "./pageRefresh";
 export * from "./tabs";
 export * from "./lock";
+export * from "./tenant-impersonate";

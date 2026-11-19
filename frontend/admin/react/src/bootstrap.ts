@@ -22,6 +22,7 @@ import {
 import { apiClient } from '@/api/client';
 import { fetchUserProfile } from '@/api/hooks/user-profile';
 import { encryptPasswordEnvelope } from '@/utils';
+import { useTenantImpersonateStore } from '@/stores/tenant-impersonate';
 
 /**
  * 应用启动初始化
@@ -102,10 +103,25 @@ async function _initI18n() {
     getLocale: () => i18n.language,
     refreshToken: async () => useAuthStore.getState().refreshToken(),
     onReAuthenticate: async () => {
+      // 会话失效即退出代租户态（下一会话默认回平台全域视图）
+      useTenantImpersonateStore.getState().clearTenant();
       useAuthStore.getState().forceLogout();
     },
     onError: (msg) => console.error('[RequestClient]', msg),
     getErrorMsg: getErrorMsg,
+  });
+
+  // 代租户操作（issue #13）：平台管理员在头部选择生效租户后，所有管理
+  // 请求携带 X-Tenant-Id——后端把数据面与租户闸门切到该租户，token 未动。
+  // 空选 = 平台全域视图（不携带头）。
+  RequestClient.getInstance().addRequestInterceptor({
+    fulfilled: (config) => {
+      const tenantId = useTenantImpersonateStore.getState().tenantId;
+      if (tenantId) {
+        config.headers['X-Tenant-Id'] = tenantId;
+      }
+      return config as never;
+    },
   });
 
   // SSE 基础地址由宿主从自身 env 解析后传入（包内零 env 直读），

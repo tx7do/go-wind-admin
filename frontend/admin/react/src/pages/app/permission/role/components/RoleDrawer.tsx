@@ -32,6 +32,7 @@ import {
 } from '../constants';
 import AiGenerateButton from '@/components/common/AiGenerateButton';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
+import { useUserStore } from '@/stores/user';
 
 interface RoleDrawerProps {
   open: boolean;
@@ -54,6 +55,10 @@ const isReservedRoleCode = (v: string) =>
 const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSuccess }) => {
   const { t } = useTranslation('role');
   const formRef = useRef<ProFormInstance>(null);
+  // 角色值（code）只有平台管理员需要理解与维护（承载保留身份语义）；
+  // 其余用户的角色码由系统自动生成，页面不再展示与编辑（issue #14）。
+  const isPlatformAdmin =
+    useUserStore((s) => s.userRoles?.includes('platform:admin')) ?? false;
 
   // 关闭守卫：遮罩/ESC/X/取消统一，脏数据先确认（docs/form_drawer_close_guard.md）
   const { guardClose, handleValuesChange } = useDrawerCloseGuard(open, onClose);
@@ -261,6 +266,9 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSu
           // 用叶子交集剥离权限组父节点 ID（父子联动会自动勾选父节点，
           // 组 ID 混入提交会被后端当作权限 ID，可能越权绑定）。
           permissions: submittedPerms,
+          // 非平台管理员的角色码由系统生成（创建时），编辑态不携带——
+          // 后端"载荷缺 = 不动"，存量码保持原值（issue #14）。
+          ...(isPlatformAdmin ? {} : mode === 'create' ? { code: `r-${Date.now().toString(36)}` } : { code: undefined }),
           // 父角色始终随表单提交：'0'=根角色（清空父角色须显式 '0' 进 updateMask，
           // 否则后端三态语义会把它当"未声明"静默跳过）。
           parentId: selectedParentId || '0',
@@ -336,21 +344,23 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSu
         fieldProps={{ allowClear: true }}
       />
 
-      <ProFormText
-        name="code"
-        label={t('code')}
-        placeholder={t('codePlaceholder')}
-        rules={[
-          { required: true, message: t('requiredCode') },
-          {
-            validator: (_, value: string) =>
-              !value || !isReservedRoleCode(value)
-                ? Promise.resolve()
-                : Promise.reject(new Error(t('reservedCode'))),
-          },
-        ]}
-        fieldProps={{ allowClear: true }}
-      />
+      {isPlatformAdmin && (
+        <ProFormText
+          name="code"
+          label={t('code')}
+          placeholder={t('codePlaceholder')}
+          rules={[
+            { required: true, message: t('requiredCode') },
+            {
+              validator: (_, value: string) =>
+                !value || !isReservedRoleCode(value)
+                  ? Promise.resolve()
+                  : Promise.reject(new Error(t('reservedCode'))),
+            },
+          ]}
+          fieldProps={{ allowClear: true }}
+        />
+      )}
 
       <ProFormDigit
         name="sortOrder"

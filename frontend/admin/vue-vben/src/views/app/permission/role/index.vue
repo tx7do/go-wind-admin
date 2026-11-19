@@ -1,7 +1,7 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { computed, h } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
@@ -9,6 +9,7 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { useUserStore } from '@vben/stores';
 import {
   dataScopeToColor,
   fetchListRoles,
@@ -30,6 +31,13 @@ import RoleDrawer from './role-drawer.vue';
 
 const { mutateAsync: deleteRole } = useDeleteRole();
 
+// 角色值（code）仅平台管理员可见/可搜——其余用户的角色码由系统生成，
+// 页面不再展示与维护（issue #14）。
+const userStore = useUserStore();
+const isPlatformAdmin = computed(() =>
+  (userStore.userInfo?.roles ?? []).includes('platform:admin'),
+);
+
 const formOptions: VbenFormProps = {
   // 默认展开
   // 控制表单是否显示折叠按钮
@@ -46,15 +54,19 @@ const formOptions: VbenFormProps = {
         allowClear: true,
       },
     },
-    {
-      component: 'Input',
-      fieldName: 'code',
-      label: $t('page.role.code'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-    },
+    ...(isPlatformAdmin.value
+      ? [
+          {
+            component: 'Input',
+            fieldName: 'code',
+            label: $t('page.role.code'),
+            componentProps: {
+              placeholder: $t('ui.placeholder.input'),
+              allowClear: true,
+            },
+          },
+        ]
+      : []),
     {
       component: 'Select',
       fieldName: 'status',
@@ -104,7 +116,9 @@ const gridOptions: VxeGridProps<Role> = {
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     { title: $t('page.role.name'), field: 'name' },
-    { title: $t('page.role.code'), field: 'code' },
+    ...(isPlatformAdmin.value
+      ? [{ title: $t('page.role.code'), field: 'code' }]
+      : []),
     { title: $t('page.role.parentName'), field: 'parentName' },
     { title: $t('page.role.tenantName'), field: 'tenantName' },
     {

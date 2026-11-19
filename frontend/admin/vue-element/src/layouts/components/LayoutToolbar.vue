@@ -2,6 +2,11 @@
   <div :class="['navbar-actions', navbarActionsClass]">
     <!-- 桌面端工具项 -->
     <template v-if="isDesktop">
+      <!-- 代租户操作切换器（仅平台管理员渲染；issue #13） -->
+      <div class="navbar-actions__item">
+        <TenantSwitcher />
+      </div>
+
       <!-- 搜索 -->
       <div class="navbar-actions__item navbar-actions__item--search">
         <CommandPalette />
@@ -66,6 +71,7 @@ import LayoutSizeSelect from "./LayoutSizeSelect.vue";
 import LangSelect from "@/components/LangSelect/index.vue";
 import NoticeDropdown from "@/components/NoticeDropdown/index.vue";
 import UserDropdown from "./UserDropdown.vue";
+import TenantSwitcher from "./TenantSwitcher.vue";
 
 const { isMobile, appPreferences } = usePreferences();
 

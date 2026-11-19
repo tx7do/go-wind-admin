@@ -17,6 +17,7 @@ import RoleDrawer from './components/RoleDrawer';
 import { TABLE } from '@go-wind/admin-react';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
+import { useUserStore } from '@/stores/user';
 
 /**
  * 角色管理页面
@@ -26,6 +27,10 @@ const RoleManagement = () => {
   const actionRef = useRef<ActionType>(null);
   const queryClient = useQueryClient();
   const { message } = App.useApp();
+  // 角色值（code）仅平台管理员可见/可搜——其余用户的角色码由系统生成，
+  // 页面不再展示与维护（issue #14）。
+  const isPlatformAdmin =
+    useUserStore((s) => s.userRoles?.includes('platform:admin')) ?? false;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const tableScrollY = useProTableScrollY(containerRef);
@@ -73,6 +78,8 @@ const RoleManagement = () => {
       title: t('code'),
       dataIndex: 'code',
       width: 150,
+      hideInTable: !isPlatformAdmin,
+      hideInSearch: !isPlatformAdmin,
     },
     {
       title: t('parentName'),

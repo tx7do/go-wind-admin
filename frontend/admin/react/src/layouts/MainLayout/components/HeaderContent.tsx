@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { getIconFromName } from '@/layouts/MainLayout/utils/iconResolver';
 
 import { SettingBoltIcon } from '@/components/common/settingBoltIcon';
+import { TenantSwitcher } from '@/components/common/TenantSwitcher';
 
 import { useI18n } from '@go-wind/admin-react';
 import { usePreferencesStore } from '@go-wind/admin-react';
@@ -1017,6 +1018,8 @@ export const HeaderContent = ({
 
       {/* ========== 右侧区域：搜索 + 设置 + 主题 + 语言 + 全屏 + 通知 + 头像 ========== */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        {/* 代租户操作切换器（仅平台管理员渲染；issue #13） */}
+        <TenantSwitcher />
         {/* 搜索按钮（带快捷键提示） */}
         {widgetConfig.globalSearch && (
           <>

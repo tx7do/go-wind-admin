@@ -2,6 +2,7 @@
 import { computed, h, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
+import { useUserStore } from '@vben/stores';
 import { useFormCloseGuard } from '#/composables/use-form-close-guard';
 import { $t } from '@vben/locales';
 
@@ -220,6 +221,13 @@ const getTitle = computed(() =>
 );
 // const isCreate = computed(() => data.value?.create);
 
+// 角色值（code）只有平台管理员需要理解与维护（承载保留身份语义）；
+// 其余用户的角色码由提交时自动生成，表单不再展示与编辑（issue #14）。
+const userStore = useUserStore();
+const isPlatformAdmin = computed(() =>
+  (userStore.userInfo?.roles ?? []).includes('platform:admin'),
+);
+
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
   // 所有表单项共用，可单独在表单内覆盖
@@ -255,6 +263,9 @@ const [BaseForm, baseFormApi] = useVbenForm({
       // 保留角色码：platform: / template: 命名空间与内置租户管理员码承载登录态
       // 身份判定语义（后端按码值精确匹配填管理员标志），禁止用户自建角色占用。
       // 前端拦截只是即时反馈，后端 Create/Update 仍有一道校验兜底。
+      // 角色值只有平台管理员需要理解与维护（issue #14）——其余用户的角色码
+      // 由提交时自动生成，表单不再展示与编辑。
+      ifShow: () => isPlatformAdmin.value,
       rules: z
         .string()
         .min(1, { message: $t('ui.formRules.required') })
@@ -470,6 +481,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await baseFormApi.getValues();
     // @ts-ignore JSON.stringify
     const finalValues = deepClone(values);
+
+    // 非平台管理员的角色码由系统生成（创建时）；编辑态剔除——后端
+    // "载荷缺 = 不动"，存量码保持原值（issue #14）。ifShow 裁掉的表单
+    // 字段不会进 getValues，这里显式补齐。
+    if (!isPlatformAdmin.value) {
+      finalValues.code =
+        data.value?.create && !finalValues.code
+          ? `r-${Date.now().toString(36)}`
+          : undefined;
+    }
 
     if (
       finalValues.permissions !== null &&

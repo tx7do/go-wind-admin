@@ -241,6 +241,9 @@ const headerSlots = computed(() => {
         <template #user-dropdown>
           <slot name="user-dropdown"></slot>
         </template>
+        <template #tenant-switcher>
+          <slot name="tenant-switcher"></slot>
+        </template>
         <template #notification>
           <slot name="notification"></slot>
         </template>

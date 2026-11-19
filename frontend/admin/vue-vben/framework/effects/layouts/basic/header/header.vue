@@ -142,6 +142,8 @@ function clearPreferencesAndLogout() {
     <slot name="menu"></slot>
   </div>
   <div class="flex h-full min-w-0 flex-shrink-0 items-center">
+    <!-- 代租户操作切换器（宿主按需注入；仅平台管理员渲染时产出内容） -->
+    <slot name="tenant-switcher"></slot>
     <template v-for="slot in rightSlots" :key="slot.name">
       <slot :name="slot.name">
         <template v-if="slot.name === 'global-search'">

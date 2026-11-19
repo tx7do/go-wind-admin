@@ -29,6 +29,7 @@ import { type internal_messageservicev1_InternalMessageRecipient as InternalMess
 import { $t } from '#/locales';
 import { router } from '#/router';
 import { useAuthStore } from '#/stores';
+import TenantSwitcher from '#/components/TenantSwitcher.vue';
 import { globalSSEClient, SSE_EVENT } from '@go-wind/admin-core';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
@@ -266,6 +267,9 @@ watch(
         :description="userStore.userInfo?.email"
         @logout="handleLogout"
       />
+    </template>
+    <template #tenant-switcher>
+      <TenantSwitcher />
     </template>
     <template #notification>
       <Notification

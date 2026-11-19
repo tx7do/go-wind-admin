@@ -12,6 +12,7 @@
     "create": "Create Role"
   },
   "dataScope": "Data Scope",
+  "tenantSwitcherAllTenants": "All tenants (default)",
   "homePath": "Default Home Route",
   "homePathPlaceholder": "Landing page for this role's users, e.g. /dashboard; empty = system default",
   "orgUnits": "Authorized Org Units",

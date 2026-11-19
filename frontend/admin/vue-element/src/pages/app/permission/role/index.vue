@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
@@ -39,9 +39,16 @@ import {
   useDeleteRole,
 } from "@/api/composables";
 import { PaginationQuery } from "@go-wind/admin-core";
-import { $t } from "@go-wind/admin-element";
+import { $t, useAppUserStore } from "@go-wind/admin-element";
 
 const { mutateAsync: deleteRole } = useDeleteRole();
+
+// 角色值（code）仅平台管理员可见/可搜——其余用户的角色码由系统生成，
+// 页面不再展示与维护（issue #14）。
+const userStore = useAppUserStore();
+const isPlatformAdmin = computed(() =>
+  (userStore.userInfo?.roles ?? []).includes("platform:admin"),
+);
 
 const pageRef = ref();
 const drawerRef = ref();
@@ -57,21 +64,16 @@ const pageConfig = computed<ProPageConfig>(() => ({
         field: "name",
         attrs: { placeholder: $t("common.placeholder.input"), clearable: true },
       },
-      {
-        type: "input",
-        label: $t("pages.role.code"),
-        field: "code",
-        attrs: { placeholder: $t("common.placeholder.input"), clearable: true },
-      },
-      {
-        type: "select",
-        label: $t("common.table.status"),
-        field: "status",
-        attrs: { placeholder: $t("common.placeholder.select"), clearable: true },
-        options: statusList.value,
-      },
-    ],
-  },
+      ...(isPlatformAdmin.value
+        ? [
+            {
+              type: "input",
+              label: $t("pages.role.code"),
+              field: "code",
+              attrs: { placeholder: $t("common.placeholder.input"), clearable: true },
+            },
+          ]
+        : []),
 
   table: {
     exportFilename: "roles",
@@ -95,7 +97,9 @@ const pageConfig = computed<ProPageConfig>(() => ({
     columns: [
       { type: "index", label: $t("common.table.seq"), width: 60 },
       { prop: "name", label: $t("pages.role.name"), minWidth: 120 },
-      { prop: "code", label: $t("pages.role.code"), minWidth: 120 },
+      ...(isPlatformAdmin.value
+        ? [{ prop: "code", label: $t("pages.role.code"), minWidth: 120 }]
+        : []),
       { prop: "parentName", label: $t("pages.role.parentName"), minWidth: 120 },
       { prop: "tenantName", label: $t("pages.role.tenantName"), minWidth: 120 },
       {

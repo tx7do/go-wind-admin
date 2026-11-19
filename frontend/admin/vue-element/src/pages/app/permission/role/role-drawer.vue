@@ -24,7 +24,9 @@
         <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
-      <ElFormItem :label="$t('pages.role.code')" prop="code">
+      <!-- 角色值（code）只有平台管理员需要理解与维护（承载保留身份语义）；
+           其余用户的角色码由系统自动生成，抽屉不再展示与编辑（issue #14） -->
+      <ElFormItem v-if="isPlatformAdmin" :label="$t('pages.role.code')" prop="code">
         <ElInput v-model="formData.code" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
@@ -190,12 +192,19 @@ import {
   buildPermissionTree,
 } from "@/api/composables";
 import { PaginationQuery } from "@go-wind/admin-core";
-import { $t } from "@go-wind/admin-element";
+import { $t, useAppUserStore } from "@go-wind/admin-element";
 import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits<{
   success: [];
 }>();
+
+// 角色值（code）只有平台管理员需要理解与维护（承载保留身份语义）；
+// 其余用户的角色码由系统自动生成，抽屉不再展示与编辑（issue #14）。
+const userStore = useAppUserStore();
+const isPlatformAdmin = computed(() =>
+  (userStore.userInfo?.roles ?? []).includes("platform:admin"),
+);
 
 const { mutateAsync: createRole } = useCreateRole();
 const { mutateAsync: updateRole } = useUpdateRole();
@@ -615,6 +624,13 @@ async function handleSubmit() {
       // 父角色始终随表单提交："0"=根角色（清空父角色须显式 "0" 进 updateMask，
       // 否则后端三态语义会把它当"未声明"静默跳过）。
       parentId: formData.parentId || "0",
+      // 非平台管理员的角色码由系统生成（创建时）；编辑态剔除——后端
+      // "载荷缺 = 不动"，存量码保持原值（issue #14）。
+      code: isPlatformAdmin.value
+        ? formData.code
+        : isCreate.value
+          ? `r-${Date.now().toString(36)}`
+          : undefined,
     };
 
     // 仅 SELECTED_UNITS 档提交授权单元集（含清空场景）；
