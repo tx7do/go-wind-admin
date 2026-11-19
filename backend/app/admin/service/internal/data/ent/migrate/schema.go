@@ -2920,6 +2920,7 @@ var (
 		{Name: "type", Type: field.TypeEnum, Comment: "角色类型", Enums: []string{"SYSTEM", "TEMPLATE", "TENANT"}, Default: "TENANT"},
 		{Name: "data_scope", Type: field.TypeEnum, Comment: "数据权限范围", Enums: []string{"ALL", "SELF", "UNIT_ONLY", "UNIT_AND_CHILD", "SELECTED_UNITS"}, Default: "ALL"},
 		{Name: "parent_id", Type: field.TypeInt64, Nullable: true, Comment: "父角色ID，0表示无父级"},
+		{Name: "home_path", Type: field.TypeString, Nullable: true, Comment: "默认首页路由"},
 	}
 	// SysRolesTable holds the schema information for the "sys_roles" table.
 	SysRolesTable = &schema.Table{

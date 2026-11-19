@@ -301,6 +301,17 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
     },
     {
+      // 默认首页路由（按角色设定默认菜单能力）：该角色用户登录后的落地页；
+      // 留空回落系统默认首页。清空以空串提交（后端归一为未配置）。
+      component: 'Input',
+      fieldName: 'homePath',
+      label: $t('page.role.homePath'),
+      componentProps: {
+        placeholder: $t('page.role.homePathPlaceholder'),
+        allowClear: true,
+      },
+    },
+    {
       // 权限继承：父角色（可选）。候选树排除自身及后代（防环），数据由
       // loadRoleTreeOptions 装载；切换时 handleParentChange 收窄权限树。
       component: 'TreeSelect',

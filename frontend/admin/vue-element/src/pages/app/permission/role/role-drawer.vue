@@ -56,6 +56,16 @@
         </ElSelect>
       </ElFormItem>
 
+      <!-- 默认首页路由（按角色设定默认菜单能力）：该角色用户登录后的落地页；
+           留空回落系统默认首页。清空以空串提交（后端归一为未配置） -->
+      <ElFormItem :label="$t('pages.role.homePath')" prop="homePath">
+        <ElInput
+          v-model="formData.homePath"
+          :placeholder="$t('pages.role.homePathPlaceholder')"
+          clearable
+        />
+      </ElFormItem>
+
       <!-- 权限继承：父角色（可选）。子角色的可选权限与保存校验均受父角色约束 -->
       <ElFormItem :label="$t('pages.role.parentId')" prop="parentId">
         <ElTreeSelect
@@ -208,6 +218,7 @@ const formData = reactive({
   sortOrder: 1,
   status: "ON",
   dataScope: "ALL",
+  homePath: "",
   description: "",
   // 父角色ID，''=根角色。清空选择时 @change 归一为 ''，提交时显式 "0" 进 updateMask
   parentId: "",
@@ -492,6 +503,7 @@ async function open(data?: { create: boolean; row?: any }) {
       formData.sortOrder = data.row.sortOrder ?? 1;
       formData.status = data.row.status ?? "ON";
       formData.dataScope = data.row.dataScope ?? "ALL";
+      formData.homePath = data.row.homePath ?? "";
       formData.description = data.row.description ?? "";
       formData.parentId = data.row.parentId && data.row.parentId !== "0" ? data.row.parentId : "";
 
@@ -544,6 +556,7 @@ function resetForm() {
   formData.sortOrder = 1;
   formData.status = "ON";
   formData.dataScope = "ALL";
+  formData.homePath = "";
   formData.description = "";
   formData.parentId = "";
   formData.permissions = [];

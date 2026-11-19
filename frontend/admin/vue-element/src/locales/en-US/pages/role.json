@@ -11,6 +11,8 @@
   "remark": "Remark",
   "createdAt": "Created At",
   "dataScope": "Data Scope",
+  "homePath": "Default Home Route",
+  "homePathPlaceholder": "Landing page for this role's users, e.g. /dashboard; empty = system default",
   "orgUnits": "Authorized Org Units",
   "noOrgUnitData": "No org unit data",
   "fieldPerm": {

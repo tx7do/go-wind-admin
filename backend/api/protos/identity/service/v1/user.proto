@@ -120,6 +120,10 @@ message User {
     json_name = "roleNames",
     (gnostic.openapi.v3.property) = { description: "角色名称列表"}
   ]; // 角色名称列表
+  optional string home_path = 16 [
+    json_name = "homePath",
+    (gnostic.openapi.v3.property) = {description: "默认首页路由（响应回填：按用户角色的 sort_order 取第一个配置了 home_path 的角色；未配置 = 系统默认首页）"}
+  ]; // 默认首页路由（响应回填，登录落地页）
 
   optional string username = 20 [
     json_name = "username",

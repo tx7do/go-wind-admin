@@ -186,6 +186,7 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSu
           sortOrder: (data as any).sortOrder ?? 1,
           status: data.status || 'ON',
           dataScope: data.dataScope || 'ALL',
+          homePath: (data as any).homePath || '',
           // 父角色回填为字符串（'0'=根角色），保证清空选择时提交的是显式 '0' 而非 undefined
           parentId: data.parentId ? String(data.parentId) : '0',
           description: (data as any).description || '',
@@ -374,6 +375,15 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSu
         options={getDataScopeOptions(t)}
         rules={[{ required: true, message: t('requiredDataScope') }]}
         fieldProps={{ allowClear: false }}
+      />
+
+      {/* 默认首页路由（按角色设定默认菜单能力）：该角色用户登录后的落地页；
+          留空回落系统默认首页。清空以空串提交（后端归一为未配置） */}
+      <ProFormText
+        name="homePath"
+        label={t('homePath')}
+        placeholder={t('homePathPlaceholder')}
+        fieldProps={{ allowClear: true }}
       />
 
       {/* 权限继承：父角色（可选）。子角色的可选权限与保存校验均受父角色约束 */}

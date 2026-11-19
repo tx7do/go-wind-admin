@@ -48,6 +48,8 @@ const (
 	FieldDataScope = "data_scope"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
+	// FieldHomePath holds the string denoting the home_path field in the database.
+	FieldHomePath = "home_path"
 	// Table holds the table name of the role in the database.
 	Table = "sys_roles"
 )
@@ -72,6 +74,7 @@ var Columns = []string{
 	FieldType,
 	FieldDataScope,
 	FieldParentID,
+	FieldHomePath,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -279,4 +282,9 @@ func ByDataScope(opts ...sql.OrderTermOption) OrderOption {
 // ByParentID orders the results by the parent_id field.
 func ByParentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldParentID, opts...).ToFunc()
+}
+
+// ByHomePath orders the results by the home_path field.
+func ByHomePath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHomePath, opts...).ToFunc()
 }

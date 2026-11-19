@@ -88,6 +88,10 @@ func (m *User) validate(all bool) error {
 		// no validation rules for RoleId
 	}
 
+	if m.HomePath != nil {
+		// no validation rules for HomePath
+	}
+
 	if m.Username != nil {
 		// no validation rules for Username
 	}

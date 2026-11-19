@@ -10144,9 +10144,7 @@ components:
                     type: string
                 userId:
                     type: string
-                    description: |-
-                        管理端重置：指定目标用户（不传=操作当前登录用户）。
-                         仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
+                    description: "管理端重置：指定目标用户（不传=操作当前登录用户）。\r\n 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。"
             description: Disable / remove
         DistributionItem:
             type: object
@@ -13695,6 +13693,9 @@ components:
                 parentName:
                     type: string
                     description: 父角色名称（响应回填）
+                homePath:
+                    type: string
+                    description: 默认首页路由（该角色用户的登录落地页；空 = 系统默认首页）
                 tenantId:
                     type: string
                     description: 租户ID，0代表系统全局角色
@@ -15175,6 +15176,9 @@ components:
                     items:
                         type: string
                     description: 角色名称列表
+                homePath:
+                    type: string
+                    description: 默认首页路由（响应回填：按用户角色的 sort_order 取第一个配置了 home_path 的角色；未配置 = 系统默认首页）
                 username:
                     type: string
                     description: 用户名

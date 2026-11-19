@@ -79533,6 +79533,7 @@ type RoleMutation struct {
 	data_scope    *role.DataScope
 	parent_id     *int64
 	addparent_id  *int64
+	home_path     *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Role, error)
@@ -80550,6 +80551,55 @@ func (m *RoleMutation) ResetParentID() {
 	delete(m.clearedFields, role.FieldParentID)
 }
 
+// SetHomePath sets the "home_path" field.
+func (m *RoleMutation) SetHomePath(s string) {
+	m.home_path = &s
+}
+
+// HomePath returns the value of the "home_path" field in the mutation.
+func (m *RoleMutation) HomePath() (r string, exists bool) {
+	v := m.home_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHomePath returns the old "home_path" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldHomePath(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHomePath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHomePath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHomePath: %w", err)
+	}
+	return oldValue.HomePath, nil
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (m *RoleMutation) ClearHomePath() {
+	m.home_path = nil
+	m.clearedFields[role.FieldHomePath] = struct{}{}
+}
+
+// HomePathCleared returns if the "home_path" field was cleared in this mutation.
+func (m *RoleMutation) HomePathCleared() bool {
+	_, ok := m.clearedFields[role.FieldHomePath]
+	return ok
+}
+
+// ResetHomePath resets all changes to the "home_path" field.
+func (m *RoleMutation) ResetHomePath() {
+	m.home_path = nil
+	delete(m.clearedFields, role.FieldHomePath)
+}
+
 // Where appends a list predicates to the RoleMutation builder.
 func (m *RoleMutation) Where(ps ...predicate.Role) {
 	m.predicates = append(m.predicates, ps...)
@@ -80584,7 +80634,7 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
 	}
@@ -80636,6 +80686,9 @@ func (m *RoleMutation) Fields() []string {
 	if m.parent_id != nil {
 		fields = append(fields, role.FieldParentID)
 	}
+	if m.home_path != nil {
+		fields = append(fields, role.FieldHomePath)
+	}
 	return fields
 }
 
@@ -80678,6 +80731,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.DataScope()
 	case role.FieldParentID:
 		return m.ParentID()
+	case role.FieldHomePath:
+		return m.HomePath()
 	}
 	return nil, false
 }
@@ -80721,6 +80776,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDataScope(ctx)
 	case role.FieldParentID:
 		return m.OldParentID(ctx)
+	case role.FieldHomePath:
+		return m.OldHomePath(ctx)
 	}
 	return nil, fmt.Errorf("unknown Role field %s", name)
 }
@@ -80848,6 +80905,13 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetParentID(v)
+		return nil
+	case role.FieldHomePath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHomePath(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
@@ -80993,6 +81057,9 @@ func (m *RoleMutation) ClearedFields() []string {
 	if m.FieldCleared(role.FieldParentID) {
 		fields = append(fields, role.FieldParentID)
 	}
+	if m.FieldCleared(role.FieldHomePath) {
+		fields = append(fields, role.FieldHomePath)
+	}
 	return fields
 }
 
@@ -81045,6 +81112,9 @@ func (m *RoleMutation) ClearField(name string) error {
 		return nil
 	case role.FieldParentID:
 		m.ClearParentID()
+		return nil
+	case role.FieldHomePath:
+		m.ClearHomePath()
 		return nil
 	}
 	return fmt.Errorf("unknown Role nullable field %s", name)
@@ -81104,6 +81174,9 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldParentID:
 		m.ResetParentID()
+		return nil
+	case role.FieldHomePath:
+		m.ResetHomePath()
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)

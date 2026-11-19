@@ -202,6 +202,8 @@ func (x *User) Redact() {
 
 	// Safe field: RoleNames
 
+	// Safe field: HomePath
+
 	// Safe field: Username
 
 	// Safe field: Nickname

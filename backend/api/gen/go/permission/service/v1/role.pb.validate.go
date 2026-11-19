@@ -138,6 +138,10 @@ func (m *Role) validate(all bool) error {
 		// no validation rules for ParentName
 	}
 
+	if m.HomePath != nil {
+		// no validation rules for HomePath
+	}
+
 	if m.TenantId != nil {
 		// no validation rules for TenantId
 	}

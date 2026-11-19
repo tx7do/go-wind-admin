@@ -51,7 +51,9 @@ type Role struct {
 	// 数据权限范围
 	DataScope *role.DataScope `json:"data_scope,omitempty"`
 	// 父角色ID，0表示无父级
-	ParentID     *int64 `json:"parent_id,omitempty"`
+	ParentID *int64 `json:"parent_id,omitempty"`
+	// 默认首页路由
+	HomePath     *string `json:"home_path,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -64,7 +66,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID, role.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode, role.FieldType, role.FieldDataScope:
+		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode, role.FieldType, role.FieldDataScope, role.FieldHomePath:
 			values[i] = new(sql.NullString)
 		case role.FieldCreatedAt, role.FieldUpdatedAt, role.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -208,6 +210,13 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.ParentID = new(int64)
 				*_m.ParentID = value.Int64
 			}
+		case role.FieldHomePath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field home_path", values[i])
+			} else if value.Valid {
+				_m.HomePath = new(string)
+				*_m.HomePath = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -327,6 +336,11 @@ func (_m *Role) String() string {
 	if v := _m.ParentID; v != nil {
 		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.HomePath; v != nil {
+		builder.WriteString("home_path=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

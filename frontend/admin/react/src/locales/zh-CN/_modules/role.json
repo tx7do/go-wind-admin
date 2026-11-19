@@ -13,6 +13,8 @@
   "parentId": "父角色",
   "parentIdPlaceholder": "选择父角色（可选）",
   "parentName": "父角色",
+  "homePath": "默认首页路由",
+  "homePathPlaceholder": "该角色用户登录后的落地页，如 /dashboard；留空为系统默认",
   "permCapHint": "可选权限已收窄为父角色的授权范围",
   "permTrimConfirmTitle": "权限收敛确认",
   "permTrimConfirmContent": "该角色有 {{count}} 个权限点超出父角色的授权范围，保存后将被移除。是否继续？",

@@ -124,6 +124,11 @@ func ParentID(v int64) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldParentID, v))
 }
 
+// HomePath applies equality check predicate on the "home_path" field. It's identical to HomePathEQ.
+func HomePath(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldHomePath, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -942,6 +947,81 @@ func ParentIDIsNil() predicate.Role {
 // ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
 func ParentIDNotNil() predicate.Role {
 	return predicate.Role(sql.FieldNotNull(FieldParentID))
+}
+
+// HomePathEQ applies the EQ predicate on the "home_path" field.
+func HomePathEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldHomePath, v))
+}
+
+// HomePathNEQ applies the NEQ predicate on the "home_path" field.
+func HomePathNEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldHomePath, v))
+}
+
+// HomePathIn applies the In predicate on the "home_path" field.
+func HomePathIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldHomePath, vs...))
+}
+
+// HomePathNotIn applies the NotIn predicate on the "home_path" field.
+func HomePathNotIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldHomePath, vs...))
+}
+
+// HomePathGT applies the GT predicate on the "home_path" field.
+func HomePathGT(v string) predicate.Role {
+	return predicate.Role(sql.FieldGT(FieldHomePath, v))
+}
+
+// HomePathGTE applies the GTE predicate on the "home_path" field.
+func HomePathGTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldGTE(FieldHomePath, v))
+}
+
+// HomePathLT applies the LT predicate on the "home_path" field.
+func HomePathLT(v string) predicate.Role {
+	return predicate.Role(sql.FieldLT(FieldHomePath, v))
+}
+
+// HomePathLTE applies the LTE predicate on the "home_path" field.
+func HomePathLTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldLTE(FieldHomePath, v))
+}
+
+// HomePathContains applies the Contains predicate on the "home_path" field.
+func HomePathContains(v string) predicate.Role {
+	return predicate.Role(sql.FieldContains(FieldHomePath, v))
+}
+
+// HomePathHasPrefix applies the HasPrefix predicate on the "home_path" field.
+func HomePathHasPrefix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasPrefix(FieldHomePath, v))
+}
+
+// HomePathHasSuffix applies the HasSuffix predicate on the "home_path" field.
+func HomePathHasSuffix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasSuffix(FieldHomePath, v))
+}
+
+// HomePathIsNil applies the IsNil predicate on the "home_path" field.
+func HomePathIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldHomePath))
+}
+
+// HomePathNotNil applies the NotNil predicate on the "home_path" field.
+func HomePathNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldHomePath))
+}
+
+// HomePathEqualFold applies the EqualFold predicate on the "home_path" field.
+func HomePathEqualFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldEqualFold(FieldHomePath, v))
+}
+
+// HomePathContainsFold applies the ContainsFold predicate on the "home_path" field.
+func HomePathContainsFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldContainsFold(FieldHomePath, v))
 }
 
 // And groups predicates with the AND operator between them.

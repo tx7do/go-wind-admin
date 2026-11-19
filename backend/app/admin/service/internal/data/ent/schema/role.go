@@ -79,6 +79,14 @@ func (Role) Fields() []ent.Field {
 			Comment("父角色ID，0表示无父级").
 			Optional().
 			Nillable(),
+
+		// 默认首页路由：该角色用户的登录落地页（issue #12 按角色设定默认
+		// 菜单能力）。空 = 系统默认首页；多角色用户由 service 层按
+		// sort_order 升序取第一个非空者。
+		field.String("home_path").
+			Comment("默认首页路由").
+			Optional().
+			Nillable(),
 	}
 }
 

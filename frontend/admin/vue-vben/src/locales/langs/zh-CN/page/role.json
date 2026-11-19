@@ -12,6 +12,8 @@
     "create": "创建角色"
   },
   "dataScope": "数据权限范围",
+  "homePath": "默认首页路由",
+  "homePathPlaceholder": "该角色用户登录后的落地页，如 /dashboard；留空为系统默认",
   "orgUnits": "授权组织单元",
   "fieldPerm": {
     "title": "字段权限",

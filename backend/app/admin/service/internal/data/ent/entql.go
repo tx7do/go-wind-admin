@@ -1529,6 +1529,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldType:        {Type: field.TypeEnum, Column: role.FieldType},
 			role.FieldDataScope:   {Type: field.TypeEnum, Column: role.FieldDataScope},
 			role.FieldParentID:    {Type: field.TypeInt64, Column: role.FieldParentID},
+			role.FieldHomePath:    {Type: field.TypeString, Column: role.FieldHomePath},
 		},
 	}
 	graph.Nodes[52] = &sqlgraph.Node{
@@ -8566,6 +8567,11 @@ func (f *RoleFilter) WhereDataScope(p entql.StringP) {
 // WhereParentID applies the entql int64 predicate on the parent_id field.
 func (f *RoleFilter) WhereParentID(p entql.Int64P) {
 	f.Where(p.Field(role.FieldParentID))
+}
+
+// WhereHomePath applies the entql string predicate on the home_path field.
+func (f *RoleFilter) WhereHomePath(p entql.StringP) {
+	f.Where(p.Field(role.FieldHomePath))
 }
 
 // addPredicate implements the predicateAdder interface.

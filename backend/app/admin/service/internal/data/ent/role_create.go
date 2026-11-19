@@ -260,6 +260,20 @@ func (_c *RoleCreate) SetNillableParentID(v *int64) *RoleCreate {
 	return _c
 }
 
+// SetHomePath sets the "home_path" field.
+func (_c *RoleCreate) SetHomePath(v string) *RoleCreate {
+	_c.mutation.SetHomePath(v)
+	return _c
+}
+
+// SetNillableHomePath sets the "home_path" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableHomePath(v *string) *RoleCreate {
+	if v != nil {
+		_c.SetHomePath(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *RoleCreate) SetID(v int64) *RoleCreate {
 	_c.mutation.SetID(v)
@@ -474,6 +488,10 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ParentID(); ok {
 		_spec.SetField(role.FieldParentID, field.TypeInt64, value)
 		_node.ParentID = &value
+	}
+	if value, ok := _c.mutation.HomePath(); ok {
+		_spec.SetField(role.FieldHomePath, field.TypeString, value)
+		_node.HomePath = &value
 	}
 	return _node, _spec
 }
@@ -800,6 +818,24 @@ func (u *RoleUpsert) AddParentID(v int64) *RoleUpsert {
 // ClearParentID clears the value of the "parent_id" field.
 func (u *RoleUpsert) ClearParentID() *RoleUpsert {
 	u.SetNull(role.FieldParentID)
+	return u
+}
+
+// SetHomePath sets the "home_path" field.
+func (u *RoleUpsert) SetHomePath(v string) *RoleUpsert {
+	u.Set(role.FieldHomePath, v)
+	return u
+}
+
+// UpdateHomePath sets the "home_path" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateHomePath() *RoleUpsert {
+	u.SetExcluded(role.FieldHomePath)
+	return u
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (u *RoleUpsert) ClearHomePath() *RoleUpsert {
+	u.SetNull(role.FieldHomePath)
 	return u
 }
 
@@ -1176,6 +1212,27 @@ func (u *RoleUpsertOne) UpdateParentID() *RoleUpsertOne {
 func (u *RoleUpsertOne) ClearParentID() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetHomePath sets the "home_path" field.
+func (u *RoleUpsertOne) SetHomePath(v string) *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetHomePath(v)
+	})
+}
+
+// UpdateHomePath sets the "home_path" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateHomePath() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateHomePath()
+	})
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (u *RoleUpsertOne) ClearHomePath() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearHomePath()
 	})
 }
 
@@ -1718,6 +1775,27 @@ func (u *RoleUpsertBulk) UpdateParentID() *RoleUpsertBulk {
 func (u *RoleUpsertBulk) ClearParentID() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetHomePath sets the "home_path" field.
+func (u *RoleUpsertBulk) SetHomePath(v string) *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetHomePath(v)
+	})
+}
+
+// UpdateHomePath sets the "home_path" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateHomePath() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateHomePath()
+	})
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (u *RoleUpsertBulk) ClearHomePath() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearHomePath()
 	})
 }
 

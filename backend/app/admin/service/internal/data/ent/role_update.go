@@ -340,6 +340,26 @@ func (_u *RoleUpdate) ClearParentID() *RoleUpdate {
 	return _u
 }
 
+// SetHomePath sets the "home_path" field.
+func (_u *RoleUpdate) SetHomePath(v string) *RoleUpdate {
+	_u.mutation.SetHomePath(v)
+	return _u
+}
+
+// SetNillableHomePath sets the "home_path" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableHomePath(v *string) *RoleUpdate {
+	if v != nil {
+		_u.SetHomePath(*v)
+	}
+	return _u
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (_u *RoleUpdate) ClearHomePath() *RoleUpdate {
+	_u.mutation.ClearHomePath()
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdate) Mutation() *RoleMutation {
 	return _u.mutation
@@ -518,6 +538,12 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ParentIDCleared() {
 		_spec.ClearField(role.FieldParentID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.HomePath(); ok {
+		_spec.SetField(role.FieldHomePath, field.TypeString, value)
+	}
+	if _u.mutation.HomePathCleared() {
+		_spec.ClearField(role.FieldHomePath, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -852,6 +878,26 @@ func (_u *RoleUpdateOne) ClearParentID() *RoleUpdateOne {
 	return _u
 }
 
+// SetHomePath sets the "home_path" field.
+func (_u *RoleUpdateOne) SetHomePath(v string) *RoleUpdateOne {
+	_u.mutation.SetHomePath(v)
+	return _u
+}
+
+// SetNillableHomePath sets the "home_path" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableHomePath(v *string) *RoleUpdateOne {
+	if v != nil {
+		_u.SetHomePath(*v)
+	}
+	return _u
+}
+
+// ClearHomePath clears the value of the "home_path" field.
+func (_u *RoleUpdateOne) ClearHomePath() *RoleUpdateOne {
+	_u.mutation.ClearHomePath()
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdateOne) Mutation() *RoleMutation {
 	return _u.mutation
@@ -1060,6 +1106,12 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if _u.mutation.ParentIDCleared() {
 		_spec.ClearField(role.FieldParentID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.HomePath(); ok {
+		_spec.SetField(role.FieldHomePath, field.TypeString, value)
+	}
+	if _u.mutation.HomePathCleared() {
+		_spec.ClearField(role.FieldHomePath, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

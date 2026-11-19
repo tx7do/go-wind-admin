@@ -132,6 +132,11 @@ message Role {
     (gnostic.openapi.v3.property) = {description: "父角色名称（响应回填）"}
   ]; // 父角色名称（响应回填）
 
+  optional string home_path = 15 [
+    json_name = "homePath",
+    (gnostic.openapi.v3.property) = {description: "默认首页路由（该角色用户的登录落地页；空 = 系统默认首页）"}
+  ]; // 默认首页路由；多角色用户按 sort_order 取第一个非空者
+
   optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}

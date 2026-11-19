@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/base64"
+	"sort"
 
 	"github.com/tx7do/go-utils/ossutil"
 	"github.com/tx7do/go-utils/trans"
@@ -84,6 +85,28 @@ func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*id
 	}
 	if roleCodes != nil {
 		user.Roles = roleCodes
+	}
+
+	// 默认首页（按角色设定默认菜单能力）：用户多角色都可能配了 home_path，
+	// 按角色的 sort_order（同序按 id）升序取第一个非空者——sort_order 即
+	// 角色在管理界面的优先级。全未配置则不回填字段，前端回落系统默认首页。
+	roles, rerr := s.roleRepo.ListRolesByRoleIds(ctx, user.GetRoleIds())
+	if rerr != nil {
+		s.log.Errorf(ctx, "get user roles for home path failed [%s]", rerr.Error())
+	} else {
+		sort.Slice(roles, func(i, j int) bool {
+			si, sj := roles[i].GetSortOrder(), roles[j].GetSortOrder()
+			if si != sj {
+				return si < sj
+			}
+			return roles[i].GetId() < roles[j].GetId()
+		})
+		for _, r := range roles {
+			if hp := r.GetHomePath(); hp != "" {
+				user.HomePath = trans.Ptr(hp)
+				break
+			}
+		}
 	}
 
 	return user, err

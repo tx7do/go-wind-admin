@@ -459,6 +459,12 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
+	// 空串归一为 NULL：前端清空默认首页发空串（Rust 侧同语义），与"未配置"
+	// 同一列形态，读侧不产生两种空值。
+	if data.HomePath != nil && *data.HomePath == "" {
+		data.HomePath = nil
+	}
+
 	builder := tx.Role.Create().
 		SetNillableTenantID(data.TenantId).
 		SetNillableName(data.Name).
@@ -469,6 +475,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableDescription(data.Description).
 		SetNillableParentID(data.ParentId).
+		SetNillableHomePath(data.HomePath).
 		SetNillableCreatedBy(data.CreatedBy).
 		SetCreatedAt(time.Now())
 
@@ -672,6 +679,20 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 				builder.ClearParentID()
 			} else {
 				builder.SetNillableParentID(req.Data.ParentId)
+			}
+
+			// home_path 三态（照 parent_id 先例）：载荷 nil/空串 ⇒ 显式清空
+			//（空串是前端清空的表单形态，归一为 NULL 与"未配置"同列值）；
+			// 载荷非空落库；**部分更新**（mask 存在但未声明 homePath）不动旧值
+			//（FilterByFieldMask 已把 DTO 字段清 nil，SetNillable 天然跳过）。
+			updateHomePath := req.UpdateMask != nil &&
+				(hasPath("home_path", req.UpdateMask) || hasPath("homePath", req.UpdateMask))
+			homePathEmpty := req.Data.HomePath == nil || *req.Data.HomePath == ""
+			partialUpdate := req.UpdateMask != nil && !updateHomePath
+			if !partialUpdate && homePathEmpty {
+				builder.ClearHomePath()
+			} else {
+				builder.SetNillableHomePath(req.Data.HomePath)
 			}
 		},
 		func(s *sql.Selector) {

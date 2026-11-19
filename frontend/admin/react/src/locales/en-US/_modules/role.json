@@ -13,6 +13,8 @@
   "parentId": "Parent Role",
   "parentIdPlaceholder": "Select parent role (optional)",
   "parentName": "Parent Role",
+  "homePath": "Default Home Route",
+  "homePathPlaceholder": "Landing page for this role's users, e.g. /dashboard; empty = system default",
   "permCapHint": "Selectable permissions are limited to the parent role's grant",
   "permTrimConfirmTitle": "Permission Trim Confirmation",
   "permTrimConfirmContent": "{{count}} permission(s) of this role exceed the parent role's grant and will be removed on save. Continue?",

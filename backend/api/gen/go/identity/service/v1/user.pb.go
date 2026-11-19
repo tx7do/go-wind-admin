@@ -156,6 +156,7 @@ type User struct {
 	RoleIds       []int64                `protobuf:"varint,13,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`                    // 角色ID列表
 	Roles         []string               `protobuf:"bytes,14,rep,name=roles,proto3" json:"roles,omitempty"`                                               // 角色码列表
 	RoleNames     []string               `protobuf:"bytes,15,rep,name=role_names,json=roleNames,proto3" json:"role_names,omitempty"`                      // 角色名称列表
+	HomePath      *string                `protobuf:"bytes,16,opt,name=home_path,json=homePath,proto3,oneof" json:"home_path,omitempty"`                   // 默认首页路由（响应回填，登录落地页）
 	Username      *string                `protobuf:"bytes,20,opt,name=username,proto3,oneof" json:"username,omitempty"`                                   // 用户名
 	Nickname      *string                `protobuf:"bytes,21,opt,name=nickname,proto3,oneof" json:"nickname,omitempty"`                                   // 昵称
 	Realname      *string                `protobuf:"bytes,22,opt,name=realname,proto3,oneof" json:"realname,omitempty"`                                   // 真实姓名
@@ -317,6 +318,13 @@ func (x *User) GetRoleNames() []string {
 		return x.RoleNames
 	}
 	return nil
+}
+
+func (x *User) GetHomePath() string {
+	if x != nil && x.HomePath != nil {
+		return *x.HomePath
+	}
+	return ""
 }
 
 func (x *User) GetUsername() string {
@@ -1760,7 +1768,7 @@ var File_identity_service_v1_user_proto protoreflect.FileDescriptor
 
 const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1eidentity/service/v1/user.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x1epagination/v1/pagination.proto\x1a\x17validate/validate.proto\"\x9f\x16\n" +
+	"\x1eidentity/service/v1/user.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x1epagination/v1/pagination.proto\x1a\x17validate/validate.proto\"\xea\x17\n" +
 	"\x04User\x12#\n" +
 	"\x02id\x18\x01 \x01(\x03B\x0e\xbaG\v\x92\x02\b用户IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\x03B\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -1781,37 +1789,38 @@ const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\brole_ids\x18\r \x03(\x03B\x14\xbaG\x11\x92\x02\x0e角色ID列表R\aroleIds\x12+\n" +
 	"\x05roles\x18\x0e \x03(\tB\x15\xbaG\x12\x92\x02\x0f角色码列表R\x05roles\x127\n" +
 	"\n" +
-	"role_names\x18\x0f \x03(\tB\x18\xbaG\x15\x92\x02\x12角色名称列表R\troleNames\x120\n" +
-	"\busername\x18\x14 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\bR\busername\x88\x01\x01\x12-\n" +
-	"\bnickname\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06昵称H\tR\bnickname\x88\x01\x01\x123\n" +
-	"\brealname\x18\x16 \x01(\tB\x12\xbaG\x0f\x92\x02\f真实姓名H\n" +
-	"R\brealname\x88\x01\x01\x12)\n" +
-	"\x06avatar\x18\x17 \x01(\tB\f\xbaG\t\x92\x02\x06头像H\vR\x06avatar\x88\x01\x01\x120\n" +
-	"\x05email\x18\x18 \x01(\tB\x15\xbaG\t\x92\x02\x06邮箱ڶ\x1a\x05\xc2\x01\x02\b\x02H\fR\x05email\x88\x01\x01\x127\n" +
-	"\x06mobile\x18\x19 \x01(\tB\x1a\xbaG\f\x92\x02\t手机号ڶ\x1a\a\xb2\x01\x04\b\x03\x10\x04H\rR\x06mobile\x88\x01\x01\x122\n" +
-	"\ttelephone\x18\x1a \x01(\tB\x0f\xbaG\f\x92\x02\t座机号H\x0eR\ttelephone\x88\x01\x01\x12K\n" +
-	"\x06gender\x18\x1b \x01(\x0e2 .identity.service.v1.User.GenderB\f\xbaG\t\x92\x02\x06性别H\x0fR\x06gender\x88\x01\x01\x12+\n" +
-	"\aaddress\x18\x1c \x01(\tB\f\xbaG\t\x92\x02\x06住址H\x10R\aaddress\x88\x01\x01\x12/\n" +
-	"\x06region\x18\x1d \x01(\tB\x12\xbaG\x0f\x92\x02\f国家地区H\x11R\x06region\x88\x01\x01\x12S\n" +
-	"\x06locale\x18  \x01(\tB6\xbaG3\x92\x020偏好语言（zh-CN/en-US，空=跟随请求）H\x12R\x06locale\x88\x01\x01\x129\n" +
-	"\vdescription\x18\x1e \x01(\tB\x12\xbaG\x0f\x92\x02\f个人描述H\x13R\vdescription\x88\x01\x01\x12)\n" +
-	"\x06remark\x18\x1f \x01(\tB\f\xbaG\t\x92\x02\x06备注H\x14R\x06remark\x88\x01\x01\x12]\n" +
-	"\rlast_login_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12最后登录时间H\x15R\vlastLoginAt\x88\x01\x01\x12=\n" +
-	"\rlast_login_ip\x183 \x01(\tB\x14\xbaG\x11\x92\x02\x0e最后登录IPH\x16R\vlastLoginIp\x88\x01\x01\x12K\n" +
-	"\x06status\x184 \x01(\x0e2 .identity.service.v1.User.StatusB\f\xbaG\t\x92\x02\x06状态H\x17R\x06status\x88\x01\x01\x12\\\n" +
-	"\flocked_until\x185 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12锁定截止时间H\x18R\vlockedUntil\x88\x01\x01\x125\n" +
+	"role_names\x18\x0f \x03(\tB\x18\xbaG\x15\x92\x02\x12角色名称列表R\troleNames\x12\xba\x01\n" +
+	"\thome_path\x18\x10 \x01(\tB\x97\x01\xbaG\x93\x01\x92\x02\x8f\x01默认首页路由（响应回填：按用户角色的 sort_order 取第一个配置了 home_path 的角色；未配置 = 系统默认首页）H\bR\bhomePath\x88\x01\x01\x120\n" +
+	"\busername\x18\x14 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\tR\busername\x88\x01\x01\x12-\n" +
+	"\bnickname\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06昵称H\n" +
+	"R\bnickname\x88\x01\x01\x123\n" +
+	"\brealname\x18\x16 \x01(\tB\x12\xbaG\x0f\x92\x02\f真实姓名H\vR\brealname\x88\x01\x01\x12)\n" +
+	"\x06avatar\x18\x17 \x01(\tB\f\xbaG\t\x92\x02\x06头像H\fR\x06avatar\x88\x01\x01\x120\n" +
+	"\x05email\x18\x18 \x01(\tB\x15\xbaG\t\x92\x02\x06邮箱ڶ\x1a\x05\xc2\x01\x02\b\x02H\rR\x05email\x88\x01\x01\x127\n" +
+	"\x06mobile\x18\x19 \x01(\tB\x1a\xbaG\f\x92\x02\t手机号ڶ\x1a\a\xb2\x01\x04\b\x03\x10\x04H\x0eR\x06mobile\x88\x01\x01\x122\n" +
+	"\ttelephone\x18\x1a \x01(\tB\x0f\xbaG\f\x92\x02\t座机号H\x0fR\ttelephone\x88\x01\x01\x12K\n" +
+	"\x06gender\x18\x1b \x01(\x0e2 .identity.service.v1.User.GenderB\f\xbaG\t\x92\x02\x06性别H\x10R\x06gender\x88\x01\x01\x12+\n" +
+	"\aaddress\x18\x1c \x01(\tB\f\xbaG\t\x92\x02\x06住址H\x11R\aaddress\x88\x01\x01\x12/\n" +
+	"\x06region\x18\x1d \x01(\tB\x12\xbaG\x0f\x92\x02\f国家地区H\x12R\x06region\x88\x01\x01\x12S\n" +
+	"\x06locale\x18  \x01(\tB6\xbaG3\x92\x020偏好语言（zh-CN/en-US，空=跟随请求）H\x13R\x06locale\x88\x01\x01\x129\n" +
+	"\vdescription\x18\x1e \x01(\tB\x12\xbaG\x0f\x92\x02\f个人描述H\x14R\vdescription\x88\x01\x01\x12)\n" +
+	"\x06remark\x18\x1f \x01(\tB\f\xbaG\t\x92\x02\x06备注H\x15R\x06remark\x88\x01\x01\x12]\n" +
+	"\rlast_login_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12最后登录时间H\x16R\vlastLoginAt\x88\x01\x01\x12=\n" +
+	"\rlast_login_ip\x183 \x01(\tB\x14\xbaG\x11\x92\x02\x0e最后登录IPH\x17R\vlastLoginIp\x88\x01\x01\x12K\n" +
+	"\x06status\x184 \x01(\x0e2 .identity.service.v1.User.StatusB\f\xbaG\t\x92\x02\x06状态H\x18R\x06status\x88\x01\x01\x12\\\n" +
+	"\flocked_until\x185 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12锁定截止时间H\x19R\vlockedUntil\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x19R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\x03B\x11\xbaG\x0e\x92\x02\v创建者IDH\x1aR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x1aR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\x03B\x11\xbaG\x0e\x92\x02\v更新者IDH\x1bR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x1bR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\x03B\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x1cR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x1cR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x1dR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x1dR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x1eR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x1eR\tdeletedAt\x88\x01\x01\"*\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x1fR\tdeletedAt\x88\x01\x01\"*\n" +
 	"\x06Gender\x12\n" +
 	"\n" +
 	"\x06SECRET\x10\x00\x12\b\n" +
@@ -1837,7 +1846,9 @@ const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\f_position_idB\x10\n" +
 	"\x0e_position_nameB\n" +
 	"\n" +
-	"\b_role_idB\v\n" +
+	"\b_role_idB\f\n" +
+	"\n" +
+	"_home_pathB\v\n" +
 	"\t_usernameB\v\n" +
 	"\t_nicknameB\v\n" +
 	"\t_realnameB\t\n" +
