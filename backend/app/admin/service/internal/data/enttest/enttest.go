@@ -41,7 +41,8 @@ import (
 
 // NewEntClientForTest 构造一个基于 SQLite 内存库的 entCrud.EntClient，
 // 供 repo 层集成测试使用。每个调用独占一个内存库，通过 t.Cleanup 自动关闭。
-func NewEntClientForTest(t *testing.T) *entCrud.EntClient[*ent.Client] {
+// 参数为 testing.TB：常规测试（*testing.T）与基准（*testing.B）均可直接使用。
+func NewEntClientForTest(t testing.TB) *entCrud.EntClient[*ent.Client] {
 	t.Helper()
 	// modernc.org/sqlite 以 "sqlite" 名注册到 database/sql。
 	// 每次调用用唯一命名的 mode=memory 库：连接池内同 URI 连接共享同一库
