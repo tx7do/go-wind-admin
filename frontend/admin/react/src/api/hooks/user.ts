@@ -90,7 +90,14 @@ export function useCreateUser(
   options?: UseMutationOptions<{}, Error, { data: identityservicev1_User; password?: string }>,
 ) {
   return useMutation({
-    mutationFn: ({ data, password }) => apiClient.userService.Create({ data, password }),
+    // 创建与更新同规：密码走 rsa-v1 传输信封。明文直传会让后端把明文
+    // 当传输密文处理（Rust 版按密文解，Go 版解密失败兜底按明文收），
+    // 两种后端语义从此统一。
+    mutationFn: async ({ data, password }) =>
+      apiClient.userService.Create({
+        data,
+        password: password ? await encryptPasswordEnvelope(String(password)) : undefined,
+      }),
     ...options,
   });
 }

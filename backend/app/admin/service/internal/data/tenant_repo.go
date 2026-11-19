@@ -196,27 +196,33 @@ func (r *TenantRepo) Get(ctx context.Context, req *identityV1.GetTenantRequest) 
 	return dto, nil
 }
 
-func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, cleanup func(), err error) {
-	tx, err = r.entClient.Client().Tx(ctx)
+// BeginTx 开事务。finish 由调用方 defer，参数声明成败：true → commit，
+// false → rollback。此前 cleanup 闭包按 BeginTx 自己的命名返回 err 判向
+// ——它在返回时恒为 nil，调用方的 err 是另一个变量，失败路径永远走
+// commit（半数据照常提交），回滚分支不可达。
+func (r *TenantRepo) BeginTx(ctx context.Context) (*ent.Tx, func(committed bool) error, error) {
+	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return nil, nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 
-	cleanup = func() {
-		if err != nil {
+	finish := func(committed bool) error {
+		if !committed {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
 				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+				return rollbackErr
 			}
-			return
+			return nil
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
-			err = identityV1.ErrorInternalServerError("transaction commit failed")
+			return identityV1.ErrorInternalServerError("transaction commit failed")
 		}
+		return nil
 	}
 
-	return tx, cleanup, nil
+	return tx, finish, nil
 }
 
 func (r *TenantRepo) Create(ctx context.Context, data *identityV1.Tenant) (tenant *identityV1.Tenant, err error) {

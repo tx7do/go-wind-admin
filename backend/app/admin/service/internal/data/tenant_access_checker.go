@@ -105,6 +105,19 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 		return adminV1.ErrorForbidden("no subscription plan")
 	}
 
+	// 套餐存在但一个白名单模块都没配：给出专属提示——笼统的 "module not
+	// allowed" 会把租户管理员引向一个怎么配置都满足不了的模块名上。
+	totalModules, werr := c.entClient.PlanModule.Query().
+		Where(planmodule.HasPlanWith(plan.IDEQ(planId))).
+		Count(sysCtx)
+	if werr != nil {
+		c.log.Errorf(ctx, "tenant access check: whitelist query failed: %v", werr)
+		return adminV1.ErrorForbidden("access denied")
+	}
+	if totalModules == 0 {
+		return adminV1.ErrorForbidden("tenant plan has no whitelisted modules")
+	}
+
 	allowed, lerr := c.isModuleAllowed(sysCtx, planId, bizModule)
 	if lerr != nil {
 		c.log.Errorf(ctx, "tenant access check: whitelist query failed: %v", lerr)

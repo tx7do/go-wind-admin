@@ -25,6 +25,7 @@ import (
 	"github.com/tx7do/go-crud/viewer"
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/passwordcrypto"
 )
 
 type UserService struct {
@@ -447,9 +448,22 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 		}
 	}
 
+	// 创建用户 + 凭证同一事务（此前两步各自独立落库：凭证步失败时用户行
+	// 已存在，前端收到报错但列表里能看到半创建用户——"报错但已创建"）。
+	tx, finishTx, terr := s.tenantRepo.BeginTx(ctx)
+	if terr != nil {
+		return nil, terr
+	}
+	committed := false
+	defer func() {
+		if ferr := finishTx(committed); ferr != nil {
+			s.log.Errorf(ctx, "finish user create tx err: %v", ferr)
+		}
+	}()
+
 	// 创建用户
 	var user *identityV1.User
-	if user, err = s.userRepo.Create(ctx, req); err != nil {
+	if user, err = s.userRepo.CreateWithTx(ctx, tx, req.Data); err != nil {
 		return nil, err
 	}
 
@@ -459,25 +473,31 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 	}
 
 	if len(req.GetPassword()) > 0 {
-		if err = s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
-			Data: &authenticationV1.UserCredential{
-				UserId:   user.Id,
-				TenantId: user.TenantId,
+		// 传输形态统一入口（rsa-v1 信封优先，旧 base64+AES 兼容）；解密失败
+		// 按明文兜底——创建表单的历史形态直传明文，与 ChangeCredential 的
+		// need_decrypt 严格语义不同，这里两种形态都要能落库。
+		credential := req.GetPassword()
+		if plain, derr := passwordcrypto.DecryptTransferPassword(credential); derr == nil {
+			credential = plain
+		}
+		if err = s.userCredentialRepo.CreateWithTx(ctx, tx, &authenticationV1.UserCredential{
+			UserId:   user.Id,
+			TenantId: user.TenantId,
 
-				IdentityType: authenticationV1.UserCredential_USERNAME.Enum(),
-				Identifier:   req.Data.Username,
+			IdentityType: authenticationV1.UserCredential_USERNAME.Enum(),
+			Identifier:   req.Data.Username,
 
-				CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
-				Credential:     req.Password,
+			CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
+			Credential:     trans.Ptr(credential),
 
-				IsPrimary: trans.Ptr(true),
-				Status:    authenticationV1.UserCredential_ENABLED.Enum(),
-			},
+			IsPrimary: trans.Ptr(true),
+			Status:    authenticationV1.UserCredential_ENABLED.Enum(),
 		}); err != nil {
 			return nil, err
 		}
 	}
 
+	committed = true
 	return &emptypb.Empty{}, nil
 }
 

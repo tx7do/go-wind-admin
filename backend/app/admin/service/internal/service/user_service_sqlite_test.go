@@ -41,6 +41,7 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
 	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
@@ -89,6 +90,12 @@ func (s *userServiceUserRepoStub) Create(_ context.Context, req *identityV1.Crea
 	s.creates = append(s.creates, req)
 	// 直接透传请求体内的租户指针（含 nil=平台），保持 Create 返回行的租户语义。
 	return &identityV1.User{Id: trans.Ptr(int64(66001)), TenantId: req.Data.TenantId}, nil
+}
+
+// CreateWithTx 与 Create 同形：服务层 Create 事务化后改走带 tx 的入口，
+// 桩不区分事务内外，同样记录 creates 供断言复用。
+func (s *userServiceUserRepoStub) CreateWithTx(_ context.Context, _ *ent.Tx, data *identityV1.User) (*identityV1.User, error) {
+	return s.Create(nil, &identityV1.CreateUserRequest{Data: data})
 }
 
 func (s *userServiceUserRepoStub) Update(_ context.Context, req *identityV1.UpdateUserRequest) error {

@@ -293,17 +293,21 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 	// 不同租户允许使用相同 username。此前按 username 跨租户全局查重会误判冲突、
 	// 且在平台上下文(tid=0)下跨租户泄露用户名存在性。租户内唯一性由 DB 唯一索引保证。
 
-	tx, cleanup, err := s.tenantRepo.BeginTx(ctx)
+	tx, finishTx, err := s.tenantRepo.BeginTx(ctx)
 	if err != nil {
 		s.log.Errorf(ctx, "begin tx err: %v", err)
 		return nil, err
 	}
+	// 事务成败由 committed 标志驱动（finishTx(true)=commit / (false)=rollback），
+	// 不再依赖 BeginTx 的 cleanup 闭包——旧闭包按 BeginTx 自己的命名返回 err
+	// 判向，恒为 nil，失败路径永远 commit（半数据照常提交）。
+	committed := false
 	defer func() {
-		if cleanup != nil {
-			cleanup()
+		if ferr := finishTx(committed); ferr != nil {
+			s.log.Errorf(ctx, "finish tenant tx err: %v", ferr)
 		}
 
-		if err == nil {
+		if committed {
 			_ = s.authorizer.ResetPolicies(ctx)
 		}
 	}()
@@ -354,6 +358,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 		return nil, err
 	}
 
+	committed = true
 	return &emptypb.Empty{}, nil
 }
 
