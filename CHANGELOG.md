@@ -23,6 +23,8 @@
   长度未知）的请求须先通过访问令牌校验，未认证请求最多 1MiB。该护栏同时覆盖
   kratos 生成 handler「先 `ctx.Bind`（内部 `io.ReadAll`）后跑中间件」导致的同类
   问题（登录等 JSON 端点同样可被超大 body 打爆内存）。
+  已发布 [GHSA-vq5w-97vx-4gj3](https://github.com/tx7do/go-wind-admin/security/advisories/GHSA-vq5w-97vx-4gj3)
+  并申请 CVE。**致谢上报者 Chua Wei Feng（负责任地私下披露并提供完整复现）。**
 
 ## [1.7.0] - 2026-11-18
 
