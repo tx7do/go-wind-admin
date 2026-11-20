@@ -32,7 +32,7 @@ import {
 } from '../constants';
 import AiGenerateButton from '@/components/common/AiGenerateButton';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@go-wind/admin-react';
 
 interface RoleDrawerProps {
   open: boolean;

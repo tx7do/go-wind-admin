@@ -17,7 +17,7 @@ import RoleDrawer from './components/RoleDrawer';
 import { TABLE } from '@go-wind/admin-react';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@go-wind/admin-react';
 
 /**
  * 角色管理页面

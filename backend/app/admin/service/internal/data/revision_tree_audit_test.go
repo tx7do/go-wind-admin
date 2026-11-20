@@ -11,6 +11,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -31,11 +32,15 @@ const revisionPayload = `{"charts":[{"id":"c1","title":"月度销售额"}],"them
 
 // seedBiDashboard 直连 ent 造一张主表仪表盘行（revision.dashboard_id 是外键，
 // enttest 开启外键约束，必须先有主表行才能落快照）。
+// code 后缀用计数器而不是 UnixNano：Windows 时钟粒度粗，同一测试内两次连续
+// 调用会撞出相同纳秒值，触发 UNIQUE(code, tenant_id) 冲突（曾稳定复现）。
+var seedBiDashboardSeq atomic.Int64
+
 func seedBiDashboard(t *testing.T, entClient *ent.Client, ctx context.Context) int64 {
 	t.Helper()
 	row, err := entClient.BiDashboard.Create().
 		SetName("销售分析看板").
-		SetCode("dash-" + fmt.Sprintf("%d", time.Now().UnixNano())).
+		SetCode(fmt.Sprintf("dash-%d-%d", time.Now().UnixNano(), seedBiDashboardSeq.Add(1))).
 		SetPayload("{}").
 		Save(ctx)
 	require.NoError(t, err)

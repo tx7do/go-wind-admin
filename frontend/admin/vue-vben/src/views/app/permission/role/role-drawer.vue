@@ -265,7 +265,14 @@ const [BaseForm, baseFormApi] = useVbenForm({
       // 前端拦截只是即时反馈，后端 Create/Update 仍有一道校验兜底。
       // 角色值只有平台管理员需要理解与维护（issue #14）——其余用户的角色码
       // 由提交时自动生成，表单不再展示与编辑。
-      ifShow: () => isPlatformAdmin.value,
+      // vben 无 ifShow 属性（原作者按 react 惯例臆写，typecheck 断链来源）；
+      // 外部状态驱动的显隐用 dependencies.if（真移除，字段不进 getValues），
+      // 且依赖 watch 对空 triggerFields 直接跳过（form-ui/dependencies.ts），
+      // 必须给一个恒存在的触发字段（惯例同 user-drawer 的 email/mobile）。
+      dependencies: {
+        if: () => isPlatformAdmin.value,
+        triggerFields: ['name'],
+      },
       rules: z
         .string()
         .min(1, { message: $t('ui.formRules.required') })

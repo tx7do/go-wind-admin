@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Select } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { PaginationQuery } from '@go-wind/admin-react';
+import { PaginationQuery, useUserStore } from '@go-wind/admin-react';
 import { fetchListTenants } from '@/api/hooks/tenant';
-import { useUserStore } from '@/stores/user';
 import { useTenantImpersonateStore } from '@/stores/tenant-impersonate';
 
 /**

@@ -111,7 +111,9 @@ export function useCreateUser(
     mutationFn: async ({ data, password }) =>
       apiClient.userService.Create({
         data,
-        password: password ? await encryptPasswordEnvelope(String(password)) : undefined,
+        password: password
+          ? await encryptPasswordEnvelope(String(password), import.meta.env.VITE_PASSWORD_RSA_PUB ?? "")
+          : undefined,
       }),
     ...options,
   });

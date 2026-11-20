@@ -27,6 +27,7 @@ import { ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
+import type { ProFormField } from "@/components/Pro/ProForm/types";
 import RoleDrawer from "./role-drawer.vue";
 
 import {
@@ -72,8 +73,10 @@ const pageConfig = computed<ProPageConfig>(() => ({
               field: "code",
               attrs: { placeholder: $t("common.placeholder.input"), clearable: true },
             },
-          ]
+          ] satisfies ProFormField[]
         : []),
+      ],
+    },
 
   table: {
     exportFilename: "roles",

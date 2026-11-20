@@ -30,10 +30,12 @@ const { data } = useQuery({
   queryFn: () => fetchListTenants({ paging: { page: 1, pageSize: 200 } } as any),
 });
 
-const options = computed(() =>
+// 显式给出元素类型：getter 里 `data.value as any` 会把整条链污染成 any，
+// 下方 some/find 的回调参数随之失去上下文类型（noImplicitAny 报 TS7006）。
+const options = computed<{ value: string; label: string }[]>(() =>
   ((data.value as any)?.items ?? []).map((it: any) => ({
     value: it.id != null ? String(it.id) : "",
-    label: it.name || it.code || String(it.id),
+    label: String(it.name || it.code || String(it.id)),
   })),
 );
 
