@@ -8,6 +8,11 @@ overrides:
   vue: 3.5.13
   vue-router: 5.4.0
 
+patchedDependencies:
+  '@go-wind/admin-core@0.1.0':
+    hash: 4f3c45b813f969d0467ef1740a72a045779cabff0712eea29933c6c6ca1cad83
+    path: patches/@go-wind__admin-core@0.1.0.patch
+
 importers:
 
   .:
@@ -20,7 +25,7 @@ importers:
         version: 5.3.1
       '@go-wind/admin-core':
         specifier: 0.1.0
-        version: 0.1.0
+        version: 0.1.0(patch_hash=4f3c45b813f969d0467ef1740a72a045779cabff0712eea29933c6c6ca1cad83)
       '@go-wind/admin-element':
         specifier: 0.1.1
         version: 0.1.1(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)
@@ -6091,7 +6096,7 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.3.1
 
-  '@go-wind/admin-core@0.1.0':
+  '@go-wind/admin-core@0.1.0(patch_hash=4f3c45b813f969d0467ef1740a72a045779cabff0712eea29933c6c6ca1cad83)':
     dependencies:
       '@microsoft/fetch-event-source': 2.0.1
       axios: 1.21.0
@@ -6109,7 +6114,7 @@ snapshots:
   '@go-wind/admin-element@0.1.1(@tanstack/vue-query@5.105.0(vue@3.5.13(typescript@5.9.3)))(element-plus@2.14.7(vue@3.5.13(typescript@5.9.3)))(pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(vue-i18n@11.4.16(vue@3.5.13(typescript@5.9.3)))(vue-router@5.4.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.13(typescript@5.9.3)))(rolldown@1.2.15)(vite@8.3.5(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.0)(yaml@2.9.1))(vue@3.5.13(typescript@5.9.3)))(vue@3.5.13(typescript@5.9.3))(vxe-table@4.23.12)':
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.13(typescript@5.9.3))
-      '@go-wind/admin-core': 0.1.0
+      '@go-wind/admin-core': 0.1.0(patch_hash=4f3c45b813f969d0467ef1740a72a045779cabff0712eea29933c6c6ca1cad83)
       '@tanstack/vue-query': 5.105.0(vue@3.5.13(typescript@5.9.3))
       '@vueuse/core': 11.3.0(vue@3.5.13(typescript@5.9.3))
       element-plus: 2.14.7(vue@3.5.13(typescript@5.9.3))

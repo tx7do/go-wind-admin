@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"time"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
@@ -129,7 +130,10 @@ func revisionEntityToDTO(row *ent.BiDashboardRevision) *biV1.BiDashboardRevision
 		dto.CreatedBy = trans.Ptr(*row.CreatedBy)
 	}
 	if row.CreatedAt != nil {
-		dto.CreatedAt = trans.Ptr(row.CreatedAt.Format("2006-01-02 15:04:05"))
+		// ent 从 timestamptz 读出的 time.Time 挂在 UTC 偏移上，直接 Format 产出 UTC 挂钟
+		// 裸串（proto 字段为 string），前端按本地挂钟原样展示会早 8 小时；
+		// 先转进程本地时区（部署约定 TZ=Asia/Shanghai）再格式化。
+		dto.CreatedAt = trans.Ptr(row.CreatedAt.In(time.Local).Format("2006-01-02 15:04:05"))
 	}
 	return dto
 }

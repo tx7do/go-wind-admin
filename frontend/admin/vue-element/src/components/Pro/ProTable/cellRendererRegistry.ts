@@ -1,6 +1,6 @@
 import { defineComponent, h } from "vue";
 import type { Component, FunctionalComponent } from "vue";
-import { useDateFormat } from "@vueuse/core";
+import { formatDate } from "@go-wind/admin-core";
 import {
   ElDropdown,
   ElDropdownItem,
@@ -107,7 +107,12 @@ const SwitchCell = defineComponent({
 });
 
 const DateCell: FunctionalComponent<CellRendererContext> = ({ col, row, field }) => {
-  return row[field] ? useDateFormat(row[field], col.dateFormat ?? "YYYY-MM-DD HH:mm:ss").value : "";
+  // 统一走 admin-core 的 formatDate：先按原义解析（尊重 Z/±hh:mm 偏移）再换算
+  // 上海挂钟展示。不能走 useDateFormat/xe-utils——toStringDate 对 ISO-Z 串丢偏移，
+  // 把 UTC 挂钟数字当本地挂钟重排，时间列整体早 8 小时。
+  return row[field]
+    ? formatDate(row[field] as never, col.dateFormat ?? "YYYY-MM-DD HH:mm:ss") || ""
+    : "";
 };
 
 const LinkCell: FunctionalComponent<CellRendererContext> = ({ row, field }) => {

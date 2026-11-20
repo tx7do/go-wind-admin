@@ -2,6 +2,7 @@ import { Button, Drawer, Popconfirm, Tag, Typography } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDateTime } from '@go-wind/admin-react';
 import type {
   aiservicev1_AiAgentApp as AiAgentApp,
 } from '@/api/generated/admin/service/v1';
@@ -59,7 +60,10 @@ export default function AgentRevisionsDrawer({
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             {sourceTag(rev.source)}
             <span style={{ color: 'var(--ant-color-text-tertiary, #aaa)' }}>#{rev.id}</span>
-            <span style={{ color: 'var(--ant-color-text-tertiary, #aaa)' }}>{rev.createdAt}</span>
+            {/* createdAt 为 protojson 的 UTC ISO 串，裸贴会显示 UTC 挂钟；统一走 formatDateTime 转本地挂钟 */}
+            <span style={{ color: 'var(--ant-color-text-tertiary, #aaa)' }}>
+              {rev.createdAt ? formatDateTime(rev.createdAt) : ''}
+            </span>
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
               <a onClick={() => setExpandedId(expandedId === rev.id ? undefined : rev.id)} style={{ cursor: 'pointer' }}>
                 {expandedId === rev.id ? t('revisions.collapse') : t('revisions.viewGraph')}

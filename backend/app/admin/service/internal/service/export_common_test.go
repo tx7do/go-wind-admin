@@ -245,14 +245,14 @@ func TestExportCommon_BuildXLSX(t *testing.T) {
 }
 
 // TestExportCommon_FmtTimeAndBoolStr 验证单元格取值器的 nil 安全与格式：
-// 时间 nil 回空串、格式固定到秒（经 TimestamppbToTime → AsTime，为 UTC 挂钟）；
-// 布尔 nil 回空串（未记录 ≠ false）。
+// 时间 nil 回空串、格式固定到秒（经 TimestamppbToTime → AsTime 为 UTC 挂钟，
+// 落单元格前 In(time.Local) 对齐界面展示口径）；布尔 nil 回空串（未记录 ≠ false）。
 func TestExportCommon_FmtTimeAndBoolStr(t *testing.T) {
 	require.Empty(t, fmtTime(nil), "nil 时间应回空串而不是零值时间")
 
 	ts := timestamppb.New(time.Unix(1773456605, 0))
-	require.Equal(t, time.Unix(1773456605, 0).UTC().Format("2006-01-02 15:04:05"), fmtTime(ts),
-		"时间格式应固定为 2006-01-02 15:04:05（AsTime 为 UTC 口径）")
+	require.Equal(t, time.Unix(1773456605, 0).In(time.Local).Format("2006-01-02 15:04:05"), fmtTime(ts),
+		"时间格式应固定为 2006-01-02 15:04:05（本地时区口径）")
 
 	require.Empty(t, boolStr(nil), "nil 布尔回空串（未记录不得显示为 false）")
 	require.Equal(t, "true", boolStr(trans.Ptr(true)))

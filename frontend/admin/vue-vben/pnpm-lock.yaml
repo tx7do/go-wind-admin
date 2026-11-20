@@ -425,6 +425,9 @@ overrides:
   pinia: 2.2.2
   vue: 3.5.13
 
+patchedDependencies:
+  '@go-wind/admin-vben@0.1.5': 2e24670f1561af78e310464dd81daef743c7aafe82c242512a2f155a4dd0f62e
+
 importers:
 
   .:
@@ -437,7 +440,7 @@ importers:
         version: 0.1.0(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0)
       '@go-wind/admin-vben':
         specifier: 0.1.5
-        version: 0.1.5(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
+        version: 0.1.5(patch_hash=2e24670f1561af78e310464dd81daef743c7aafe82c242512a2f155a4dd0f62e)(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
       '@go-wind/bi-core':
         specifier: 0.2.3
         version: 0.2.3
@@ -2918,20 +2921,24 @@ packages:
     resolution: {integrity: sha512-DV+sYXIkHVd5yVb2mL7br/NEUwzUoLBsMkV3H0InefWgmYa34NLZUvMCGi5oWX+Hqr2Y2qUxnVrnOWF4aBlgWg==}
     engines: {node: '>= 16'}
 
-  '@intlify/message-compiler@12.0.0-alpha.11':
-    resolution: {integrity: sha512-Hbk8DJZxGBUg+I7BbV7RcOeBqOOVQ1xs6vz2fguICLpidY/bkjlIjSCriWQ6Am03x2+z4Nukr6NRP2TA++2D7Q==}
+  '@intlify/message-compiler@12.0.0-alpha.12':
+    resolution: {integrity: sha512-Pnl8Zyp3TBJjomaUeALNqt3o8774RzP1+ByXfRQifDbq8gkq3OcGCUL7j0aFspW37mwSHhuUHC85vAgMoth8rQ==}
     engines: {node: '>= 22'}
 
   '@intlify/shared@10.0.8':
     resolution: {integrity: sha512-BcmHpb5bQyeVNrptC3UhzpBZB/YHHDoEREOUERrmF2BRxsyOEuRrq+Z96C/D4+2KJb8kuHiouzAei7BXlG0YYw==}
     engines: {node: '>= 16'}
 
-  '@intlify/shared@11.4.20':
-    resolution: {integrity: sha512-qg2pOSUU5Xr2fHZCmluah8h/g/4MG5RfzIZBVR8Id0/c2EKsCPtWvamSiVtwc+4VvYnEGQxZast7uQMTb6jP9A==}
+  '@intlify/shared@11.4.23':
+    resolution: {integrity: sha512-1iqGalDCOlHZ8y7LOC3yisSm52K5AmkTmaNO23XGFYWU6Z1oIX8VeAGRq9rn2KrDFb8nMtQaxNyMa1n8EeDm5g==}
     engines: {node: '>= 22'}
 
-  '@intlify/shared@12.0.0-alpha.11':
-    resolution: {integrity: sha512-hOwvi2x0BbABV0MgmPHp+E5hL6y0Q+w4JzpNKAKXSjNuDYwzZgz/C9pfJ+kD98hSAiVjBCcCVHZ0MFnIdUUXtg==}
+  '@intlify/shared@12.0.0-alpha.12':
+    resolution: {integrity: sha512-K8UN+YD+E+eJhsW3MdJ7tHmWOc6K5lsh1Qvqlctr0dscswAtptA25g7aOKE5HFCYnD1Q/6+V5L/ezKJ3/2csHg==}
+    engines: {node: '>= 22'}
+
+  '@intlify/shared@12.0.0-alpha.13':
+    resolution: {integrity: sha512-G3+X8bNBME6YeocS+KckFSxRfxOdzif+Br49zH99gQw5m6znNnCL3jZiSwFJet4cYCpnh4Srta+cokbcSpyyKw==}
     engines: {node: '>= 22'}
 
   '@intlify/unplugin-vue-i18n@6.0.1':
@@ -12267,7 +12274,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@go-wind/admin-vben@0.1.5(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
+  '@go-wind/admin-vben@0.1.5(patch_hash=2e24670f1561af78e310464dd81daef743c7aafe82c242512a2f155a4dd0f62e)(@iconify/vue@4.2.0(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-query@5.100.14(vue@3.5.13(typescript@5.6.3)))(@tanstack/vue-store@0.6.0(vue@3.5.13(typescript@5.6.3)))(ant-design-vue@4.2.6(vue@3.5.13(typescript@5.6.3)))(async-validator@4.2.5)(axios@1.16.1(debug@4.4.3(supports-color@10.0.0))(supports-color@10.0.0))(pinia-plugin-persistedstate@4.7.1(@nuxt/kit@3.14.1592(magicast@0.5.4)(rollup@4.63.1)(supports-color@10.0.0))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))))(pinia@2.2.2(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(qrcode@1.5.4)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue-router@4.6.4(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@ctrl/tinycolor': 4.2.1
       '@iconify/vue': 4.2.0(vue@3.5.13(typescript@5.6.3))
@@ -12383,8 +12390,8 @@ snapshots:
 
   '@intlify/bundle-utils@10.0.0(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))':
     dependencies:
-      '@intlify/message-compiler': 12.0.0-alpha.11
-      '@intlify/shared': 12.0.0-alpha.11
+      '@intlify/message-compiler': 12.0.0-alpha.12
+      '@intlify/shared': 12.0.0-alpha.13
       acorn: 8.18.0
       escodegen: 2.1.0
       estree-walker: 2.0.2
@@ -12405,23 +12412,25 @@ snapshots:
       '@intlify/shared': 10.0.8
       source-map-js: 1.2.2
 
-  '@intlify/message-compiler@12.0.0-alpha.11':
+  '@intlify/message-compiler@12.0.0-alpha.12':
     dependencies:
-      '@intlify/shared': 12.0.0-alpha.11
+      '@intlify/shared': 12.0.0-alpha.12
       source-map-js: 1.2.2
 
   '@intlify/shared@10.0.8': {}
 
-  '@intlify/shared@11.4.20': {}
+  '@intlify/shared@11.4.23': {}
 
-  '@intlify/shared@12.0.0-alpha.11': {}
+  '@intlify/shared@12.0.0-alpha.12': {}
+
+  '@intlify/shared@12.0.0-alpha.13': {}
 
   '@intlify/unplugin-vue-i18n@6.0.1(@vue/compiler-dom@3.5.38)(eslint@9.39.5(jiti@2.7.0)(supports-color@10.0.0))(rollup@4.63.1)(supports-color@10.0.0)(typescript@5.6.3)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.0.0))
       '@intlify/bundle-utils': 10.0.0(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))
-      '@intlify/shared': 11.4.20
-      '@intlify/vue-i18n-extensions': 7.0.0(@intlify/shared@11.4.20)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
+      '@intlify/shared': 11.4.23
+      '@intlify/vue-i18n-extensions': 7.0.0(@intlify/shared@11.4.23)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
       '@rollup/pluginutils': 5.4.0(rollup@4.63.1)
       '@typescript-eslint/scope-manager': 8.69.0
       '@typescript-eslint/typescript-estree': 8.69.0(supports-color@10.0.0)(typescript@5.6.3)
@@ -12443,11 +12452,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@intlify/vue-i18n-extensions@7.0.0(@intlify/shared@11.4.20)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
+  '@intlify/vue-i18n-extensions@7.0.0(@intlify/shared@11.4.23)(@vue/compiler-dom@3.5.38)(vue-i18n@10.0.8(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@babel/parser': 7.29.7
     optionalDependencies:
-      '@intlify/shared': 11.4.20
+      '@intlify/shared': 11.4.23
       '@vue/compiler-dom': 3.5.38
       vue: 3.5.13(typescript@5.6.3)
       vue-i18n: 10.0.8(vue@3.5.13(typescript@5.6.3))

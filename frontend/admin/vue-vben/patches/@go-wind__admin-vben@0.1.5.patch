@@ -1,0 +1,55 @@
+diff --git a/src/base/shared/utils/date.ts b/src/base/shared/utils/date.ts
+index ee311d9fe596839a7c29813cf97356237d7302fa..14b46f73fefcf143b382a49db887228c1e576fd4 100644
+--- a/src/base/shared/utils/date.ts
++++ b/src/base/shared/utils/date.ts
+@@ -9,27 +9,26 @@ dayjs.extend(relativeTime);
+ 
+ const dateUtil = dayjs;
+ 
+-// 统一以上海时区展示时间。注意：setDefault 仅影响 dayjs.tz(input) 的解析，
+-// 不影响 dayjs(input)（按浏览器本地时区）。因此 formatDate 内必须使用
+-// dateUtil.tz(...) 才能让该默认时区真正生效，否则跨时区客户端会显示偏差。
++// 统一以上海时区展示时间。setDefault 只影响 dayjs.tz(input) 省略时区参数时的默认值；
++// 解析仍走 dayjs(input)（尊重串内偏移 / naive 按浏览器本地），随后 .tz(DEFAULT_TZ)
++// 把同一绝对时刻换算成上海挂钟——时刻不变、展示统一，跨时区客户端不漂移。
+ const DEFAULT_TZ = 'Asia/Shanghai';
+ dayjs.tz.setDefault(DEFAULT_TZ);
+ dateUtil.tz.setDefault(DEFAULT_TZ);
+ 
+ export { dateUtil };
+ 
+-export function formatDate(time: number | string, format = 'YYYY-MM-DD') {
++export function formatDate(time: number | string | Date, format = 'YYYY-MM-DD') {
+   if (time === null || time === undefined || time === '') {
+     return '';
+   }
+-  if (isDate(time)) {
+-    return dateUtil.tz(time, DEFAULT_TZ).format(format);
+-  }
+ 
+   try {
+-    // 使用 tz 解析：后端返回的 UTC 时间（如 2026-08-06T12:00:00Z）
+-    // 会被统一转换为上海时区展示，避免随浏览器本地时区漂移。
+-    const date = dateUtil.tz(time, DEFAULT_TZ);
++    // 先按输入原义解析，再 .tz() 换算展示时区。
++    // 不能用 dateUtil.tz(time, ...) 直接解析：tz 的字符串分支把挂钟数字一律
++    // 当目标时区的本地时间重新解释，ISO 串里的 Z/+08:00 偏移会被丢弃
++    // （'2026-08-06T12:00:00Z' 会被显示成上海 12:00，实际应为上海 20:00）。
++    const date = dateUtil(time).tz(DEFAULT_TZ);
+     if (!date.isValid()) {
+       // throw new Error('Invalid date');
+       return '';
+@@ -37,11 +36,11 @@ export function formatDate(time: number | string, format = 'YYYY-MM-DD') {
+     return date.format(format);
+   } catch (error) {
+     console.error(`Error formatting date: ${error}`);
+-    return time;
++    return time as string;
+   }
+ }
+ 
+-export function formatDateTime(time: number | string) {
++export function formatDateTime(time: number | string | Date) {
+   if (time === null || time === undefined || time === '') {
+     return '';
+   }

@@ -118,7 +118,9 @@ func fmtTime(ts *timestamppb.Timestamp) string {
 	if t == nil {
 		return ""
 	}
-	return t.Format("2006-01-02 15:04:05")
+	// AsTime 恒为 UTC 挂钟，直接 Format 会让导出文件里的时间列比界面早 8 小时；
+	// 界面统一按 Asia/Shanghai 展示，导出对齐进程本地时区（部署约定 TZ=Asia/Shanghai）。
+	return t.In(time.Local).Format("2006-01-02 15:04:05")
 }
 
 func boolStr(v *bool) string {

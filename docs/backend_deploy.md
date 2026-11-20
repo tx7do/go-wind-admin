@@ -138,6 +138,27 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out jwt_private_ke
 openssl pkey -in jwt_private_key.pem -pubout -out jwt_public_key.pem
 ```
 
+## 时区要求（TZ=Asia/Shanghai）
+
+后端进程的本地时区是**部署契约**，不是可选项。二进制内多处按进程本地时区产出"人类可读"的时间：
+
+- 仪表盘趋势按本地时区分桶（`startOfToday()`）；
+- 导出 Excel/CSV 的时间列、智能问数结果表时间单元格、BI 版本快照的 `createdAt` 裸串，均 `In(time.Local)` 格式化；
+- asynq 定时任务的 cron 表达式（如审计归档 `30 3 * * *`、配额水位 `0 9 * * *`）按进程本地时区解释。
+
+前端三端展示层统一按 Asia/Shanghai 挂钟渲染（机制层 formatter 固定），与 `TZ=Asia/Shanghai` 的进程口径一致。**部署时必须**：
+
+```yaml
+# docker-compose.yaml（已内置）
+admin-service:
+  environment:
+    - TZ=Asia/Shanghai
+```
+
+裸机 / systemd / PM2 部署同理：设置系统时区或导出 `TZ=Asia/Shanghai`。若进程跑在 UTC，上述本地挂钟输出会比界面整体早 8 小时（存储与 protojson 的绝对时刻不受影响，只有"挂钟格式化"这一层漂移）。
+
+> PostgreSQL 会话时区（`SHOW timezone`）与列表时间范围筛选的解释相关：结构化过滤器把前端发来的裸串（`created_at__gte=YYYY-MM-DD HH:mm:ss`）原样进 SQL 谓词，按**数据库会话时区**解释。当前部署约定数据库默认 UTC、前端发本地挂钟裸串——两者不一致时筛选窗口会整体偏移，属已知口径（运维配置项，暂不调整）。
+
 ## 备份与恢复
 
 平台有两套互补的备份机制，**互不替代**：

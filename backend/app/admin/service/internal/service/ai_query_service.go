@@ -595,7 +595,9 @@ func stringifyCellValue(v interface{}) string {
 	case nil:
 		return ""
 	case time.Time:
-		return val.Format("2006-01-02 15:04:05")
+		// pgx/lib/pq 解码 timestamptz 得到的 time.Time 挂在 UTC 偏移上，直接 Format
+		// 会让结果表的时间列比界面早 8 小时；先转进程本地时区（部署约定 TZ=Asia/Shanghai）。
+		return val.In(time.Local).Format("2006-01-02 15:04:05")
 	case []byte:
 		return string(val)
 	default:
