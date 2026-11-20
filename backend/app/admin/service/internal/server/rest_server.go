@@ -56,10 +56,11 @@ func NewRestMiddleware(
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
 	// 兜底为 500，避免崩溃请求 goroutine、被用作未认证 DoS。
 	ms = append(ms, recovery.Recovery())
-	// P2 修复：上传路由请求体上限——生成代码的 multipart 解码先全量 io.Copy 进
-	// 内存再校验大小，且 REST 服务端此前无任何 body 上限，单请求数 GB body 即可
-	// 令进程内存暴涨（并发即 OOM）。上限 = MaxUploadSize + 1MB（multipart 编码余量）。
-	ms = append(ms, uploadBodyLimit())
+	// 注意：请求体上限不能放在这个中间件链里。kratos 的中间件由 handler 内部
+	// 调用（ctx.Middleware），生成代码的 ctx.Bind 与上传 handler 的 FormFile
+	// 都在中间件之前执行，挂在中间件里的限制永远晚于 body 读取。
+	// 上传路由的硬上限见 i_file_transfer_http.pb.go 的 uploadBodyGuard；
+	// 全站护栏见 NewRestServer 里的 requestBodyGuard。
 	ms = append(ms, securityHeaders())
 	ms = append(ms, logging.Server(bLogger.AsKratosLogger(ctx.GetLogger())))
 
@@ -190,27 +191,79 @@ func securityHeaders() middleware.Middleware {
 	}
 }
 
-// uploadBodyLimit 上传路由的请求体上限中间件（P2 修复）。
-// kratos 中间件先于 handler 执行，此处替换 http.Request.Body 后，生成代码的
-// multipart 解码（io.Copy 全量入内存）读到的是被限流的流。
-func uploadBodyLimit() middleware.Middleware {
-	const uploadPathSuffix = "/file/upload"
-	const maxUploadBody = ossutil.MaxUploadSize + 1<<20 // 50MiB + multipart 编码余量
+const (
+	// maxRequestBody 全站请求体上限。需容纳 base64 编码后的 50MiB 上传体
+	// （base64 膨胀 4/3）与 JSON 结构开销；比它更小的请求不受影响。
+	maxRequestBody = ossutil.MaxUploadSize*4/3 + 4<<20
 
-	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req interface{}) (interface{}, error) {
-			if tr, ok := transport.FromServerContext(ctx); ok {
-				if htr, ok := tr.(*http.Transport); ok && htr.Request() != nil {
-					r := htr.Request()
-					if (r.Method == "POST" || r.Method == "PUT") &&
-						strings.HasSuffix(r.URL.Path, uploadPathSuffix) {
-						r.Body = nethttp.MaxBytesReader(htr.Response(), r.Body, maxUploadBody)
-					}
+	// maxUnauthenticatedBody 未认证请求体上限。所有免鉴权端点（登录、验证码、
+	// 找回密码、SSO、令牌交换等）的请求体都远小于此值；kratos 生成的 handler
+	// 在中间件之前 ctx.Bind（内部 io.ReadAll 整个 body），不设限时未认证请求
+	// 即可用超大 JSON 打爆内存。
+	maxUnauthenticatedBody = 1 << 20
+)
+
+// requestBodyGuard 挂在整个 REST 服务最外层（mux 之前），给所有请求封顶：
+//   - 声明长度超过 maxRequestBody：直接 413，不读 body；
+//   - 声明长度超过 maxUnauthenticatedBody（或长度未知）：必须携带有效访问令牌，
+//     否则 401，不读 body——大 body 的合法场景（上传/头像/知识库文档）都是
+//     已登录操作，免鉴权端点没有大 body 的需求；
+//   - 其余请求：只套 MaxBytesReader 兜底。
+//
+// 之所以放在 HTTP Filter 而不是 kratos 中间件：后者的执行点在 handler 内部，
+// 晚于 ctx.Bind / FormFile 的 body 读取。
+func requestBodyGuard(checker auth.AccessTokenChecker) http.FilterFunc {
+	return func(next nethttp.Handler) nethttp.Handler {
+		return nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
+			if r.ContentLength > maxRequestBody {
+				nethttp.Error(w, "request entity too large", nethttp.StatusRequestEntityTooLarge)
+				return
+			}
+
+			limit := int64(maxUnauthenticatedBody)
+
+			switch {
+			case r.ContentLength > maxUnauthenticatedBody:
+				// 大 body：先认证，再放行读取。
+				if !hasValidAccessToken(r, checker) {
+					nethttp.Error(w, "missing or invalid bearer token", nethttp.StatusUnauthorized)
+					return
+				}
+				limit = maxRequestBody
+			case r.ContentLength < 0:
+				// 长度未知（chunked）：有有效令牌才允许超过未认证上限。
+				if hasValidAccessToken(r, checker) {
+					limit = maxRequestBody
 				}
 			}
-			return handler(ctx, req)
-		}
+
+			r.Body = nethttp.MaxBytesReader(w, r.Body, limit)
+			next.ServeHTTP(w, r)
+		})
 	}
+}
+
+// hasValidAccessToken 在读取 body 之前校验 Bearer 令牌。
+func hasValidAccessToken(r *nethttp.Request, checker auth.AccessTokenChecker) bool {
+	if checker == nil {
+		return false
+	}
+	token := bearerToken(r)
+	if token == "" {
+		return false
+	}
+	valid, _ := checker.IsValidAccessToken(r.Context(), token, false)
+	return valid
+}
+
+// bearerToken 从 Authorization 头提取 Bearer 令牌，与 kratos-authn 的
+// AuthFromMD 同口径（scheme 大小写不敏感）。
+func bearerToken(r *nethttp.Request) string {
+	scheme, token, ok := strings.Cut(r.Header.Get("Authorization"), " ")
+	if !ok || !strings.EqualFold(scheme, "Bearer") {
+		return ""
+	}
+	return strings.TrimSpace(token)
 }
 
 // NewRestServer new an REST server.
@@ -219,6 +272,7 @@ func NewRestServer(
 
 	middlewares []middleware.Middleware,
 	authorizer *authorizer.Authorizer,
+	accessTokenChecker auth.AccessTokenChecker,
 
 	authenticationService *service.AuthenticationService,
 	mfaService *service.MfaService,
@@ -304,6 +358,10 @@ func NewRestServer(
 	if err != nil {
 		return nil, err
 	}
+
+	// 全站请求体护栏包在最外层（CORS/pprof 过滤器与路由都在其内层），
+	// 使 401/413 的判定发生在任何 body 读取之前。
+	srv.Handler = requestBodyGuard(accessTokenChecker)(srv.Handler)
 
 	apiService.RegisterRouteWalker(srv)
 

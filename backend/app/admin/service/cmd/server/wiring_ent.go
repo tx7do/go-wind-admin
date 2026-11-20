@@ -339,7 +339,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		apiAuditLogRepo, loginAuditLogRepo, operationAuditLogRepo, permissionAuditLogRepo, dataAccessAuditLogRepo, policyEvaluationLogRepo,
 		taskService)
 
-	restServer, err := server.NewRestServer(ctx, restMiddlewares, authz,
+	restServer, err := server.NewRestServer(ctx, restMiddlewares, authz, accessTokenChecker,
 		authenticationService, mfaService, loginPolicyService,
 		adminPortalService, taskService,
 		fileService, fileTransferService,

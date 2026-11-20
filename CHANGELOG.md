@@ -8,6 +8,22 @@
 
 ## [Unreleased]
 
+### 安全
+
+- **未认证请求体 DoS 修复**（私下上报）：`/admin/v1/file/upload`（POST/PUT）此前在
+  认证/鉴权中间件执行前就把请求体整包读入内存（multipart 经 `strings.Builder`
+  再转 `[]byte`，两份完整副本），未登录请求即可用超大文件打爆进程内存。修复分三层：
+  1. 上传路由改在 HTTP Filter 层用 `MaxBytesReader` 封顶——multipart 上限
+     50MiB + 1MiB 余量，JSON/base64 形态按 4/3 膨胀放宽到约 70MiB；声明的
+     `Content-Length` 超限直接 413，不读 body；
+  2. 请求体解析移入 `ctx.Middleware` 的回调内部，认证/鉴权先于读 body 执行
+     （kratos 的中间件由 handler 内部调用，此前的大小限制中间件因此从未生效）；
+  3. 文件内容改为单次拷贝并按实际大小校验，超限映射为 413。
+  另新增全站请求体护栏：声明长度超过约 70MiB 直接 413；超过 1MiB（或 chunked
+  长度未知）的请求须先通过访问令牌校验，未认证请求最多 1MiB。该护栏同时覆盖
+  kratos 生成 handler「先 `ctx.Bind`（内部 `io.ReadAll`）后跑中间件」导致的同类
+  问题（登录等 JSON 端点同样可被超大 body 打爆内存）。
+
 ## [1.7.0] - 2026-11-18
 
 ### 变更
