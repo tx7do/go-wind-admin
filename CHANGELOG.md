@@ -8,6 +8,8 @@
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-22
+
 ### 安全
 
 - **未认证请求体 DoS 修复**（私下上报）：`/admin/v1/file/upload`（POST/PUT）此前在
@@ -25,6 +27,28 @@
   问题（登录等 JSON 端点同样可被超大 body 打爆内存）。
   已发布 [GHSA-vq5w-97vx-4gj3](https://github.com/tx7do/go-wind-admin/security/advisories/GHSA-vq5w-97vx-4gj3)
   并申请 CVE。**致谢上报者 Chua Wei Feng（负责任地私下披露并提供完整复现）。**
+
+### 新增
+
+- **平台管理员代租户操作**（issues #13/#14）：平台管理员经 `X-Tenant-Id` Header 以指定租户
+  身份执行管理操作（后端认证中间件校验平台身份后注入目标租户上下文）；三端顶栏新增
+  TenantSwitcher 租户切换器，选择后请求自动携带该 Header。角色管理页的 code 列/表单项
+  对非平台管理员隐藏。
+- **角色默认首页路由**（issue #12）：角色可配置默认首页——登录后落地页跟随优先级最高且
+  配置了该项的角色；三端角色抽屉新增该配置项（proto `role`/`user` 扩展
+  `default_home_route` 字段）。
+
+### 修复
+
+- **时区漂移**：机制层时间格式化器把字符串直接喂 `dayjs.tz()`，其字符串分支把墙钟数字当
+  目标时区本地时间重读、丢弃 ISO 偏移——UTC 时间戳在 ele/vben 列表与详情抽屉早显 8 小时
+  （xe-utils 的 DateCell 同坑）。改为先 `dayjs()` 解析（尊重偏移）再转 Asia/Shanghai 展示
+  墙钟；后端导出改用本地墙钟（三处 `Format` → `In(time.Local)`）。修复经 npm 包
+  `@go-wind/admin-core@0.1.1` / `@go-wind/admin-element@0.1.2` / `@go-wind/admin-vben@0.1.6`
+  发布，宿主侧临时 pnpm patch 已撤。
+- **问题上报修复批次**：用户创建失败不再留半成品行（落库收进事务、失败回滚）；租户事务
+  学会回滚；套餐模块白名单为空给出专属错误文案（此前是含糊的通用报错）。
+- **typecheck 门禁**：#13/#14 特性曾随解析错误入库，已修复——三端 typecheck 门禁全绿。
 
 ## [1.7.0] - 2026-11-18
 
