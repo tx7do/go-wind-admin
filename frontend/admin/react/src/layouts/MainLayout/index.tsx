@@ -9,6 +9,7 @@ import SiderMenu from './components/SiderMenu';
 import TabsBar from './components/TabsBar';
 import AppFooter from './components/Footer';
 import { LockScreen } from './components/LockScreen';
+import { CheckUpdates } from './components/CheckUpdates';
 import { PageContainer } from '@/layouts/components/PageContainer';
 
 // Hooks
@@ -387,6 +388,9 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
           void logout();
         }}
       />
+
+      {/* 热更新检测：组件内按 preferences.app.enableCheckUpdates 自行门控 */}
+      <CheckUpdates />
     </ConfigProvider>
   );
 };

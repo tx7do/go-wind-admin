@@ -58,6 +58,8 @@
     "dynamicTitle": "Dynamic Title",
     "watermark": "Watermark",
     "checkUpdates": "Check Updates",
+    "checkUpdatesTitle": "New Version Available",
+    "checkUpdatesDescription": "Click to refresh and get the latest version",
     "animation": "Animation",
     "progressBar": "Progress Bar",
     "loading": "Loading",

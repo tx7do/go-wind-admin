@@ -3,6 +3,8 @@
     <component :is="currentLayoutComponent" />
     <PreferencesPanel :open="settingsVisible" @close="settingsVisible = false" />
     <LockScreen :avatar="avatar" @to-login="handleLockToLogin" />
+    <!-- 热更新检测：组件内按 preferences.app.enableCheckUpdates 自行门控 -->
+    <CheckUpdates />
   </div>
 </template>
 
@@ -21,6 +23,7 @@ import LeftLayout from "./LeftLayout.vue";
 import TopLayout from "./TopLayout.vue";
 import MixLayout from "./MixLayout.vue";
 import LockScreen from "@/components/LockScreen/index.vue";
+import CheckUpdates from "@/components/CheckUpdates/index.vue";
 
 const route = useRoute();
 const router = useRouter();
