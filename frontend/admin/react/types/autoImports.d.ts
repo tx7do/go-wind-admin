@@ -44,6 +44,7 @@ declare global {
   const TableActions: typeof import('../src/components/common/TableActions/index').default
   const TableExportButton: typeof import('../src/components/common/TableExportButton/index').default
   const TableSkeleton: typeof import('../src/components/common/ListTable/TableSkeleton').default
+  const TenantSwitcher: typeof import('../src/components/common/TenantSwitcher').TenantSwitcher
   const ThemeLoading: typeof import('../src/components/common/Loading/index').ThemeLoading
   const TiptapEditor: typeof import('../src/components/common/Editor/src/TiptapEditor').default
   const Toolbar: typeof import('../src/components/common/Editor/src/TiptapEditor/index').Toolbar
@@ -122,6 +123,7 @@ declare global {
   const useSyncExternalStore: typeof import('react').useSyncExternalStore
   const useTableScrollHeight: typeof import('../src/hooks/useTableScrollHeight').useTableScrollHeight
   const useTabsStore: typeof import('../src/stores/tabs').useTabsStore
+  const useTenantImpersonateStore: typeof import('../src/stores/tenant-impersonate').useTenantImpersonateStore
   const useTimes: typeof import('../src/hooks/useTime').useTimes
   const useTiptapEditor: typeof import('../src/components/common/Editor/src/TiptapEditor/useTiptapEditor').useTiptapEditor
   const useTitle: typeof import('../src/hooks/useTitle').useTitle
